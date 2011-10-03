@@ -1,0 +1,3 @@
+JAVA_HOME=/opt/jdk1.7.0 ~/usr/apache-maven-3.0.3/bin/mvn package
+JAVA_HOME=/opt/jdk1.7.0 ~/usr/apache-tomcat-7.0.22/bin/catalina.sh start
+cp -p target/myweb-1.0-SNAPSHOT.war /home/roart/usr/apache-tomcat-7.0.22/webapps/myweb.war
