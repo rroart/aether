@@ -34,5 +34,19 @@
 
 <br/>
 
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="filesystemadd"/>
+<input type="submit" name="filesystemadd"/>
+<textarea rows="1" cols="40" name="filesystemadd"></textarea>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="luceneadd"/>
+<input type="submit" name="luceneadd"/>
+<textarea rows="1" cols="40" name="luceneadd"></textarea>
+</form>
+
 </body>
 </html>

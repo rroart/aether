@@ -1,7 +1,6 @@
 package roart.dir;
 
-import java.util.Set;
-import java.util.HashMap;
+import java.util.Map;
 import java.io.*;
 import roart.content.*;
 import roart.search.*;
@@ -63,8 +62,8 @@ public class Traverse {
 	return retset;
     }
 
-    public static ArrayList<String> index() throws Exception {
-	ArrayList<String> retlist = new ArrayList<String>();
+    public static List<String> index() throws Exception {
+	List<String> retlist = new ArrayList<String>();
 	log.info("here");
 	List<Files> files = Files.getAll();
 	List<Index> indexes = Index.getAll();
@@ -80,14 +79,62 @@ public class Traverse {
 	    indexMap.put(index.getMd5(), index.getIndexed());
 	}
 	for (String md5 : filesMapMd5.keySet()) {
+	    indexsingle(retlist, md5, indexMap, filesMapMd5);
+	}
+	return retlist;
+    }
+
+    public static List<String> index(String add) throws Exception {
+	List<String> retlist = new ArrayList<String>();
+	HashSet<String> md5set = new HashSet<String>();
+	String dirname = add;
+	File dir = new File(dirname);
+	File listDir[] = dir.listFiles();
+	//log.info("dir " + dirname);
+	//log.info("listDir " + listDir.length);
+	for (int i = 0; i < listDir.length; i++) {
+	    String filename = listDir[i].getAbsolutePath();
+	    //log.info("file " + filename);
+	    if (listDir[i].isDirectory()) {
+		//log.info("isdir " + filename);
+		retlist.addAll(index(filename));
+	    } else {
+		//log.info("retset " + filename);
+		//Reader reader = new ParsingReader(parser, stream, ...);
+		File plainFile = new File(filename);
+		Files files = Files.getByFilename(filename);
+		//files.setTouched(new Boolean(true));
+		if (files == null || files.getMd5() == null) {
+		    continue;
+		}
+		retlist.add(filename);
+		String md5 = files.getMd5();
+		Index index = Index.getByMd5(md5);
+		if (index == null) {
+		    continue;
+		}
+
+		HashMap<String, String> filesMapMd5 = new HashMap<String, String>();
+		filesMapMd5.put(files.getMd5(), files.getFilename());
+
+		HashMap<String, Boolean> indexMap = new HashMap<String, Boolean>();
+		indexMap.put(index.getMd5(), index.getIndexed());
+
+		indexsingle(retlist, md5, indexMap, filesMapMd5);
+	    }
+	}
+	return retlist;
+    }
+
+    private static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5) throws Exception {
 	    if (md5 == null) {
 		log.info("md5 should not be null");
-		continue;
+		return;
 	    }
 	    Boolean indexed = indexMap.get(md5);
 	    if (indexed != null) {
 		if (indexed.booleanValue()) {
-		    continue;
+		    return;
 		}
 	    }
 	    String filename = filesMapMd5.get(md5);
@@ -113,11 +160,9 @@ public class Traverse {
 		}
 		size = doTika(filename, "/tmp/t.txt", md5, index, retlist);
 	    }
-	}
-	return retlist;
     }
 
-    private static int doTika(String dbfilename, String filename, String md5, Index index, ArrayList<String> retlist) {
+    private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
 	int size = 0;
 	try {
 	    TikaHandler tika = new TikaHandler();

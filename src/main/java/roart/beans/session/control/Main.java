@@ -89,7 +89,15 @@ import org.apache.commons.logging.LogFactory;
 public class Main {
     private Log log = LogFactory.getLog(this.getClass());
 
-    public List<String> traverse() {
+    public List<String> traverse(String add) throws Exception {
+	HashMap<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
+	HashSet<String> filesetnew2 = Traverse.doList(add, dirset);    
+	roart.model.HibernateUtil.commit();
+	roart.model.HibernateUtil.currentSession().close();
+	return new ArrayList<String>(filesetnew2);
+    }
+
+    public List<String> traverse() throws Exception {
 	List<String> retList = new ArrayList<String>();
 	TreeMap<Integer, String> sortlist = new TreeMap<Integer, String>();
 	HashMap<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
@@ -163,7 +171,7 @@ public class Main {
 	return retList;
     }
 
-    public List<String> index() {
+    public List<String> index() throws Exception {
 	List retlist = null;
 	try {
 	    retlist = Traverse.index();
@@ -208,6 +216,19 @@ public class Main {
 		log.error("Exception", e);
 	}
 	return retlist;
+    }
+
+    public List<String> index(String add) throws Exception {
+	List retlist = null;
+	try {
+	    retlist = Traverse.index(add);
+	    roart.model.HibernateUtil.commit();
+	    roart.model.HibernateUtil.currentSession().close();
+	} catch (Exception e) {
+	    log.info(e);
+	    log.error("Exception", e);
+	}
+	return null;
     }
 
     public List<String> cleanup() {

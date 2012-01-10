@@ -27,6 +27,8 @@
 	//HttpSession session = request.getSession();
 	String lucene = request.getParameter("lucene");
 	String filesystem = request.getParameter("filesystem");
+	String luceneadd = request.getParameter("luceneadd");
+	String filesystemadd = request.getParameter("filesystemadd");
 	String cleanup = request.getParameter("cleanup");
 	System.out.println("test " + lucene + " " + filesystem);
 	List<String> strarr = null;
@@ -35,6 +37,12 @@
 	}
 	if (lucene != null) {
  	   strarr = main5.index();
+	}
+	if (filesystemadd != null) {
+ 	   strarr = main5.traverse(filesystemadd);
+	}
+	if (luceneadd != null) {
+ 	   strarr = main5.index(luceneadd);
 	}
 	if (cleanup != null) {
  	   strarr = main5.cleanup();
