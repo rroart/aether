@@ -173,14 +173,14 @@ public class Traverse {
 		    String output = execute("/usr/bin/djvutxt", env);
 		    retry = true;
 		}
-		// pdf 2nd try
 		// epub 2nd try
-		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".pdf") || lowercase.endsWith(".lit")) {
+		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/ebook-convert", env);
 		    retry = true;
 		}
-		if (false) {
+		// pdf 2nd try
+		if (lowercase.endsWith(".pdf") || ) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/pdftotext", env);
 		    retry = true;
