@@ -218,8 +218,8 @@ public class SearchLucene {
 	}
     }
 
-    public static ArrayList<String> removeDuplicate() throws Exception {
-	ArrayList<String> retlist = new ArrayList<String>();
+    public static List<String> removeDuplicate() throws Exception {
+	List<String> retlist = new ArrayList<String>();
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = Constants.PATH+type;
@@ -310,8 +310,8 @@ public class SearchLucene {
 	return retlist;
     }//End of removeDuplicate method
 
-    public static ArrayList<String> removeDuplicate2() throws Exception {
-	ArrayList<String> retlist = new ArrayList<String>();
+    public static List<String> removeDuplicate2() throws Exception {
+	List<String> retlist = new ArrayList<String>();
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = Constants.PATH+type;
