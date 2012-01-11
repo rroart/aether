@@ -164,6 +164,7 @@ public class Traverse {
 	    int size = 0;
 	    size = doTika(filename, filename, md5, index, retlist);
 	    int limit = mylimit(filename);
+	    log.info("sizes " + size + " " + limit);
 	    if (size <= limit) {
 		String lowercase = filename.toLowerCase();
 		if (lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
@@ -180,7 +181,10 @@ public class Traverse {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/pdftotext", env);
 		}
-		size = doTika(filename, "/tmp/t.txt", md5, index, retlist);
+		File txt = new File("/tmp/t.txt");
+		if (txt.exists()) {
+		    size = doTika(filename, "/tmp/t.txt", md5, index, retlist);
+		}
 	    }
 	    File txt = new File("/tmp/t.txt");
 	    if (txt.exists()) {
@@ -232,9 +236,10 @@ public class Traverse {
 	    if (size > limit) {
 		size = SearchLucene.indexme("all", md5, inputStream);
 		index.setIndexed(new Boolean(true));
+		retlist.add("Indexed " + dbfilename + " " + md5 + " " + size);
 	    } else {
 		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-		retlist.add(dbfilename + " " + md5 + " " + size);
+		retlist.add("Too small " + dbfilename + " " + md5 + " " + size);
 	    }
 	    log.info("size2 " + size);
 	    inputStream.close();
@@ -249,25 +254,33 @@ public class Traverse {
 	return size;
     }
 
-    private static String execute(String filename, String[] env) {
+    private static String execute(String filename, String[] arg) {
+	String res = null;
         Process proc = null;
         try {
-	    proc = Runtime.getRuntime().exec(filename, env);
-            if (proc != null) proc.waitFor();
+	    //filename = "/tmp/t.sh";
+	    //proc = Runtime.getRuntime().exec(filename + " \"" + arg[0] + "\" " + arg[1]);
+	    String[] cmdarray = new String[3];
+	    cmdarray[0] = filename;
+	    cmdarray[1] = arg[0];
+	    cmdarray[2] = arg[1];
+	    proc = Runtime.getRuntime().exec(cmdarray);
+	    log.info("proc " + proc);
+            if (proc != null) {
+		proc.waitFor();
+	    }
+	    StringBuilder buffer = new StringBuilder();
+	    BufferedInputStream br = new BufferedInputStream(proc.getInputStream());
+	    while (br.available() != 0) {
+		buffer.append((char) br.read());
+	    }
+	    res = buffer.toString().trim();
+	    log.info("output " + res);
         } catch (Exception e) {
 	    log.info("Exception" + e);
 	    log.error("Exception", e);
         }
-	/*
-	StringBuilder buffer = new StringBuilder();
-	BufferedInputStream br = new BufferedInputStream(proc.getInputStream());
-	while (br.available() != 0) {
-	    buffer.append((char) br.read());
-	}
-	String res = buffer.toString().trim();
 	return res;
-	*/
-	return null;
     }
 
     private static int mylimit(String filename) {
