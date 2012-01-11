@@ -166,23 +166,27 @@ public class Traverse {
 	    int limit = mylimit(filename);
 	    log.info("sizes " + size + " " + limit);
 	    if (size <= limit) {
+		boolean retry = false;
 		String lowercase = filename.toLowerCase();
-		if (lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
+		if (false) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/djvutxt", env);
-		}
-		// epub 2nd try
-		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub")) {
-		    String[] env = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/ebook-convert", env);
+		    retry = true;
 		}
 		// pdf 2nd try
-		if (lowercase.endsWith(".pdf")) {
+		// epub 2nd try
+		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".pdf") || lowercase.endsWith(".lit")) {
+		    String[] env = { filename, "/tmp/t.txt" };
+		    String output = execute("/usr/bin/ebook-convert", env);
+		    retry = true;
+		}
+		if (false) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/pdftotext", env);
+		    retry = true;
 		}
 		File txt = new File("/tmp/t.txt");
-		if (txt.exists()) {
+		if (retry && txt.exists()) {
 		    size = doTika(filename, "/tmp/t.txt", md5, index, retlist);
 		}
 	    }
