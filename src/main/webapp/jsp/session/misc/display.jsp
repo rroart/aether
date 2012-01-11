@@ -27,11 +27,10 @@
 	//HttpSession session = request.getSession();
 	String type = request.getParameter("type");
 	String searchme = request.getParameter("searchme");
-	System.out.println("bla " + searchme);
 	if (searchme == null) {
 	String creator = request.getParameter("creator");
 	String year = request.getParameter("year");
-	List<unit> myunits = null;
+	List<Unit> myunits = null;
 	if (year != null) {
 		myunits = main.searchyear(type, year);
 	}
