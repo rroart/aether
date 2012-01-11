@@ -35,8 +35,14 @@
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
+<input type="submit" name="notindexed" value="notindexed"/>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="filesystemadd"/>
-<input type="submit" name="filesystemadd"/>
+<input type="submit" name="filesystemadd2" value="filesystemadd"/>
 <textarea rows="1" cols="40" name="filesystemadd"></textarea>
 </form>
 
@@ -44,7 +50,7 @@
 
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="luceneadd"/>
-<input type="submit" name="luceneadd"/>
+<input type="submit" name="luceneadd2" value="luceneadd"/>
 <textarea rows="1" cols="40" name="luceneadd"></textarea>
 </form>
 

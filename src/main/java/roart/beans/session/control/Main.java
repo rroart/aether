@@ -73,6 +73,7 @@ import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Map;
 
 import java.util.Iterator;
 
@@ -228,7 +229,7 @@ public class Main {
 	    log.info(e);
 	    log.error("Exception", e);
 	}
-	return null;
+	return retlist;
     }
 
     public List<String> cleanup() {
@@ -239,6 +240,35 @@ public class Main {
 		log.error("Exception", e);
 	}
 	return null;
+    }
+
+    public List<String> notindexed() throws Exception {
+	List<String> retlist = null;
+	try {
+	    retlist = Traverse.notindexed();
+	    Map<String, Integer> plusretlist = new HashMap<String, Integer>();
+	    for(String filename : retlist) {
+		int ind = filename.lastIndexOf(".");
+		if (ind == -1) {
+		    continue;
+		}
+		String suffix = filename.substring(ind+1);
+		Integer i = plusretlist.get(suffix);
+		if (i == null) {
+		    i = new Integer(0);
+		}
+		i++;
+		plusretlist.put(suffix, i);
+	    }
+	    System.out.println("size " + plusretlist.size());
+	    for(String string : plusretlist.keySet()) {
+		retlist.add("Format " + string + " : " + plusretlist.get(string).intValue());
+	    }
+	} catch (Exception e) {
+	    log.info(e);
+	    log.error("Exception", e);
+	}
+	return retlist;
     }
 
 }

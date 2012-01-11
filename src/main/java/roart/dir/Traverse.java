@@ -71,8 +71,14 @@ public class Traverse {
 	HashMap<String, String> filesMapMd5 = new HashMap<String, String>();
 	HashMap<String, String> filesMapFilename = new HashMap<String, String>();
 	for (Files file : files) {
-	    filesMapMd5.put(file.getMd5(), file.getFilename());
-	    filesMapFilename.put(file.getFilename(), file.getMd5());
+	    String filename = file.getFilename();
+	    String md5 = file.getFilename();
+	    if (md5 == null) {
+		retlist.add("No md5 " + filename);
+		continue;
+	    }
+	    filesMapMd5.put(md5, filename);
+	    filesMapFilename.put(filename, md5);
 	}
 	HashMap<String, Boolean> indexMap = new HashMap<String, Boolean>();
 	for (Index index : indexes) {
@@ -89,12 +95,22 @@ public class Traverse {
 	HashSet<String> md5set = new HashSet<String>();
 	String dirname = add;
 	File dir = new File(dirname);
-	File listDir[] = dir.listFiles();
+	if (!dir.exists()) {
+	    retlist.add("File " + add + " does not exist");
+	    return retlist;
+	}
+	File listDir[];
+	if (dir.isDirectory()) {
+	    listDir = dir.listFiles();
+	} else {
+	    listDir = new File[1];
+	    listDir[0] = dir;
+	}
 	//log.info("dir " + dirname);
-	//log.info("listDir " + listDir.length);
+	log.info("listDir " + listDir.length);
 	for (int i = 0; i < listDir.length; i++) {
 	    String filename = listDir[i].getAbsolutePath();
-	    //log.info("file " + filename);
+	    log.info("file " + filename);
 	    if (listDir[i].isDirectory()) {
 		//log.info("isdir " + filename);
 		retlist.addAll(index(filename));
@@ -109,6 +125,9 @@ public class Traverse {
 		}
 		retlist.add(filename);
 		String md5 = files.getMd5();
+		if (md5 == null) {
+		    continue;
+		}
 		Index index = Index.getByMd5(md5);
 		if (index == null) {
 		    continue;
@@ -122,6 +141,7 @@ public class Traverse {
 
 		indexsingle(retlist, md5, indexMap, filesMapMd5);
 	    }
+	    log.info("file " + filename);
 	}
 	return retlist;
     }
@@ -137,29 +157,67 @@ public class Traverse {
 		    return;
 		}
 	    }
+	    
 	    String filename = filesMapMd5.get(md5);
-	    log.info("indexing " + filename);
 	    Index index = Index.ensureExistence(md5);
 	    //InputStream stream = null;
 	    int size = 0;
 	    size = doTika(filename, filename, md5, index, retlist);
 	    int limit = mylimit(filename);
-	    if (false && size <= limit) {
+	    if (size <= limit) {
 		String lowercase = filename.toLowerCase();
-		if (lowercase.endsWith(".djvu") || lowercase.endsWith(".djv")) {
-		    String[] env = { filename };
+		if (lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
+		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/djvutxt", env);
 		}
-		if (lowercase.endsWith(".epub")) {
+		// epub 2nd try
+		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub")) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/ebook-convert", env);
 		}
+		// pdf 2nd try
 		if (lowercase.endsWith(".pdf")) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/pdftotext", env);
 		}
 		size = doTika(filename, "/tmp/t.txt", md5, index, retlist);
 	    }
+	    File txt = new File("/tmp/t.txt");
+	    if (txt.exists()) {
+		txt.delete();
+	    }
+    }
+
+    public static List<String> notindexed() throws Exception {
+	List<String> retlist = new ArrayList<String>();
+	List<Files> files = Files.getAll();
+	List<Index> indexes = Index.getAll();
+	log.info("sizes " + files.size() + " " + indexes.size());
+	HashMap<String, String> filesMapMd5 = new HashMap<String, String>();
+	HashMap<String, String> filesMapFilename = new HashMap<String, String>();
+	for (Files file : files) {
+	    String filename = file.getFilename();
+	    String md5 = file.getMd5();
+	    if (md5 == null) {
+		retlist.add("No md5 " + filename);
+		continue;
+	    }
+	    filesMapMd5.put(md5, filename);
+	    filesMapFilename.put(filename, md5);
+	}
+	HashMap<String, Boolean> indexMap = new HashMap<String, Boolean>();
+	for (Index index : indexes) {
+	    Boolean indexed = index.getIndexed();
+	    if (indexed != null) {
+		if (indexed.booleanValue()) {
+		    continue;
+		}
+	    }
+	    String md5 = index.getMd5();
+	    String filename = filesMapMd5.get(md5);
+	    retlist.add(filename);
+	}
+	return retlist;
     }
 
     private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {

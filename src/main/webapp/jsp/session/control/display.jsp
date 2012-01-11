@@ -28,15 +28,18 @@
 	String lucene = request.getParameter("lucene");
 	String filesystem = request.getParameter("filesystem");
 	String luceneadd = request.getParameter("luceneadd");
+	String notindexed = request.getParameter("notindexed");
 	String filesystemadd = request.getParameter("filesystemadd");
 	String cleanup = request.getParameter("cleanup");
-	System.out.println("test " + lucene + " " + filesystem);
 	List<String> strarr = null;
 	if (filesystem != null) {
  	   strarr = main5.traverse();
 	}
 	if (lucene != null) {
  	   strarr = main5.index();
+	}
+	if (notindexed != null) {
+ 	   strarr = main5.notindexed();
 	}
 	if (filesystemadd != null) {
  	   strarr = main5.traverse(filesystemadd);
