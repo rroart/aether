@@ -35,6 +35,12 @@
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
+<input type="submit" name="memoryusage" value="memoryusage"/>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
 <input type="submit" name="notindexed" value="notindexed"/>
 </form>
 
