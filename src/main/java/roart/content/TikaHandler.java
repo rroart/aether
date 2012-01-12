@@ -50,7 +50,7 @@ public class TikaHandler {
 
     private class NoDocumentMetHandler extends DefaultHandler{
 
-        protected PrintWriter writer;
+        private PrintWriter writer;
 
         private boolean metOutput;
 
@@ -132,8 +132,6 @@ public class TikaHandler {
     private Metadata metadata;
 
     private OutputType type = TEXT;
-
-    private LanguageProfilerBuilder ngp = null;
 
     /**                                                                         
      * Output character encoding, or <code>null</code> for platform default     

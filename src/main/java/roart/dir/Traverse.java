@@ -19,9 +19,9 @@ public class Traverse {
 
     private static Log log = LogFactory.getLog("Traverse");
 
-    public static HashSet<String> doList (String dirname, HashMap<String, HashSet<String>> dirset) throws Exception {
-	HashSet<String> retset = new HashSet<String>();
-	HashSet<String> md5set = new HashSet<String>();
+    public static Set<String> doList (String dirname, Map<String, Set<String>> dirset) throws Exception {
+	Set<String> retset = new HashSet<String>();
+	Set<String> md5set = new HashSet<String>();
 	File dir = new File(dirname);
 	File listDir[] = dir.listFiles();
 	//log.info("dir " + dirname);
@@ -40,9 +40,8 @@ public class Traverse {
 		//log.info("retset " + filename);
 		retset.add(filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
-		File plainFile = new File(filename);
 		Files files = Files.ensureExistence(filename);
-		//files.setTouched(new Boolean(true));
+		//files.setTouched(Boolean.TRUE);
 		if (files.getMd5() == null) {
 		    try {
 			FileInputStream fis = new FileInputStream( new File(filename));
@@ -68,8 +67,8 @@ public class Traverse {
 	List<Files> files = Files.getAll();
 	List<Index> indexes = Index.getAll();
 	log.info("sizes " + files.size() + " " + indexes.size());
-	HashMap<String, String> filesMapMd5 = new HashMap<String, String>();
-	HashMap<String, String> filesMapFilename = new HashMap<String, String>();
+	Map<String, String> filesMapMd5 = new HashMap<String, String>();
+	Map<String, String> filesMapFilename = new HashMap<String, String>();
 	for (Files file : files) {
 	    String filename = file.getFilename();
 	    String md5 = file.getFilename();
@@ -80,7 +79,7 @@ public class Traverse {
 	    filesMapMd5.put(md5, filename);
 	    filesMapFilename.put(filename, md5);
 	}
-	HashMap<String, Boolean> indexMap = new HashMap<String, Boolean>();
+	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
 	for (Index index : indexes) {
 	    indexMap.put(index.getMd5(), index.getIndexed());
 	}
@@ -92,7 +91,7 @@ public class Traverse {
 
     public static List<String> index(String add) throws Exception {
 	List<String> retlist = new ArrayList<String>();
-	HashSet<String> md5set = new HashSet<String>();
+	Set<String> md5set = new HashSet<String>();
 	String dirname = add;
 	File dir = new File(dirname);
 	if (!dir.exists()) {
@@ -117,9 +116,8 @@ public class Traverse {
 	    } else {
 		//log.info("retset " + filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
-		File plainFile = new File(filename);
 		Files files = Files.getByFilename(filename);
-		//files.setTouched(new Boolean(true));
+		//files.setTouched(Boolean.TRUE);
 		if (files == null || files.getMd5() == null) {
 		    continue;
 		}
@@ -133,10 +131,10 @@ public class Traverse {
 		    continue;
 		}
 
-		HashMap<String, String> filesMapMd5 = new HashMap<String, String>();
+		Map<String, String> filesMapMd5 = new HashMap<String, String>();
 		filesMapMd5.put(files.getMd5(), files.getFilename());
 
-		HashMap<String, Boolean> indexMap = new HashMap<String, Boolean>();
+		Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
 		indexMap.put(index.getMd5(), index.getIndexed());
 
 		indexsingle(retlist, md5, indexMap, filesMapMd5);
@@ -201,8 +199,8 @@ public class Traverse {
 	List<Files> files = Files.getAll();
 	List<Index> indexes = Index.getAll();
 	log.info("sizes " + files.size() + " " + indexes.size());
-	HashMap<String, String> filesMapMd5 = new HashMap<String, String>();
-	HashMap<String, String> filesMapFilename = new HashMap<String, String>();
+	Map<String, String> filesMapMd5 = new HashMap<String, String>();
+	Map<String, String> filesMapFilename = new HashMap<String, String>();
 	for (Files file : files) {
 	    String filename = file.getFilename();
 	    String md5 = file.getMd5();
@@ -213,7 +211,6 @@ public class Traverse {
 	    filesMapMd5.put(md5, filename);
 	    filesMapFilename.put(filename, md5);
 	}
-	HashMap<String, Boolean> indexMap = new HashMap<String, Boolean>();
 	for (Index index : indexes) {
 	    Boolean indexed = index.getIndexed();
 	    if (indexed != null) {
@@ -239,7 +236,7 @@ public class Traverse {
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
 		size = SearchLucene.indexme("all", md5, inputStream);
-		index.setIndexed(new Boolean(true));
+		index.setIndexed(Boolean.TRUE);
 		retlist.add("Indexed " + dbfilename + " " + md5 + " " + size);
 	    } else {
 		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
@@ -249,7 +246,6 @@ public class Traverse {
 	    inputStream.close();
 	    outputStream.close();
 	} catch (Exception e) {
-	    log.info(e);
 	    log.error("Exception", e);
 	} finally {
 	    log.info("bla");
