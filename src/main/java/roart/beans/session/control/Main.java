@@ -91,8 +91,8 @@ public class Main {
     private Log log = LogFactory.getLog(this.getClass());
 
     public List<String> traverse(String add) throws Exception {
-	HashMap<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	HashSet<String> filesetnew2 = Traverse.doList(add, dirset);    
+	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
+	Set<String> filesetnew2 = Traverse.doList(add, dirset);    
 	roart.model.HibernateUtil.commit();
 	roart.model.HibernateUtil.currentSession().close();
 	return new ArrayList<String>(filesetnew2);
@@ -100,11 +100,11 @@ public class Main {
 
     public List<String> traverse() throws Exception {
 	List<String> retList = new ArrayList<String>();
-	TreeMap<Integer, String> sortlist = new TreeMap<Integer, String>();
-	HashMap<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
+	Map<Integer, String> sortlist = new TreeMap<Integer, String>();
+	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	try {
-	    HashSet<String> fileset = new HashSet<String>();
-	    //HashSet<String> filesetnew = new HashSet<String>();
+	    Set<String> fileset = new HashSet<String>();
+	    //Set<String> filesetnew = new HashSet<String>();
 	    List<Files> files = Files.getAll();
 	    log.info("size " + files.size());
 	    for (Files file : files) {
@@ -112,13 +112,13 @@ public class Main {
 		fileset.add(file.getFilename());
 	    }
 	    files.clear();
-	    //HashSet<String> md5set = new HashSet<String>();
+	    //Set<String> md5set = new HashSet<String>();
 	    String[] dirlist = { "/home/roart/usr/music", "/home/roart/usr/video", "/home/roart/usr/abook", "/home/roart/usr/books"  };
 
-	    HashSet<String> filesetnew = new HashSet<String>();
+	    Set<String> filesetnew = new HashSet<String>();
 
 	    for (int i = 0; i < dirlist.length; i ++) {
-		HashSet<String> filesetnew2 = Traverse.doList(dirlist[i], dirset);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], dirset);
 		filesetnew.addAll(filesetnew2);
 	    }
 	    //roart.model.HibernateUtil.currentSession().flush();
@@ -177,7 +177,7 @@ public class Main {
 	try {
 	    retlist = Traverse.index();
 
-	    HashSet<String> filesindexset = new HashSet<String>();
+	    Set<String> filesindexset = new HashSet<String>();
 	    List<Files> files = Files.getAll();
 	    log.info("size " + files.size());
 	    for (Files file : files) {
@@ -185,7 +185,7 @@ public class Main {
 		filesindexset.add(file.getMd5());
 	    }
 
-	    HashSet<String> indexset = new HashSet<String>();
+	    Set<String> indexset = new HashSet<String>();
 	    List<Index> indexes = Index.getAll();
 	    log.info("size " + indexes.size());
 	    for (Index index : indexes) {
@@ -233,13 +233,33 @@ public class Main {
     }
 
     public List<String> cleanup() {
+	List<String> retlist = new ArrayList<String>();
 	try {
 	    return roart.search.SearchLucene.removeDuplicate();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
 	}
-	return null;
+	return retlist;
+    }
+
+    public List<String> memoryusage() {
+	List<String> retlist = new ArrayList<String>();
+	try {
+	    Runtime runtime = Runtime.getRuntime();
+	    long maxMemory = runtime.maxMemory();
+	    long allocatedMemory = runtime.totalMemory();
+	    long freeMemory = runtime.freeMemory();
+	    java.text.NumberFormat format = java.text.NumberFormat.getInstance();
+	    retlist.add("free memory: " + format.format(freeMemory / 1024));
+	    retlist.add("allocated memory: " + format.format(allocatedMemory / 1024));
+	    retlist.add("max memory: " + format.format(maxMemory / 1024));
+	    retlist.add("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024));
+	} catch (Exception e) {
+		log.info(e);
+		log.error("Exception", e);
+	}
+	return retlist;
     }
 
     public List<String> notindexed() throws Exception {

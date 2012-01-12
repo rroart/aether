@@ -19,9 +19,9 @@ public class Traverse {
 
     private static Log log = LogFactory.getLog("Traverse");
 
-    public static Set<String> doList (String dirname, Map<String, Set<String>> dirset) throws Exception {
+    public static Set<String> doList (String dirname, Map<String, HashSet<String>> dirset) throws Exception {
 	Set<String> retset = new HashSet<String>();
-	Set<String> md5set = new HashSet<String>();
+	HashSet<String> md5set = new HashSet<String>();
 	File dir = new File(dirname);
 	File listDir[] = dir.listFiles();
 	//log.info("dir " + dirname);
