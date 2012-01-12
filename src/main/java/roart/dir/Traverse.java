@@ -274,6 +274,19 @@ public class Traverse {
 	    while (br.available() != 0) {
 		buffer.append((char) br.read());
 	    }
+
+	    /*
+	    BufferedOutputStream br2 = new BufferedOutputStream(proc.getOutputStream());
+	    while (br2.available() != 0) {
+		buffer.append((char) br2.read());
+	    }
+	    */
+
+	    BufferedInputStream br3 = new BufferedInputStream(proc.getErrorStream());
+	    while (br3.available() != 0) {
+		buffer.append((char) br3.read());
+	    }
+
 	    res = buffer.toString().trim();
 	    log.info("output " + res);
         } catch (Exception e) {
