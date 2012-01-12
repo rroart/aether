@@ -177,6 +177,8 @@ public class TikaHandler {
 	try {
 	    type.process(input, output);
 	    //type.process(input, System.out);
+	} catch (Exception e) {
+	    log.error("Exception", e);
 	} finally {
 	    input.close();
 	    System.out.flush();
