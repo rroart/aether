@@ -180,7 +180,7 @@ public class Traverse {
 		    retry = true;
 		}
 		// pdf 2nd try
-		if (lowercase.endsWith(".pdf") || ) {
+		if (lowercase.endsWith(".pdf")) {
 		    String[] env = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/pdftotext", env);
 		    retry = true;
