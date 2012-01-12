@@ -173,8 +173,18 @@ public class Traverse {
 		}
 		// epub 2nd try
 		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
+		    File file = new File(filename);
+		    String dirname = file.getParent();
+		    File dir = new File(dirname);
+		    boolean w = dir.canWrite();
+		    if (!w) {
+			dir.setWritable(true);
+		    }
 		    String[] arg = { filename, "/tmp/t.txt" };
 		    String output = execute("/usr/bin/ebook-convert", arg);
+		    if (!w) {
+			dir.setWritable(false);
+		    }
 		    retry = true;
 		}
 		// pdf 2nd try
