@@ -167,20 +167,20 @@ public class Traverse {
 		boolean retry = false;
 		String lowercase = filename.toLowerCase();
 		if (false) {
-		    String[] env = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/djvutxt", env);
+		    String[] arg = { filename, "/tmp/t.txt" };
+		    String output = execute("/usr/bin/djvutxt", arg);
 		    retry = true;
 		}
 		// epub 2nd try
 		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
-		    String[] env = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/ebook-convert", env);
+		    String[] arg = { filename, "/tmp/t.txt" };
+		    String output = execute("/usr/bin/ebook-convert", arg);
 		    retry = true;
 		}
 		// pdf 2nd try
 		if (lowercase.endsWith(".pdf")) {
-		    String[] env = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/pdftotext", env);
+		    String[] arg = { filename, "/tmp/t.txt" };
+		    String output = execute("/usr/bin/pdftotext", arg);
 		    retry = true;
 		}
 		File txt = new File("/tmp/t.txt");
@@ -264,7 +264,10 @@ public class Traverse {
 	    cmdarray[0] = filename;
 	    cmdarray[1] = arg[0];
 	    cmdarray[2] = arg[1];
-	    proc = Runtime.getRuntime().exec(cmdarray);
+	    String[] envarray = new String[2];
+	    envarray[0] = "CALIBRE_WORKER_TEMP_DIR=/tmp";
+	    envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
+	    proc = Runtime.getRuntime().exec(cmdarray, envarray);
 	    log.info("proc " + proc);
             if (proc != null) {
 		proc.waitFor();
