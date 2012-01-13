@@ -164,13 +164,9 @@ public class Traverse {
 	    int limit = mylimit(filename);
 	    log.info("sizes " + size + " " + limit);
 	    if (size <= limit) {
+		String output = null;
 		boolean retry = false;
 		String lowercase = filename.toLowerCase();
-		if (false) {
-		    String[] arg = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/djvutxt", arg);
-		    retry = true;
-		}
 		// epub 2nd try
 		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
 		    File file = new File(filename);
@@ -181,16 +177,22 @@ public class Traverse {
 			dir.setWritable(true);
 		    }
 		    String[] arg = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/ebook-convert", arg);
+		    output = execute("/usr/bin/ebook-convert", arg);
 		    if (!w) {
 			dir.setWritable(false);
 		    }
 		    retry = true;
 		}
+		// djvu 2nd try in case djvu not ebook-convert supported
+		if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
+		    String[] arg = { filename, "/tmp/t.txt" };
+		    output = execute("/usr/bin/djvutxt", arg);
+		    retry = true;
+		}
 		// pdf 2nd try
 		if (lowercase.endsWith(".pdf")) {
 		    String[] arg = { filename, "/tmp/t.txt" };
-		    String output = execute("/usr/bin/pdftotext", arg);
+		    output = execute("/usr/bin/pdftotext", arg);
 		    retry = true;
 		}
 		File txt = new File("/tmp/t.txt");
