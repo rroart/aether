@@ -71,7 +71,7 @@ public class Traverse {
 	Map<String, String> filesMapFilename = new HashMap<String, String>();
 	for (Files file : files) {
 	    String filename = file.getFilename();
-	    String md5 = file.getFilename();
+	    String md5 = file.getMd5();
 	    if (md5 == null) {
 		retlist.add("No md5 " + filename);
 		continue;
