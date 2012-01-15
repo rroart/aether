@@ -7,6 +7,8 @@ import roart.model.HibernateUtil;
 import java.io.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
  
@@ -237,6 +239,7 @@ public class SearchLucene {
 		thisDoc = ind.document(m);
 	    } 
 	    catch (Exception e) {
+		log.error("Exception", e);
 		continue;
 	    }
 	    String a2[] = thisDoc.getValues(field);
@@ -306,6 +309,102 @@ public class SearchLucene {
 	 */
 	retlist.add("Entries Scanned:"+totalDocs);
         retlist.add("Duplicates:"+dups);
+        retlist.add("Currently Present Entries:"+(docs+newDocs));
+	return retlist;
+    }//End of removeDuplicate method
+
+    public static List<String> cleanup2() throws Exception {
+	List<String> retlist = new ArrayList<String>();
+	List<Files> files = Files.getAll();
+	List<Index> indexes = Index.getAll();
+	Map<String, String> filesMapMd5 = new HashMap<String, String>();
+	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
+	for (Index index : indexes) {
+	    indexMap.put(index.getMd5(), index.getIndexed());
+	}
+	String type = "all";
+	String field = Constants.TITLE;
+	String indexDir = Constants.PATH+type;
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_35 );
+	int docs = 0;
+        int errors = 0;
+	Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	IndexReader ind = IndexReader.open(index, false);
+        IndexSearcher searcher = new IndexSearcher(index);
+        int totalDocs = ind.numDocs();
+        HashSet<Document> Doc = new HashSet<Document>();
+        for(int m=0;m<totalDocs;m++) {
+	    Document thisDoc = null;
+	    try {
+		thisDoc = ind.document(m);
+	    } 
+	    catch (Exception e) {
+		log.error("Exception", e);
+		continue;
+	    }
+	    String a2[] = thisDoc.getValues(field);
+	    a2[0].trim();
+
+	    if (a2[0].equals("")) {
+		continue;
+	    }
+	    if (a2[0].contains("/home/roart/")) {
+		retlist.add("error " + a2[0]);
+		Files file = Files.getByFilename(a2[0]);
+		String md5 = file.getMd5();
+		Index indexf = Index.getByMd5(md5);
+		boolean indexval = false;
+		if (indexf != null) {
+		    Boolean indexed = indexf.getIndexed();
+		    if (indexed != null) {
+			if (indexed.booleanValue()) {
+			    indexval = true;
+			}
+		    }
+		}
+		retlist.add("md5 " + md5 + " " + indexf + " " + indexval);
+		filesMapMd5.put(md5, a2[0]);
+		errors++;
+		ind.deleteDocument(thisDoc);
+	    }
+	}//end of for loop
+	for (String md5 : filesMapMd5.keySet()) {
+	    roart.dir.Traverse.indexsingle(retlist, md5, indexMap, filesMapMd5);
+	}
+	    /*
+	    Index indexmd5 = Index.getByMd5(a2[0]);
+	    if (indexmd5 == null) {
+		retlist.add("delete1 " + a2[0]);
+		ind.deleteDocument(topdocs.scoreDocs[0].doc);
+	    }
+	    if (indexmd5 != null) {
+		Boolean indexed = indexmd5.getIndexed();
+		if (indexed != null && indexed.booleanValue()) {
+		} else {
+		    retlist.add("delete2 " + a2[0]);
+		    ind.deleteDocument(topdocs.scoreDocs[0].doc);
+		}
+	    }
+	    */
+                
+        int newDocs = ind.numDocs();
+        ind.close();//close index Reader
+        
+        /**
+         * Open indexwriter to write duplicate document
+         */
+        IndexWriter iw = new IndexWriter(index,analyzer,false,IndexWriter.MaxFieldLength.UNLIMITED);
+        for(Document doc : Doc) {
+	    //iw.addDocument(doc);
+        }
+        iw.optimize() ;
+        iw.close();//Close Index Writer
+        
+	/**
+	 * Print statistics
+	 */
+	retlist.add("Entries Scanned:"+totalDocs);
+        retlist.add("Errors:"+errors);
         retlist.add("Currently Present Entries:"+(docs+newDocs));
 	return retlist;
     }//End of removeDuplicate method
