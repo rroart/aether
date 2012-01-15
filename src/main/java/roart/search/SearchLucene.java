@@ -365,7 +365,7 @@ public class SearchLucene {
 		retlist.add("md5 " + md5 + " " + indexf + " " + indexval);
 		filesMapMd5.put(md5, a2[0]);
 		errors++;
-		ind.deleteDocument(thisDoc);
+		ind.deleteDocument(m);
 	    }
 	}//end of for loop
 	for (String md5 : filesMapMd5.keySet()) {

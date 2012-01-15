@@ -31,6 +31,7 @@
 	String notindexed = request.getParameter("notindexed");
 	String filesystemadd = request.getParameter("filesystemadd");
 	String cleanup = request.getParameter("cleanup");
+	String cleanup2 = request.getParameter("cleanup2");
 	String memoryusage = request.getParameter("memoryusage");
 	List<String> strarr = null;
 	if (filesystem != null) {
@@ -50,6 +51,9 @@
 	}
 	if (cleanup != null) {
  	   strarr = main5.cleanup();
+	}
+	if (cleanup2 != null) {
+ 	   strarr = main5.cleanup2();
 	}
 	if (memoryusage != null) {
  	   strarr = main5.memoryusage();

@@ -144,7 +144,7 @@ public class Traverse {
 	return retlist;
     }
 
-    private static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5) throws Exception {
+    public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5) throws Exception {
 	    if (md5 == null) {
 		log.info("md5 should not be null");
 		return;

@@ -243,6 +243,17 @@ public class Main {
 	return retlist;
     }
 
+    public List<String> cleanup2() {
+	List<String> retlist = new ArrayList<String>();
+	try {
+	    return roart.search.SearchLucene.cleanup2();
+	} catch (Exception e) {
+		log.info(e);
+		log.error("Exception", e);
+	}
+	return retlist;
+    }
+
     public List<String> memoryusage() {
 	List<String> retlist = new ArrayList<String>();
 	try {
