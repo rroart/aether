@@ -127,15 +127,14 @@ public class Traverse {
 		    continue;
 		}
 		Index index = Index.getByMd5(md5);
-		if (index == null) {
-		    continue;
-		}
 
 		Map<String, String> filesMapMd5 = new HashMap<String, String>();
 		filesMapMd5.put(files.getMd5(), files.getFilename());
 
 		Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
-		indexMap.put(index.getMd5(), index.getIndexed());
+		if (index != null) {
+		    indexMap.put(index.getMd5(), index.getIndexed());
+		}
 
 		indexsingle(retlist, md5, indexMap, filesMapMd5);
 	    }
