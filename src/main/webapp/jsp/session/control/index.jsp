@@ -41,6 +41,12 @@
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
+<input type="submit" name="cleanupfs" value="cleanupfs"/>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
 <input type="submit" name="memoryusage" value="memoryusage"/>
 </form>
 
@@ -64,6 +70,14 @@
 <input type="hidden" name="type" value="luceneadd"/>
 <input type="submit" name="luceneadd2" value="luceneadd"/>
 <textarea rows="1" cols="40" name="luceneadd"></textarea>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="cleanupfs"/>
+<input type="submit" name="cleanupfs2" value="cleanupfs"/>
+<textarea rows="1" cols="40" name="cleanupfs"></textarea>
 </form>
 
 </body>

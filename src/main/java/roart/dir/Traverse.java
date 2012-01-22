@@ -61,6 +61,49 @@ public class Traverse {
 	return retset;
     }
 
+    public static Set<String> dupdir (String dirname) throws Exception {
+	boolean onlyone = false;
+	boolean error = false;
+	int count = 0;
+	Set<String> retset = new HashSet<String>();
+	HashSet<String> md5set = new HashSet<String>();
+	File dir = new File(dirname);
+	File listDir[] = dir.listFiles();
+	for (int i = 0; i < listDir.length; i++) {
+	    String filename = listDir[i].getAbsolutePath();
+	    if (filename.length() > 250) {
+		log.info("Too large filesize " + filename);
+		error = true;
+		continue;
+	    }
+	    if (listDir[i].isDirectory()) {
+		retset.addAll(dupdir(filename));
+	    } else {
+		if (error) {
+		    continue;
+		}
+		Files files = Files.getByFilename(filename);
+		if (files == null) {
+		    error = true;
+		    continue;
+		}
+		String md5 = files.getMd5();
+		if (md5 == null) {
+		    error = true;
+		    continue;
+		}
+		if (Files.getByMd5(md5).size() < 2) {
+		    onlyone = true;
+		}
+		count++;
+	    }
+	}
+	if (!error && !onlyone && count>0) {
+	    retset.add(dirname);
+	}
+	return retset;
+    }
+
     public static List<String> index() throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	log.info("here");

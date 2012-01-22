@@ -254,6 +254,23 @@ public class Main {
 	return retlist;
     }
 
+    public List<String> cleanupfs(String dirname) {
+	//List<String> retlist = new ArrayList<String>();
+	Set<String> filesetnew = new HashSet<String>();
+	try {
+	    //String[] dirlist = { "/home/roart/usr/music", "/home/roart/usr/video", "/home/roart/usr/abook", "/home/roart/usr/books"  };
+	    String[] dirlist = { dirname };
+	    for (int i = 0; i < dirlist.length; i ++) {
+		Set<String> filesetnew2 = Traverse.dupdir(dirlist[i]);
+		filesetnew.addAll(filesetnew2);
+	    }
+	} catch (Exception e) {
+		log.info(e);
+		log.error("Exception", e);
+	}
+	return new ArrayList<String>(filesetnew);
+    }
+
     public List<String> memoryusage() {
 	List<String> retlist = new ArrayList<String>();
 	try {
