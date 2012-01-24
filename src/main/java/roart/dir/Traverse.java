@@ -65,6 +65,7 @@ public class Traverse {
 	boolean onlyone = false;
 	boolean error = false;
 	int count = 0;
+	long size = 0;
 	Set<String> retset = new HashSet<String>();
 	HashSet<String> md5set = new HashSet<String>();
 	File dir = new File(dirname);
@@ -96,10 +97,11 @@ public class Traverse {
 		    onlyone = true;
 		}
 		count++;
+		size+=new File(filename).length();
 	    }
 	}
 	if (!error && !onlyone && count>0) {
-	    retset.add(dirname);
+	    retset.add(dirname + " size " + size);
 	}
 	return retset;
     }

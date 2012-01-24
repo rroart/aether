@@ -369,7 +369,7 @@ public class SearchLucene {
 	    }
 	}//end of for loop
 	for (String md5 : filesMapMd5.keySet()) {
-	    roart.dir.Traverse.indexsingle(retlist, md5, indexMap, filesMapMd5);
+	    //roart.dir.Traverse.indexsingle(retlist, md5, indexMap, filesMapMd5);
 	}
 	    /*
 	    Index indexmd5 = Index.getByMd5(a2[0]);
