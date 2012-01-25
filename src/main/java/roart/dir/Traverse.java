@@ -17,6 +17,8 @@ import java.util.HashMap;
 
 public class Traverse {
 
+    private int MAXFILE = 500;
+
     private static Log log = LogFactory.getLog("Traverse");
 
     public static Set<String> doList (String dirname, Map<String, HashSet<String>> dirset) throws Exception {
@@ -28,7 +30,7 @@ public class Traverse {
 	//log.info("listDir " + listDir.length);
 	for (int i = 0; i < listDir.length; i++) {
 	    String filename = listDir[i].getAbsolutePath();
-	    if (filename.length() > 250) {
+	    if (filename.length() > MAXFILE) {
 		log.info("Too large filesize " + filename);
 		continue;
 	    }
@@ -72,7 +74,7 @@ public class Traverse {
 	File listDir[] = dir.listFiles();
 	for (int i = 0; i < listDir.length; i++) {
 	    String filename = listDir[i].getAbsolutePath();
-	    if (filename.length() > 250) {
+	    if (filename.length() > MAXFILE) {
 		log.info("Too large filesize " + filename);
 		error = true;
 		continue;

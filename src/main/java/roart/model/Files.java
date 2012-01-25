@@ -64,7 +64,7 @@ import org.apache.commons.logging.LogFactory;
 	 * @hibernate.property
 	 *  column="filename"
 	 */
-	@Column(name = "filename")
+	@Column(name = "filename", length=511)
 	@Id
         public String getFilename() {
 	    return filename;
