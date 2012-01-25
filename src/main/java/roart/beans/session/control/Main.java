@@ -100,7 +100,7 @@ public class Main {
 
     public List<String> traverse() throws Exception {
 	List<String> retList = new ArrayList<String>();
-	Map<Integer, String> sortlist = new TreeMap<Integer, String>();
+	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	try {
 	    Set<String> fileset = new HashSet<String>();
@@ -162,12 +162,20 @@ public class Main {
 		if (ratio > 9) {
 		    set1.addAll(set4);
 		    Integer intI = new Integer(ratio);
-		    sortlist.put(intI, keyList.get(i) + " : " + keyList.get(j) + " " + set1);
+		    String str = keyList.get(i) + " : " + keyList.get(j) + " " + set1;
+		    Set<String> strSet = sortlist.get(intI);
+		    if (strSet == null) {
+			strSet = new HashSet<String>();
+		    }
+		    strSet.add(str);
+		    sortlist.put(intI, strSet);
 		}
 	    }
 	}
 	for (Integer intI : sortlist.keySet()) {
-	    retList.add("" + intI.intValue() + " : " + sortlist.get(intI));
+	    for (String str : sortlist.get(intI)) {
+		retList.add("" + intI.intValue() + " : " + str);
+	    }
 	}
 	return retList;
     }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class Traverse {
 
-    private int MAXFILE = 500;
+    private static int MAXFILE = 500;
 
     private static Log log = LogFactory.getLog("Traverse");
 
