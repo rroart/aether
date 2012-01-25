@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import roart.util.ExecCommand;
+
 public class Traverse {
 
     private static int MAXFILE = 500;
@@ -314,46 +316,12 @@ public class Traverse {
 
     private static String execute(String filename, String[] arg) {
 	String res = null;
-        Process proc = null;
-        try {
-	    //filename = "/tmp/t.sh";
-	    //proc = Runtime.getRuntime().exec(filename + " \"" + arg[0] + "\" " + arg[1]);
-	    String[] cmdarray = new String[3];
-	    cmdarray[0] = filename;
-	    cmdarray[1] = arg[0];
-	    cmdarray[2] = arg[1];
-	    String[] envarray = new String[2];
-	    envarray[0] = "CALIBRE_WORKER_TEMP_DIR=/tmp";
-	    envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
-	    proc = Runtime.getRuntime().exec(cmdarray, envarray);
-	    log.info("proc " + proc);
-            if (proc != null) {
-		proc.waitFor();
-	    }
-	    StringBuilder buffer = new StringBuilder();
-	    BufferedInputStream br = new BufferedInputStream(proc.getInputStream());
-	    while (br.available() != 0) {
-		buffer.append((char) br.read());
-	    }
 
-	    /*
-	    BufferedOutputStream br2 = new BufferedOutputStream(proc.getOutputStream());
-	    while (br2.available() != 0) {
-		buffer.append((char) br2.read());
-	    }
-	    */
+	ExecCommand ec = new ExecCommand();
+	ec.execute(filename, arg);
 
-	    BufferedInputStream br3 = new BufferedInputStream(proc.getErrorStream());
-	    while (br3.available() != 0) {
-		buffer.append((char) br3.read());
-	    }
-
-	    res = buffer.toString().trim();
-	    log.info("output " + res);
-        } catch (Exception e) {
-	    log.info("Exception" + e);
-	    log.error("Exception", e);
-        }
+	res = ec.getOutput() + ec.getError();
+	log.info("output " + res);
 	return res;
     }
 
