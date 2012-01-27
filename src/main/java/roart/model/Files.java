@@ -91,7 +91,7 @@ import org.apache.commons.logging.LogFactory;
 	*/
 
 	public static Files ensureExistence(String filename) throws Exception {
-	    Files fi = new Files().getByFilename(filename);
+	    Files fi = getByFilename(filename);
 	    if (fi == null) {
 		fi = new Files();
 		fi.setFilename(filename);

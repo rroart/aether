@@ -89,7 +89,7 @@ import org.apache.commons.logging.LogFactory;
 	}
 
 	public static Index ensureExistence(String md5) throws Exception {
-	    Index fi = new Index().getByMd5(md5);
+	    Index fi = getByMd5(md5);
 	    if (fi == null) {
 		fi = new Index();
 		fi.setMd5(md5);
