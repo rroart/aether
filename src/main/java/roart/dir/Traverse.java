@@ -216,7 +216,7 @@ public class Traverse {
 		boolean retry = false;
 		String lowercase = filename.toLowerCase();
 		// epub 2nd try
-		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj")) {
+		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".chm")) {
 		    File file = new File(filename);
 		    String dirname = file.getParent();
 		    File dir = new File(dirname);
