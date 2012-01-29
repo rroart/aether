@@ -94,7 +94,7 @@ public class Main {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = Traverse.doList(add, dirset);    
 	roart.model.HibernateUtil.commit();
-	roart.model.HibernateUtil.currentSession().close();
+	//roart.model.HibernateUtil.currentSession().close();
 	return new ArrayList<String>(filesetnew2);
     }
 
@@ -139,7 +139,7 @@ public class Main {
 		roart.model.HibernateUtil.currentSession().delete(file);
 	    }
 	    roart.model.HibernateUtil.commit();
-	    roart.model.HibernateUtil.currentSession().close();
+	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
@@ -219,7 +219,7 @@ public class Main {
 
 	    //roart.model.HibernateUtil.currentSession().flush();
 	    roart.model.HibernateUtil.commit();
-	    roart.model.HibernateUtil.currentSession().close();
+	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
@@ -232,7 +232,7 @@ public class Main {
 	try {
 	    retlist = Traverse.index(add);
 	    roart.model.HibernateUtil.commit();
-	    roart.model.HibernateUtil.currentSession().close();
+	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 	    log.info(e);
 	    log.error("Exception", e);
