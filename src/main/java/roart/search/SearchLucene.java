@@ -3,6 +3,7 @@ package roart.search;
 import roart.model.Index;
 import roart.model.Files;
 import roart.model.HibernateUtil;
+import roart.lang.LanguageDetect;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -69,11 +70,23 @@ public class SearchLucene {
 
 	log.info("indexing " + md5);
 
+	String lang = null;
+	try {
+	    lang = LanguageDetect.detect(strLine);
+	    log.info("language " + lang);
+	    log.info("language2 " + LanguageDetect.detectLangs(strLine));
+	} catch (Exception e) {
+	    log.error("exception", e);
+	}
+
 	Document doc = new Document();
 	doc.add(new TextField(Constants.TITLE, md5, Field.Store.YES));
+	doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 	doc.add(new TextField(Constants.NAME, i, Field.Store.NO));
 	Term term = new Term(Constants.TITLE, md5);
+	Term term2 = new Term(Constants.LANG, lang);
 	w.updateDocument(term, doc);
+	w.updateDocument(term2, doc);
 	//w.addDocument(doc);
  
     w.close();
@@ -167,7 +180,7 @@ public class SearchLucene {
 		Directory index = FSDirectory.open(new File(Constants.PATH+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_40, new String[]{Constants.TITLE, Constants.NAME},
+    Query q = new MultiFieldQueryParser(Version.LUCENE_40, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG},
 					analyzer).parse(str);
  
     // searching ...
@@ -187,6 +200,7 @@ public class SearchLucene {
 	float score = hits[i].score;
 	Document d = searcher.doc(docId);
 	String md5 = d.get(Constants.TITLE);
+	String lang = d.get(Constants.LANG);
 	String filename = null;
 	List<Files> files = Files.getByMd5(md5);
 	if (files != null && files.size() > 0) {
@@ -194,6 +208,9 @@ public class SearchLucene {
 	    filename = file.getFilename();
 	}
 	String title = md5 + " " + filename;
+	if (lang != null) {
+	    title = title + " (" + lang + ") ";
+	}
 	log.info((i + 1) + ". " + title + ": "
 			   + score);
 	strarr[i] = "" + (i + 1) + ". " + title + ": "
