@@ -5,6 +5,7 @@ import java.io.*;
 import roart.content.*;
 import roart.search.*;
 import roart.model.*;
+import roart.lang.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -133,12 +134,12 @@ public class Traverse {
 	    indexMap.put(index.getMd5(), index.getIndexed());
 	}
 	for (String md5 : filesMapMd5.keySet()) {
-	    indexsingle(retlist, md5, indexMap, filesMapMd5);
+	    indexsingle(retlist, md5, indexMap, filesMapMd5, false);
 	}
 	return retlist;
     }
 
-    public static List<String> index(String add) throws Exception {
+    public static List<String> index(String add, boolean reindex) throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	Set<String> md5set = new HashSet<String>();
 	String dirname = add;
@@ -161,7 +162,7 @@ public class Traverse {
 	    log.info("file " + filename);
 	    if (listDir[i].isDirectory()) {
 		//log.info("isdir " + filename);
-		retlist.addAll(index(filename));
+		retlist.addAll(index(filename, reindex));
 	    } else {
 		//log.info("retset " + filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
@@ -185,21 +186,21 @@ public class Traverse {
 		    indexMap.put(index.getMd5(), index.getIndexed());
 		}
 
-		indexsingle(retlist, md5, indexMap, filesMapMd5);
+		indexsingle(retlist, md5, indexMap, filesMapMd5, reindex);
 	    }
 	    log.info("file " + filename);
 	}
 	return retlist;
     }
 
-    public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5) throws Exception {
+    public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex) throws Exception {
 	    if (md5 == null) {
 		log.info("md5 should not be null");
 		return;
 	    }
 	    Boolean indexed = indexMap.get(md5);
 	    if (indexed != null) {
-		if (indexed.booleanValue()) {
+		if (!reindex && indexed.booleanValue()) {
 		    return;
 		}
 	    }
@@ -293,6 +294,8 @@ public class Traverse {
 	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
 	    size = ((ByteArrayOutputStream)outputStream).size();
 	    log.info("size1 " + size);
+	    BufferedInputStream bis = new BufferedInputStream(inputStream);
+
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
 		size = SearchLucene.indexme("all", md5, inputStream);

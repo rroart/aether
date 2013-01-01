@@ -75,6 +75,14 @@
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="lucenereindex"/>
+<input type="submit" name="luceneadd2" value="lucenereindex"/>
+<textarea rows="1" cols="40" name="lucenereindex"></textarea>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="cleanupfs"/>
 <input type="submit" name="cleanupfs2" value="cleanupfs"/>
 <textarea rows="1" cols="40" name="cleanupfs"></textarea>

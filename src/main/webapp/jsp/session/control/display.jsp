@@ -28,6 +28,7 @@
 	String lucene = request.getParameter("lucene");
 	String filesystem = request.getParameter("filesystem");
 	String luceneadd = request.getParameter("luceneadd");
+	String lucenereindex = request.getParameter("lucenereindex");
 	String notindexed = request.getParameter("notindexed");
 	String filesystemadd = request.getParameter("filesystemadd");
 	String cleanup = request.getParameter("cleanup");
@@ -48,7 +49,10 @@
  	   strarr = main5.traverse(filesystemadd);
 	}
 	if (luceneadd != null) {
- 	   strarr = main5.index(luceneadd);
+ 	   strarr = main5.index(luceneadd, false);
+	}
+	if (lucenereindex != null) {
+ 	   strarr = main5.index(lucenereindex, true);
 	}
 	if (cleanup != null) {
  	   strarr = main5.cleanup();

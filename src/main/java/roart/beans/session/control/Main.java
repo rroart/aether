@@ -227,10 +227,10 @@ public class Main {
 	return retlist;
     }
 
-    public List<String> index(String add) throws Exception {
+    public List<String> index(String add, boolean reindex) throws Exception {
 	List retlist = null;
 	try {
-	    retlist = Traverse.index(add);
+	    retlist = Traverse.index(add, reindex);
 	    roart.model.HibernateUtil.commit();
 	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
