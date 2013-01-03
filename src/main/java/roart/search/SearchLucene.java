@@ -84,9 +84,7 @@ public class SearchLucene {
 	doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 	doc.add(new TextField(Constants.NAME, i, Field.Store.NO));
 	Term term = new Term(Constants.TITLE, md5);
-	Term term2 = new Term(Constants.LANG, lang);
 	w.updateDocument(term, doc);
-	w.updateDocument(term2, doc);
 	//w.addDocument(doc);
  
     w.close();
