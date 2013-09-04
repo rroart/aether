@@ -52,8 +52,8 @@ public class SearchLucene {
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(Constants.PATH+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
 	    DataInputStream in = new DataInputStream(inputStream);
@@ -103,8 +103,8 @@ public class SearchLucene {
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(Constants.PATH+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
     String filename = type;
@@ -137,9 +137,9 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(Constants.PATH+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_40, new String[]{Constants.TITLE, Constants.NAME},
+    Query q = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME},
 					analyzer).parse(str);
  
     // searching ...
@@ -176,9 +176,9 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(Constants.PATH+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_40, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG},
+    Query q = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG},
 					analyzer).parse(str);
  
     // searching ...
@@ -226,8 +226,8 @@ public class SearchLucene {
 	try {
 	    String type = "all";
 	    Directory index = FSDirectory.open(new File(Constants.PATH+type));
-	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
-	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
+	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
 	    iw.deleteDocuments(new Term(Constants.TITLE, str));
@@ -243,11 +243,11 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = Constants.PATH+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(Constants.PATH+type));
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
     IndexWriter iw = new IndexWriter(index, iwc);
     IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);
@@ -270,7 +270,7 @@ public class SearchLucene {
 	    }
 	    String queryExpression = "\""+a2[0]+"\"";     
 
-	    QueryParser parser=new QueryParser(Version.LUCENE_40,field,analyzer);
+	    QueryParser parser=new QueryParser(Version.LUCENE_44,field,analyzer);
 	    Query queryJ=parser.parse(queryExpression);
 
 	    /**
@@ -318,7 +318,7 @@ public class SearchLucene {
         /**
          * Open indexwriter to write duplicate document
          */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
         //IndexWriter iw = new IndexWriter(index, iwc);
         for(Document doc : Doc) {
 	    //iw.addDocument(doc);
@@ -347,13 +347,13 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = Constants.PATH+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
 	int docs = 0;
         int errors = 0;
 	Directory index = FSDirectory.open(new File(Constants.PATH+type));
         IndexReader ind = DirectoryReader.open(index); 
         IndexSearcher searcher = new IndexSearcher(ind);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
         IndexWriter iw = new IndexWriter(index, iwc);
         int totalDocs = ind.numDocs();
         HashSet<Document> Doc = new HashSet<Document>();
@@ -419,7 +419,7 @@ public class SearchLucene {
         /**
          * Open indexwriter to write duplicate document
          */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
         //IndexWriter iw = new IndexWriter(index, iwc);
         for(Document doc : Doc) {
 	    //iw.addDocument(doc);
@@ -441,11 +441,11 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = Constants.PATH+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(Constants.PATH+type));
-	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
 	IndexWriter iw = new IndexWriter(index, iwc);
 	IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);
