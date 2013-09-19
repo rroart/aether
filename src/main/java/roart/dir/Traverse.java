@@ -3,13 +3,18 @@ package roart.dir;
 import java.util.Map;
 import java.io.*;
 import roart.content.*;
+import roart.queue.IndexQueueElement;
+import roart.queue.Queues;
+import roart.queue.TikaQueueElement;
 import roart.search.*;
+import roart.thread.TikaRunner;
 import roart.model.*;
 import roart.lang.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
@@ -209,50 +214,9 @@ public class Traverse {
 	    Index index = Index.ensureExistence(md5);
 	    //InputStream stream = null;
 	    int size = 0;
-	    size = doTika(filename, filename, md5, index, retlist);
-	    int limit = mylimit(filename);
-	    log.info("sizes " + size + " " + limit);
-	    if (size <= limit) {
-		String output = null;
-		boolean retry = false;
-		String lowercase = filename.toLowerCase();
-		// epub 2nd try
-		if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".chm")) {
-		    File file = new File(filename);
-		    String dirname = file.getParent();
-		    File dir = new File(dirname);
-		    boolean w = dir.canWrite();
-		    if (!w) {
-			dir.setWritable(true);
-		    }
-		    String[] arg = { filename, "/tmp/t.txt" };
-		    output = execute("/usr/bin/ebook-convert", arg);
-		    if (!w) {
-			dir.setWritable(false);
-		    }
-		    retry = true;
-		}
-		// djvu 2nd try in case djvu not ebook-convert supported
-		if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
-		    String[] arg = { filename, "/tmp/t.txt" };
-		    output = execute("/usr/bin/djvutxt", arg);
-		    retry = true;
-		}
-		// pdf 2nd try
-		if (lowercase.endsWith(".pdf")) {
-		    String[] arg = { filename, "/tmp/t.txt" };
-		    output = execute("/usr/bin/pdftotext", arg);
-		    retry = true;
-		}
-		File txt = new File("/tmp/t.txt");
-		if (retry && txt.exists()) {
-		    size = doTika(filename, "/tmp/t.txt", md5, index, retlist);
-		}
-	    }
-	    File txt = new File("/tmp/t.txt");
-	    if (txt.exists()) {
-		txt.delete();
-	    }
+	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist);
+	    Queues.tikaQueue.add(e);
+	    //size = doTika(filename, filename, md5, index, retlist);
     }
 
     public static List<String> notindexed() throws Exception {
@@ -286,7 +250,22 @@ public class Traverse {
 	return retlist;
     }
 
-    private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
+    //private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
+    public static void doTika() {
+	TikaQueueElement el = Queues.tikaQueue.poll();
+	if (el == null) {
+		log.error("empty queue");
+	    return;
+	}
+	// vulnerable spot
+	Queues.incTikas();
+	long now = new Date().getTime();
+	
+	String dbfilename = el.dbfilename;
+	String filename = el.filename;
+	String md5 = el.md5;
+	Index index = el.index;
+	List<String> retlist = el.retlist;
 	int size = 0;
 	try {
 	    TikaHandler tika = new TikaHandler();
@@ -298,34 +277,28 @@ public class Traverse {
 
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
-		size = SearchLucene.indexme("all", md5, inputStream);
-		index.setIndexed(Boolean.TRUE);
-		retlist.add("Indexed " + dbfilename + " " + md5 + " " + size);
+		    log.info("sizes " + size + " " + limit);
+		    //size = SearchLucene.indexme("all", md5, inputStream);
+	    	IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename);
+	    	Queues.indexQueue.add(elem);
 	    } else {
-		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-		retlist.add("Too small " + dbfilename + " " + md5 + " " + size);
+	    	if (dbfilename.equals(filename)) {
+	    	    el.size = size;
+	    	    Queues.otherQueue.add(el);
+	    	} else {
+	    		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
+	    		retlist.add("Too small " + dbfilename + " " + md5 + " " + size);
+	    	}
 	    }
-	    log.info("size2 " + size);
-	    inputStream.close();
+	    
 	    outputStream.close();
 	} catch (Exception e) {
 	    log.error("Exception", e);
 	} finally {
-	    log.info("bla");
 	    //stream.close();            // close the stream
 	}
-	return size;
-    }
-
-    private static String execute(String filename, String[] arg) {
-	String res = null;
-
-	ExecCommand ec = new ExecCommand();
-	ec.execute(filename, arg);
-
-	res = ec.getOutput() + ec.getError();
-	log.info("output " + res);
-	return res;
+	log.info("timerStop " + (new Date().getTime() - now));
+	Queues.decTikas();
     }
 
     private static int mylimit(String filename) {

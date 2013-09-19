@@ -163,6 +163,12 @@ public class TikaHandler {
         context.set(Parser.class, parser);
 
 	pipeMode = false;
+	/*
+	if (filename.endsWith(".MP3") || filename.endsWith(".mp3") || filename.endsWith(".flac") || filename.endsWith("Improve Your Confidence An.pdf") || filename.endsWith("EdgarCayceReadings.chm")) {
+		log.error("manual mp3 skip " + filename);
+		return new ByteArrayOutputStream();
+	}
+	*/
 	type = TEXT;
 	metadata = new Metadata();
 	File file = new File(filename);

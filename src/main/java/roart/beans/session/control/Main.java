@@ -76,6 +76,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import java.io.*;
 
@@ -83,6 +84,10 @@ import roart.dir.Traverse;
 
 import roart.model.Files;
 import roart.model.Index;
+import roart.queue.Queues;
+import roart.thread.IndexRunner;
+import roart.thread.OtherRunner;
+import roart.thread.TikaRunner;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -181,6 +186,7 @@ public class Main {
     }
 
     public List<String> index() throws Exception {
+    	startThreads();
 	List retlist = null;
 	try {
 	    retlist = Traverse.index();
@@ -218,25 +224,42 @@ public class Main {
 	    }
 
 	    //roart.model.HibernateUtil.currentSession().flush();
-	    roart.model.HibernateUtil.commit();
 	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
 	}
+	//while (tikaWorker.isAlive())  {
+	//TimeUnit.SECONDS.sleep(1);
+	//}
+	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+		TimeUnit.SECONDS.sleep(60);
+		Queues.queueStat();
+	}
+    roart.model.HibernateUtil.commit();
+	
 	return retlist;
     }
 
     public List<String> index(String add, boolean reindex) throws Exception {
+    	startThreads();
 	List retlist = null;
 	try {
 	    retlist = Traverse.index(add, reindex);
-	    roart.model.HibernateUtil.commit();
 	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 	    log.info(e);
 	    log.error("Exception", e);
 	}
+	//while (tikaWorker.isAlive())  {
+	//TimeUnit.SECONDS.sleep(1);
+	//}
+	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+		TimeUnit.SECONDS.sleep(60);
+		Queues.queueStat();
+	}
+    roart.model.HibernateUtil.commit();
+
 	return retlist;
     }
 
@@ -327,6 +350,34 @@ public class Main {
 	return retlist;
     }
 
+    private static TikaRunner tikaRunnable = null;
+    private static Thread tikaWorker = null;
+    private static IndexRunner indexRunnable = null;
+    private static Thread indexWorker = null;
+    private static OtherRunner otherRunnable = null;
+    private static Thread otherWorker = null;
+   
+    private void startThreads() {
+    	if (tikaRunnable == null) {
+    	tikaRunnable = new TikaRunner();
+    	tikaWorker = new Thread(tikaRunnable);
+    	tikaWorker.setName("TikaWorker");
+    	tikaWorker.start();
+    	}
+    	if (indexRunnable == null) {
+    	indexRunnable = new IndexRunner();
+    	indexWorker = new Thread(indexRunnable);
+    	indexWorker.setName("IndexWorker");
+    	indexWorker.start();
+    	}
+    	if (otherRunnable == null) {
+    	otherRunnable = new OtherRunner();
+    	otherWorker = new Thread(otherRunnable);
+    	otherWorker.setName("OtherWorker");
+    	otherWorker.start();
+    	}
+    }
+    
 }
 
 /*

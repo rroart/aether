@@ -3,10 +3,13 @@ package roart.search;
 import roart.model.Index;
 import roart.model.Files;
 import roart.model.HibernateUtil;
+import roart.queue.IndexQueueElement;
+import roart.queue.Queues;
 import roart.lang.LanguageDetect;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +48,25 @@ import org.apache.commons.logging.LogFactory;
 public class SearchLucene {
     private static Log log = LogFactory.getLog("SearchLucene");
 
-    public static int indexme(String type, String md5, InputStream inputStream) {
-	int retsize = 0;
+    //public static int indexme(String type, String md5, InputStream inputStream) {
+    public static void indexme() {
+    	IndexQueueElement el = Queues.indexQueue.poll();
+    	if (el == null) {
+    		log.error("empty queue");
+    	    return;
+    	}
+    	// vulnerable spot
+    	Queues.incIndexs();
+    	long now = new Date().getTime();
+    	
+    	String type = el.type;
+     	String md5 = el.md5;
+    	InputStream inputStream = el.inputStream;
+    	Index dbindex = el.index;
+    	String dbfilename = el.dbfilename;
+    	List<String> retlist = el.retlist;
+
+    int retsize = 0;
     // create some index
     // we could also create an index in our ram ...
     // Directory index = new RAMDirectory();
@@ -95,7 +115,19 @@ public class SearchLucene {
 	    log.info("Error3: " + e.getMessage());
 	    log.error("Exception", e);
 	}
-	return retsize;
+    log.info("size2 " + retsize);
+	el.size = retsize;
+	dbindex.setIndexed(Boolean.TRUE);
+	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize);
+    try {
+		inputStream.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		log.error("Exception", e);
+	}
+	log.info("timerStop " + (new Date().getTime() - now));
+    Queues.decIndexs();
+    
 	}
 
     public static void indexme(String type) {

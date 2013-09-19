@@ -95,7 +95,7 @@ public class ExecCommand {
 	try {
 	    outputSem.acquire();
 	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	    log.error("Exception", e);
 	}
 	String value = output;
 	outputSem.release();
@@ -106,7 +106,7 @@ public class ExecCommand {
 	try {
 	    errorSem.acquire();
 	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	    log.error("Exception", e);
 	}
 	String value = error;
 	errorSem.release();
@@ -128,7 +128,7 @@ public class ExecCommand {
 	    envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
 	    proc = Runtime.getRuntime().exec(cmdarray, envarray);
 	    p = proc;
-	    log.info("proc " + proc);
+	    log.info("proc " + filename + " " + proc);
 	    InputWriter iw = null;
 	    OutputReader or = null;
 	    ErrorReader er = null;
