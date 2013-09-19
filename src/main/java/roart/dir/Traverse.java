@@ -200,7 +200,7 @@ public class Traverse {
 
     public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex) throws Exception {
 	    if (md5 == null) {
-		log.info("md5 should not be null");
+		log.error("md5 should not be null");
 		return;
 	    }
 	    Boolean indexed = indexMap.get(md5);
