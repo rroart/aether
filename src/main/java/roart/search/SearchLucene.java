@@ -118,14 +118,15 @@ public class SearchLucene {
     log.info("size2 " + retsize);
 	el.size = retsize;
 	dbindex.setIndexed(Boolean.TRUE);
-	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize);
+	long time = new Date().getTime() - now;
+	log.info("timerStop filename " + time);
+	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + time);
     try {
 		inputStream.close();
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		log.error("Exception", e);
 	}
-	log.info("timerStop " + (new Date().getTime() - now));
     Queues.decIndexs();
     
 	}
