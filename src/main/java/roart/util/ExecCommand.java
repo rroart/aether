@@ -53,7 +53,7 @@ public class ExecCommand {
 		String buff = new String();
 		while ((buff = isr.readLine()) != null) {
 		    readBuffer.append(buff);
-		    log.error(buff);
+		    log.info(buff);
 		}
 		output = readBuffer.toString();
 		outputSem.release();
@@ -69,7 +69,7 @@ public class ExecCommand {
 		errorSem = new Semaphore(1);
 		errorSem.acquire();
 	    } catch (InterruptedException e) {
-		log.error("Exception", e);
+		log.warn("Exception", e);
 	    }
 	}
 
@@ -87,7 +87,7 @@ public class ExecCommand {
 		log.error("Exception", e);
 	    }
 	    if (error.length() > 0)
-		log.error(error);
+		log.warn(error);
 	}
     }
  
@@ -128,7 +128,7 @@ public class ExecCommand {
 	    envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
 	    proc = Runtime.getRuntime().exec(cmdarray, envarray);
 	    p = proc;
-	    log.info("proc " + filename + " " + proc);
+	    log.info("proc " + filename + " " + arg[0] + " " + proc);
 	    InputWriter iw = null;
 	    OutputReader or = null;
 	    ErrorReader er = null;
