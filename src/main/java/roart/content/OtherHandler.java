@@ -61,7 +61,7 @@ public class OtherHandler {
 		dir.setWritable(true);
 	    }
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/ebook-convert", arg);
+	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlist);
 	    if (!w) {
 		dir.setWritable(false);
 	    }
@@ -70,25 +70,30 @@ public class OtherHandler {
 	// djvu 2nd try in case djvu not ebook-convert supported
 	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/djvutxt", arg);
+	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist);
 	    retry = true;
 	}
 	// pdf 2nd try
 	if (lowercase.endsWith(".pdf")) {
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/pdftotext", arg);
+	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist);
 	    retry = true;
 	}
 	File txt = temp;
+	long time = new Date().getTime() - now;
+	log.info("timerStop " + dbfilename + " " + time);
 	if (retry && txt.exists()) {
+		log.info("handling filename " + dbfilename + " : " + time);
+		retlist.add("other handling filename " + dbfilename + " : " + time);
 	    TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist);
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);
+	} else {
+		log.info("handled not " + dbfilename + " : " + time);
 	}
 	if (false && txt.exists()) {
 		 txt.delete();
 	}
-	log.info("timerStop " + (new Date().getTime() - now));
 	Queues.decOthers();
 	
     }
@@ -113,7 +118,7 @@ public class OtherHandler {
     	return execute(filename, arg);
     }
     
-    public static String executeTimeout(String filename, String [] arg) {
+    public static String executeTimeout(String filename, String [] arg, List<String> retlist) {
     	Object [] objs = new Object[2];
     	objs[0] = filename;
     	objs[1] = arg;
@@ -134,7 +139,8 @@ public class OtherHandler {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            log.error("timeout...", e);
+            log.error("timeout running " + filename + " " + arg[0], e);
+            retlist.add("timeout running " + filename + " " + arg[0]);
         } catch (InterruptedException e) {
             log.error("interrupted", e);
         }
