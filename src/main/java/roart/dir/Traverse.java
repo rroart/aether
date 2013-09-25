@@ -260,12 +260,14 @@ public class Traverse {
 	// vulnerable spot
 	Queues.incTikas();
 	long now = new Date().getTime();
-	
+	try {
 	String dbfilename = el.dbfilename;
 	String filename = el.filename;
 	String md5 = el.md5;
 	Index index = el.index;
 	List<String> retlist = el.retlist;
+	log.info("incTikas " + dbfilename);
+	Queues.tikaTimeoutQueue.add(dbfilename);
 	int size = 0;
 	try {
 	    TikaHandler tika = new TikaHandler();
@@ -275,9 +277,13 @@ public class Traverse {
 	    log.info("size1 " + size);
 	    BufferedInputStream bis = new BufferedInputStream(inputStream);
 
+		long time = new Date().getTime() - now;
+		log.info("timerStop filename " + time);
+		retlist.add("tika handling filename " + dbfilename + " " + size + " : " + time);
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
 		    log.info("sizes " + size + " " + limit);
+			log.info("handling filename " + dbfilename + " " + size + " : " + time);
 		    //size = SearchLucene.indexme("all", md5, inputStream);
 	    	IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename);
 	    	Queues.indexQueue.add(elem);
@@ -297,8 +303,17 @@ public class Traverse {
 	} finally {
 	    //stream.close();            // close the stream
 	}
-	log.info("timerStop " + (new Date().getTime() - now));
 	Queues.decTikas();
+	boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
+	if (!success) {
+		log.error("queue not having " + dbfilename);
+	}
+	} catch (Exception e) {
+		log.error("Exception", e);
+	}
+	finally {
+		//log.info("ending");
+	}
     }
 
     private static int mylimit(String filename) {
