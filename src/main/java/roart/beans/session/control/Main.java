@@ -166,7 +166,7 @@ public class Main {
 		int ratio = (int) (100*size/size0);
 		if (ratio > 9) {
 		    set1.addAll(set4);
-		    Integer intI = new Integer(ratio);
+		    Integer intI = new Integer(ratio * size);
 		    String str = keyList.get(i) + " : " + keyList.get(j) + " " + set1;
 		    Set<String> strSet = sortlist.get(intI);
 		    if (strSet == null) {
@@ -236,6 +236,10 @@ public class Main {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	for (String ret : Queues.tikaTimeoutQueue) {
+		retlist.add("timeout tika " + ret);
+	}
+	Queues.resetTikaTimeoutQueue();
     roart.model.HibernateUtil.commit();
 	
 	return retlist;
@@ -258,6 +262,10 @@ public class Main {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	for (String ret : Queues.tikaTimeoutQueue) {
+		retlist.add("timeout tika " + ret);
+	}
+	Queues.resetTikaTimeoutQueue();
     roart.model.HibernateUtil.commit();
 
 	return retlist;
