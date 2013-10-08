@@ -258,7 +258,8 @@ public class Traverse {
 	    return;
 	}
 	// vulnerable spot
-	Queues.incTikas();
+	//Queues.incTikas();
+	//Queues.tikaRunQueue.add(el);
 	long now = new Date().getTime();
 	try {
 	String dbfilename = el.dbfilename;
@@ -303,7 +304,9 @@ public class Traverse {
 	} finally {
 	    //stream.close();            // close the stream
 	}
-	Queues.decTikas();
+	//Queues.decTikas();
+	//Queues.tikaRunQueue.remove(el);
+	
 	boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
 	if (!success) {
 		log.error("queue not having " + dbfilename);
