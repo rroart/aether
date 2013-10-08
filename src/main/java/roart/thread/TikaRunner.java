@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 import roart.dir.Traverse;
 import roart.queue.Queues;
+import roart.queue.TikaQueueElement;
 
 public class TikaRunner implements Runnable {
 	
@@ -62,7 +63,7 @@ public class TikaRunner implements Runnable {
     				continue;
     			}
     			
-    			Queues.decTikas();
+    			//Queues.decTikas();
 	            log.error("timeout and removing " + task + " " + map.size());
     	        boolean ok = task.cancel(true);
     	        if (!ok) {
@@ -97,6 +98,7 @@ public class TikaRunner implements Runnable {
     		for (Future<Object> key: removes) {
     			map.remove(key);
     			running--;
+    			Queues.decTikas();
     		}
     		if (false && removes.size() > 0) {
     		log.info("active 0 " + executorService.getActiveCount());
@@ -132,6 +134,7 @@ public class TikaRunner implements Runnable {
     			Future<Object> task = executorService.submit(callable);
     			map.put(task, new Date());
     			Queues.queueStat();
+    			Queues.incTikas();
     			running++;
     			log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
     			log.info("queue " + executorService.getQueue());
@@ -152,7 +155,14 @@ public class TikaRunner implements Runnable {
     public static String doTikaTimeout() {
         Callable<Object> callable = new Callable<Object>() {
             public Object call() throws Exception {
-                Traverse.doTika();
+            	/*
+            	TikaQueueElement el = Queues.tikaQueue.poll();
+            	if (el == null) {
+            		log.error("empty queue");
+            	    return null;
+            	}
+            	*/
+             Traverse.doTika();
                 return null;
             }
         };
@@ -160,20 +170,25 @@ public class TikaRunner implements Runnable {
 
         Future<Object> task = executorService.submit(callable);
         Object result = null;
+        //TikaQueueElement result = null;
+        
         try {
             // ok, wait for 600 seconds max
-            result = task.get(600, TimeUnit.SECONDS);
+            result = (TikaQueueElement) task.get(600, TimeUnit.SECONDS);
             log.info("Finished with result: " + result);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            log.error("timeout...", e);
+            //log.error("timeout...", e);
             log.error("timeout and removing " + task);
-            Queues.decTikas();
+            //Queues.decTikas();
+            //TikaQueueElement el = result;
+            //Queues.tikaRunQueue.remove(el);
         } catch (InterruptedException e) {
             log.error("interrupted", e);
         }
-        executorService.shutdown();  
+        List list = executorService.shutdownNow();
+        log.error("Shutdown now list size " + list.size());
         return (String) result;
     }
 
