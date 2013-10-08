@@ -139,12 +139,13 @@ public class OtherHandler {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            log.error("timeout running " + filename + " " + arg[0], e);
+            log.error("timeout running " + filename + " " + arg[0]);
             retlist.add("timeout running " + filename + " " + arg[0]);
         } catch (InterruptedException e) {
             log.error("interrupted", e);
         }
-        executorService.shutdown();  
+        List list = executorService.shutdownNow();
+        log.error("Shutdown now list size " + list.size());
         return (String) result;
     }
 
