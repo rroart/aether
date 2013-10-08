@@ -16,6 +16,8 @@ public class Queues {
 	
 	private static Log log = LogFactory.getLog("Queues");
 	
+    //public static Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
+
     public static Queue<TikaQueueElement> tikaQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
@@ -43,11 +45,6 @@ public class Queues {
     }
     
    public static void decTikas() {
-	   /*
-	   Date d = new Date();
-	   System.out.println("date " + d + " " + Calendar.MILLISECOND);
-	   Thread.currentThread().dumpStack();
-	*/
    	tikas.decrementAndGet();
    }
    
