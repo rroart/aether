@@ -153,6 +153,62 @@ public class TikaRunner implements Runnable {
     }
 
     public static String doTikaTimeout() {
+   class TikaTimeout implements Runnable {
+	   private TikaQueueElement el;
+	   TikaTimeout(TikaQueueElement el) {
+		   this.el = el;
+	   }
+	   
+    	public void run() {
+    		try {
+    			Traverse.doTika(el);
+    		} catch (Exception e) {
+    			log.error("Exception", e);
+    		}
+    	}
+    }
+    
+	TikaQueueElement el = Queues.tikaQueue.poll();
+	if (el == null) {
+		log.error("empty queue");
+	    return null;
+	}
+         TikaTimeout tikaRunnable = new TikaTimeout(el);
+    	Thread tikaWorker = new Thread(tikaRunnable);
+    	tikaWorker.setName("TikaTimeout");
+    	tikaWorker.start();
+    	long start = new Date().getTime();
+    	boolean b = true;
+    	while (b) {
+    		try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				log.error("Exception", e);
+				// TODO Auto-generated catch block
+			}
+    		long now = new Date().getTime();
+    		if ((now - start) > 1000 * 60 * 10) {
+    			b = false;
+    		}
+    		if (!tikaWorker.isAlive()) {
+    			log.info("Tikaworker finished " + tikaWorker + " " + tikaRunnable);
+    			return null;
+    		}
+    	}
+    	tikaWorker.stop(); // .interrupt();
+		log.info("Tikaworker timeout " + el.dbfilename + " " + tikaWorker + " " + tikaRunnable);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			log.error("Exception", e);
+			// TODO Auto-generated catch block
+		}
+		log.info("Tikaworker timeout " + tikaWorker + " " + tikaRunnable + " " + tikaWorker.isAlive() + " " + tikaWorker.isInterrupted() + " " + tikaWorker.interrupted());
+		Queues.otherQueue.add(el);
+		return (String) null;
+    }
+    
+    public static String doTikaTimeout2() {
         Callable<Object> callable = new Callable<Object>() {
             public Object call() throws Exception {
             	/*
@@ -162,7 +218,7 @@ public class TikaRunner implements Runnable {
             	    return null;
             	}
             	*/
-             Traverse.doTika();
+             Traverse.doTika(null); // CHECK fix if changes
                 return null;
             }
         };
