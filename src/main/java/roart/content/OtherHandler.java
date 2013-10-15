@@ -15,6 +15,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import roart.dir.Traverse;
 import roart.model.Index;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
@@ -68,13 +69,14 @@ public class OtherHandler {
 	    retry = true;
 	}
 	// djvu 2nd try in case djvu not ebook-convert supported
-	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
+	//	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
+	if (output == null && lowercase.contains(".dj")) {
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist);
 	    retry = true;
 	}
 	// pdf 2nd try
-	if (lowercase.endsWith(".pdf")) {
+	if (output == null && lowercase.endsWith(".pdf")) {
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist);
 	    retry = true;
@@ -82,7 +84,7 @@ public class OtherHandler {
 	File txt = temp;
 	long time = new Date().getTime() - now;
 	log.info("timerStop " + dbfilename + " " + time);
-	if (retry && txt.exists()) {
+	if (output != null && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		retlist.add("other handling filename " + dbfilename + " : " + time);
 	    TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist);
@@ -119,6 +121,59 @@ public class OtherHandler {
     }
     
     public static String executeTimeout(String filename, String [] arg, List<String> retlist) {
+    	   class OtherTimeout implements Runnable {
+    	    	public void run() {
+    	    		try {
+    	    			executeQueue();
+    	    		} catch (Exception e) {
+    	    			log.error("Exception", e);
+    	    		}
+    	    	}
+    	    }
+    	    
+	    	Object [] objs = new Object[2];
+	    	objs[0] = filename;
+	    	objs[1] = arg;
+	    	execQueue.add(objs);
+
+	    	OtherTimeout otherRunnable = new OtherTimeout();
+    	    	Thread otherWorker = new Thread(otherRunnable);
+    	    	otherWorker.setName("OtherTimeout");
+    	    	otherWorker.start();
+    	    	long start = new Date().getTime();
+    	    	boolean b = true;
+    	    	while (b) {
+    	    		try {
+    					Thread.sleep(1000);
+    				} catch (InterruptedException e) {
+    					log.error("Exception", e);
+    					// TODO Auto-generated catch block
+    				}
+    	    		long now = new Date().getTime();
+    	    		if ((now - start) > 1000 * 60 * 10) {
+    	    			b = false;
+    	    		}
+    	    		if (!otherWorker.isAlive()) {
+    	    			log.info("Otherworker finished " + filename + " " + arg[0] + " " + otherWorker + " " + otherRunnable);
+    	    			return "end";
+    	    		}
+    	    	}
+    	    	otherWorker.stop(); // .interrupt();
+    			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable);
+    			try {
+    				Thread.sleep(1000);
+    			} catch (InterruptedException e) {
+    				log.error("Exception", e);
+    				// TODO Auto-generated catch block
+    			}
+    			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable + " " + otherWorker.isAlive() + " " + otherWorker.isInterrupted() + " " + otherWorker.interrupted());
+
+    			log.error("timeout running " + filename + " " + arg[0]);
+            retlist.add("timeout running " + filename + " " + arg[0]);
+        return (String) null;
+    }
+
+    public static String executeTimeout2(String filename, String [] arg, List<String> retlist) {
     	Object [] objs = new Object[2];
     	objs[0] = filename;
     	objs[1] = arg;
