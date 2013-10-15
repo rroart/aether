@@ -251,12 +251,14 @@ public class Traverse {
     }
 
     //private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
-    public static void doTika() {
+    public static void doTika(TikaQueueElement el) {
+    	/*
 	TikaQueueElement el = Queues.tikaQueue.poll();
 	if (el == null) {
 		log.error("empty queue");
 	    return;
 	}
+	*/
 	// vulnerable spot
 	//Queues.incTikas();
 	//Queues.tikaRunQueue.add(el);
@@ -315,7 +317,7 @@ public class Traverse {
 		log.error("Exception", e);
 	}
 	finally {
-		//log.info("ending");
+		log.info("ending " + el.dbfilename);
 	}
     }
 
