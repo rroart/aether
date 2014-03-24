@@ -29,7 +29,16 @@ public class Traverse {
 
     private static Log log = LogFactory.getLog("Traverse");
 
-    public static Set<String> doList (String dirname, Map<String, HashSet<String>> dirset) throws Exception {
+    private static boolean indirlistnot(String filename, String[] dirlistnot) {
+	for (int i = 0; i < dirlistnot.length; i++) {
+	    if (filename.indexOf(dirlistnot[i])>=0) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    public static Set<String> doList (String dirname, Map<String, HashSet<String>> dirset, String[] dirlistnot) throws Exception {
 	Set<String> retset = new HashSet<String>();
 	HashSet<String> md5set = new HashSet<String>();
 	File dir = new File(dirname);
@@ -45,7 +54,7 @@ public class Traverse {
 	    //log.info("file " + filename);
 	    if (listDir[i].isDirectory()) {
 		//log.info("isdir " + filename);
-		retset.addAll(doList(filename, dirset));
+		retset.addAll(doList(filename, dirset, dirlistnot));
 	    } else {
 		//log.info("retset " + filename);
 		retset.add(filename);
