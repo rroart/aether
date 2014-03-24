@@ -97,7 +97,7 @@ public class Main {
 
     public List<String> traverse(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	Set<String> filesetnew2 = Traverse.doList(add, dirset);    
+	Set<String> filesetnew2 = Traverse.doList(add, dirset, null);    
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	//roart.model.HibernateUtil.currentSession().close();
@@ -105,7 +105,16 @@ public class Main {
     }
 
     public List<String> traverse() throws Exception {
+	Set<String> filesetnew = new HashSet<String>();
+	List<String> retList = filesystem(filesetnew);
+	roart.model.HibernateUtil.commit();
+	log.info("Hibernate commit");
+	return retList;
+    }
+
+    private List<String> filesystem(Set<String> filesetnew) {
 	List<String> retList = new ArrayList<String>();
+
 	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	try {
@@ -120,11 +129,10 @@ public class Main {
 	    files.clear();
 	    //Set<String> md5set = new HashSet<String>();
 	    String[] dirlist = { "/home/roart/usr/music", "/home/roart/usr/video", "/home/roart/usr/abook", "/home/roart/usr/books"  };
-
-	    Set<String> filesetnew = new HashSet<String>();
+	    String[] dirlistnot = { "/home/roart/usr/music/tmp", "/home/roart/usr/music/tmp_any2dvd", "/home/roart/usr/video/tmp", "/home/roart/usr/abook/tmp", "/home/roart/usr/books/tmp", "/home/roart/usr/books/tmp2"  };
 
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], dirset);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], dirset, dirlistnot);
 		filesetnew.addAll(filesetnew2);
 	    }
 	    //roart.model.HibernateUtil.currentSession().flush();
@@ -144,8 +152,8 @@ public class Main {
 		Files file = Files.getByFilename(filename);
 		roart.model.HibernateUtil.currentSession().delete(file);
 	    }
-	    roart.model.HibernateUtil.commit();
-		log.info("Hibernate commit");
+	    //roart.model.HibernateUtil.commit();
+	    //log.info("Hibernate commit");
 	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 		log.info(e);
@@ -250,6 +258,23 @@ public class Main {
 
     public List<String> index(String add, boolean reindex) throws Exception {
     	startThreads();
+	List retlist = lucene(add, reindex);
+	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+		TimeUnit.SECONDS.sleep(60);
+		Queues.queueStat();
+	}
+	for (String ret : Queues.tikaTimeoutQueue) {
+		retlist.add("timeout tika " + ret);
+	}
+
+	Queues.resetTikaTimeoutQueue();
+	roart.model.HibernateUtil.commit();
+	log.info("Hibernate commit");	
+
+	return retlist;
+    }
+
+    private List<String> lucene(String add, boolean reindex) throws Exception {
 	List retlist = null;
 	try {
 	    retlist = Traverse.index(add, reindex);
@@ -261,17 +286,6 @@ public class Main {
 	//while (tikaWorker.isAlive())  {
 	//TimeUnit.SECONDS.sleep(1);
 	//}
-	while ((Queues.queueSize() + Queues.runSize()) > 0) {
-		TimeUnit.SECONDS.sleep(60);
-		Queues.queueStat();
-	}
-	for (String ret : Queues.tikaTimeoutQueue) {
-		retlist.add("timeout tika " + ret);
-	}
-	Queues.resetTikaTimeoutQueue();
-    roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");
-
 	return retlist;
     }
 
@@ -359,6 +373,29 @@ public class Main {
 	    log.info(e);
 	    log.error("Exception", e);
 	}
+	return retlist;
+    }
+
+    public List<String> filesystemlucene() throws Exception {
+	Set<String> filesetnew = new HashSet<String>();
+	List<String> retlist = filesystem(filesetnew);
+
+    	startThreads();
+	for (String filename : filesetnew) {
+	    //log.info("size2 " + filename);
+	    lucene(filename, false);
+	}
+	Queues.resetTikaTimeoutQueue();
+	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+		TimeUnit.SECONDS.sleep(60);
+		Queues.queueStat();
+	}
+	for (String ret : Queues.tikaTimeoutQueue) {
+		retlist.add("timeout tika " + ret);
+	}
+	Queues.resetTikaTimeoutQueue();
+	roart.model.HibernateUtil.commit();
+	log.info("Hibernate commit");
 	return retlist;
     }
 
