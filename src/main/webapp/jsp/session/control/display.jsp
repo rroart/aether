@@ -35,6 +35,7 @@
 	String cleanup2 = request.getParameter("cleanup2");
 	String cleanupfs = request.getParameter("cleanupfs");
 	String memoryusage = request.getParameter("memoryusage");
+	String filesystemlucene = request.getParameter("filesystemlucene");
 	List<String> strarr = null;
 	if (filesystem != null) {
  	   strarr = main5.traverse();
@@ -65,6 +66,9 @@
 	}
 	if (memoryusage != null) {
  	   strarr = main5.memoryusage();
+	}
+	if (filesystemlucene != null) {
+ 	   strarr = main5.filesystemlucene();
 	}
   	   for (int i=0; i<strarr.size(); i++) {
 	     String str = strarr.get(i);

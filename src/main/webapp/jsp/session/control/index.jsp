@@ -88,5 +88,9 @@
 <textarea rows="1" cols="40" name="cleanupfs"></textarea>
 </form>
 
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="submit" name="filesystemlucene" value="filesystemlucene"/>
+</form>
+
 </body>
 </html>
