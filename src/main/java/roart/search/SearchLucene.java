@@ -71,7 +71,7 @@ public class SearchLucene {
     // we could also create an index in our ram ...
     // Directory index = new RAMDirectory();
 	try {
-	    Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
     IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
@@ -137,14 +137,15 @@ public class SearchLucene {
     // we could also create an index in our ram ...
     // Directory index = new RAMDirectory();
 	try {
-	    Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
     IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
     String filename = type;
 
-	    FileInputStream fstream = new FileInputStream("/home/roart/data/"+type+".txt");
+	    String datadir = roart.util.Prop.getProp().getProperty("datadir");
+	    FileInputStream fstream = new FileInputStream(datadir+type+".txt");
 	    DataInputStream in = new DataInputStream(fstream);
 	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	    String strLine = null;
@@ -171,7 +172,7 @@ public class SearchLucene {
     public static String [] searchme(String type, String str) {
 		String[] strarr = new String[0];
 	    try {
-		Directory index = FSDirectory.open(new File(Constants.PATH+type));
+		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
     // parse query over multiple fields
     Query q = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME},
@@ -210,7 +211,7 @@ public class SearchLucene {
 	String type = "all";
 		String[] strarr = new String[0];
 	    try {
-		Directory index = FSDirectory.open(new File(Constants.PATH+type));
+		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
     // parse query over multiple fields
     Query q = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG},
@@ -260,7 +261,7 @@ public class SearchLucene {
     public static void deleteme(String str) {
 	try {
 	    String type = "all";
-	    Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
 	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
 	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
@@ -277,11 +278,11 @@ public class SearchLucene {
 	List<String> retlist = new ArrayList<String>();
 	String type = "all";
 	String field = Constants.TITLE;
-	String indexDir = Constants.PATH+type;
+	String indexDir = getLucenePath()+type;
 	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
 	int docs = 0;
         int dups = 0;
-	Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	Directory index = FSDirectory.open(new File(getLucenePath()+type));
     IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
     IndexWriter iw = new IndexWriter(index, iwc);
     IndexReader ind = DirectoryReader.open(index);
@@ -381,11 +382,11 @@ public class SearchLucene {
 	}
 	String type = "all";
 	String field = Constants.TITLE;
-	String indexDir = Constants.PATH+type;
+	String indexDir = getLucenePath()+type;
 	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
 	int docs = 0;
         int errors = 0;
-	Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	Directory index = FSDirectory.open(new File(getLucenePath()+type));
         IndexReader ind = DirectoryReader.open(index); 
         IndexSearcher searcher = new IndexSearcher(ind);
         IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
@@ -407,7 +408,8 @@ public class SearchLucene {
 	    if (a2[0].equals("")) {
 		continue;
 	    }
-	    if (a2[0].contains("/home/roart/")) {
+	    String homedir = roart.util.Prop.getProp().getProperty("homedir");
+	    if (a2[0].contains(homedir)) {
 		retlist.add("error " + a2[0]);
 		Files file = Files.getByFilename(a2[0]);
 		String md5 = file.getMd5();
@@ -475,11 +477,11 @@ public class SearchLucene {
 	List<String> retlist = new ArrayList<String>();
 	String type = "all";
 	String field = Constants.TITLE;
-	String indexDir = Constants.PATH+type;
+	String indexDir = getLucenePath()+type;
 	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
 	int docs = 0;
         int dups = 0;
-	Directory index = FSDirectory.open(new File(Constants.PATH+type));
+	Directory index = FSDirectory.open(new File(getLucenePath()+type));
 	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
 	IndexWriter iw = new IndexWriter(index, iwc);
 	IndexReader ind = DirectoryReader.open(index);
@@ -508,5 +510,9 @@ public class SearchLucene {
 	retlist.add("Entries Scanned:"+totalDocs);
 	return retlist;
     }//End of removeDuplicate method
+
+    private static String getLucenePath() {
+	return roart.util.Prop.getProp().getProperty(Constants.LUCENEPATH);
+    }
 
 }

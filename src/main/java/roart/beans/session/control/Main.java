@@ -112,6 +112,18 @@ public class Main {
 	return retList;
     }
 
+    String[] dirlist = null;
+    String[] dirlistnot = null;
+
+    private void parseconfig() {
+	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
+	String dirlistnotstr = roart.util.Prop.getProp().getProperty("dirlistnot");
+	System.out.println(dirlist);
+	System.out.println(dirlistnot);
+	dirlist = dirliststr.split(",");
+	dirlistnot = dirlistnotstr.split(",");
+    }
+
     private List<String> filesystem(Set<String> filesetnew) {
 	List<String> retList = new ArrayList<String>();
 
@@ -128,8 +140,7 @@ public class Main {
 	    }
 	    files.clear();
 	    //Set<String> md5set = new HashSet<String>();
-	    String[] dirlist = { "/home/roart/usr/music", "/home/roart/usr/video", "/home/roart/usr/abook", "/home/roart/usr/books"  };
-	    String[] dirlistnot = { "/home/roart/usr/music/tmp", "/home/roart/usr/music/tmp_any2dvd", "/home/roart/usr/video/tmp", "/home/roart/usr/abook/tmp", "/home/roart/usr/books/tmp", "/home/roart/usr/books/tmp2"  };
+	    parseconfig();
 
 	    for (int i = 0; i < dirlist.length; i ++) {
 		Set<String> filesetnew2 = Traverse.doList(dirlist[i], dirset, dirlistnot);
@@ -315,7 +326,6 @@ public class Main {
 	//List<String> retlist = new ArrayList<String>();
 	Set<String> filesetnew = new HashSet<String>();
 	try {
-	    //String[] dirlist = { "/home/roart/usr/music", "/home/roart/usr/video", "/home/roart/usr/abook", "/home/roart/usr/books"  };
 	    String[] dirlist = { dirname };
 	    for (int i = 0; i < dirlist.length; i ++) {
 		Set<String> filesetnew2 = Traverse.dupdir(dirlist[i]);

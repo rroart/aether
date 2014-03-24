@@ -83,7 +83,8 @@ public class FileDao implements Dao {
 	String filename = type;
 	List<Unit> retlist = new ArrayList<Unit>();
 	try {
-	    FileInputStream fstream = new FileInputStream("/home/roart/data/"+type+".txt");
+	    String datadir = roart.util.Prop.getProp().getProperty("datadir");
+	    FileInputStream fstream = new FileInputStream(datadir+type+".txt");
 	    DataInputStream in = new DataInputStream(fstream);
 	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	    String strLine = null;
