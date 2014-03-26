@@ -82,11 +82,16 @@
         <configuration>
           <includes>
             <include>target/**/hibernate.cfg.xml</include>
+            <include>target/**/log4j.properties</include>
 	  </includes>
             <replacements>
                 <replacement>
                     <token>@h2dir@</token>
                     <value>${h2dir}</value>
+                </replacement>
+                <replacement>
+                    <token>@logdir@</token>
+                    <value>${logdir}</value>
                 </replacement>
             </replacements>
         </configuration>

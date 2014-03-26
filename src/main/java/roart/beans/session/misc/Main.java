@@ -282,7 +282,8 @@ public class Main {
     }
     
     public boolean isSecret() {
-	String dr = System.getProperty("user.showsecret");
+	//String dr = System.getProperty("user.showsecret");
+	String dr = roart.util.Prop.getProp().getProperty("showsecret");
 	log.info("secret " + dr);
 	return dr == null;
     }
