@@ -102,5 +102,13 @@
 <textarea rows="1" cols="40" name="cleanupfs"></textarea>
 </form>
 
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="suffixindex"/>
+<input type="submit" name="suffixindex2" value="suffixindex"/>
+<textarea rows="1" cols="40" name="suffixindex"></textarea>
+</form>
+
 </body>
 </html>

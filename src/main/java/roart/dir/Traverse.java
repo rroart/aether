@@ -30,6 +30,9 @@ public class Traverse {
     private static Log log = LogFactory.getLog("Traverse");
 
     private static boolean indirlistnot(String filename, String[] dirlistnot) {
+	if (dirlistnot == null) {
+	    return false;
+	}
 	for (int i = 0; i < dirlistnot.length; i++) {
 	    if (filename.indexOf(dirlistnot[i])>=0) {
 		return true;
@@ -131,7 +134,7 @@ public class Traverse {
 	return retset;
     }
 
-    public static List<String> index() throws Exception {
+    public static List<String> index(String suffix) throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	log.info("here");
 	List<Files> files = Files.getAll();
@@ -144,6 +147,9 @@ public class Traverse {
 	    String md5 = file.getMd5();
 	    if (md5 == null) {
 		retlist.add("No md5 " + filename);
+		continue;
+	    }
+	    if (suffix != null && !filename.endsWith(suffix)) {
 		continue;
 	    }
 	    filesMapMd5.put(md5, filename);
@@ -260,7 +266,49 @@ public class Traverse {
 	    }
 	    String md5 = index.getMd5();
 	    String filename = filesMapMd5.get(md5);
-	    retlist.add(filename);
+	    if (filename != null) {
+		filename = filename.replace('<',' ');
+		filename = filename.replace('>',' ');
+		retlist.add(filename);
+	    } else {
+		System.out.println("md5 not " + md5);
+	    }
+	}
+	return retlist;
+    }
+
+    public static List<String> indexed() throws Exception {
+	List<String> retlist = new ArrayList<String>();
+	List<Files> files = Files.getAll();
+	List<Index> indexes = Index.getAll();
+	log.info("sizes " + files.size() + " " + indexes.size());
+	Map<String, String> filesMapMd5 = new HashMap<String, String>();
+	Map<String, String> filesMapFilename = new HashMap<String, String>();
+	for (Files file : files) {
+	    String filename = file.getFilename();
+	    String md5 = file.getMd5();
+	    if (md5 == null) {
+		retlist.add("No md5 " + filename);
+		continue;
+	    }
+	    filesMapMd5.put(md5, filename);
+	    filesMapFilename.put(filename, md5);
+	}
+	for (Index index : indexes) {
+	    Boolean indexed = index.getIndexed();
+	    if (indexed != null) {
+		if (indexed.booleanValue()) {
+		    String md5 = index.getMd5();
+		    String filename = filesMapMd5.get(md5);
+		    if (filename != null) {
+			filename = filename.replace('<',' ');
+			filename = filename.replace('>',' ');
+			retlist.add(filename);
+		    } else {
+			System.out.println("md5 not " + md5);
+		    }
+		}
+	    }
 	}
 	return retlist;
     }

@@ -37,6 +37,7 @@
 	String cleanup2 = request.getParameter("cleanup2");
 	String cleanupfs = request.getParameter("cleanupfs");
 	String memoryusage = request.getParameter("memoryusage");
+	String suffixindex = request.getParameter("suffixindex");
 	List<String> strarr = null;
 	if (filesystemlucene != null) {
  	   strarr = main5.filesystemlucene();
@@ -45,7 +46,7 @@
  	   strarr = main5.traverse();
 	}
 	if (lucene != null) {
- 	   strarr = main5.index();
+ 	   strarr = main5.index(null);
 	}
 	if (notindexed != null) {
  	   strarr = main5.notindexed();
@@ -73,6 +74,9 @@
 	}
 	if (memoryusage != null) {
  	   strarr = main5.memoryusage();
+	}
+	if (suffixindex != null) {
+ 	   strarr = main5.index(suffixindex);
 	}
   	   for (int i=0; i<strarr.size(); i++) {
 	     String str = strarr.get(i);

@@ -206,11 +206,11 @@ public class Main {
 	return retList;
     }
 
-    public List<String> index() throws Exception {
+    public List<String> index(String suffix) throws Exception {
     	startThreads();
 	List retlist = null;
 	try {
-	    retlist = Traverse.index();
+	    retlist = Traverse.index(suffix);
 
 	    Set<String> filesindexset = new HashSet<String>();
 	    List<Files> files = Files.getAll();
@@ -359,12 +359,18 @@ public class Main {
 
     public List<String> notindexed() throws Exception {
 	List<String> retlist = null;
+	List<String> retlistyes = null;
 	try {
 	    retlist = Traverse.notindexed();
+	    retlistyes = Traverse.indexed();
 	    Map<String, Integer> plusretlist = new HashMap<String, Integer>();
+	    Map<String, Integer> plusretlistyes = new HashMap<String, Integer>();
 	    for(String filename : retlist) {
+		if (filename == null) {
+		    continue;
+		}
 		int ind = filename.lastIndexOf(".");
-		if (ind == -1) {
+		if (ind == -1 && ind >= filename.length() - 6) {
 		    continue;
 		}
 		String suffix = filename.substring(ind+1);
@@ -375,9 +381,29 @@ public class Main {
 		i++;
 		plusretlist.put(suffix, i);
 	    }
+	    for(String filename : retlistyes) {
+		if (filename == null) {
+		    continue;
+		}
+		int ind = filename.lastIndexOf(".");
+		if (ind == -1 && ind >= filename.length() - 6) {
+		    continue;
+		}
+		String suffix = filename.substring(ind+1);
+		Integer i = plusretlistyes.get(suffix);
+		if (i == null) {
+		    i = new Integer(0);
+		}
+		i++;
+		plusretlistyes.put(suffix, i);
+	    }
 	    System.out.println("size " + plusretlist.size());
+	    System.out.println("sizeyes " + plusretlistyes.size());
 	    for(String string : plusretlist.keySet()) {
 		retlist.add("Format " + string + " : " + plusretlist.get(string).intValue());
+	    }
+	    for(String string : plusretlistyes.keySet()) {
+		retlist.add("Formatyes " + string + " : " + plusretlistyes.get(string).intValue());
 	    }
 	} catch (Exception e) {
 	    log.info(e);
@@ -410,7 +436,7 @@ public class Main {
 	return retlist;
     }
 
-    public List<String> filesystemluceneadd(String add) throws Exception {
+    public List<String> filesystemlucene(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = new ArrayList<String>();
