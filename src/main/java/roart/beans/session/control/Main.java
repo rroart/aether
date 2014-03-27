@@ -410,6 +410,31 @@ public class Main {
 	return retlist;
     }
 
+    public List<String> filesystemluceneadd(String add) throws Exception {
+	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
+	Set<String> newset = new HashSet<String>();
+	List<String> retlist = new ArrayList<String>();
+	Set<String> retset = Traverse.doList(add, newset, dirset, null);
+
+    	startThreads();
+	for (String filename : newset) {
+	    //log.info("size2 " + filename);
+	    lucene(filename, false);
+	}
+	Queues.resetTikaTimeoutQueue();
+	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+		TimeUnit.SECONDS.sleep(60);
+		Queues.queueStat();
+	}
+	for (String ret : Queues.tikaTimeoutQueue) {
+		retlist.add("timeout tika " + ret);
+	}
+	Queues.resetTikaTimeoutQueue();
+	roart.model.HibernateUtil.commit();
+	log.info("Hibernate commit");
+	return retlist;
+    }
+
     private static TikaRunner tikaRunnable = null;
     private static Thread tikaWorker = null;
     private static IndexRunner indexRunnable = null;

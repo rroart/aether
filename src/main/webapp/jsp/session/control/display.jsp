@@ -25,18 +25,22 @@
 
 <%
 	//HttpSession session = request.getSession();
+	String filesystemlucene = request.getParameter("filesystemlucene");
 	String lucene = request.getParameter("lucene");
 	String filesystem = request.getParameter("filesystem");
 	String luceneadd = request.getParameter("luceneadd");
 	String lucenereindex = request.getParameter("lucenereindex");
 	String notindexed = request.getParameter("notindexed");
 	String filesystemadd = request.getParameter("filesystemadd");
+	String filesystemluceneadd = request.getParameter("filesystemluceneadd");
 	String cleanup = request.getParameter("cleanup");
 	String cleanup2 = request.getParameter("cleanup2");
 	String cleanupfs = request.getParameter("cleanupfs");
 	String memoryusage = request.getParameter("memoryusage");
-	String filesystemlucene = request.getParameter("filesystemlucene");
 	List<String> strarr = null;
+	if (filesystemlucene != null) {
+ 	   strarr = main5.filesystemlucene();
+	}
 	if (filesystem != null) {
  	   strarr = main5.traverse();
 	}
@@ -45,6 +49,9 @@
 	}
 	if (notindexed != null) {
  	   strarr = main5.notindexed();
+	}
+	if (filesystemluceneadd != null) {
+ 	   strarr = main5.filesystemlucene(filesystemluceneadd);
 	}
 	if (filesystemadd != null) {
  	   strarr = main5.traverse(filesystemadd);
@@ -66,9 +73,6 @@
 	}
 	if (memoryusage != null) {
  	   strarr = main5.memoryusage();
-	}
-	if (filesystemlucene != null) {
- 	   strarr = main5.filesystemlucene();
 	}
   	   for (int i=0; i<strarr.size(); i++) {
 	     String str = strarr.get(i);
