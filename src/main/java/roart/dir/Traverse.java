@@ -38,8 +38,11 @@ public class Traverse {
 	return false;
     }
 
-    public static Set<String> doList (String dirname, Map<String, HashSet<String>> dirset, String[] dirlistnot) throws Exception {
+    public static Set<String> doList (String dirname, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot) throws Exception {
 	Set<String> retset = new HashSet<String>();
+	if (indirlistnot(dirname, dirlistnot)) {
+	    return retset;
+	}
 	HashSet<String> md5set = new HashSet<String>();
 	File dir = new File(dirname);
 	File listDir[] = dir.listFiles();
@@ -54,7 +57,7 @@ public class Traverse {
 	    //log.info("file " + filename);
 	    if (listDir[i].isDirectory()) {
 		//log.info("isdir " + filename);
-		retset.addAll(doList(filename, dirset, dirlistnot));
+		retset.addAll(doList(filename, newset, dirset, dirlistnot));
 	    } else {
 		//log.info("retset " + filename);
 		retset.add(filename);
@@ -67,6 +70,9 @@ public class Traverse {
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
 			files.setMd5(md5);
 			log.info("adding md5 file " + filename);
+			if (newset != null) {
+			    newset.add(filename);
+			}
 		    } catch (Exception e) {
 			log.info("Error: " + e.getMessage());
 			log.error("Exception", e);

@@ -97,7 +97,7 @@ public class Main {
 
     public List<String> traverse(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	Set<String> filesetnew2 = Traverse.doList(add, dirset, null);    
+	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null);    
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	//roart.model.HibernateUtil.currentSession().close();
@@ -106,7 +106,7 @@ public class Main {
 
     public List<String> traverse() throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
-	List<String> retList = filesystem(filesetnew);
+	List<String> retList = filesystem(filesetnew, null);
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	return retList;
@@ -124,7 +124,7 @@ public class Main {
 	dirlistnot = dirlistnotstr.split(",");
     }
 
-    private List<String> filesystem(Set<String> filesetnew) {
+    private List<String> filesystem(Set<String> filesetnew, Set<String> newset) {
 	List<String> retList = new ArrayList<String>();
 
 	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
@@ -143,7 +143,7 @@ public class Main {
 	    parseconfig();
 
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], dirset, dirlistnot);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], newset, dirset, dirlistnot);
 		filesetnew.addAll(filesetnew2);
 	    }
 	    //roart.model.HibernateUtil.currentSession().flush();
@@ -388,10 +388,11 @@ public class Main {
 
     public List<String> filesystemlucene() throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
-	List<String> retlist = filesystem(filesetnew);
+	Set<String> newset = new HashSet<String>();
+	List<String> retlist = filesystem(filesetnew, newset);
 
     	startThreads();
-	for (String filename : filesetnew) {
+	for (String filename : newset) {
 	    //log.info("size2 " + filename);
 	    lucene(filename, false);
 	}
