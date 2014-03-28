@@ -18,7 +18,7 @@
 <jsp:setProperty name="main5" property="*" />
 
 <form action="display.jsp" style="display: inline; margin: 0;">
-<input type="submit" name="filesystemlucene" value="filesystemlucene"/>
+<input type="submit" name="filesystemlucenenew" value="filesystemlucenenew"/>
 </form>
 
 <br/>
@@ -65,9 +65,9 @@
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
-<input type="hidden" name="type" value="filesystemluceneadd"/>
-<input type="submit" name="filesystemluceneadd2" value="filesystemluceneadd"/>
-<textarea rows="1" cols="40" name="filesystemluceneadd"></textarea>
+<input type="hidden" name="type" value="filesystemlucenenewadd"/>
+<input type="submit" name="filesystemlucenenewadd2" value="filesystemlucenenewadd"/>
+<textarea rows="1" cols="40" name="filesystemlucenenewadd"></textarea>
 </form>
 
 <br/>

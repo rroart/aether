@@ -412,7 +412,7 @@ public class Main {
 	return retlist;
     }
 
-    public List<String> filesystemlucene() throws Exception {
+    public List<String> filesystemlucenenew() throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = filesystem(filesetnew, newset);
@@ -436,7 +436,7 @@ public class Main {
 	return retlist;
     }
 
-    public List<String> filesystemlucene(String add) throws Exception {
+    public List<String> filesystemlucenenew(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = new ArrayList<String>();
