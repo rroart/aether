@@ -31,6 +31,7 @@
 	String luceneadd = request.getParameter("luceneadd");
 	String lucenereindex = request.getParameter("lucenereindex");
 	String notindexed = request.getParameter("notindexed");
+	String overlapping = request.getParameter("overlapping");
 	String filesystemadd = request.getParameter("filesystemadd");
 	String filesystemlucenenewadd = request.getParameter("filesystemlucenenewadd");
 	String cleanup = request.getParameter("cleanup");
@@ -51,8 +52,11 @@
 	if (notindexed != null) {
  	   strarr = main5.notindexed();
 	}
+	if (overlapping != null) {
+ 	   strarr = main5.overlapping();
+	}
 	if (filesystemlucenenewadd != null) {
- 	   strarr = main5.filesystemlucene(filesystemlucenenewadd);
+ 	   strarr = main5.filesystemlucenenew(filesystemlucenenewadd);
 	}
 	if (filesystemadd != null) {
  	   strarr = main5.traverse(filesystemadd);

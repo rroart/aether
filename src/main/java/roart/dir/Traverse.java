@@ -89,6 +89,26 @@ public class Traverse {
 	return retset;
     }
 
+    public static Set<String> doList2 (Map<String, HashSet<String>> dirset) throws Exception {
+	Set<String> retset = new HashSet<String>();
+
+	List<Files> files = Files.getAll();
+	log.info("size " + files.size());
+	for (Files file : files) {
+	    String filename = file.getFilename();
+	    String md5 = file.getMd5();
+	    File tmpfile = new File(filename);
+	    String dirname = tmpfile.getParent();
+	    HashSet<String> md5set = dirset.get(dirname);
+	    if (md5set == null) {
+		md5set = new HashSet<String>();
+		dirset.put(dirname, md5set);
+	    }
+	    md5set.add(md5);
+	}
+	return retset;
+    }
+
     public static Set<String> dupdir (String dirname) throws Exception {
 	boolean onlyone = false;
 	boolean error = false;

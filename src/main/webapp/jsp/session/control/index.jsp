@@ -65,6 +65,12 @@
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
+<input type="submit" name="overlapping" value="overlapping"/>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="filesystemlucenenewadd"/>
 <input type="submit" name="filesystemlucenenewadd2" value="filesystemlucenenewadd"/>
 <textarea rows="1" cols="40" name="filesystemlucenenewadd"></textarea>

@@ -71,6 +71,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,6 +171,23 @@ public class Main {
 		log.info(e);
 		log.error("Exception", e);
 	}
+	return retList;
+    }
+
+    public List<String> overlapping() {
+	List<String> retList = new ArrayList<String>();
+
+	Set<String> filesetnew = new HashSet<String>();
+	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
+	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
+	try {
+	    Set<String> filesetnew2 = Traverse.doList2(dirset);
+	    filesetnew.addAll(filesetnew2);
+	} catch (Exception e) {
+		log.info(e);
+		log.error("Exception", e);
+	}
+
 	List<String> keyList = new ArrayList<String>(dirset.keySet());
 	for (int i = 0; i < keyList.size(); i++ ) {
 	    for (int j = i+1; j < keyList.size(); j++ ) {
@@ -185,13 +203,15 @@ public class Main {
 		    size0 = 1000000;
 		}
 		int ratio = (int) (100*size/size0);
-		if (ratio > 9) {
+		if (ratio > 9 && size > 4) {
 		    set1.addAll(set4);
-		    Integer intI = new Integer(ratio * size);
-		    String str = keyList.get(i) + " : " + keyList.get(j) + " " + set1;
+		    Integer intI = new Integer(ratio);
+		    String sizestr = "" + size;
+		    sizestr = "      ".substring(sizestr.length()) + sizestr;
+		    String str = sizestr + " : " + keyList.get(i) + " : " + keyList.get(j); // + " " + set1;
 		    Set<String> strSet = sortlist.get(intI);
 		    if (strSet == null) {
-			strSet = new HashSet<String>();
+			strSet = new TreeSet<String>();
 		    }
 		    strSet.add(str);
 		    sortlist.put(intI, strSet);
