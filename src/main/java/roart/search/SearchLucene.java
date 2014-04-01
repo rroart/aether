@@ -274,6 +274,7 @@ public class SearchLucene {
 	}
     }
 
+    // outdated, did run once, had a bug which made duplicates
     public static List<String> removeDuplicate() throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	String type = "all";
@@ -371,6 +372,7 @@ public class SearchLucene {
 	return retlist;
     }//End of removeDuplicate method
 
+    // outdated, used once, when bug added filename instead of md5
     public static List<String> cleanup2() throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	List<Files> files = Files.getAll();
@@ -473,6 +475,7 @@ public class SearchLucene {
 	return retlist;
     }//End of removeDuplicate method
 
+    // not used, find out what it exactly does at a later time
     public static List<String> removeDuplicate2() throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	String type = "all";

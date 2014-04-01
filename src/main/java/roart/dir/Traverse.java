@@ -109,6 +109,7 @@ public class Traverse {
 	return retset;
     }
 
+    // old, probably oudated by overlapping?
     public static Set<String> dupdir (String dirname) throws Exception {
 	boolean onlyone = false;
 	boolean error = false;

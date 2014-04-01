@@ -67,6 +67,7 @@
 	if (lucenereindex != null) {
  	   strarr = main5.index(lucenereindex, true);
 	}
+/*
 	if (cleanup != null) {
  	   strarr = main5.cleanup();
 	}
@@ -76,6 +77,7 @@
 	if (cleanupfs != null) {
  	   strarr = main5.cleanupfs(cleanupfs);
 	}
+*/
 	if (memoryusage != null) {
  	   strarr = main5.memoryusage();
 	}

@@ -34,7 +34,7 @@
 
 <br/>
 
-<form action="display.jsp" style="display: inline; margin: 0;">
+<!--form action="display.jsp" style="display: inline; margin: 0;">
 <input type="submit" name="cleanup" value="cleanup"/>
 </form>
 
@@ -50,7 +50,7 @@
 <input type="submit" name="cleanupfs" value="cleanupfs"/>
 </form>
 
-<br/>
+<br/-->
 
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="submit" name="memoryusage" value="memoryusage"/>
@@ -102,13 +102,13 @@
 
 <br/>
 
-<form action="display.jsp" style="display: inline; margin: 0;">
+<!--form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="cleanupfs"/>
 <input type="submit" name="cleanupfs2" value="cleanupfs"/>
 <textarea rows="1" cols="40" name="cleanupfs"></textarea>
 </form>
 
-<br/>
+<br/-->
 
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="suffixindex"/>
