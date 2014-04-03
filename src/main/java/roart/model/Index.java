@@ -95,7 +95,7 @@ import org.apache.commons.logging.LogFactory;
 	 */
 	@Column(name = "timestamp")
 	
-        public Boolean getTimestamp() {
+        public String getTimestamp() {
 	    return timestamp;
 	}
 
