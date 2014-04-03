@@ -261,7 +261,7 @@ items10[i]
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="0"/>
 <input type="submit" name="all" value="search simple">
-<textarea rows="4" cols="40" name="searchme0"></textarea>
+<textarea rows="4" cols="40" name="searchme"></textarea>
 </form>
 
 <br/>
