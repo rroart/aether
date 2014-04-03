@@ -268,14 +268,6 @@ items10[i]
 
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="1"/>
-<input type="submit" name="all" value="search simple">
-<textarea rows="4" cols="40" name="searchme"></textarea>
-</form>
-
-<br/>
-
-<form action="display.jsp" style="display: inline; margin: 0;">
-<input type="hidden" name="type" value="2"/>
 <input type="submit" name="all" value="search analyzing">
 <textarea rows="4" cols="40" name="searchme"></textarea>
 </form>
@@ -283,7 +275,7 @@ items10[i]
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
-<input type="hidden" name="type" value="3"/>
+<input type="hidden" name="type" value="2"/>
 <input type="submit" name="all" value="search complex">
 <textarea rows="4" cols="40" name="searchme"></textarea>
 </form>
@@ -291,7 +283,7 @@ items10[i]
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
-<input type="hidden" name="type" value="4"/>
+<input type="hidden" name="type" value="3"/>
 <input type="submit" name="all" value="search extendable">
 <textarea rows="4" cols="40" name="searchme"></textarea>
 </form>
@@ -299,8 +291,16 @@ items10[i]
 <br/>
 
 <form action="display.jsp" style="display: inline; margin: 0;">
-<input type="hidden" name="type" value="lucene2"/>
+<input type="hidden" name="type" value="4"/>
 <input type="submit" name="all" value="search multi">
+<textarea rows="4" cols="40" name="searchme"></textarea>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="lucene2"/>
+<input type="submit" name="all" value="search similar">
 <textarea rows="4" cols="40" name="searchsimilar"></textarea>
 </form>
 
