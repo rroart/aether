@@ -280,6 +280,15 @@ public class SearchLucene {
 	if (lang != null) {
 	    title = title + " (" + lang + ") ";
 	}
+	Index indexmd5 = Index.getByMd5(md5);
+	if (indexmd5 != null) {
+	    String timestamp = indexmd5.getTimestamp();
+	    if (timestamp != null) {
+		Long l = new Long(timestamp);
+		Date date = new Date(l.longValue());
+		title = title + " (" + date.toString() + ") ";
+	    }
+	}
 	log.info((i + 1) + ". " + title + ": "
 			   + score);
 	strarr[i] = "" + (i + 1) + ". " + title + ": "
@@ -293,6 +302,7 @@ public class SearchLucene {
     return strarr;
 }
 
+    // not yet usable, lacking termvector
     public static String [] searchsimilar(String md5i) {
 	String type = "all";
 		String[] strarr = new String[0];
@@ -387,6 +397,7 @@ public class SearchLucene {
     return strarr;
 }
 
+    // not yet usable, lacking termvector
     public static Query docsLike(int id, IndexReader ind/*, int max*/) throws IOException {
 	//Document doc = reader.document(id);
 	/*
@@ -442,6 +453,7 @@ public class SearchLucene {
 	*/
     }
 
+    // not yet usable, lacking termvector
     public static Query docsLike(int id, Document doc, IndexReader ind/*, int max*/) throws IOException {
 	//Document doc = reader.document(id);
 	/*
