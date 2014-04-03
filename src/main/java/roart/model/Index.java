@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 	private Log log = LogFactory.getLog(this.getClass());
 	private String md5;
 	private Boolean indexed;
+	private String timestamp;
 
 	/**
 	 * @hibernate.property
@@ -86,6 +87,20 @@ import org.apache.commons.logging.LogFactory;
 
 	public void setIndexed(Boolean indexed) {
 	    this.indexed = indexed;
+	}
+
+	/**
+	 * @hibernate.property
+	 *  column="timestamp"
+	 */
+	@Column(name = "timestamp")
+	
+        public Boolean getTimestamp() {
+	    return timestamp;
+	}
+
+	public void setIndexed(String timestampe) {
+	    this.timestamp = timestamp;
 	}
 
 	public static Index ensureExistence(String md5) throws Exception {
