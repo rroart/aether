@@ -21,6 +21,8 @@ import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.util.ExecCommand;
 
+import org.apache.tika.metadata.Metadata;
+
 public class OtherHandler {
 	
 	private static Log log = LogFactory.getLog("OtherHandler");
@@ -40,6 +42,7 @@ public class OtherHandler {
     	String md5 = el.md5;
     	Index index = el.index;
     	List<String> retlist = el.retlist;
+	Metadata metadata = el.metadata;
 
 	String output = null;
 	boolean retry = false;
@@ -87,7 +90,7 @@ public class OtherHandler {
 	if (output != null && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		retlist.add("other handling filename " + dbfilename + " : " + time);
-	    TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist);
+		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, metadata);
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);
 	} else {

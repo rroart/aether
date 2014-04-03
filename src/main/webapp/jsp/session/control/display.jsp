@@ -30,6 +30,7 @@
 	String filesystem = request.getParameter("filesystem");
 	String luceneadd = request.getParameter("luceneadd");
 	String lucenereindex = request.getParameter("lucenereindex");
+	String lucenereindexdate = request.getParameter("lucenereindexdate");
 	String notindexed = request.getParameter("notindexed");
 	String overlapping = request.getParameter("overlapping");
 	String filesystemadd = request.getParameter("filesystemadd");
@@ -66,6 +67,9 @@
 	}
 	if (lucenereindex != null) {
  	   strarr = main5.index(lucenereindex, true);
+	}
+	if (lucenereindexdate != null) {
+ 	   strarr = main5.indexdate(lucenereindexdate, true);
 	}
 /*
 	if (cleanup != null) {

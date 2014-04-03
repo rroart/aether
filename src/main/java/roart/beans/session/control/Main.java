@@ -305,10 +305,43 @@ public class Main {
 	return retlist;
     }
 
+    public List<String> indexdate(String date, boolean reindex) throws Exception {
+    	startThreads();
+	List retlist = lucenedate(date, reindex);
+	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+		TimeUnit.SECONDS.sleep(60);
+		Queues.queueStat();
+	}
+	for (String ret : Queues.tikaTimeoutQueue) {
+		retlist.add("timeout tika " + ret);
+	}
+
+	Queues.resetTikaTimeoutQueue();
+	roart.model.HibernateUtil.commit();
+	log.info("Hibernate commit");	
+
+	return retlist;
+    }
+
     private List<String> lucene(String add, boolean reindex) throws Exception {
 	List retlist = null;
 	try {
 	    retlist = Traverse.index(add, reindex);
+	    //roart.model.HibernateUtil.currentSession().close();
+	} catch (Exception e) {
+	    log.info(e);
+	    log.error("Exception", e);
+	}
+	//while (tikaWorker.isAlive())  {
+	//TimeUnit.SECONDS.sleep(1);
+	//}
+	return retlist;
+    }
+
+    private List<String> lucenedate(String date, boolean reindex) throws Exception {
+	List retlist = null;
+	try {
+	    retlist = Traverse.reindexdate(date);
 	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 	    log.info(e);

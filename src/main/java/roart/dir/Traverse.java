@@ -23,6 +23,8 @@ import java.util.HashMap;
 
 import roart.util.ExecCommand;
 
+import org.apache.tika.metadata.Metadata;
+
 public class Traverse {
 
     private static int MAXFILE = 500;
@@ -240,6 +242,55 @@ public class Traverse {
 	return retlist;
     }
 
+    public static List<String> reindexdate(String date) throws Exception {
+	boolean reindex = true;
+	List<String> retlist = new ArrayList<String>();
+	Set<String> md5set = new HashSet<String>();
+        List<Index> indexes = Index.getAll();
+	int i = 0;
+	int max = 1000;
+	Integer ts = new Integer(date);
+	for (Index index : indexes) {
+	    String md5 = index.getMd5();
+	    String timestamp = index.getTimestamp();
+	    if (timestamp != null) {
+		if (new Integer(timestamp).compareTo(ts) >= 0) {
+		    continue;
+		}
+	    }
+	    String filename = null;
+	    List<Files> files = Files.getByMd5(md5);
+	    if (files != null && files.size() > 0) {
+		Files file = files.get(0);
+		filename = file.getFilename();
+	    }
+
+	    if (filename == null) {
+		log.error("md5 filename null " + md5);
+		continue;
+	    }
+
+	    i++;
+	    if (i > max) {
+		break;
+	    }
+
+	    retlist.add(filename);
+
+	    Map<String, String> filesMapMd5 = new HashMap<String, String>();
+	    filesMapMd5.put(md5, filename);
+
+	    Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
+	    if (index != null) {
+		indexMap.put(md5, index.getIndexed());
+	    }
+
+	    indexsingle(retlist, md5, indexMap, filesMapMd5, reindex);
+	    log.info("file " + filename);
+	}
+	return retlist;
+    }
+
     public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex) throws Exception {
 	    if (md5 == null) {
 		log.error("md5 should not be null");
@@ -256,7 +307,7 @@ public class Traverse {
 	    Index index = Index.ensureExistence(md5);
 	    //InputStream stream = null;
 	    int size = 0;
-	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist);
+	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, null);
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, filename, md5, index, retlist);
     }
@@ -353,6 +404,7 @@ public class Traverse {
 	String md5 = el.md5;
 	Index index = el.index;
 	List<String> retlist = el.retlist;
+	Metadata metadata = el.metadata;
 	log.info("incTikas " + dbfilename);
 	Queues.tikaTimeoutQueue.add(dbfilename);
 	int size = 0;
@@ -372,7 +424,7 @@ public class Traverse {
 		    log.info("sizes " + size + " " + limit);
 			log.info("handling filename " + dbfilename + " " + size + " : " + time);
 		    //size = SearchLucene.indexme("all", md5, inputStream);
-	    	IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename);
+			IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename, metadata);
 	    	Queues.indexQueue.add(elem);
 	    } else {
 	    	if (dbfilename.equals(filename)) {

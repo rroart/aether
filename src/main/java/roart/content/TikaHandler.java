@@ -82,7 +82,7 @@ public class TikaHandler {
 
     private class OutputType {
 
-        public void process(InputStream input, OutputStream output)
+        public void process(InputStream input, OutputStream output, Metadata metadata)
 	    throws Exception {
             Parser p = parser;
             if (fork) {
@@ -181,7 +181,7 @@ public class TikaHandler {
 	//PipedOutputStream output = new PipedOutputStream(writeIn);
 	ByteArrayOutputStream output = new ByteArrayOutputStream();
 	try {
-	    type.process(input, output);
+	    type.process(input, output, metadata);
 	    //type.process(input, System.out);
 	} catch (Exception e) {
 	    log.error("Exception", e);

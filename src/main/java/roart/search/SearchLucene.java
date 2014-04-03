@@ -19,17 +19,26 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Fields;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.analyzing.AnalyzingQueryParser;
+import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
+import org.apache.lucene.queryparser.ext.ExtendableQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.queries.mlt.MoreLikeThis;
 //import org.apache.lucene.search.TopDocCollector;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
@@ -41,6 +50,10 @@ import org.apache.lucene.util.Version;
 import org.apache.lucene.index.Term;
 //import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.util.BytesRef;
+import org.apache.tika.metadata.Metadata;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +77,7 @@ public class SearchLucene {
     	InputStream inputStream = el.inputStream;
     	Index dbindex = el.index;
     	String dbfilename = el.dbfilename;
+	Metadata metadata = el.metadata;
     	List<String> retlist = el.retlist;
 
     int retsize = 0;
@@ -105,6 +119,8 @@ public class SearchLucene {
 	doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 	}
 	doc.add(new TextField(Constants.NAME, i, Field.Store.NO));
+	log.info("with md " + metadata.toString());
+	doc.add(new StringField(Constants.METADATA, metadata.toString(), Field.Store.NO));
 	Term term = new Term(Constants.TITLE, md5);
 	w.updateDocument(term, doc);
 	//w.addDocument(doc);
@@ -118,6 +134,7 @@ public class SearchLucene {
     log.info("size2 " + retsize);
 	el.size = retsize;
 	dbindex.setIndexed(Boolean.TRUE);
+	dbindex.setTimestamp("" + new Date().getTime());
 	long time = new Date().getTime() - now;
 	log.info("timerStop filename " + time);
 	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + time);
@@ -207,15 +224,33 @@ public class SearchLucene {
     return strarr;
 }
 
-    public static String [] searchme(String str) {
+    public static String [] searchme2(String str, String searchtype) {
 	String type = "all";
+	int stype = new Integer(searchtype).intValue();
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG},
-					analyzer).parse(str);
+    QueryParser cp = null;
+    switch (stype) {
+    case 0:
+	cp = new QueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	break;
+    case 1:
+	cp = new AnalyzingQueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	break;
+    case 2:
+	cp = new ComplexPhraseQueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	break;
+    case 3:
+	cp = new ExtendableQueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	break;
+    case 4:
+	cp = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
+	break;
+    }
+	Query q = cp.parse(str);
  
     // searching ...
     int hitsPerPage = 100;
@@ -257,6 +292,199 @@ public class SearchLucene {
 
     return strarr;
 }
+
+    public static String [] searchsimilar(String md5i) {
+	String type = "all";
+		String[] strarr = new String[0];
+	    try {
+		Directory index = FSDirectory.open(new File(getLucenePath()+type));
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+
+    // searching ...
+    int hitsPerPage = 100;
+    IndexReader ind = DirectoryReader.open(index);
+    IndexSearcher searcher = new IndexSearcher(ind);
+    //TopDocCollector collector = new TopDocCollector(hitsPerPage);
+    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+
+    int totalDocs = ind.numDocs();
+    Document found = null;
+    int doc = 0;
+    for(int m=0;m<totalDocs;m++) {
+	Document thisDoc = null;
+	try {
+	    thisDoc = ind.document(m);
+	}
+	catch (Exception e) {
+	    log.error("Exception", e);
+	    continue;
+	}
+	String a2[] = thisDoc.getValues(Constants.TITLE);
+	a2[0].trim();
+
+	if (a2[0].equals(md5i)) {
+	    System.out.println("m is " + m);
+	    doc = m;
+	    found = thisDoc;
+	    break;
+	}
+    }
+    if (found == null) {
+	System.out.println("not found");
+	return null;
+    }
+
+    MoreLikeThis mlt = new MoreLikeThis(ind);
+    mlt.setAnalyzer(analyzer);
+    String[] fields = { Constants.NAME /*, Constants.TITLE */ };
+    mlt.setFieldNames(fields);
+    mlt.setMinTermFreq(1);
+    mlt.setMinDocFreq(1);
+    mlt.setMinWordLen(1);
+    //mlt.setMaxWordLen(10);
+    mlt.setMaxQueryTerms(1000);
+    // md5 orig source of doc you want to find similarities to
+    Query query = mlt.like(doc);
+    System.out.println("query doc " + doc + ":" + query.toString() + ":" + mlt.describeParams());
+    System.out.println("hits " + searcher.search(query,100).totalHits);
+    query = docsLike(doc, ind);
+    System.out.println("query doc " + doc + ":" + query.toString());
+    query = docsLike(doc, found, ind);
+    System.out.println("query doc " + doc + ":" + query.toString());
+
+    searcher.search(query, collector);
+    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+ 
+    strarr = new String[hits.length];
+    // output results
+    log.info("Found " + hits.length + " hits.");
+    for (int i = 0; i < hits.length; ++i) {
+	int docId = hits[i].doc;
+	float score = hits[i].score;
+	Document d = searcher.doc(docId);
+	String md5 = d.get(Constants.TITLE);
+	String lang = d.get(Constants.LANG);
+	String filename = null;
+	List<Files> files = Files.getByMd5(md5);
+	if (files != null && files.size() > 0) {
+	    Files file = files.get(0);
+	    filename = file.getFilename();
+	}
+	String title = md5 + " " + filename;
+	if (lang != null) {
+	    title = title + " (" + lang + ") ";
+	}
+	log.info((i + 1) + ". " + title + ": "
+			   + score);
+	strarr[i] = "" + (i + 1) + ". " + title + ": "
+			   + score;
+    }
+  	} catch (Exception e) {
+	    log.info("Error3: " + e.getMessage());
+	    log.error("Exception", e);
+	}
+
+    return strarr;
+}
+
+    public static Query docsLike(int id, IndexReader ind/*, int max*/) throws IOException {
+	//Document doc = reader.document(id);
+	/*
+	String[] authors = doc.getValues("author");
+	BooleanQuery authorQuery = new BooleanQuery();
+	for (String author : authors) {
+	    authorQuery.add(new TermQuery(new Term("author", author)), BooleanClause.Occur.SHOULD);
+	}
+	authorQuery.setBoost(2.0f);
+	*/
+	Fields fields = ind.getTermVectors(id);
+	/*
+	String fname;
+	java.util.Iterator it = fields.iterator();
+	while ((fname = it.next()) != null) {
+	    System.out.println("fname " + fname);
+	}
+	*/
+	if (fields != null) {
+	for (String fname2 : fields) {
+	    System.out.println("fname " + fname2);
+	}
+	}
+	System.out.println("here");
+	Terms terms = ind.getTermVector(id, Constants.NAME);
+	BooleanQuery subjectQuery = new BooleanQuery();
+	if (terms != null) {
+	System.out.println("size " + terms.size());
+	TermsEnum termsEnum = terms.iterator((TermsEnum) null);
+	BytesRef text;
+	while((text = termsEnum.next()) != null) {
+	    //Term t = termsEnum.term();
+	    String t = text.utf8ToString();
+	    System.out.println(/*"field=" + t.field() + */"text=" + t/*.text()*/);
+	    TermQuery tq = new TermQuery(new Term(Constants.NAME, t/*.text()*/));
+	    subjectQuery.add(tq, BooleanClause.Occur.SHOULD);
+	}
+	}
+	BooleanQuery likeThisQuery = new BooleanQuery();
+	//likeThisQuery.add(authorQuery, BooleanClause.Occur.SHOULD);
+	likeThisQuery.add(subjectQuery, BooleanClause.Occur.SHOULD);
+	//likeThisQuery.add(new TermQuery(new Term("isbn", doc.get("isbn"))), BooleanClause.Occur.MUST_NOT);
+	return likeThisQuery;
+	/*
+	TopDocs hits = searcher.search(likeThisQuery, 10);
+	int size = max;
+	if (max > hits.scoreDocs.length) size = hits.scoreDocs.length;
+	Document[] docs = new Document[size];
+	for (int i = 0; i < size; i++) {
+	    docs[i] = reader.document(hits.scoreDocs[i].doc);
+	}
+	return docs;
+	*/
+    }
+
+    public static Query docsLike(int id, Document doc, IndexReader ind/*, int max*/) throws IOException {
+	//Document doc = reader.document(id);
+	/*
+	String[] authors = doc.getValues("author");
+	BooleanQuery authorQuery = new BooleanQuery();
+	for (String author : authors) {
+	    authorQuery.add(new TermQuery(new Term("author", author)), BooleanClause.Occur.SHOULD);
+	}
+	authorQuery.setBoost(2.0f);
+	*/
+	/*
+	String fname;
+	java.util.Iterator it = fields.iterator();
+	while ((fname = it.next()) != null) {
+	    System.out.println("fname " + fname);
+	}
+	*/
+	BooleanQuery subjectQuery = new BooleanQuery();
+	String[] values = doc.getValues(Constants.NAME);
+	System.out.println("or no fname");
+	for (String fname2 : values) {
+	    System.out.println("fname " + fname2);
+	    String t = fname2;
+	    System.out.println(/*"field=" + t.field() + */"text=" + t/*.text()*/);
+	    TermQuery tq = new TermQuery(new Term(Constants.NAME, t/*.text()*/));
+	    subjectQuery.add(tq, BooleanClause.Occur.SHOULD);
+	}
+	BooleanQuery likeThisQuery = new BooleanQuery();
+	//likeThisQuery.add(authorQuery, BooleanClause.Occur.SHOULD);
+	likeThisQuery.add(subjectQuery, BooleanClause.Occur.SHOULD);
+	//likeThisQuery.add(new TermQuery(new Term("isbn", doc.get("isbn"))), BooleanClause.Occur.MUST_NOT);
+	return likeThisQuery;
+	/*
+	TopDocs hits = searcher.search(likeThisQuery, 10);
+	int size = max;
+	if (max > hits.scoreDocs.length) size = hits.scoreDocs.length;
+	Document[] docs = new Document[size];
+	for (int i = 0; i < size; i++) {
+	    docs[i] = reader.document(hits.scoreDocs[i].doc);
+	}
+	return docs;
+	*/
+    }
 
     public static void deleteme(String str) {
 	try {
