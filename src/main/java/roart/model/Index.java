@@ -99,7 +99,7 @@ import org.apache.commons.logging.LogFactory;
 	    return timestamp;
 	}
 
-	public void setIndexed(String timestampe) {
+	public void setTimestamp(String timestamp) {
 	    this.timestamp = timestamp;
 	}
 
