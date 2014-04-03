@@ -272,9 +272,21 @@ public class Main {
 	return strlist;
     }
     
-    public List<String> searchme(String str) {
+    public List<String> searchme2(String str, String type) {
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.SearchLucene.searchme(str);
+	String[] strarr = roart.search.SearchLucene.searchme2(str, type);
+	for (String stri : strarr) {
+	    strlist.add(stri);
+	}
+	return strlist;
+    }
+    
+    public List<String> searchsimilar(String md5) {
+	List strlist = new ArrayList<String>();
+	String[] strarr = roart.search.SearchLucene.searchsimilar(md5);
+	if (strarr == null) {
+	    return strlist;
+	}
 	for (String stri : strarr) {
 	    strlist.add(stri);
 	}

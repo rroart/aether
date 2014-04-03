@@ -27,7 +27,9 @@
 	//HttpSession session = request.getSession();
 	String type = request.getParameter("type");
 	String searchme = request.getParameter("searchme");
-	if (searchme == null) {
+	String searchsimilar = request.getParameter("searchsimilar");
+	System.out.println("se " + searchme + ":" + searchsimilar);
+	if (searchme == null && searchsimilar == null) {
 	String creator = request.getParameter("creator");
 	String year = request.getParameter("year");
 	List<Unit> myunits = null;
@@ -72,6 +74,7 @@
 <%= price %>
 <%
 	} else {
+	  if (searchme != null) {
 	  List<String> strarr = main.searchme(type, searchme);
 	  for (int i=0; i<strarr.size(); i++) {
 	    String str = strarr.get(i);
@@ -80,7 +83,14 @@
 <br/>
 <%
           }
-	  List<String> strarr2 = main.searchme(searchme);
+          }
+	  List<String> strarr2 = null;
+	  if (searchme != null) {
+	   strarr2 = main.searchme2(searchme, type);
+	  }
+	  if (searchsimilar != null) {
+	   strarr2 = main.searchsimilar(searchsimilar);
+	  }
 	  for (int i=0; i<strarr2.size(); i++) {
 	    String str = strarr2.get(i);
 %>
