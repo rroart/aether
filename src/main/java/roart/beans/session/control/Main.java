@@ -205,7 +205,7 @@ public class Main {
 		    size0 = 1000000;
 		}
 		int ratio = (int) (100*size/size0);
-		if (ratio > 9 && size > 4) {
+		if (ratio > 50 && size > 4) {
 		    set1.addAll(set4);
 		    Integer intI = new Integer(ratio);
 		    String sizestr = "" + size;
@@ -226,10 +226,10 @@ public class Main {
 	    }
 	}
 	for (int i = 0; i < keyList.size(); i++ ) {
-	    int dirsize = keyList.size();
 	    int fileexist = 0;
 	    String dirname = keyList.get(i);
 	    Set<String> dirs = dirset.get(dirname);
+	    int dirsize = dirs.size();
 	    for (String md5 : dirs) {
 		Set<String> files = fileset.get(md5);
 		if (files != null && files.size() >= 2) {
@@ -243,12 +243,12 @@ public class Main {
 		String sizestr = "" + dirsize;
 		sizestr = "      ".substring(sizestr.length()) + sizestr;
 		String str = sizestr + " : " + dirname;
-		Set<String> strSet = sortlist.get(intI);
+		Set<String> strSet = sortlist2.get(intI);
 		if (strSet == null) {
 		    strSet = new TreeSet<String>();
 		}
 		strSet.add(str);
-		sortlist.put(intI, strSet);
+		sortlist2.put(intI, strSet);
 	    }
 	}
 	for (Integer intI : sortlist2.keySet()) {
