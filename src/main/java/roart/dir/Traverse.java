@@ -255,7 +255,8 @@ public class Traverse {
 	Set<String> md5set = new HashSet<String>();
         List<Index> indexes = Index.getAll();
 	int i = 0;
-	int max = 1000;
+	String maxStr = roart.util.Prop.getProp().getProperty("reindexlimit");
+	int max = new Integer(maxStr).intValue();
 	Integer ts = new Integer(date);
 	for (Index index : indexes) {
 	    String md5 = index.getMd5();
@@ -278,7 +279,7 @@ public class Traverse {
 	    }
 
 	    i++;
-	    if (i > max) {
+	    if (max > 0 && i > max) {
 		break;
 	    }
 
