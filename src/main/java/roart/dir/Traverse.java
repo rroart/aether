@@ -259,6 +259,10 @@ public class Traverse {
 	int max = new Integer(maxStr).intValue();
 	Integer ts = new Integer(date);
 	for (Index index : indexes) {
+	    Boolean indexed = index.getIndexed();
+            if (indexed == null || indexed.booleanValue() == false) {
+		continue;
+            }
 	    String md5 = index.getMd5();
 	    String timestamp = index.getTimestamp();
 	    if (timestamp != null) {
