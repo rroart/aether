@@ -91,7 +91,7 @@ public class Traverse {
 	return retset;
     }
 
-    public static Set<String> doList2 (Map<String, HashSet<String>> dirset) throws Exception {
+    public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
 	Set<String> retset = new HashSet<String>();
 
 	List<Files> files = Files.getAll();
@@ -107,6 +107,13 @@ public class Traverse {
 		dirset.put(dirname, md5set);
 	    }
 	    md5set.add(md5);
+
+	    HashSet<String> dir5set = fileset.get(md5);
+	    if (dir5set == null) {
+		dir5set = new HashSet<String>();
+		fileset.put(md5, dir5set);
+	    }
+	    dir5set.add(dirname);
 	}
 	return retset;
     }

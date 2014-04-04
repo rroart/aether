@@ -179,9 +179,11 @@ public class Main {
 
 	Set<String> filesetnew = new HashSet<String>();
 	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
+	Map<Integer, Set<String>> sortlist2 = new TreeMap<Integer, Set<String>>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
+	Map<String, HashSet<String>> fileset = new HashMap<String, HashSet<String>>();
 	try {
-	    Set<String> filesetnew2 = Traverse.doList2(dirset);
+	    Set<String> filesetnew2 = Traverse.doList2(dirset, fileset);
 	    filesetnew.addAll(filesetnew2);
 	} catch (Exception e) {
 		log.info(e);
@@ -220,6 +222,37 @@ public class Main {
 	}
 	for (Integer intI : sortlist.keySet()) {
 	    for (String str : sortlist.get(intI)) {
+		retList.add("" + intI.intValue() + " : " + str);
+	    }
+	}
+	for (int i = 0; i < keyList.size(); i++ ) {
+	    int dirsize = keyList.size();
+	    int fileexist = 0;
+	    String dirname = keyList.get(i);
+	    Set<String> dirs = dirset.get(dirname);
+	    for (String md5 : dirs) {
+		Set<String> files = fileset.get(md5);
+		if (files != null && files.size() >= 2) {
+		    fileexist++;
+		}
+	    }
+	    int ratio = (int) (100*fileexist/dirsize);
+	    // overlapping?
+	    if (ratio > 50 && dirsize > 4) {
+		Integer intI = new Integer(ratio);
+		String sizestr = "" + dirsize;
+		sizestr = "      ".substring(sizestr.length()) + sizestr;
+		String str = sizestr + " : " + dirname;
+		Set<String> strSet = sortlist.get(intI);
+		if (strSet == null) {
+		    strSet = new TreeSet<String>();
+		}
+		strSet.add(str);
+		sortlist.put(intI, strSet);
+	    }
+	}
+	for (Integer intI : sortlist2.keySet()) {
+	    for (String str : sortlist2.get(intI)) {
 		retList.add("" + intI.intValue() + " : " + str);
 	    }
 	}
