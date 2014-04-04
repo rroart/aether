@@ -50,6 +50,8 @@ public class TikaHandler {
 
     private class NoDocumentMetHandler extends DefaultHandler{
 
+	private Metadata metadata;
+
         private PrintWriter writer;
 
         private boolean metOutput;
@@ -129,8 +131,6 @@ public class TikaHandler {
 
     private Parser parser;
 
-    private Metadata metadata;
-
     private OutputType type = TEXT;
 
     /**                                                                         
@@ -155,7 +155,7 @@ public class TikaHandler {
         context.set(Parser.class, parser);
     }
 
-    public ByteArrayOutputStream process(String filename) throws Exception {
+    public ByteArrayOutputStream process(String filename, Metadata metadata) throws Exception {
 	//TikaHandler();
         context = new ParseContext();
         detector = new DefaultDetector();
@@ -170,7 +170,6 @@ public class TikaHandler {
 	}
 	*/
 	type = TEXT;
-	metadata = new Metadata();
 	File file = new File(filename);
 	URL url = null;
 	if (file.isFile()) {

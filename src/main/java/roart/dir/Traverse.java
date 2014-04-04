@@ -314,7 +314,7 @@ public class Traverse {
 	    Index index = Index.ensureExistence(md5);
 	    //InputStream stream = null;
 	    int size = 0;
-	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, null);
+	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, new Metadata());
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, filename, md5, index, retlist);
     }
@@ -417,7 +417,7 @@ public class Traverse {
 	int size = 0;
 	try {
 	    TikaHandler tika = new TikaHandler();
-	    OutputStream outputStream = tika.process(filename);
+	    OutputStream outputStream = tika.process(filename, metadata);
 	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
 	    size = ((ByteArrayOutputStream)outputStream).size();
 	    log.info("size1 " + size);
