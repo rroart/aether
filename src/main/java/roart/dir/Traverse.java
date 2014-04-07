@@ -257,7 +257,7 @@ public class Traverse {
 	int i = 0;
 	String maxStr = roart.util.Prop.getProp().getProperty("reindexlimit");
 	int max = new Integer(maxStr).intValue();
-	Integer ts = new Integer(date);
+	Long ts = new Long(date);
 	for (Index index : indexes) {
 	    Boolean indexed = index.getIndexed();
             if (indexed == null || indexed.booleanValue() == false) {
@@ -266,7 +266,7 @@ public class Traverse {
 	    String md5 = index.getMd5();
 	    String timestamp = index.getTimestamp();
 	    if (timestamp != null) {
-		if (new Integer(timestamp).compareTo(ts) >= 0) {
+		if (new Long(timestamp).compareTo(ts) >= 0) {
 		    continue;
 		}
 	    }
