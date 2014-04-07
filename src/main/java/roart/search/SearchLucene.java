@@ -121,7 +121,7 @@ public class SearchLucene {
 	doc.add(new TextField(Constants.NAME, i, Field.Store.NO));
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());
-	    doc.add(new StringField(Constants.METADATA, metadata.toString(), Field.Store.NO));
+	    doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
 	}
 	Term term = new Term(Constants.TITLE, md5);
 	w.updateDocument(term, doc);
