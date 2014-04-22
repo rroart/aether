@@ -43,7 +43,7 @@ public class Traverse {
 	return false;
     }
 
-    public static Set<String> doList (String dirname, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot) throws Exception {
+    public static Set<String> doList (String dirname, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, boolean newmd5) throws Exception {
 	Set<String> retset = new HashSet<String>();
 	if (indirlistnot(dirname, dirlistnot)) {
 	    return retset;
@@ -62,21 +62,24 @@ public class Traverse {
 	    //log.info("file " + filename);
 	    if (listDir[i].isDirectory()) {
 		//log.info("isdir " + filename);
-		retset.addAll(doList(filename, newset, dirset, dirlistnot));
+		retset.addAll(doList(filename, newset, dirset, dirlistnot, newmd5));
 	    } else {
 		//log.info("retset " + filename);
 		retset.add(filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
 		Files files = Files.ensureExistence(filename);
 		//files.setTouched(Boolean.TRUE);
-		if (files.getMd5() == null) {
+		String curMd5 = files.getMd5();
+		if (newmd5 == true || curMd5 == null) {
 		    try {
 			FileInputStream fis = new FileInputStream( new File(filename));
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
 			files.setMd5(md5);
 			log.info("adding md5 file " + filename);
 			if (newset != null) {
-			    newset.add(filename);
+			    if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
+				newset.add(filename);
+			    }
 			}
 		    } catch (Exception e) {
 			log.info("Error: " + e.getMessage());

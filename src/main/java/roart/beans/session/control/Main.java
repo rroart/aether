@@ -98,7 +98,7 @@ public class Main {
 
     public List<String> traverse(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null);    
+	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null, false);    
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	//roart.model.HibernateUtil.currentSession().close();
@@ -144,7 +144,7 @@ public class Main {
 	    parseconfig();
 
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], newset, dirset, dirlistnot);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], newset, dirset, dirlistnot, false);
 		filesetnew.addAll(filesetnew2);
 	    }
 	    //roart.model.HibernateUtil.currentSession().flush();
@@ -525,11 +525,13 @@ public class Main {
 	return retlist;
     }
 
-    public List<String> filesystemlucenenew(String add) throws Exception {
+    // true: new md5 checks
+    // false: only new
+    public List<String> filesystemlucenenew(String add, boolean newmd5oronlyfile) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = new ArrayList<String>();
-	Set<String> retset = Traverse.doList(add, newset, dirset, null);
+	Set<String> retset = Traverse.doList(add, newset, dirset, null, newmd5oronlyfile);
 
     	startThreads();
 	for (String filename : newset) {

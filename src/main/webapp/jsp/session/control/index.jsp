@@ -110,6 +110,14 @@
 
 <br/>
 
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="filesystemlucenenewmd5"/>
+<input type="submit" name="filesystemlucenenewadd2" value="filesystemlucenenewmd5"/>
+<textarea rows="1" cols="40" name="filesystemlucenenewmd5"></textarea>
+</form>
+
+<br/>
+
 <!--form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="cleanupfs"/>
 <input type="submit" name="cleanupfs2" value="cleanupfs"/>
