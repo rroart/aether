@@ -21,13 +21,15 @@
         <property name="hbm2ddl.auto">update</property>
 
         <!-- Disable the second-level cache  -->
-	<property name="hibernate.cache.use_query_cache">false</property>
+	<!--property name="hibernate.cache.use_query_cache">false</property>
 	<property name="hibernate.cache.use_second_level_cache">false</property>
-        <!--property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property-->
-        <!--property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+        <property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
         <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
-        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.EhCacheRegionFactory</property-->
-        <property name="hibernate.cache.use_query_cache">false</property>
+        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.EhCacheRegionFactory</property>
+        <property name="hibernate.cache.use_query_cache">false</property-->
+
+        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
 
         <mapping package="roart.model" />
         <mapping class="roart.model.Files"/>
