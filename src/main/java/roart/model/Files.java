@@ -36,7 +36,9 @@ import org.apache.commons.logging.LogFactory;
 
 @Entity
     @Table(name = "Files")
-    @org.hibernate.annotations.Table(appliesTo = "Files")
+    @org.hibernate.annotations.Table(appliesTo = "Files",  indexes = {
+	    @Index(name = "files_md5", columnNames = "md5"),
+	})
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public class Files implements Serializable {
 	private Log log = LogFactory.getLog(this.getClass());
