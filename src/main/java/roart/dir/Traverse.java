@@ -440,6 +440,11 @@ public class Traverse {
 			log.info("handling filename " + dbfilename + " " + size + " : " + time);
 		    //size = SearchLucene.indexme("all", md5, inputStream);
 			IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename, metadata);
+			if (el.convertsw != null) {
+			    elem.convertsw = el.convertsw;
+			} else {
+			    elem.convertsw = "tika";
+			}
 	    	Queues.indexQueue.add(elem);
 	    } else {
 	    	if (dbfilename.equals(filename)) {

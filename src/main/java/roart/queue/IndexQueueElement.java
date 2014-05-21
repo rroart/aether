@@ -15,6 +15,7 @@ public class IndexQueueElement {
 	public int size;
 	public String dbfilename;
     public Metadata metadata;
+    public String convertsw;
 	
     public IndexQueueElement(String type, String md5, InputStream inputStream, Index index, List<String> retlist, String dbfilename, Metadata metadata) {
 	this.type = type;

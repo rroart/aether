@@ -137,9 +137,10 @@ public class SearchLucene {
 	el.size = retsize;
 	dbindex.setIndexed(Boolean.TRUE);
 	dbindex.setTimestamp("" + new Date().getTime());
+	dbindex.setConvertsw(el.convertsw);
 	long time = new Date().getTime() - now;
 	log.info("timerStop filename " + time);
-	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + time);
+	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time);
     try {
 		inputStream.close();
 	} catch (IOException e) {
@@ -289,6 +290,10 @@ public class SearchLucene {
 		Long l = new Long(timestamp);
 		Date date = new Date(l.longValue());
 		title = title + " (" + date.toString() + ") ";
+	    }
+	    String convertsw = indexmd5.getConvertsw();
+	    if (convertsw != null) {
+		title = title + " (" + convertsw + ") ";
 	    }
 	}
 	log.info((i + 1) + ". " + title + ": "

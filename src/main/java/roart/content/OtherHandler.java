@@ -66,6 +66,9 @@ public class OtherHandler {
 	    }
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlist);
+	    if (output != null) {
+		el.convertsw = "calibre";
+	    }
 	    if (!w) {
 		dir.setWritable(false);
 	    }
@@ -74,14 +77,22 @@ public class OtherHandler {
 	// djvu 2nd try in case djvu not ebook-convert supported
 	//	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
 	if (output == null && lowercase.contains(".dj")) {
+	    log.info("doing2 djvutxt");
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist);
+	    if (output != null) {
+		el.convertsw = "djvutxt";
+	    }
 	    retry = true;
 	}
 	// pdf 2nd try
 	if (output == null && lowercase.endsWith(".pdf")) {
+	    log.info("doing2 pdftotext");
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist);
+	    if (output != null) {
+		el.convertsw = "pdftotext";
+	    }
 	    retry = true;
 	}
 	File txt = temp;
@@ -91,6 +102,7 @@ public class OtherHandler {
 		log.info("handling filename " + dbfilename + " : " + time);
 		retlist.add("other handling filename " + dbfilename + " : " + time);
 		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, metadata);
+		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);
 	} else {

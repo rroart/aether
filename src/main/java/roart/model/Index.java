@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 	private String md5;
 	private Boolean indexed;
 	private String timestamp;
+	private String convertsw;
 
 	/**
 	 * @hibernate.property
@@ -101,6 +102,20 @@ import org.apache.commons.logging.LogFactory;
 
 	public void setTimestamp(String timestamp) {
 	    this.timestamp = timestamp;
+	}
+
+	/**
+	 * @hibernate.property
+	 *  column="convertsw"
+	 */
+	@Column(name = "convertsw")
+	
+        public String getConvertsw() {
+	    return convertsw;
+	}
+
+	public void setConvertsw(String convertsw) {
+	    this.convertsw = convertsw;
 	}
 
 	public static Index ensureExistence(String md5) throws Exception {
