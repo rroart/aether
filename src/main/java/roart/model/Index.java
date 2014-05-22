@@ -44,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 	private Boolean indexed;
 	private String timestamp;
 	private String convertsw;
+	private Integer failed;
 
 	/**
 	 * @hibernate.property
@@ -116,6 +117,30 @@ import org.apache.commons.logging.LogFactory;
 
 	public void setConvertsw(String convertsw) {
 	    this.convertsw = convertsw;
+	}
+
+	/**
+	 * @hibernate.property
+	 *  column="failed"
+	 */
+	@Column(name = "failed")
+	
+        public Integer getFailed() {
+	    if (failed == null) {
+		failed = new Integer(0);
+	    }
+	    return failed;
+	}
+
+	public void setFailed(Integer failed) {
+	    this.failed = failed;
+	}
+
+        public void incrFailed() {
+	    if (failed == null) {
+		failed = new Integer(0);
+	    }
+	    failed++;
 	}
 
 	public static Index ensureExistence(String md5) throws Exception {

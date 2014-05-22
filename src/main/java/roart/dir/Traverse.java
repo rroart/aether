@@ -170,6 +170,8 @@ public class Traverse {
     public static List<String> index(String suffix) throws Exception {
 	List<String> retlist = new ArrayList<String>();
 	log.info("here");
+	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
+        int max = new Integer(maxStr).intValue();
 	List<Files> files = Files.getAll();
 	List<Index> indexes = Index.getAll();
 	log.info("sizes " + files.size() + " " + indexes.size());
@@ -193,13 +195,15 @@ public class Traverse {
 	    indexMap.put(index.getMd5(), index.getIndexed());
 	}
 	for (String md5 : filesMapMd5.keySet()) {
-	    indexsingle(retlist, md5, indexMap, filesMapMd5, false);
+	    indexsingle(retlist, md5, indexMap, filesMapMd5, false, max);
 	}
 	return retlist;
     }
 
     public static List<String> index(String add, boolean reindex) throws Exception {
 	List<String> retlist = new ArrayList<String>();
+	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
+        int max = new Integer(maxStr).intValue();
 	Set<String> md5set = new HashSet<String>();
 	String dirname = add;
 	File dir = new File(dirname);
@@ -245,7 +249,7 @@ public class Traverse {
 		    indexMap.put(index.getMd5(), index.getIndexed());
 		}
 
-		indexsingle(retlist, md5, indexMap, filesMapMd5, reindex);
+		indexsingle(retlist, md5, indexMap, filesMapMd5, reindex, max);
 	    }
 	    log.info("file " + filename);
 	}
@@ -300,13 +304,13 @@ public class Traverse {
 		indexMap.put(md5, index.getIndexed());
 	    }
 
-	    indexsingle(retlist, md5, indexMap, filesMapMd5, reindex);
+	    indexsingle(retlist, md5, indexMap, filesMapMd5, reindex, 0);
 	    log.info("file " + filename);
 	}
 	return retlist;
     }
 
-    public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex) throws Exception {
+    public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max) throws Exception {
 	    if (md5 == null) {
 		log.error("md5 should not be null");
 		return;
@@ -320,6 +324,14 @@ public class Traverse {
 	    
 	    String filename = filesMapMd5.get(md5);
 	    Index index = Index.ensureExistence(md5);
+
+	    if (!reindex && max > 0) {
+		int failed = index.getFailed();
+		if (failed >= max) {
+		    return;
+		}
+	    }
+
 	    //InputStream stream = null;
 	    int size = 0;
 	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, new Metadata());
@@ -453,6 +465,10 @@ public class Traverse {
 	    	} else {
 	    		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
 	    		retlist.add("Too small " + dbfilename + " " + md5 + " " + size);
+			Boolean isIndexed = index.getIndexed();
+			if (isIndexed == null || isIndexed.booleanValue() == false) {
+			    index.incrFailed();
+			}
 	    	}
 	    }
 	    
