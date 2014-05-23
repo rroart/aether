@@ -107,6 +107,10 @@ public class OtherHandler {
 	    //size = doTika(filename, tmp, md5, index, retlist);
 	} else {
 		log.info("handled not " + dbfilename + " : " + time);
+		Boolean isIndexed = index.getIndexed();
+		if (isIndexed == null || isIndexed.booleanValue() == false) {
+		    index.incrFailed();
+		}
 	}
 	if (false && txt.exists()) {
 		 txt.delete();

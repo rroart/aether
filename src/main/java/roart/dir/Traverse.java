@@ -328,6 +328,7 @@ public class Traverse {
 	    if (!reindex && max > 0) {
 		int failed = index.getFailed();
 		if (failed >= max) {
+		    log.info("failed too much for " + md5);
 		    return;
 		}
 	    }
