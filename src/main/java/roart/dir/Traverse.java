@@ -505,6 +505,9 @@ public class Traverse {
 	if (lowercase.endsWith(".mp3")) {
 	    return 16;
 	}
+	if (lowercase.endsWith(".flac")) {
+	    return 16;
+	}
 	return 4096;
     }
     
