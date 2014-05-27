@@ -32,6 +32,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.analyzing.AnalyzingQueryParser;
 import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
 import org.apache.lucene.queryparser.ext.ExtendableQueryParser;
+import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.BooleanQuery;
@@ -86,8 +87,8 @@ public class SearchLucene {
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
 	    DataInputStream in = new DataInputStream(inputStream);
@@ -158,8 +159,8 @@ public class SearchLucene {
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
     String filename = type;
@@ -193,9 +194,9 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME},
+    Query q = new MultiFieldQueryParser(Version.LUCENE_48, new String[]{Constants.TITLE, Constants.NAME},
 					analyzer).parse(str);
  
     // searching ...
@@ -233,27 +234,36 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
     // parse query over multiple fields
     QueryParser cp = null;
+    Query tmpQuery = null;
     switch (stype) {
     case 0:
-	cp = new QueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	cp = new QueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
 	break;
     case 1:
-	cp = new AnalyzingQueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	cp = new AnalyzingQueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
 	break;
     case 2:
-	cp = new ComplexPhraseQueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	cp = new ComplexPhraseQueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
 	break;
     case 3:
-	cp = new ExtendableQueryParser(Version.LUCENE_44, Constants.NAME, analyzer);
+	cp = new ExtendableQueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
 	break;
     case 4:
-	cp = new MultiFieldQueryParser(Version.LUCENE_44, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
+	cp = new MultiFieldQueryParser(Version.LUCENE_48, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
+	break;
+    case 5:
+	tmpQuery = new SimpleQueryParser(analyzer, Constants.NAME).createPhraseQuery(Constants.NAME, str);
 	break;
     }
-	Query q = cp.parse(str);
+    Query q = null;
+    if (cp != null) {
+	q = cp.parse(str);
+    } else {
+	q = tmpQuery;
+    }
  
     // searching ...
     int hitsPerPage = 100;
@@ -315,7 +325,7 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
 
     // searching ...
     int hitsPerPage = 100;
@@ -509,8 +519,8 @@ public class SearchLucene {
 	try {
 	    String type = "all";
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
-	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
+	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
 	    iw.deleteDocuments(new Term(Constants.TITLE, str));
@@ -527,11 +537,11 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
     IndexWriter iw = new IndexWriter(index, iwc);
     IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);
@@ -554,7 +564,7 @@ public class SearchLucene {
 	    }
 	    String queryExpression = "\""+a2[0]+"\"";     
 
-	    QueryParser parser=new QueryParser(Version.LUCENE_44,field,analyzer);
+	    QueryParser parser=new QueryParser(Version.LUCENE_48,field,analyzer);
 	    Query queryJ=parser.parse(queryExpression);
 
 	    /**
@@ -602,7 +612,7 @@ public class SearchLucene {
         /**
          * Open indexwriter to write duplicate document
          */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
         //IndexWriter iw = new IndexWriter(index, iwc);
         for(Document doc : Doc) {
 	    //iw.addDocument(doc);
@@ -632,13 +642,13 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
 	int docs = 0;
         int errors = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
         IndexReader ind = DirectoryReader.open(index); 
         IndexSearcher searcher = new IndexSearcher(ind);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
         IndexWriter iw = new IndexWriter(index, iwc);
         int totalDocs = ind.numDocs();
         HashSet<Document> Doc = new HashSet<Document>();
@@ -705,7 +715,7 @@ public class SearchLucene {
         /**
          * Open indexwriter to write duplicate document
          */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
         //IndexWriter iw = new IndexWriter(index, iwc);
         for(Document doc : Doc) {
 	    //iw.addDocument(doc);
@@ -728,11 +738,11 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
 	IndexWriter iw = new IndexWriter(index, iwc);
 	IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);

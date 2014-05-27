@@ -260,7 +260,7 @@ items10[i]
 %>
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="0"/>
-<input type="submit" name="all" value="search simple">
+<input type="submit" name="all" value="search plain">
 <textarea rows="4" cols="40" name="searchme"></textarea>
 </form>
 
@@ -293,6 +293,14 @@ items10[i]
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="4"/>
 <input type="submit" name="all" value="search multi">
+<textarea rows="4" cols="40" name="searchme"></textarea>
+</form>
+
+<br/>
+
+<form action="display.jsp" style="display: inline; margin: 0;">
+<input type="hidden" name="type" value="5"/>
+<input type="submit" name="all" value="search simple">
 <textarea rows="4" cols="40" name="searchme"></textarea>
 </form>
 
