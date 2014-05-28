@@ -26,6 +26,8 @@ import org.apache.tika.metadata.Metadata;
 public class OtherHandler {
 	
 	private static Log log = LogFactory.getLog("OtherHandler");
+
+    static public int timeout = 3600;
 	
     public static void doOther()  {
     	TikaQueueElement el = Queues.otherQueue.poll();
@@ -169,7 +171,7 @@ public class OtherHandler {
     					// TODO Auto-generated catch block
     				}
     	    		long now = new Date().getTime();
-    	    		if ((now - start) > 1000 * 60 * 10) {
+    	    		if ((now - start) > 1000 * timeout) {
     	    			b = false;
     	    		}
     	    		if (!otherWorker.isAlive()) {
@@ -207,8 +209,8 @@ public class OtherHandler {
         Future<Object> task = executorService.submit(callable);
         Object result = null;
         try {
-            // ok, wait for 600 seconds max
-            result = task.get(600, TimeUnit.SECONDS);
+            // ok, wait for n seconds max
+            result = task.get(timeout, TimeUnit.SECONDS);
             log.info("Finished with result: " + result);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);

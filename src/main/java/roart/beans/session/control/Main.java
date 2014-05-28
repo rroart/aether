@@ -89,6 +89,7 @@ import roart.queue.Queues;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
+import roart.content.OtherHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -558,9 +559,13 @@ public class Main {
     private static Thread indexWorker = null;
     private static OtherRunner otherRunnable = null;
     private static Thread otherWorker = null;
-   
+
     private void startThreads() {
     	if (tikaRunnable == null) {
+	    String timeoutstr = roart.util.Prop.getProp().getProperty("tikatimeout");
+	    int timeout = new Integer(timeoutstr).intValue();
+	    TikaRunner.timeout = timeout;
+
     	tikaRunnable = new TikaRunner();
     	tikaWorker = new Thread(tikaRunnable);
     	tikaWorker.setName("TikaWorker");
@@ -573,6 +578,10 @@ public class Main {
     	indexWorker.start();
     	}
     	if (otherRunnable == null) {
+	    String timeoutstr = roart.util.Prop.getProp().getProperty("othertimeout");
+	    int timeout = new Integer(timeoutstr).intValue();
+	    OtherHandler.timeout = timeout;
+
     	otherRunnable = new OtherRunner();
     	otherWorker = new Thread(otherRunnable);
     	otherWorker.setName("OtherWorker");

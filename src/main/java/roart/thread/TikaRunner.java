@@ -27,6 +27,8 @@ public class TikaRunner implements Runnable {
 	
 	private static Log log = LogFactory.getLog("QueueRunner");
 	
+    static public int timeout = 3600;
+
     int NTHREDS = 2;
 
     public void run() {
@@ -187,7 +189,7 @@ public class TikaRunner implements Runnable {
 				// TODO Auto-generated catch block
 			}
     		long now = new Date().getTime();
-    		if ((now - start) > 1000 * 60 * 10) {
+    		if ((now - start) > 1000 * timeout) {
     			b = false;
     		}
     		if (!tikaWorker.isAlive()) {
@@ -229,8 +231,8 @@ public class TikaRunner implements Runnable {
         //TikaQueueElement result = null;
         
         try {
-            // ok, wait for 600 seconds max
-            result = (TikaQueueElement) task.get(600, TimeUnit.SECONDS);
+            // ok, wait for n seconds max
+            result = (TikaQueueElement) task.get(timeout, TimeUnit.SECONDS);
             log.info("Finished with result: " + result);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
