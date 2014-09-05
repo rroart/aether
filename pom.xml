@@ -255,7 +255,7 @@
   </dependencies>
   <properties>
     <jdk.version>1.7</jdk.version>
-    <lucene.version>4.9.0</lucene.version>
+    <lucene.version>4.10.0</lucene.version>
     <tika.version>1.5</tika.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>4.3.5.Final</hibernate.version>
