@@ -1,8 +1,10 @@
-package roart.search;
+package roart.jpa;
 
+import roart.dao.IndexDao;
+import roart.dao.FilesDao;
+import roart.model.HibernateUtil;
 import roart.model.Index;
 import roart.model.Files;
-import roart.model.HibernateUtil;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
@@ -56,6 +58,8 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 import org.apache.tika.metadata.Metadata;
 
+import roart.search.Constants;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -63,32 +67,16 @@ public class SearchLucene {
     private static Log log = LogFactory.getLog("SearchLucene");
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
-    public static void indexme() {
-    	IndexQueueElement el = Queues.indexQueue.poll();
-    	if (el == null) {
-    		log.error("empty queue");
-    	    return;
-    	}
-    	// vulnerable spot
-    	Queues.incIndexs();
-    	long now = new Date().getTime();
-    	
-    	String type = el.type;
-     	String md5 = el.md5;
-    	InputStream inputStream = el.inputStream;
-    	Index dbindex = el.index;
-    	String dbfilename = el.dbfilename;
-	Metadata metadata = el.metadata;
-    	List<String> retlist = el.retlist;
-
+    //public static void indexme() {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<String> retlist) {
     int retsize = 0;
     // create some index
     // we could also create an index in our ram ...
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
 	    DataInputStream in = new DataInputStream(inputStream);
@@ -134,22 +122,7 @@ public class SearchLucene {
 	    log.info("Error3: " + e.getMessage());
 	    log.error("Exception", e);
 	}
-    log.info("size2 " + retsize);
-	el.size = retsize;
-	dbindex.setIndexed(Boolean.TRUE);
-	dbindex.setTimestamp("" + new Date().getTime());
-	dbindex.setConvertsw(el.convertsw);
-	long time = new Date().getTime() - now;
-	log.info("timerStop filename " + time);
-	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time);
-    try {
-		inputStream.close();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		log.error("Exception", e);
-	}
-    Queues.decIndexs();
-    
+    return retsize;
 	}
 
     public static void indexme(String type) {
@@ -159,8 +132,8 @@ public class SearchLucene {
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
     String filename = type;
@@ -194,9 +167,9 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_48, new String[]{Constants.TITLE, Constants.NAME},
+    Query q = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.NAME},
 					analyzer).parse(str);
  
     // searching ...
@@ -234,25 +207,25 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
     // parse query over multiple fields
     QueryParser cp = null;
     Query tmpQuery = null;
     switch (stype) {
     case 0:
-	cp = new QueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
+	cp = new QueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
 	break;
     case 1:
-	cp = new AnalyzingQueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
+	cp = new AnalyzingQueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
 	break;
     case 2:
-	cp = new ComplexPhraseQueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
+	cp = new ComplexPhraseQueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
 	break;
     case 3:
-	cp = new ExtendableQueryParser(Version.LUCENE_48, Constants.NAME, analyzer);
+	cp = new ExtendableQueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
 	break;
     case 4:
-	cp = new MultiFieldQueryParser(Version.LUCENE_48, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
+	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
 	break;
     case 5:
 	tmpQuery = new SimpleQueryParser(analyzer, Constants.NAME).createPhraseQuery(Constants.NAME, str);
@@ -284,7 +257,7 @@ public class SearchLucene {
 	String md5 = d.get(Constants.TITLE);
 	String lang = d.get(Constants.LANG);
 	String filename = null;
-	List<Files> files = Files.getByMd5(md5);
+	List<Files> files = FilesDao.getByMd5(md5);
 	if (files != null && files.size() > 0) {
 	    Files file = files.get(0);
 	    filename = file.getFilename();
@@ -293,7 +266,7 @@ public class SearchLucene {
 	if (lang != null) {
 	    title = title + " (" + lang + ") ";
 	}
-	Index indexmd5 = Index.getByMd5(md5);
+	Index indexmd5 = IndexDao.getByMd5(md5);
 	if (indexmd5 != null) {
 	    String timestamp = indexmd5.getTimestamp();
 	    if (timestamp != null) {
@@ -325,7 +298,7 @@ public class SearchLucene {
 		String[] strarr = new String[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
+    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
 
     // searching ...
     int hitsPerPage = 100;
@@ -392,7 +365,7 @@ public class SearchLucene {
 	String md5 = d.get(Constants.TITLE);
 	String lang = d.get(Constants.LANG);
 	String filename = null;
-	List<Files> files = Files.getByMd5(md5);
+	List<Files> files = FilesDao.getByMd5(md5);
 	if (files != null && files.size() > 0) {
 	    Files file = files.get(0);
 	    filename = file.getFilename();
@@ -519,8 +492,8 @@ public class SearchLucene {
 	try {
 	    String type = "all";
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
-	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0);
+	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
 	    iw.deleteDocuments(new Term(Constants.TITLE, str));
@@ -537,11 +510,11 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
     IndexWriter iw = new IndexWriter(index, iwc);
     IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);
@@ -564,7 +537,7 @@ public class SearchLucene {
 	    }
 	    String queryExpression = "\""+a2[0]+"\"";     
 
-	    QueryParser parser=new QueryParser(Version.LUCENE_48,field,analyzer);
+	    QueryParser parser=new QueryParser(Version.LUCENE_4_10_0,field,analyzer);
 	    Query queryJ=parser.parse(queryExpression);
 
 	    /**
@@ -590,7 +563,7 @@ public class SearchLucene {
 		retlist.add("single " + a2[0]);
 	    }
 	    /*
-	    Index indexmd5 = Index.getByMd5(a2[0]);
+	    Index indexmd5 = IndexDao.getByMd5(a2[0]);
 	    if (indexmd5 == null) {
 		retlist.add("delete1 " + a2[0]);
 		ind.deleteDocument(topdocs.scoreDocs[0].doc);
@@ -612,7 +585,7 @@ public class SearchLucene {
         /**
          * Open indexwriter to write duplicate document
          */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
         //IndexWriter iw = new IndexWriter(index, iwc);
         for(Document doc : Doc) {
 	    //iw.addDocument(doc);
@@ -632,8 +605,8 @@ public class SearchLucene {
     // outdated, used once, when bug added filename instead of md5
     public static List<String> cleanup2() throws Exception {
 	List<String> retlist = new ArrayList<String>();
-	List<Files> files = Files.getAll();
-	List<Index> indexes = Index.getAll();
+	List<Files> files = FilesDao.getAll();
+	List<Index> indexes = IndexDao.getAll();
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
 	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
 	for (Index index : indexes) {
@@ -642,13 +615,13 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
 	int docs = 0;
         int errors = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
         IndexReader ind = DirectoryReader.open(index); 
         IndexSearcher searcher = new IndexSearcher(ind);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
         IndexWriter iw = new IndexWriter(index, iwc);
         int totalDocs = ind.numDocs();
         HashSet<Document> Doc = new HashSet<Document>();
@@ -670,9 +643,9 @@ public class SearchLucene {
 	    String homedir = roart.util.Prop.getProp().getProperty("homedir");
 	    if (a2[0].contains(homedir)) {
 		retlist.add("error " + a2[0]);
-		Files file = Files.getByFilename(a2[0]);
+		Files file = FilesDao.getByFilename(a2[0]);
 		String md5 = file.getMd5();
-		Index indexf = Index.getByMd5(md5);
+		Index indexf = IndexDao.getByMd5(md5);
 		boolean indexval = false;
 		if (indexf != null) {
 		    Boolean indexed = indexf.getIndexed();
@@ -694,7 +667,7 @@ public class SearchLucene {
 	    //roart.dir.Traverse.indexsingle(retlist, md5, indexMap, filesMapMd5);
 	}
 	    /*
-	    Index indexmd5 = Index.getByMd5(a2[0]);
+	    Index indexmd5 = IndexDao.getByMd5(a2[0]);
 	    if (indexmd5 == null) {
 		retlist.add("delete1 " + a2[0]);
 		ind.deleteDocument(topdocs.scoreDocs[0].doc);
@@ -715,7 +688,7 @@ public class SearchLucene {
         /**
          * Open indexwriter to write duplicate document
          */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
         //IndexWriter iw = new IndexWriter(index, iwc);
         for(Document doc : Doc) {
 	    //iw.addDocument(doc);
@@ -738,11 +711,11 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_48 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
 	IndexWriter iw = new IndexWriter(index, iwc);
 	IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);

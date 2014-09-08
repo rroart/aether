@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import roart.dir.Traverse;
 import roart.queue.Queues;
-import roart.search.SearchLucene;
+import roart.search.Search;
 
 public class IndexRunner implements Runnable {
 	
@@ -32,7 +32,7 @@ public class IndexRunner implements Runnable {
     			continue;
     		}
     		Queues.queueStat();
-    		SearchLucene.indexme();
+    		Search.indexme();
     	}
     }
 

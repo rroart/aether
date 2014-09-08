@@ -76,6 +76,10 @@ import java.util.List;
 
 import java.io.*;
 
+import roart.dao.SearchDao;
+import roart.dao.FilesDao;
+import roart.dao.IndexDao;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -263,9 +267,18 @@ public class Main {
 	return bubble_sort_title(creators, type);
     }
 
+    private void parseconfig() {
+	String mydb = roart.util.Prop.getProp().getProperty("mydb");
+	String myindex = roart.util.Prop.getProp().getProperty("myindex");
+	SearchDao.instance(myindex);
+	FilesDao.instance(mydb);
+	IndexDao.instance(mydb);
+    }
+
     public List<String> searchme(String type, String str) {
+	parseconfig();
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.SearchLucene.searchme(type, str);
+	String[] strarr = roart.search.Search.searchme(type, str);
 	for (String stri : strarr) {
 	    strlist.add(stri);
 	}
@@ -273,8 +286,9 @@ public class Main {
     }
     
     public List<String> searchme2(String str, String type) {
+	parseconfig();
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.SearchLucene.searchme2(str, type);
+	String[] strarr = roart.search.Search.searchme2(str, type);
 	for (String stri : strarr) {
 	    strlist.add(stri);
 	}
@@ -283,7 +297,7 @@ public class Main {
     
     public List<String> searchsimilar(String md5) {
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.SearchLucene.searchsimilar(md5);
+	String[] strarr = roart.search.Search.searchsimilar(md5);
 	if (strarr == null) {
 	    return strlist;
 	}

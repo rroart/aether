@@ -252,10 +252,16 @@
       <artifactId>langdetect</artifactId>
       <version>1.1-20120112</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-solrj</artifactId>
+      <version>${solr.version}</version>
+    </dependency>
   </dependencies>
   <properties>
     <jdk.version>1.7</jdk.version>
     <lucene.version>4.10.0</lucene.version>
+    <solr.version>4.10.0</solr.version>
     <tika.version>1.5</tika.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>4.3.5.Final</hibernate.version>

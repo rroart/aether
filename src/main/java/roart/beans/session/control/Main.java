@@ -91,6 +91,10 @@ import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
 import roart.content.OtherHandler;
 
+import roart.dao.SearchDao;
+import roart.dao.FilesDao;
+import roart.dao.IndexDao;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -124,6 +128,12 @@ public class Main {
 	System.out.println(dirlistnot);
 	dirlist = dirliststr.split(",");
 	dirlistnot = dirlistnotstr.split(",");
+
+	String mydb = roart.util.Prop.getProp().getProperty("mydb");
+	String myindex = roart.util.Prop.getProp().getProperty("myindex");
+	SearchDao.instance(myindex);
+	FilesDao.instance(mydb);
+	IndexDao.instance(mydb);
     }
 
     private List<String> filesystem(Set<String> filesetnew, Set<String> newset) {
@@ -391,7 +401,7 @@ public class Main {
     public List<String> cleanup() {
 	List<String> retlist = new ArrayList<String>();
 	try {
-	    return roart.search.SearchLucene.removeDuplicate();
+	    return roart.jpa.SearchLucene.removeDuplicate();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
@@ -403,7 +413,7 @@ public class Main {
     public List<String> cleanup2() {
 	List<String> retlist = new ArrayList<String>();
 	try {
-	    return roart.search.SearchLucene.cleanup2();
+	    return roart.jpa.SearchLucene.cleanup2();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
