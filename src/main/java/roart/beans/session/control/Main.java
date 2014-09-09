@@ -122,6 +122,9 @@ public class Main {
     String[] dirlistnot = null;
 
     private void parseconfig() {
+	new roart.jpa.SearchSolr();
+	System.out.println("config2 parsed");
+	log.info("config2 parsed");
 	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
 	String dirlistnotstr = roart.util.Prop.getProp().getProperty("dirlistnot");
 	System.out.println(dirlist);
@@ -332,6 +335,7 @@ public class Main {
     }
 
     public List<String> index(String add, boolean reindex) throws Exception {
+	parseconfig();
     	startThreads();
 	List retlist = lucene(add, reindex);
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
@@ -513,6 +517,7 @@ public class Main {
     }
 
     public List<String> filesystemlucenenew() throws Exception {
+	parseconfig();
 	Set<String> filesetnew = new HashSet<String>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = filesystem(filesetnew, newset);
@@ -539,6 +544,7 @@ public class Main {
     // true: new md5 checks
     // false: only new
     public List<String> filesystemlucenenew(String add, boolean newmd5oronlyfile) throws Exception {
+	parseconfig();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = new ArrayList<String>();

@@ -21,6 +21,8 @@ public class SearchDao {
     private static SearchJpa searchJpa = null;
 
     public static void instance(String type) {
+	System.out.println("instance " + type);
+	log.info("instance " + type);
 	if (searchJpa == null) {
 	    if (type.equals("lucene")) {
 		searchJpa = new LuceneSearchJpa();

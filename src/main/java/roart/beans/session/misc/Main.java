@@ -267,7 +267,10 @@ public class Main {
 	return bubble_sort_title(creators, type);
     }
 
-    private void parseconfig() {
+    public static void parseconfig() {
+	new roart.jpa.SearchSolr();
+	System.out.println("config1 parsed");
+	//log.info("config parsed");
 	String mydb = roart.util.Prop.getProp().getProperty("mydb");
 	String myindex = roart.util.Prop.getProp().getProperty("myindex");
 	SearchDao.instance(myindex);
