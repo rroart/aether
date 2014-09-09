@@ -37,9 +37,14 @@ public class SearchSolr {
 
     static HttpSolrServer server = null;
 
-    SearchSolr() {
+    public SearchSolr() {
+	if (server != null) {
+	    return;
+	}
 	String url = "http://localhost:8983/solr/mystuff";
 	server = new HttpSolrServer( url );
+	log.info("server " + server);
+	System.out.println("server " + server);
 	server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
 	server.setConnectionTimeout(5000); // 5 seconds to establish TCP
 	// Setting the XML response parser is only required for cross
@@ -50,7 +55,7 @@ public class SearchSolr {
 	// The following settings are provided here for completeness.
 	// They will not normally be required, and should only be used 
 	// after consulting javadocs to know whether they are truly required.
-	server.setSoTimeout(1000);  // socket read timeout
+	server.setSoTimeout(60000);  // socket read timeout
 	server.setDefaultMaxConnectionsPerHost(100);
 	server.setMaxTotalConnections(100);
 	server.setFollowRedirects(false);  // defaults to false
@@ -93,6 +98,7 @@ public class SearchSolr {
 	String i = strLine;
 	try {
 	    SolrInputDocument doc = new SolrInputDocument();
+	    doc.addField("id", md5);
 	    doc.addField(Constants.TITLE, md5);
 	    if (lang != null) {
 		doc.addField(Constants.LANG, lang);
@@ -128,11 +134,13 @@ public class SearchSolr {
 
     public static String [] searchme(String type, String str) {
 	String[] strarr = new String[0];
+	System.out.println("searchme");
 	return strarr;
     }
 
     public static String [] searchme2(String str, String searchtype) {
 	String[] strarr = new String[0];
+	System.out.println("searchme2");
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 
@@ -150,9 +158,11 @@ public class SearchSolr {
 	    // To read Documents as beans, the bean must be annotated as given in the example. 
 	    
 	    //List<Item> beans = rsp.getBeans(Item.class);
-	    int i = 0;
+	    strarr = new String[docs.size()];
+	    int i = -1;
 	    for (SolrDocument doc : docs) {
 		i++;
+	System.out.println("searchme2 doc " + i);
 		float score = 0;
 		SolrDocument d = doc;
 		String md5 = (String) d.getFieldValue(Constants.TITLE);
@@ -190,7 +200,7 @@ public class SearchSolr {
 	} catch (Exception e) {
 	    log.error("Exception", e);
 	}
-	return null;
+	return strarr;
     }
 
     public static String [] searchsimilar(String md5i) {
