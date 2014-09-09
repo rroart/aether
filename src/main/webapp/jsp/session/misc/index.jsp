@@ -26,7 +26,7 @@
 <input type="submit">
 <select size="5" name="creator">
 <% 
-        roart.search.SearchLucene.indexme("cd");
+        roart.search.Search.indexme("cd");
 	String[] items = main.getCreators("cd");
 	for (int i=0; i<items.length; i++) {
 %>
@@ -72,7 +72,7 @@ items2[i]
 <input type="submit">
 <select size="5" name="creator">
 <% 
-        roart.search.SearchLucene.indexme("dvd");
+        roart.search.Search.indexme("dvd");
 	String[] items3 = main.getCreators("dvd");
 	for (int i=0; i<items3.length; i++) {
 %>
@@ -118,7 +118,7 @@ items4[i]
 <input type="submit">
 <select size="5" name="creator">
 <% 
-        roart.search.SearchLucene.indexme("book");
+        roart.search.Search.indexme("book");
 	String[] items5 = main.getCreators("book");
 	for (int i=0; i<items5.length; i++) {
 %>
@@ -164,7 +164,7 @@ items6[i]
 <input type="submit">
 <select size="5" name="creator">
 <% 
-        roart.search.SearchLucene.indexme("booku");
+        roart.search.Search.indexme("booku");
 	String[] items7 = main.getCreators("booku");
 	for (int i=0; i<items7.length; i++) {
 %>
@@ -214,7 +214,7 @@ items8[i]
 <input type="submit">
 <select size="5" name="creator">
 <% 
-        roart.search.SearchLucene.indexme("book0");
+        roart.search.Search.indexme("book0");
 	String[] items9 = main.getCreators("book0");
 	for (int i=0; i<items9.length; i++) {
 %>
@@ -256,7 +256,7 @@ items10[i]
 <br/>
 
 <% 
-        roart.search.SearchLucene.indexme("book0gen");
+        roart.search.Search.indexme("book0gen");
 %>
 <form action="display.jsp" style="display: inline; margin: 0;">
 <input type="hidden" name="type" value="0"/>
