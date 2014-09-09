@@ -26,7 +26,7 @@ public class SolrSearchJpa extends SearchJpa {
     public String [] searchme2(String str, String searchtype) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-	return SearchSolr.searchme(str, searchtype);
+	return SearchSolr.searchme2(str, searchtype);
     }
 
     public String [] searchsimilar(String md5i) {
