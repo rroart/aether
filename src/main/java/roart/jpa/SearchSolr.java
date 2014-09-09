@@ -147,6 +147,7 @@ public class SearchSolr {
 
 	    SolrQuery query = new SolrQuery();
 	    query.setQuery( str /*"*:*"*/ );
+	    query.setIncludeScore(true);
 	    //query.addSortField( "price", SolrQuery.ORDER.asc );
 
 	    //    Query the server 
@@ -163,8 +164,8 @@ public class SearchSolr {
 	    for (SolrDocument doc : docs) {
 		i++;
 	System.out.println("searchme2 doc " + i);
-		float score = 0;
 		SolrDocument d = doc;
+		float score = (float) d.get("score"); 
 		String md5 = (String) d.getFieldValue(Constants.TITLE);
 		String lang = (String) d.getFieldValue(Constants.LANG);
 		String filename = null;
