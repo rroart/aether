@@ -27,10 +27,8 @@ import org.apache.solr.client.solrj.SolrServerException;
 import roart.search.Constants;
 import roart.lang.LanguageDetect;
 
-import roart.model.Files;
-import roart.model.Index;
-import roart.dao.FilesDao;
-import roart.dao.IndexDao;
+import roart.model.IndexFiles;
+import roart.dao.IndexFilesDao;
 
 public class SearchSolr {
     private static Log log = LogFactory.getLog("SearchSolr");
@@ -98,12 +96,11 @@ public class SearchSolr {
 	String i = strLine;
 	try {
 	    SolrInputDocument doc = new SolrInputDocument();
-	    doc.addField("id", md5);
-	    doc.addField(Constants.TITLE, md5);
+	    doc.addField(Constants.ID, md5);
 	    if (lang != null) {
 		doc.addField(Constants.LANG, lang);
 	    }
-	    doc.addField(Constants.NAME, i);
+	    doc.addField(Constants.CONTENT, i);
 	    if (metadata != null) {
 		log.info("with md " + metadata);
 		doc.addField(Constants.METADATA, metadata);
@@ -166,19 +163,14 @@ public class SearchSolr {
 	System.out.println("searchme2 doc " + i);
 		SolrDocument d = doc;
 		float score = (float) d.get("score"); 
-		String md5 = (String) d.getFieldValue(Constants.TITLE);
+		String md5 = (String) d.getFieldValue(Constants.ID);
 		String lang = (String) d.getFieldValue(Constants.LANG);
-		String filename = null;
-		List<Files> files = FilesDao.getByMd5(md5);
-		if (files != null && files.size() > 0) {
-		    Files file = files.get(0);
-		    filename = file.getFilename();
-		}
+		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
+		String filename = indexmd5.getFilelocation();
 		String title = md5 + " " + filename;
 		if (lang != null) {
 		    title = title + " (" + lang + ") ";
 		}
-		Index indexmd5 = IndexDao.getByMd5(md5);
 		if (indexmd5 != null) {
 		    String timestamp = indexmd5.getTimestamp();
 		    if (timestamp != null) {

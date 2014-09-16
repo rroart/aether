@@ -77,8 +77,8 @@ import java.util.List;
 import java.io.*;
 
 import roart.dao.SearchDao;
-import roart.dao.FilesDao;
-import roart.dao.IndexDao;
+//import roart.dao.FilesDao;
+import roart.dao.IndexFilesDao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -274,8 +274,8 @@ public class Main {
 	String mydb = roart.util.Prop.getProp().getProperty("mydb");
 	String myindex = roart.util.Prop.getProp().getProperty("myindex");
 	SearchDao.instance(myindex);
-	FilesDao.instance(mydb);
-	IndexDao.instance(mydb);
+	//FilesDao.instance(mydb);
+	IndexFilesDao.instance(mydb);
     }
 
     public List<String> searchme(String type, String str) {

@@ -1,7 +1,6 @@
 package roart.search;
 
-import roart.model.Index;
-import roart.model.Files;
+import roart.model.IndexFiles;
 import roart.model.HibernateUtil;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
@@ -39,7 +38,7 @@ public class Search {
     	String type = el.type;
      	String md5 = el.md5;
     	InputStream inputStream = el.inputStream;
-    	Index dbindex = el.index;
+    	IndexFiles dbindex = el.index;
     	String dbfilename = el.dbfilename;
 	Metadata metadata = el.metadata;
     	List<String> retlist = el.retlist;
@@ -53,6 +52,7 @@ public class Search {
 	dbindex.setIndexed(Boolean.TRUE);
 	dbindex.setTimestamp("" + new Date().getTime());
 	dbindex.setConvertsw(el.convertsw);
+	//dbindex.save();
 	long time = new Date().getTime() - now;
 	log.info("timerStop filename " + time);
 	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time);

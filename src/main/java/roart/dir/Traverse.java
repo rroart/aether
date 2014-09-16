@@ -8,7 +8,9 @@ import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.search.*;
 import roart.thread.TikaRunner;
-import roart.model.*;
+import roart.dao.IndexFilesDao;
+import roart.model.IndexFiles;
+import roart.model.FileLocation;
 import roart.lang.*;
 
 import org.apache.commons.logging.Log;
@@ -67,14 +69,27 @@ public class Traverse {
 		//log.info("retset " + filename);
 		retset.add(filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
-		Files files = Files.ensureExistence(filename);
+		//Files files = Files.ensureExistence(filename);
+		IndexFiles files = IndexFilesDao.getByFilename(filename);
 		//files.setTouched(Boolean.TRUE);
-		String curMd5 = files.getMd5();
+		String curMd5 = null;
+		if (files != null) {
+		    curMd5 = files.getMd5();
+		    if (curMd5 != null && curMd5.length() == 0) {
+			curMd5 = null;
+			log.info("set curmd5 null");
+		    }
+		}
 		if (newmd5 == true || curMd5 == null) {
 		    try {
 			FileInputStream fis = new FileInputStream( new File(filename));
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
-			files.setMd5(md5);
+			if (files == null) {
+			    files = new IndexFiles();
+			    files.setMd5(md5);
+			}
+			files.addFile(filename);
+			files.save();
 			log.info("adding md5 file " + filename);
 			if (newset != null) {
 			    if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
@@ -97,26 +112,27 @@ public class Traverse {
     public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
 	Set<String> retset = new HashSet<String>();
 
-	List<Files> files = Files.getAll();
+	List<IndexFiles> files = IndexFilesDao.getAll();
 	log.info("size " + files.size());
-	for (Files file : files) {
-	    String filename = file.getFilename();
+	for (IndexFiles file : files) {
 	    String md5 = file.getMd5();
-	    File tmpfile = new File(filename);
-	    String dirname = tmpfile.getParent();
-	    HashSet<String> md5set = dirset.get(dirname);
-	    if (md5set == null) {
-		md5set = new HashSet<String>();
-		dirset.put(dirname, md5set);
-	    }
-	    md5set.add(md5);
+	    for (FileLocation filename : file.getFilelocations()) {
+		File tmpfile = new File(filename.getFilename());
+		String dirname = tmpfile.getParent();
+		HashSet<String> md5set = dirset.get(dirname);
+		if (md5set == null) {
+		    md5set = new HashSet<String>();
+		    dirset.put(dirname, md5set);
+		}
+		md5set.add(md5);
 
-	    HashSet<String> dir5set = fileset.get(md5);
-	    if (dir5set == null) {
-		dir5set = new HashSet<String>();
-		fileset.put(md5, dir5set);
+		HashSet<String> dir5set = fileset.get(md5);
+		if (dir5set == null) {
+		    dir5set = new HashSet<String>();
+		    fileset.put(md5, dir5set);
+		}
+		dir5set.add(dirname);
 	    }
-	    dir5set.add(dirname);
 	}
 	return retset;
     }
@@ -144,7 +160,7 @@ public class Traverse {
 		if (error) {
 		    continue;
 		}
-		Files files = Files.getByFilename(filename);
+		IndexFiles files = IndexFilesDao.getByFilename(filename);
 		if (files == null) {
 		    error = true;
 		    continue;
@@ -154,7 +170,7 @@ public class Traverse {
 		    error = true;
 		    continue;
 		}
-		if (Files.getByMd5(md5).size() < 2) {
+		if (IndexFilesDao.getByMd5(md5).getFilelocations().size() < 2) {
 		    onlyone = true;
 		}
 		count++;
@@ -172,26 +188,22 @@ public class Traverse {
 	log.info("here");
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
-	List<Files> files = Files.getAll();
-	List<Index> indexes = Index.getAll();
-	log.info("sizes " + files.size() + " " + indexes.size());
+	List<IndexFiles> indexes = IndexFilesDao.getAll();
+	log.info("sizes " + indexes.size());
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
 	Map<String, String> filesMapFilename = new HashMap<String, String>();
-	for (Files file : files) {
-	    String filename = file.getFilename();
-	    String md5 = file.getMd5();
-	    if (md5 == null) {
-		retlist.add("No md5 " + filename);
-		continue;
+	for (IndexFiles index : indexes) {
+	    String md5 = index.getMd5();
+	    for (FileLocation filename : index.getFilelocations()) {
+		if (suffix != null && !filename.getFilename().endsWith(suffix)) {
+		    continue;
+		}
+		filesMapMd5.put(md5, filename.toString());
+		filesMapFilename.put(filename.toString(), md5);
 	    }
-	    if (suffix != null && !filename.endsWith(suffix)) {
-		continue;
-	    }
-	    filesMapMd5.put(md5, filename);
-	    filesMapFilename.put(filename, md5);
 	}
 	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
-	for (Index index : indexes) {
+	for (IndexFiles index : indexes) {
 	    indexMap.put(index.getMd5(), index.getIndexed());
 	}
 	for (String md5 : filesMapMd5.keySet()) {
@@ -229,7 +241,7 @@ public class Traverse {
 	    } else {
 		//log.info("retset " + filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
-		Files files = Files.getByFilename(filename);
+		IndexFiles files = IndexFilesDao.getByFilename(filename);
 		//files.setTouched(Boolean.TRUE);
 		if (files == null || files.getMd5() == null) {
 		    continue;
@@ -239,7 +251,7 @@ public class Traverse {
 		if (md5 == null) {
 		    continue;
 		}
-		Index index = Index.getByMd5(md5);
+		IndexFiles index = IndexFilesDao.getByMd5(md5);
 
 		Map<String, String> filesMapMd5 = new HashMap<String, String>();
 		filesMapMd5.put(files.getMd5(), files.getFilename());
@@ -260,12 +272,12 @@ public class Traverse {
 	boolean reindex = true;
 	List<String> retlist = new ArrayList<String>();
 	Set<String> md5set = new HashSet<String>();
-        List<Index> indexes = Index.getAll();
+        List<IndexFiles> indexes = IndexFilesDao.getAll();
 	int i = 0;
 	String maxStr = roart.util.Prop.getProp().getProperty("reindexlimit");
 	int max = new Integer(maxStr).intValue();
 	Long ts = new Long(date);
-	for (Index index : indexes) {
+	for (IndexFiles index : indexes) {
 	    Boolean indexed = index.getIndexed();
             if (indexed == null || indexed.booleanValue() == false) {
 		continue;
@@ -277,12 +289,8 @@ public class Traverse {
 		    continue;
 		}
 	    }
-	    String filename = null;
-	    List<Files> files = Files.getByMd5(md5);
-	    if (files != null && files.size() > 0) {
-		Files file = files.get(0);
-		filename = file.getFilename();
-	    }
+	    IndexFiles files = IndexFilesDao.getByMd5(md5);
+	    String filename = files.getFilename();
 
 	    if (filename == null) {
 		log.error("md5 filename null " + md5);
@@ -323,7 +331,7 @@ public class Traverse {
 	    }
 	    
 	    String filename = filesMapMd5.get(md5);
-	    Index index = Index.ensureExistence(md5);
+	    IndexFiles index = IndexFilesDao.getByMd5(md5);
 
 	    if (!reindex && max > 0) {
 		int failed = index.getFailed();
@@ -342,36 +350,26 @@ public class Traverse {
 
     public static List<String> notindexed() throws Exception {
 	List<String> retlist = new ArrayList<String>();
-	List<Files> files = Files.getAll();
-	List<Index> indexes = Index.getAll();
-	log.info("sizes " + files.size() + " " + indexes.size());
+	List<IndexFiles> indexes = IndexFilesDao.getAll();
+	log.info("sizes " + indexes.size());
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
 	Map<String, String> filesMapFilename = new HashMap<String, String>();
-	for (Files file : files) {
-	    String filename = file.getFilename();
-	    String md5 = file.getMd5();
-	    if (md5 == null) {
-		retlist.add("No md5 " + filename);
-		continue;
-	    }
-	    filesMapMd5.put(md5, filename);
-	    filesMapFilename.put(filename, md5);
-	}
-	for (Index index : indexes) {
-	    Boolean indexed = index.getIndexed();
-	    if (indexed != null) {
-		if (indexed.booleanValue()) {
-		    continue;
-		}
-	    }
+	for (IndexFiles index : indexes) {
 	    String md5 = index.getMd5();
-	    String filename = filesMapMd5.get(md5);
-	    if (filename != null) {
-		filename = filename.replace('<',' ');
-		filename = filename.replace('>',' ');
-		retlist.add(filename);
-	    } else {
-		System.out.println("md5 not " + md5);
+	    filesMapMd5.put(md5, index.getFilename());
+	    Boolean indexed = index.getIndexed();
+	    for (FileLocation filename : index.getFilelocations()) {
+		filesMapFilename.put(filename.toString(), md5);
+		if (indexed != null) {
+		    if (!indexed.booleanValue()) {
+			String name = filename.toString();
+			if (name != null) {
+			    name = name.replace('<',' ');
+			    name = name.replace('>',' ');
+			    retlist.add(name);
+			}
+		    }
+		}
 	    }
 	}
 	return retlist;
@@ -379,33 +377,24 @@ public class Traverse {
 
     public static List<String> indexed() throws Exception {
 	List<String> retlist = new ArrayList<String>();
-	List<Files> files = Files.getAll();
-	List<Index> indexes = Index.getAll();
-	log.info("sizes " + files.size() + " " + indexes.size());
+	List<IndexFiles> indexes = IndexFilesDao.getAll();
+	log.info("sizes " + indexes.size());
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
 	Map<String, String> filesMapFilename = new HashMap<String, String>();
-	for (Files file : files) {
-	    String filename = file.getFilename();
-	    String md5 = file.getMd5();
-	    if (md5 == null) {
-		retlist.add("No md5 " + filename);
-		continue;
-	    }
-	    filesMapMd5.put(md5, filename);
-	    filesMapFilename.put(filename, md5);
-	}
-	for (Index index : indexes) {
+	for (IndexFiles index : indexes) {
+	    String md5 = index.getMd5();
+	    filesMapMd5.put(md5, index.getFilename());
 	    Boolean indexed = index.getIndexed();
-	    if (indexed != null) {
-		if (indexed.booleanValue()) {
-		    String md5 = index.getMd5();
-		    String filename = filesMapMd5.get(md5);
-		    if (filename != null) {
-			filename = filename.replace('<',' ');
-			filename = filename.replace('>',' ');
-			retlist.add(filename);
-		    } else {
-			System.out.println("md5 not " + md5);
+	    for (FileLocation filename : index.getFilelocations()) {
+		filesMapFilename.put(filename.toString(), md5);
+		if (indexed != null) {
+		    if (indexed.booleanValue()) {
+			String name = filename.toString();
+			if (name != null) {
+			    name = name.replace('<',' ');
+			    name = name.replace('>',' ');
+			    retlist.add(name);
+			}
 		    }
 		}
 	    }
@@ -430,7 +419,7 @@ public class Traverse {
 	String dbfilename = el.dbfilename;
 	String filename = el.filename;
 	String md5 = el.md5;
-	Index index = el.index;
+	IndexFiles index = el.index;
 	List<String> retlist = el.retlist;
 	Metadata metadata = el.metadata;
 	log.info("incTikas " + dbfilename);
@@ -469,6 +458,7 @@ public class Traverse {
 			Boolean isIndexed = index.getIndexed();
 			if (isIndexed == null || isIndexed.booleanValue() == false) {
 			    index.incrFailed();
+			    index.save();
 			}
 	    	}
 	    }

@@ -16,7 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import roart.dir.Traverse;
-import roart.model.Index;
+import roart.model.IndexFiles;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.util.ExecCommand;
@@ -42,7 +42,7 @@ public class OtherHandler {
     	String dbfilename = el.dbfilename;
     	String filename = el.filename;
     	String md5 = el.md5;
-    	Index index = el.index;
+    	IndexFiles index = el.index;
     	List<String> retlist = el.retlist;
 	Metadata metadata = el.metadata;
 
@@ -112,6 +112,7 @@ public class OtherHandler {
 		Boolean isIndexed = index.getIndexed();
 		if (isIndexed == null || isIndexed.booleanValue() == false) {
 		    index.incrFailed();
+		    //index.save();
 		}
 	}
 	if (false && txt.exists()) {

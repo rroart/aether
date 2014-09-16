@@ -83,8 +83,8 @@ import java.io.*;
 
 import roart.dir.Traverse;
 
-import roart.model.Files;
-import roart.model.Index;
+import roart.model.FileLocation;
+import roart.model.IndexFiles;
 import roart.queue.Queues;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
@@ -92,8 +92,7 @@ import roart.thread.TikaRunner;
 import roart.content.OtherHandler;
 
 import roart.dao.SearchDao;
-import roart.dao.FilesDao;
-import roart.dao.IndexDao;
+import roart.dao.IndexFilesDao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,6 +103,7 @@ public class Main {
     public List<String> traverse(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null, false);    
+	IndexFiles.commit();
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	//roart.model.HibernateUtil.currentSession().close();
@@ -113,18 +113,19 @@ public class Main {
     public List<String> traverse() throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
 	List<String> retList = filesystem(filesetnew, null);
+	IndexFiles.commit();
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	return retList;
     }
 
-    String[] dirlist = null;
-    String[] dirlistnot = null;
+    static String[] dirlist = null;
+    static String[] dirlistnot = null;
 
-    private void parseconfig() {
+    public static void parseconfig() {
 	new roart.jpa.SearchSolr();
 	System.out.println("config2 parsed");
-	log.info("config2 parsed");
+	//log.info("config2 parsed");
 	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
 	String dirlistnotstr = roart.util.Prop.getProp().getProperty("dirlistnot");
 	System.out.println(dirlist);
@@ -135,8 +136,8 @@ public class Main {
 	String mydb = roart.util.Prop.getProp().getProperty("mydb");
 	String myindex = roart.util.Prop.getProp().getProperty("myindex");
 	SearchDao.instance(myindex);
-	FilesDao.instance(mydb);
-	IndexDao.instance(mydb);
+	//FilesDao.instance(mydb);
+	IndexFilesDao.instance(mydb);
     }
 
     private List<String> filesystem(Set<String> filesetnew, Set<String> newset) {
@@ -147,13 +148,15 @@ public class Main {
 	try {
 	    Set<String> fileset = new HashSet<String>();
 	    //Set<String> filesetnew = new HashSet<String>();
-	    List<Files> files = Files.getAll();
-	    log.info("size " + files.size());
-	    for (Files file : files) {
-		//log.info("size2 " + file.getFilename());
-		fileset.add(file.getFilename());
+	    List<IndexFiles> indexes = IndexFilesDao.getAll();
+	    log.info("size " + indexes.size());
+	    for (IndexFiles index : indexes) {
+		for (FileLocation filename : index.getFilelocations()) {
+		    //log.info("size2 " + file.getFilename());
+		    fileset.add(filename.toString());
+		}
 	    }
-	    files.clear();
+	    indexes.clear();
 	    //Set<String> md5set = new HashSet<String>();
 	    parseconfig();
 
@@ -175,7 +178,7 @@ public class Main {
 	    log.info("sizeafter " + fileset.size());
 	    for (String filename : fileset) {
 		log.info("removing " + filename);
-		Files file = Files.getByFilename(filename);
+		IndexFiles file = IndexFilesDao.getByFilename(filename);
 		roart.model.HibernateUtil.currentSession().delete(file);
 	    }
 	    //roart.model.HibernateUtil.commit();
@@ -277,35 +280,32 @@ public class Main {
     	startThreads();
 	List retlist = null;
 	try {
-	    retlist = Traverse.index(suffix);
-
-	    Set<String> filesindexset = new HashSet<String>();
-	    List<Files> files = Files.getAll();
-	    log.info("size " + files.size());
-	    for (Files file : files) {
-		//log.info("size2 " + file.getFilename());
-		filesindexset.add(file.getMd5());
+	    Set<String> preindexset = new HashSet<String>();
+	    List<IndexFiles> preindexes = IndexFilesDao.getAll();
+	    log.info("size " + preindexes.size());
+	    for (IndexFiles index : preindexes) {
+		//log.info("size2 " + index.getMd5());
+		preindexset.add(index.getMd5());
 	    }
 
+	    retlist = Traverse.index(suffix);
+
+
 	    Set<String> indexset = new HashSet<String>();
-	    List<Index> indexes = Index.getAll();
+	    List<IndexFiles> indexes = IndexFilesDao.getAll();
 	    log.info("size " + indexes.size());
-	    for (Index index : indexes) {
+	    for (IndexFiles index : indexes) {
 		//log.info("size2 " + index.getMd5());
 		indexset.add(index.getMd5());
 	    }
 
-	    log.info("sizei1 " + indexset.size());
-	    log.info("sizei2 " + filesindexset.size());
-	    indexset.removeAll(filesindexset);
-	    log.info("sizeafter " + indexset.size());
+	    log.info("sizei1 " + preindexset.size());
+	    log.info("sizei2 " + indexset.size());
+	    preindexset.removeAll(indexset);
+	    log.info("sizeafter " + preindexset.size());
 	    for (String md5 : indexset) {
-		if (md5 == null) {
-		    log.info("md5 should not be null");
-		    continue;
-		}
 		log.info("removing " + md5);
-		Index index = Index.getByMd5(md5);
+		IndexFiles index = IndexFilesDao.getByMd5(md5);
 		retlist.add("Deleted " + md5);
 		//roart.model.HibernateUtil.currentSession().delete(index);
 		//roart.search.SearchLucene.deleteme(md5);
@@ -328,7 +328,8 @@ public class Main {
 		retlist.add("timeout tika " + ret);
 	}
 	Queues.resetTikaTimeoutQueue();
-    roart.model.HibernateUtil.commit();
+	IndexFiles.commit();
+	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	
 	return retlist;
@@ -347,6 +348,7 @@ public class Main {
 	}
 
 	Queues.resetTikaTimeoutQueue();
+	IndexFiles.commit();
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");	
 
@@ -365,6 +367,7 @@ public class Main {
 	}
 
 	Queues.resetTikaTimeoutQueue();
+	IndexFiles.commit();
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");	
 
@@ -417,7 +420,7 @@ public class Main {
     public List<String> cleanup2() {
 	List<String> retlist = new ArrayList<String>();
 	try {
-	    return roart.jpa.SearchLucene.cleanup2();
+	    //return roart.jpa.SearchLucene.cleanup2();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
@@ -536,6 +539,7 @@ public class Main {
 		retlist.add("timeout tika " + ret);
 	}
 	Queues.resetTikaTimeoutQueue();
+	IndexFiles.commit();
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	return retlist;
@@ -564,6 +568,7 @@ public class Main {
 		retlist.add("timeout tika " + ret);
 	}
 	Queues.resetTikaTimeoutQueue();
+	IndexFiles.commit();
 	roart.model.HibernateUtil.commit();
 	log.info("Hibernate commit");
 	return retlist;

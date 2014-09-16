@@ -12,6 +12,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Configuration;
 
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,23 +38,26 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+@NamedQueries({
+        @NamedQuery(name = "idxByFile",
+		    query = "select idx from HibernateIndexFiles pvi where :file in pvi.filenames")
+	    })
+
 @Entity
     @Table(name = "Index")
     @org.hibernate.annotations.Table(appliesTo = "Index")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    public class Index implements Serializable {
+    public class HibernateIndexFiles implements Serializable {
 	private Log log = LogFactory.getLog(this.getClass());
 	private String md5;
 	private Boolean indexed;
 	private String timestamp;
 	private String convertsw;
 	private Integer failed;
+	private String failedreason;
+	private String timeoutreason;
+	private Set<String> filenames;
 
-	/**
-	 * @hibernate.property
-	 *  column="sl_vs_id"
-	 *  index="drug_vsid"
-	 */
 	@Column(name = "md5")
 	@Id
         public String getMd5() {
@@ -143,22 +150,71 @@ import org.apache.commons.logging.LogFactory;
 	    failed++;
 	}
 
-	public static Index ensureExistence(String md5) throws Exception {
-	    Index fi = getByMd5(md5);
+	public static HibernateIndexFiles ensureExistence(String md5) throws Exception {
+	    HibernateIndexFiles fi = getByMd5(md5);
 	    if (fi == null) {
-		fi = new Index();
+		fi = new HibernateIndexFiles();
 		fi.setMd5(md5);
 		HibernateUtil.currentSession().save(fi);
 	    }
 	    return fi;
 	}
 
-	public static Index getByMd5(String md5) throws Exception {
-	    return (Index) HibernateUtil.getHibernateSession().createQuery("from Index where md5 = :md5").setParameter("md5", md5).uniqueResult();
+	public static HibernateIndexFiles getByMd5(String md5) throws Exception {
+	    return (HibernateIndexFiles) HibernateUtil.getHibernateSession().createQuery("from HibernateIndexFiles where md5 = :md5").setParameter("md5", md5).uniqueResult();
 	}
 
-	public static List<Index> getAll() throws Exception {
-	    return HibernateUtil.convert(HibernateUtil.currentSession().createQuery("from Index").list(), Index.class);
+	public static List<HibernateIndexFiles> getAll() throws Exception {
+	    return HibernateUtil.convert(HibernateUtil.currentSession().createQuery("from HibernateIndexFiles").list(), HibernateIndexFiles.class);
+	}
+
+	@Column(name = "timeoutreason")
+        public String getTimeoutreason() {
+	    return timeoutreason;
+	}
+
+	public void setTimeoutreason(String timeoutreason) {
+	    this.timeoutreason = timeoutreason;
+	}
+
+	@Column(name = "failedreason")
+        public String getFailedreason() {
+	    return failedreason;
+	}
+
+	public void setFailedreason(String failedreason) {
+	    this.failedreason = failedreason;
+	}
+
+	/*
+    @OneToMany
+    @JoinTable(name = "files",
+	       joinColumns = @JoinColumn(name = "md5", nullable =
+					 false),
+	       inverseJoinColumns = @JoinColumn(name = "filename", nullable = false))
+						@Cascade({ CascadeType.ALL })
+	*/
+	//@OneToMany(targetEntity=String.class, mappedBy="college", fetch=FetchType.EAGER)
+	//@Column
+	@ElementCollection	
+	@CollectionTable(name = "files", joinColumns = @JoinColumn(name = "md5"))
+
+	@Column(name = "filename")
+        public Set<String> getFilenames() {
+	    return filenames;
+	}
+
+	public void setFilenames(Set<String> files) {
+	    this.filenames = files;
+	}
+
+	public HibernateIndexFiles getByFilename(String filename) {
+	    try {
+		return (HibernateIndexFiles) HibernateUtil.getHibernateSession().getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
+	    } catch (Exception e) {
+		log.error("Exception", e);
+	    }
+	    return null;
 	}
 
     }

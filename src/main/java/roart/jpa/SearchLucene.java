@@ -1,10 +1,8 @@
 package roart.jpa;
 
-import roart.dao.IndexDao;
-import roart.dao.FilesDao;
+import roart.dao.IndexFilesDao;
 import roart.model.HibernateUtil;
-import roart.model.Index;
-import roart.model.Files;
+import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
@@ -103,16 +101,18 @@ public class SearchLucene {
 	}
 
 	Document doc = new Document();
-	doc.add(new TextField(Constants.TITLE, md5, Field.Store.YES));
+	doc.add(new TextField(Constants.ID, md5, Field.Store.YES));
 	if (lang != null) {
 	doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 	}
-	doc.add(new TextField(Constants.NAME, i, Field.Store.NO));
+	doc.add(new TextField(Constants.CONTENT, i, Field.Store.NO));
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());
 	    doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
 	}
-	Term term = new Term(Constants.TITLE, md5);
+	Term oldTerm = new Term(Constants.TITLE, md5);
+	Term term = new Term(Constants.ID, md5);
+	w.deleteDocuments(term);
 	w.updateDocument(term, doc);
 	//w.addDocument(doc);
  
@@ -213,19 +213,19 @@ public class SearchLucene {
     Query tmpQuery = null;
     switch (stype) {
     case 0:
-	cp = new QueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
+	cp = new QueryParser(Version.LUCENE_4_10_0, Constants.CONTENT, analyzer);
 	break;
     case 1:
-	cp = new AnalyzingQueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
+	cp = new AnalyzingQueryParser(Version.LUCENE_4_10_0, Constants.CONTENT, analyzer);
 	break;
     case 2:
-	cp = new ComplexPhraseQueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
+	cp = new ComplexPhraseQueryParser(Version.LUCENE_4_10_0, Constants.CONTENT, analyzer);
 	break;
     case 3:
-	cp = new ExtendableQueryParser(Version.LUCENE_4_10_0, Constants.NAME, analyzer);
+	cp = new ExtendableQueryParser(Version.LUCENE_4_10_0, Constants.CONTENT, analyzer);
 	break;
     case 4:
-	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
+	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.ID, Constants.CONTENT, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
 	break;
     case 5:
 	tmpQuery = new SimpleQueryParser(analyzer, Constants.NAME).createPhraseQuery(Constants.NAME, str);
@@ -255,18 +255,16 @@ public class SearchLucene {
 	float score = hits[i].score;
 	Document d = searcher.doc(docId);
 	String md5 = d.get(Constants.TITLE);
-	String lang = d.get(Constants.LANG);
-	String filename = null;
-	List<Files> files = FilesDao.getByMd5(md5);
-	if (files != null && files.size() > 0) {
-	    Files file = files.get(0);
-	    filename = file.getFilename();
+	if (md5 == null || md5.length() == 0) {
+	    md5 = d.get(Constants.ID);
 	}
+	String lang = d.get(Constants.LANG);
+	IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
+	String filename = indexmd5.getFilelocation().toString();
 	String title = md5 + " " + filename;
 	if (lang != null) {
 	    title = title + " (" + lang + ") ";
 	}
-	Index indexmd5 = IndexDao.getByMd5(md5);
 	if (indexmd5 != null) {
 	    String timestamp = indexmd5.getTimestamp();
 	    if (timestamp != null) {
@@ -364,12 +362,8 @@ public class SearchLucene {
 	Document d = searcher.doc(docId);
 	String md5 = d.get(Constants.TITLE);
 	String lang = d.get(Constants.LANG);
-	String filename = null;
-	List<Files> files = FilesDao.getByMd5(md5);
-	if (files != null && files.size() > 0) {
-	    Files file = files.get(0);
-	    filename = file.getFilename();
-	}
+	IndexFiles files = IndexFilesDao.getByMd5(md5);
+	String filename = files.getFilelocation().toString();
 	String title = md5 + " " + filename;
 	if (lang != null) {
 	    title = title + " (" + lang + ") ";
@@ -497,6 +491,7 @@ public class SearchLucene {
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
 	    iw.deleteDocuments(new Term(Constants.TITLE, str));
+	    iw.deleteDocuments(new Term(Constants.ID, str));
 	    iw.close();
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
@@ -598,109 +593,6 @@ public class SearchLucene {
 	 */
 	retlist.add("Entries Scanned:"+totalDocs);
         retlist.add("Duplicates:"+dups);
-        retlist.add("Currently Present Entries:"+(docs+newDocs));
-	return retlist;
-    }//End of removeDuplicate method
-
-    // outdated, used once, when bug added filename instead of md5
-    public static List<String> cleanup2() throws Exception {
-	List<String> retlist = new ArrayList<String>();
-	List<Files> files = FilesDao.getAll();
-	List<Index> indexes = IndexDao.getAll();
-	Map<String, String> filesMapMd5 = new HashMap<String, String>();
-	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
-	for (Index index : indexes) {
-	    indexMap.put(index.getMd5(), index.getIndexed());
-	}
-	String type = "all";
-	String field = Constants.TITLE;
-	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
-	int docs = 0;
-        int errors = 0;
-	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-        IndexReader ind = DirectoryReader.open(index); 
-        IndexSearcher searcher = new IndexSearcher(ind);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
-        IndexWriter iw = new IndexWriter(index, iwc);
-        int totalDocs = ind.numDocs();
-        HashSet<Document> Doc = new HashSet<Document>();
-        for(int m=0;m<totalDocs;m++) {
-	    Document thisDoc = null;
-	    try {
-		thisDoc = ind.document(m);
-	    } 
-	    catch (Exception e) {
-		log.error("Exception", e);
-		continue;
-	    }
-	    String a2[] = thisDoc.getValues(field);
-	    a2[0].trim();
-
-	    if (a2[0].equals("")) {
-		continue;
-	    }
-	    String homedir = roart.util.Prop.getProp().getProperty("homedir");
-	    if (a2[0].contains(homedir)) {
-		retlist.add("error " + a2[0]);
-		Files file = FilesDao.getByFilename(a2[0]);
-		String md5 = file.getMd5();
-		Index indexf = IndexDao.getByMd5(md5);
-		boolean indexval = false;
-		if (indexf != null) {
-		    Boolean indexed = indexf.getIndexed();
-		    if (indexed != null) {
-			if (indexed.booleanValue()) {
-			    indexval = true;
-			}
-		    }
-		}
-		retlist.add("md5 " + md5 + " " + indexf + " " + indexval);
-		filesMapMd5.put(md5, a2[0]);
-		errors++;
-		Document d = searcher.doc(m);
-		// check 
-		// iw.deleteDocument(m);
-	    }
-	}//end of for loop
-	for (String md5 : filesMapMd5.keySet()) {
-	    //roart.dir.Traverse.indexsingle(retlist, md5, indexMap, filesMapMd5);
-	}
-	    /*
-	    Index indexmd5 = IndexDao.getByMd5(a2[0]);
-	    if (indexmd5 == null) {
-		retlist.add("delete1 " + a2[0]);
-		ind.deleteDocument(topdocs.scoreDocs[0].doc);
-	    }
-	    if (indexmd5 != null) {
-		Boolean indexed = indexmd5.getIndexed();
-		if (indexed != null && indexed.booleanValue()) {
-		} else {
-		    retlist.add("delete2 " + a2[0]);
-		    ind.deleteDocument(topdocs.scoreDocs[0].doc);
-		}
-	    }
-	    */
-                
-        int newDocs = ind.numDocs();
-        ind.close();//close index Reader
-        
-        /**
-         * Open indexwriter to write duplicate document
-         */
-        //IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
-        //IndexWriter iw = new IndexWriter(index, iwc);
-        for(Document doc : Doc) {
-	    //iw.addDocument(doc);
-        }
-        //iw.optimize() ;
-        iw.close();//Close Index Writer
-        
-	/**
-	 * Print statistics
-	 */
-	retlist.add("Entries Scanned:"+totalDocs);
-        retlist.add("Errors:"+errors);
         retlist.add("Currently Present Entries:"+(docs+newDocs));
 	return retlist;
     }//End of removeDuplicate method

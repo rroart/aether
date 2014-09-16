@@ -12,15 +12,15 @@ public class HibernateFilesJpa extends FilesJpa {
     private Log log = LogFactory.getLog(this.getClass());
 
     public Files getByFilename(String filename) throws Exception {
-	return Files.getByFilename(filename);
+	return null; //Files.getByFilename(filename);
     }
 
     public List<Files> getByMd5(String md5) throws Exception {
-	return Files.getByMd5(md5);
+	return null; // Files.getByMd5(md5);
     }
 
     public List<Files> getAll() throws Exception {
-	return Files.getAll();
+	return null; // Files.getAll();
     }
 
 }

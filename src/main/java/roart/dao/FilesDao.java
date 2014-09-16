@@ -23,7 +23,7 @@ public class FilesDao {
 		filesJpa = new HibernateFilesJpa();
 	    }
 	    if (type.equals("hbase")) {
-		filesJpa = new HbaseFilesJpa();
+		//filesJpa = new HbaseFilesJpa();
 	    }
 	}
     }
