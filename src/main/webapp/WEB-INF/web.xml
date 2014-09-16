@@ -98,6 +98,9 @@
     <listener>
         <listener-class>roart.servlet.listeners.SessionListener</listener-class>
     </listener>
+    <listener>
+      <listener-class>roart.servlet.listeners.StartupListener</listener-class>
+    </listener>
 
     <!-- Define servlets that are included in the example application -->
 
