@@ -40,19 +40,14 @@ public class Main {
     public List<String> traverse(String add) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null, false);    
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");
-	//roart.model.HibernateUtil.currentSession().close();
+	IndexFilesDao.commit();
 	return new ArrayList<String>(filesetnew2);
     }
 
     public List<String> traverse() throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
 	List<String> retList = filesystem(filesetnew, null);
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");
+	IndexFilesDao.commit();
 	return retList;
     }
 
@@ -60,21 +55,12 @@ public class Main {
     static String[] dirlistnot = null;
 
     public static void parseconfig() {
-	new roart.jpa.SearchSolr();
 	System.out.println("config2 parsed");
 	//log.info("config2 parsed");
 	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
 	String dirlistnotstr = roart.util.Prop.getProp().getProperty("dirlistnot");
-	System.out.println(dirlist);
-	System.out.println(dirlistnot);
 	dirlist = dirliststr.split(",");
 	dirlistnot = dirlistnotstr.split(",");
-
-	String mydb = roart.util.Prop.getProp().getProperty("mydb");
-	String myindex = roart.util.Prop.getProp().getProperty("myindex");
-	SearchDao.instance(myindex);
-	//FilesDao.instance(mydb);
-	IndexFilesDao.instance(mydb);
     }
 
     private List<String> filesystem(Set<String> filesetnew, Set<String> newset) {
@@ -95,7 +81,6 @@ public class Main {
 	    }
 	    indexes.clear();
 	    //Set<String> md5set = new HashSet<String>();
-	    parseconfig();
 
 	    for (int i = 0; i < dirlist.length; i ++) {
 		Set<String> filesetnew2 = Traverse.doList(dirlist[i], newset, dirset, dirlistnot, false);
@@ -115,8 +100,13 @@ public class Main {
 	    log.info("sizeafter " + fileset.size());
 	    for (String filename : fileset) {
 		log.info("removing " + filename);
-		IndexFiles file = IndexFilesDao.getByFilename(filename);
-		roart.model.HibernateUtil.currentSession().delete(file);
+		String md5 = IndexFilesDao.getMd5ByFilename(filename);
+		IndexFiles file = IndexFilesDao.getByMd5(md5);
+		boolean wasThere = file.removeFile(filename);
+		if (!wasThere) {
+		    log.error("the file " + filename + " was not in the set");
+		}
+		//roart.model.HibernateUtil.currentSession().delete(file);
 	    }
 	    //roart.model.HibernateUtil.commit();
 	    //log.info("Hibernate commit");
@@ -265,15 +255,12 @@ public class Main {
 		retlist.add("timeout tika " + ret);
 	}
 	Queues.resetTikaTimeoutQueue();
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");
+	IndexFilesDao.commit();
 	
 	return retlist;
     }
 
     public List<String> index(String add, boolean reindex) throws Exception {
-	parseconfig();
     	startThreads();
 	List retlist = lucene(add, reindex);
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
@@ -285,9 +272,7 @@ public class Main {
 	}
 
 	Queues.resetTikaTimeoutQueue();
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");	
+	IndexFilesDao.commit();
 
 	return retlist;
     }
@@ -304,9 +289,7 @@ public class Main {
 	}
 
 	Queues.resetTikaTimeoutQueue();
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");	
+	IndexFilesDao.commit();
 
 	return retlist;
     }
@@ -457,7 +440,6 @@ public class Main {
     }
 
     public List<String> filesystemlucenenew() throws Exception {
-	parseconfig();
 	Set<String> filesetnew = new HashSet<String>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = filesystem(filesetnew, newset);
@@ -476,16 +458,13 @@ public class Main {
 		retlist.add("timeout tika " + ret);
 	}
 	Queues.resetTikaTimeoutQueue();
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");
+	IndexFilesDao.commit();
 	return retlist;
     }
 
     // true: new md5 checks
     // false: only new
     public List<String> filesystemlucenenew(String add, boolean newmd5oronlyfile) throws Exception {
-	parseconfig();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = new ArrayList<String>();
@@ -505,9 +484,7 @@ public class Main {
 		retlist.add("timeout tika " + ret);
 	}
 	Queues.resetTikaTimeoutQueue();
-	IndexFiles.commit();
-	roart.model.HibernateUtil.commit();
-	log.info("Hibernate commit");
+	IndexFilesDao.commit();
 	return retlist;
     }
 

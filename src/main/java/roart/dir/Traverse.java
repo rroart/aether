@@ -70,9 +70,9 @@ public class Traverse {
 		retset.add(filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
 		//Files files = Files.ensureExistence(filename);
-		IndexFiles files = IndexFilesDao.getByFilename(filename);
+		String curMd5 = IndexFilesDao.getMd5ByFilename(filename);;
 		//files.setTouched(Boolean.TRUE);
-		String curMd5 = null;
+		/*
 		if (files != null) {
 		    curMd5 = files.getMd5();
 		    if (curMd5 != null && curMd5.length() == 0) {
@@ -80,16 +80,17 @@ public class Traverse {
 			log.info("set curmd5 null");
 		    }
 		}
+		*/
 		if (newmd5 == true || curMd5 == null) {
 		    try {
 			FileInputStream fis = new FileInputStream( new File(filename));
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
+			IndexFiles files = null;
 			if (files == null) {
-			    files = new IndexFiles();
-			    files.setMd5(md5);
+			    files = IndexFilesDao.getByMd5(md5);
 			}
 			files.addFile(filename);
-			files.save();
+			IndexFilesDao.save(files);
 			log.info("adding md5 file " + filename);
 			if (newset != null) {
 			    if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
@@ -101,10 +102,11 @@ public class Traverse {
 			log.error("Exception", e);
 		    }
 		}
-		md5set.add(files.getMd5());
+		md5set.add(curMd5);
 	    }
 	}
 	dirset.put(dirname, md5set);
+	//IndexFilesDao.flush();
 	//log.info("retsize " + retset.size());
 	return retset;
     }
@@ -160,12 +162,12 @@ public class Traverse {
 		if (error) {
 		    continue;
 		}
-		IndexFiles files = IndexFilesDao.getByFilename(filename);
+		String md5 = IndexFilesDao.getMd5ByFilename(filename);
+		IndexFiles files = IndexFilesDao.getByMd5(md5);
 		if (files == null) {
 		    error = true;
 		    continue;
 		}
-		String md5 = files.getMd5();
 		if (md5 == null) {
 		    error = true;
 		    continue;
@@ -241,17 +243,18 @@ public class Traverse {
 	    } else {
 		//log.info("retset " + filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
-		IndexFiles files = IndexFilesDao.getByFilename(filename);
+		String md5 = IndexFilesDao.getMd5ByFilename(filename);
+		if (md5 == null) {
+		    log.error("filename md5 null for " + filename);
+		    continue;
+		}
+		IndexFiles files = IndexFilesDao.getByMd5(md5);
 		//files.setTouched(Boolean.TRUE);
 		if (files == null || files.getMd5() == null) {
 		    continue;
 		}
 		retlist.add(filename);
-		String md5 = files.getMd5();
-		if (md5 == null) {
-		    continue;
-		}
-		IndexFiles index = IndexFilesDao.getByMd5(md5);
+		IndexFiles index = files;
 
 		Map<String, String> filesMapMd5 = new HashMap<String, String>();
 		filesMapMd5.put(files.getMd5(), files.getFilename());
@@ -342,6 +345,8 @@ public class Traverse {
 	    }
 
 	    //InputStream stream = null;
+	    index.setTimeoutreason("");
+	    index.setFailedreason("");
 	    int size = 0;
 	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, new Metadata());
 	    Queues.tikaQueue.add(e);
@@ -455,16 +460,18 @@ public class Traverse {
 	    	} else {
 	    		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
 	    		retlist.add("Too small " + dbfilename + " " + md5 + " " + size);
+			el.index.setFailedreason(el.index.getFailedreason() + "small " + size + " ");
 			Boolean isIndexed = index.getIndexed();
 			if (isIndexed == null || isIndexed.booleanValue() == false) {
 			    index.incrFailed();
-			    index.save();
+			    //index.save();
 			}
 	    	}
 	    }
 	    
 	    outputStream.close();
 	} catch (Exception e) {
+	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	    log.error("Exception", e);
 	} finally {
 	    //stream.close();            // close the stream

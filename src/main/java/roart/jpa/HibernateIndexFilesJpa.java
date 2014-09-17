@@ -15,46 +15,32 @@ import org.apache.commons.logging.LogFactory;
 
 public class HibernateIndexFilesJpa extends IndexFilesJpa {
 
-    private Log log = LogFactory.getLog(this.getClass());
+    private static Log log = LogFactory.getLog("HibernateIndexFilesJpa");
 
     public IndexFiles getByMd5(String md5) throws Exception {
-	IndexFiles ifile = new IndexFiles();
 	HibernateIndexFiles index = HibernateIndexFiles.getByMd5(md5);
-	ifile.setMd5(index.getMd5());
-	ifile.setIndexed(index.getIndexed());
-	ifile.setTimestamp(index.getTimestamp());
-	ifile.setConvertsw(index.getConvertsw());
-	ifile.setFailed(index.getFailed());
-	ifile.setFailedreason(index.getFailedreason());
-	ifile.setTimeoutreason(index.getTimeoutreason());
-	Set<String> files = index.getFilenames();
-	for (String file : files) {
-	    ifile.addFile(new FileLocation(file));
-	}
-	return ifile;
+	return convert(index);
     }
 
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
 	String filename = fl.getFilename();
-	IndexFiles files = IndexFilesDao.getByFilename(filename);
-	return files;
+	HibernateIndexFiles files = HibernateIndexFiles.getByFilename(filename);
+	if (files == null) {
+	    return null;
+	}
+	return convert(files);
+    }
+
+    public String getMd5ByFilelocation(FileLocation fl) throws Exception {
+	String filename = fl.getFilename();
+	return HibernateIndexFiles.getMd5ByFilename(filename);
     }
 
     public List<IndexFiles> getAll() throws Exception {
 	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
 	List<HibernateIndexFiles> indexes = HibernateIndexFiles.getAll();
 	for (HibernateIndexFiles index : indexes) {
-	    IndexFiles ifile = new IndexFiles();
-	    String md5 = index.getMd5();
-	    ifile.setMd5(index.getMd5());
-	    ifile.setIndexed(index.getIndexed());
-	    ifile.setTimestamp(index.getTimestamp());
-	    ifile.setConvertsw(index.getConvertsw());
-	    ifile.setFailed(index.getFailed());
-	    Set<String> files = index.getFilenames();
-	    for (String file : files) {
-		ifile.addFile(new FileLocation(file));
-	    }
+	    IndexFiles ifile = convert(index);
 	}
 	return retlist;
     }
@@ -72,6 +58,26 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	} catch (Exception e) {
 	    log.error("Exception", e);
 	}
+    }
+
+    private IndexFiles convert(HibernateIndexFiles hif) {
+	if (hif == null) {
+	    return null;
+	}
+	String md5 = hif.getMd5();
+	IndexFiles ifile = new IndexFiles(md5);
+	//ifile.setMd5(hif.getMd5());
+	ifile.setIndexed(hif.getIndexed());
+	ifile.setTimestamp(hif.getTimestamp());
+	ifile.setConvertsw(hif.getConvertsw());
+	ifile.setFailed(hif.getFailed());
+	ifile.setFailedreason(hif.getFailedreason());
+	ifile.setTimeoutreason(hif.getTimeoutreason());
+	Set<String> files = hif.getFilenames();
+	for (String file : files) {
+	    ifile.addFile(new FileLocation(file));
+	}
+	return ifile;
     }
 
 }

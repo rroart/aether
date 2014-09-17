@@ -1,6 +1,8 @@
 package roart.dao;
 
 import java.util.List;
+import java.util.TreeMap;
+import java.util.Map;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
@@ -14,7 +16,9 @@ import org.apache.commons.logging.LogFactory;
 
 public class IndexFilesDao {
 
-    private Log log = LogFactory.getLog(this.getClass());
+    private static Log log = LogFactory.getLog("IndexFilesDao");
+
+    private static Map<String, IndexFiles> all = new TreeMap<String, IndexFiles>();
 
     private static IndexFilesJpa indexFilesJpa = null;
 
@@ -30,21 +34,40 @@ public class IndexFilesDao {
     }
 
     public static IndexFiles getByMd5(String md5) throws Exception {
-	return indexFilesJpa.getByMd5(md5);
+	if (all.containsKey(md5)) {
+	    return all.get(md5);
+	}
+	IndexFiles i = indexFilesJpa.getByMd5(md5);
+	if (i == null) {
+	    i = new IndexFiles(md5);
+	}
+	all.put(md5, i);
+	return i;
     }
 
-    public static IndexFiles getByFilename(String filename) throws Exception {
+    public static IndexFiles getByFilenameNot(String filename) throws Exception {
 	String nodename = roart.util.Prop.getProp().getProperty("nodename");
 	FileLocation fl = new FileLocation(nodename, filename);
 	return indexFilesJpa.getByFilelocation(fl);
     }
 
-    public static IndexFiles getByFilelocation(FileLocation fl) throws Exception {
+    public static IndexFiles getByFilelocationNot(FileLocation fl) throws Exception {
 	return indexFilesJpa.getByFilelocation(fl);
     }
 
+    public static String getMd5ByFilename(String filename) throws Exception {
+	String nodename = roart.util.Prop.getProp().getProperty("nodename");
+	FileLocation fl = new FileLocation(nodename, filename);
+	return indexFilesJpa.getMd5ByFilelocation(fl);
+    }
+
     public static List<IndexFiles> getAll() throws Exception {
-	return indexFilesJpa.getAll();
+	all.clear();
+	List<IndexFiles> iAll = indexFilesJpa.getAll();
+	for (IndexFiles i : iAll) {
+	    all.put(i.getMd5(), i);
+	}
+	return iAll;
     }
 
     /*
@@ -68,7 +91,45 @@ public class IndexFilesDao {
     }
 
     public static void save(IndexFiles i) {
+	log.info("saving " + i.getMd5());
 	indexFilesJpa.save(i);
     }
 
+    public static IndexFiles instanceNot(String md5) {
+	IndexFiles i = all.get(md5);
+	if (i == null) {
+	    i = new IndexFiles(md5);
+	    all.put(md5, i);
+	}
+	return i;
+    }
+
+    public static void commit() {
+	String mydb = roart.util.Prop.getProp().getProperty("mydb");
+	if (mydb != null) {
+	    for (String k : all.keySet()) {
+		IndexFiles i = all.get(k);
+		IndexFilesDao.save(i);
+	    }
+	    all.clear();
+	}
+	if (mydb.equals("hibernate")) {
+	    try {
+		roart.model.HibernateUtil.commit();
+	    } catch (Exception e) {
+		log.error("Exception", e);
+	    }
+	}
+    }
+
+    public static void flush() {
+	String mydb = roart.util.Prop.getProp().getProperty("mydb");
+	if (mydb.equals("hibernate")) {
+	    try {
+		roart.model.HibernateUtil.currentSession().flush();
+	    } catch (Exception e) {
+		log.error("Exception", e);
+	    }
+	}
+    }
 }

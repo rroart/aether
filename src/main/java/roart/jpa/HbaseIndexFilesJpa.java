@@ -32,7 +32,6 @@ public class HbaseIndexFilesJpa extends IndexFilesJpa {
     private Log log = LogFactory.getLog(this.getClass());
 
     public IndexFiles getByMd5(String md5) throws Exception {
-	IndexFiles ifile = new IndexFiles();
 	return HbaseIndexFiles.get(md5);
     }
 
@@ -47,6 +46,10 @@ public class HbaseIndexFilesJpa extends IndexFilesJpa {
 	}
 	return files;
 	*/
+    }
+
+    public String getMd5ByFilelocation(FileLocation fl) throws Exception {
+	return HbaseIndexFiles.getMd5ByFilelocation(fl);
     }
 
     public List<IndexFiles> getAll() throws Exception {

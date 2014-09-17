@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 import roart.dao.IndexFilesDao;
 
@@ -15,8 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class IndexFiles {
-
-    private static Set<IndexFiles> all = new HashSet<IndexFiles>();
 
 	private static Log log = LogFactory.getLog("IndexFiles");
 	private String md5;
@@ -28,9 +25,13 @@ public class IndexFiles {
     private String timeoutreason;
 	private Set<FileLocation> filelocations;
 
-	public IndexFiles() {
+	private IndexFiles() {
 	    filelocations = new HashSet<FileLocation>();
-	    all.add(this);
+	}
+
+	public IndexFiles(String md5) {
+	    filelocations = new HashSet<FileLocation>();
+	    this.setMd5(md5);
 	}
 
         public String getMd5() {
@@ -124,8 +125,14 @@ public class IndexFiles {
 	    addFile(fl);
 	}
 
-	public boolean removeFile(String filelocation) {
-	    return filelocations.remove(filelocation);
+	public boolean removeFile(String filename) {
+	    String nodename = roart.util.Prop.getProp().getProperty("nodename");
+	    FileLocation fl = new FileLocation(nodename, filename);
+	    return filelocations.remove(fl);
+	}
+
+	public boolean removeFilelocation(FileLocation fl) {
+	    return filelocations.remove(fl);
 	}
 
         public String getTimeoutreason() {
@@ -144,27 +151,11 @@ public class IndexFiles {
 	    this.failedreason = failedreason;
 	}
 
+    /*
     public void save() {
 	all.remove(this);
 	IndexFilesDao.save(this);
     }
-
-    public static void commit() {
-	String mydb = roart.util.Prop.getProp().getProperty("mydb");
-	if (mydb.equals("hibernate")) {
-	    try {
-		roart.model.HibernateUtil.commit();
-	    } catch (Exception e) {
-		log.error("Exception", e);
-	    }
-	}
-	if (mydb.equals("hbase")) {
-	    for (IndexFiles i : all) {
-		log.info("saving " + i.getMd5());
-		i.save();
-	    }
-	    all.clear();
-	}
-    }
+    */
 
     }

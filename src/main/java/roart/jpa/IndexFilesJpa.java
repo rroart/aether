@@ -14,6 +14,8 @@ public abstract class IndexFilesJpa {
 
     public abstract IndexFiles getByFilelocation(FileLocation fl) throws Exception;
 
+    public abstract String getMd5ByFilelocation(FileLocation fl) throws Exception;
+
     public abstract IndexFiles getByMd5(String md5) throws Exception;
 
     public abstract List<IndexFiles> getAll() throws Exception;

@@ -7,6 +7,7 @@ import org.hibernate.annotations.CascadeType;
 //import org.hibernate.annotations.Index;
 
 import org.hibernate.Session;
+import org.hibernate.SQLQuery;
 import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
@@ -40,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 
 @NamedQueries({
         @NamedQuery(name = "idxByFile",
-		    query = "select idx from HibernateIndexFiles pvi where :file in pvi.filenames")
+		    query = "select idx from HibernateIndexFiles idx where :file in idx.filenames")
 	    })
 
 @Entity
@@ -48,7 +49,7 @@ import org.apache.commons.logging.LogFactory;
     @org.hibernate.annotations.Table(appliesTo = "Index")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public class HibernateIndexFiles implements Serializable {
-	private Log log = LogFactory.getLog(this.getClass());
+	private static Log log = LogFactory.getLog("HibernateIndexFiles");
 	private String md5;
 	private Boolean indexed;
 	private String timestamp;
@@ -208,9 +209,33 @@ import org.apache.commons.logging.LogFactory;
 	    this.filenames = files;
 	}
 
-	public HibernateIndexFiles getByFilename(String filename) {
+	public static HibernateIndexFiles getByFilename(String filename) {
 	    try {
+		String md5 = getMd5ByFilename(filename);
+		if (md5 == null) {
+		    return null;
+		}
+		return getByMd5(md5);
+	    } catch (Exception e) {
+		log.error("Exception", e);
+	    }
+	    return null;
+	}
+
+	public static String getMd5ByFilename(String filename) {
+	    try {
+		/*
 		return (HibernateIndexFiles) HibernateUtil.getHibernateSession().getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
+		*/
+		SQLQuery sqlQuery = HibernateUtil.currentSession().createSQLQuery("select md5 from files where filename = :filename");
+		sqlQuery.setParameter("filename", filename);
+		List<?> qResults = sqlQuery.list();
+		log.info("results " + qResults.size() + " " + filename);
+		String md5 = null;
+		for (Object row : qResults) {
+		    md5 = (String) row;
+		}
+		return md5;
 	    } catch (Exception e) {
 		log.error("Exception", e);
 	    }

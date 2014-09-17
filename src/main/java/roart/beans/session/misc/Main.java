@@ -204,19 +204,7 @@ public class Main {
 	return bubble_sort_title(creators, type);
     }
 
-    public static void parseconfig() {
-	new roart.jpa.SearchSolr();
-	System.out.println("config1 parsed");
-	//log.info("config parsed");
-	String mydb = roart.util.Prop.getProp().getProperty("mydb");
-	String myindex = roart.util.Prop.getProp().getProperty("myindex");
-	SearchDao.instance(myindex);
-	//FilesDao.instance(mydb);
-	IndexFilesDao.instance(mydb);
-    }
-
     public List<String> searchme(String type, String str) {
-	parseconfig();
 	List strlist = new ArrayList<String>();
 	String[] strarr = roart.search.Search.searchme(type, str);
 	for (String stri : strarr) {
@@ -226,7 +214,6 @@ public class Main {
     }
     
     public List<String> searchme2(String str, String type) {
-	parseconfig();
 	List strlist = new ArrayList<String>();
 	String[] strarr = roart.search.Search.searchme2(str, type);
 	for (String stri : strarr) {

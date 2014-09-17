@@ -113,6 +113,8 @@ public class SearchLucene {
 	Term oldTerm = new Term(Constants.TITLE, md5);
 	Term term = new Term(Constants.ID, md5);
 	w.deleteDocuments(term);
+	doc.removeField(Constants.NAME);
+	doc.removeField(Constants.TITLE);
 	w.updateDocument(term, doc);
 	//w.addDocument(doc);
  

@@ -119,8 +119,9 @@ public class HbaseIndexFiles {
     }
 
     public static IndexFiles get(Result index) {
-	IndexFiles ifile = new IndexFiles();
-	ifile.setMd5(new String(index.getValue(indexcf, md5q)));
+	String md5 = new String(index.getValue(indexcf, md5q));
+	IndexFiles ifile = new IndexFiles(md5);
+	//ifile.setMd5(new String(index.getValue(indexcf, md5q)));
 	ifile.setIndexed(new Boolean(new String(index.getValue(indexcf, indexedq))));
 	ifile.setTimestamp(new String(index.getValue(indexcf, timestampq)));
 	ifile.setConvertsw(new String(index.getValue(indexcf, convertswq)));
@@ -159,6 +160,9 @@ public class HbaseIndexFiles {
 
     public static IndexFiles getIndexByFilelocation(FileLocation fl) {
 	String md5 = getMd5ByFilelocation(fl);
+	if (md5.length() == 0) {
+	    return null;
+	}
 	return get(md5);
     }
 
@@ -188,8 +192,8 @@ public class HbaseIndexFiles {
 	} catch (IOException e) {
 	    log.error("Exception", e);
 	}
-	IndexFiles i = new IndexFiles();
-	i.setMd5(md5);
+	IndexFiles i = new IndexFiles(md5);
+	//i.setMd5(md5);
 	return i;
     }
 

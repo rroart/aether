@@ -78,6 +78,7 @@ public class HibernateUtil {
     }
 
     public static void commit() throws /*MappingException,*/ HibernateException, Exception {
+	log.info("Doing hibernate commit");
 	transaction.commit();
 	if (session.isOpen()) {
 	    session.close();
