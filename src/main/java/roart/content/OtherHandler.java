@@ -67,7 +67,7 @@ public class OtherHandler {
 		dir.setWritable(true);
 	    }
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlist);
+	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlist, el);
 	    if (output != null) {
 		el.convertsw = "calibre";
 	    }
@@ -81,7 +81,7 @@ public class OtherHandler {
 	if (output == null && lowercase.contains(".dj")) {
 	    log.info("doing2 djvutxt");
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist);
+	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist, el);
 	    if (output != null) {
 		el.convertsw = "djvutxt";
 	    }
@@ -91,7 +91,7 @@ public class OtherHandler {
 	if (output == null && lowercase.endsWith(".pdf")) {
 	    log.info("doing2 pdftotext");
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist);
+	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist, el);
 	    if (output != null) {
 		el.convertsw = "pdftotext";
 	    }
@@ -142,7 +142,7 @@ public class OtherHandler {
     	return execute(filename, arg);
     }
     
-    public static String executeTimeout(String filename, String [] arg, List<String> retlist) {
+    public static String executeTimeout(String filename, String [] arg, List<String> retlist, TikaQueueElement el) {
     	   class OtherTimeout implements Runnable {
     	    	public void run() {
     	    		try {
@@ -181,6 +181,7 @@ public class OtherHandler {
     	    		}
     	    	}
     	    	otherWorker.stop(); // .interrupt();
+		el.index.setTimeoutreason(el.index.getTimeoutreason() + "othertimeout" + filename + " " + timeout + " ");
     			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable);
     			try {
     				Thread.sleep(1000);

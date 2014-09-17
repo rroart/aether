@@ -198,6 +198,7 @@ public class TikaRunner implements Runnable {
     		}
     	}
     	tikaWorker.stop(); // .interrupt();
+	el.index.setTimeoutreason(el.index.getTimeoutreason() + "tikatimeout" + timeout + " ");
 		log.info("Tikaworker timeout " + el.dbfilename + " " + tikaWorker + " " + tikaRunnable);
 		try {
 			Thread.sleep(1000);
