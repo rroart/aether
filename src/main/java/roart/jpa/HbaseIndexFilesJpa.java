@@ -68,5 +68,13 @@ public class HbaseIndexFilesJpa extends IndexFilesJpa {
 	HbaseIndexFiles.put(i);
     }
 
+    public void flush() {
+	HbaseIndexFiles.flush();
+    }
+
+    public void close() {
+	HbaseIndexFiles.close();
+    }
+
 }
 

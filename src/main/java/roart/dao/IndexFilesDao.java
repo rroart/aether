@@ -105,31 +105,20 @@ public class IndexFilesDao {
     }
 
     public static void commit() {
-	String mydb = roart.util.Prop.getProp().getProperty("mydb");
-	if (mydb != null) {
-	    for (String k : all.keySet()) {
-		IndexFiles i = all.get(k);
-		IndexFilesDao.save(i);
-	    }
-	    all.clear();
+	close();
+    }
+
+    public static void close() {
+	for (String k : all.keySet()) {
+	    IndexFiles i = all.get(k);
+	    IndexFilesDao.save(i);
 	}
-	if (mydb.equals("hibernate")) {
-	    try {
-		roart.model.HibernateUtil.commit();
-	    } catch (Exception e) {
-		log.error("Exception", e);
-	    }
-	}
+	all.clear();
+	indexFilesJpa.close();
     }
 
     public static void flush() {
-	String mydb = roart.util.Prop.getProp().getProperty("mydb");
-	if (mydb.equals("hibernate")) {
-	    try {
-		roart.model.HibernateUtil.currentSession().flush();
-	    } catch (Exception e) {
-		log.error("Exception", e);
-	    }
-	}
+	indexFilesJpa.flush();
     }
+
 }
