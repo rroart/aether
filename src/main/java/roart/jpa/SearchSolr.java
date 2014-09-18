@@ -39,7 +39,7 @@ public class SearchSolr {
 	if (server != null) {
 	    return;
 	}
-	String url = "http://localhost:8983/solr/mystuff";
+	String url = roart.util.Prop.getProp().getProperty("solrurl");
 	server = new HttpSolrServer( url );
 	log.info("server " + server);
 	System.out.println("server " + server);
@@ -137,7 +137,6 @@ public class SearchSolr {
 
     public static String [] searchme2(String str, String searchtype) {
 	String[] strarr = new String[0];
-	System.out.println("searchme2");
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 
@@ -160,7 +159,6 @@ public class SearchSolr {
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
 		i++;
-	System.out.println("searchme2 doc " + i);
 		SolrDocument d = doc;
 		float score = (float) d.get("score"); 
 		String md5 = (String) d.getFieldValue(Constants.ID);
@@ -180,7 +178,7 @@ public class SearchSolr {
 		    }
 		    String convertsw = indexmd5.getConvertsw();
 		    if (convertsw != null) {
-			title = title + " (" + convertsw + ") ";
+			title = title + " (" + convertsw + " " + indexmd5.getConverttime() + "s) ";
 		    }
 		}
 		log.info((i + 1) + ". " + title + ": "

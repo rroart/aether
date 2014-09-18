@@ -37,7 +37,7 @@ public class OtherHandler {
     	}
     	// vulnerable spot
     	Queues.incOthers();
-    	long now = new Date().getTime();
+    	long now = System.currentTimeMillis();
     	
     	String dbfilename = el.dbfilename;
     	String filename = el.filename;
@@ -66,10 +66,13 @@ public class OtherHandler {
 	    if (!w) {
 		dir.setWritable(true);
 	    }
+	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlist, el);
 	    if (output != null) {
 		el.convertsw = "calibre";
+		long time = execstart - System.currentTimeMillis();
+		el.index.setConverttime(time);
 	    }
 	    if (!w) {
 		dir.setWritable(false);
@@ -80,25 +83,31 @@ public class OtherHandler {
 	//	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
 	if (output == null && lowercase.contains(".dj")) {
 	    log.info("doing2 djvutxt");
+	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist, el);
 	    if (output != null) {
 		el.convertsw = "djvutxt";
+		long time = execstart - System.currentTimeMillis();
+		el.index.setConverttime(time);
 	    }
 	    retry = true;
 	}
 	// pdf 2nd try
 	if (output == null && lowercase.endsWith(".pdf")) {
 	    log.info("doing2 pdftotext");
+	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist, el);
 	    if (output != null) {
 		el.convertsw = "pdftotext";
+		long time = execstart - System.currentTimeMillis();
+		el.index.setConverttime(time);
 	    }
 	    retry = true;
 	}
 	File txt = temp;
-	long time = new Date().getTime() - now;
+	long time = System.currentTimeMillis() - now;
 	log.info("timerStop " + dbfilename + " " + time);
 	if (output != null && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
@@ -162,7 +171,7 @@ public class OtherHandler {
     	    	Thread otherWorker = new Thread(otherRunnable);
     	    	otherWorker.setName("OtherTimeout");
     	    	otherWorker.start();
-    	    	long start = new Date().getTime();
+    	    	long start = System.currentTimeMillis();
     	    	boolean b = true;
     	    	while (b) {
     	    		try {
@@ -171,7 +180,7 @@ public class OtherHandler {
     					log.error("Exception", e);
     					// TODO Auto-generated catch block
     				}
-    	    		long now = new Date().getTime();
+    	    		long now = System.currentTimeMillis();
     	    		if ((now - start) > 1000 * timeout) {
     	    			b = false;
     	    		}

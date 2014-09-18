@@ -276,7 +276,7 @@ public class SearchLucene {
 	    }
 	    String convertsw = indexmd5.getConvertsw();
 	    if (convertsw != null) {
-		title = title + " (" + convertsw + ") ";
+		title = title + " (" + convertsw + " " + indexmd5.getConverttime() + "s) ";
 	    }
 	}
 	log.info((i + 1) + ". " + title + ": "

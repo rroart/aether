@@ -33,7 +33,7 @@ public class Search {
     	}
     	// vulnerable spot
     	Queues.incIndexs();
-    	long now = new Date().getTime();
+    	long now = System.currentTimeMillis();
     	
     	String type = el.type;
      	String md5 = el.md5;
@@ -50,10 +50,11 @@ public class Search {
     log.info("size2 " + retsize);
 	el.size = retsize;
 	dbindex.setIndexed(Boolean.TRUE);
-	dbindex.setTimestamp("" + new Date().getTime());
+	dbindex.setTimestamp("" + System.currentTimeMillis());
 	dbindex.setConvertsw(el.convertsw);
 	//dbindex.save();
-	long time = new Date().getTime() - now;
+	long time = System.currentTimeMillis() - now;
+	dbindex.setTimeindex(time);
 	log.info("timerStop filename " + time);
 	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time);
     try {

@@ -18,8 +18,10 @@ public class IndexFiles {
 	private static Log log = LogFactory.getLog("IndexFiles");
 	private String md5;
 	private Boolean indexed;
+	private String timeindex;
 	private String timestamp;
 	private String convertsw;
+	private String converttime;
 	private Integer failed;
     private String failedreason;
     private String timeoutreason;
@@ -72,12 +74,38 @@ public class IndexFiles {
 	    this.timestamp = timestamp;
 	}
 
+        public String getTimeindex() {
+	    return timeindex;
+	}
+
+	public void setTimeindex(String timeindex) {
+	    this.timeindex = timeindex;
+	}
+
+	public void setTimeindex(long millis) {
+	    String timeindex = String.format("%.2f", (float) millis/1000);
+	    this.timeindex = timeindex;
+	}
+
         public String getConvertsw() {
 	    return convertsw;
 	}
 
 	public void setConvertsw(String convertsw) {
 	    this.convertsw = convertsw;
+	}
+
+        public String getConverttime() {
+	    return converttime;
+	}
+
+	public void setConverttime(String converttime) {
+	    this.converttime = converttime;
+	}
+
+	public void setConverttime(long millis) {
+	    String converttime = String.format("%.2f", (float) millis/1000);
+	    this.converttime = converttime;
 	}
 
         public Integer getFailed() {

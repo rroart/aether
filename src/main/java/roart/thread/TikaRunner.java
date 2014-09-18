@@ -39,7 +39,7 @@ public class TikaRunner implements Runnable {
     	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
     	while (true) {
-    		long now = new Date().getTime();
+    		long now = System.currentTimeMillis();
     		List<Future> removes = new ArrayList<Future>();
     		for(Future<Object> task: map.keySet()) {
      			if (task.isCancelled()) {
@@ -179,7 +179,7 @@ public class TikaRunner implements Runnable {
     	Thread tikaWorker = new Thread(tikaRunnable);
     	tikaWorker.setName("TikaTimeout");
     	tikaWorker.start();
-    	long start = new Date().getTime();
+    	long start = System.currentTimeMillis();
     	boolean b = true;
     	while (b) {
     		try {
@@ -188,7 +188,7 @@ public class TikaRunner implements Runnable {
 				log.error("Exception", e);
 				// TODO Auto-generated catch block
 			}
-    		long now = new Date().getTime();
+    		long now = System.currentTimeMillis();
     		if ((now - start) > 1000 * timeout) {
     			b = false;
     		}
