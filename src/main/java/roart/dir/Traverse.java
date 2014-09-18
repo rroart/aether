@@ -91,6 +91,7 @@ public class Traverse {
 			}
 			files.addFile(filename);
 			IndexFilesDao.save(files);
+			IndexFilesDao.flush();
 			log.info("adding md5 file " + filename);
 			if (newset != null) {
 			    if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
@@ -106,7 +107,6 @@ public class Traverse {
 	    }
 	}
 	dirset.put(dirname, md5set);
-	//IndexFilesDao.flush();
 	//log.info("retsize " + retset.size());
 	return retset;
     }
@@ -419,7 +419,7 @@ public class Traverse {
 	// vulnerable spot
 	//Queues.incTikas();
 	//Queues.tikaRunQueue.add(el);
-	long now = new Date().getTime();
+	long now = System.currentTimeMillis();
 	try {
 	String dbfilename = el.dbfilename;
 	String filename = el.filename;
@@ -438,7 +438,8 @@ public class Traverse {
 	    log.info("size1 " + size);
 	    BufferedInputStream bis = new BufferedInputStream(inputStream);
 
-		long time = new Date().getTime() - now;
+		long time = System.currentTimeMillis() - now;
+		el.index.setConverttime(time);
 		log.info("timerStop filename " + time);
 		retlist.add("tika handling filename " + dbfilename + " " + size + " : " + time);
 	    int limit = mylimit(dbfilename);

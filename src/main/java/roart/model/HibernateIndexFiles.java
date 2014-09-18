@@ -52,8 +52,10 @@ import org.apache.commons.logging.LogFactory;
 	private static Log log = LogFactory.getLog("HibernateIndexFiles");
 	private String md5;
 	private Boolean indexed;
+	private String timeindex;
 	private String timestamp;
 	private String convertsw;
+	private String converttime;
 	private Integer failed;
 	private String failedreason;
 	private String timeoutreason;
@@ -115,6 +117,20 @@ import org.apache.commons.logging.LogFactory;
 
 	/**
 	 * @hibernate.property
+	 *  column="timeindex"
+	 */
+	@Column(name = "timeindex")
+	
+        public String getTimeindex() {
+	    return timeindex;
+	}
+
+	public void setTimeindex(String timeindex) {
+	    this.timeindex = timeindex;
+	}
+
+	/**
+	 * @hibernate.property
 	 *  column="convertsw"
 	 */
 	@Column(name = "convertsw")
@@ -125,6 +141,20 @@ import org.apache.commons.logging.LogFactory;
 
 	public void setConvertsw(String convertsw) {
 	    this.convertsw = convertsw;
+	}
+
+	/**
+	 * @hibernate.property
+	 *  column="converttime"
+	 */
+	@Column(name = "converttime")
+	
+        public String getConverttime() {
+	    return converttime;
+	}
+
+	public void setConverttime(String converttime) {
+	    this.converttime = converttime;
 	}
 
 	/**
@@ -240,6 +270,22 @@ import org.apache.commons.logging.LogFactory;
 		log.error("Exception", e);
 	    }
 	    return null;
+	}
+
+	public static void flush() {
+            try {
+                roart.model.HibernateUtil.currentSession().flush();
+            } catch (Exception e) {
+                log.error("Exception", e);
+            }
+	}
+
+	public static void commit() {
+            try {
+                roart.model.HibernateUtil.commit();
+            } catch (Exception e) {
+                log.error("Exception", e);
+            }
 	}
 
     }

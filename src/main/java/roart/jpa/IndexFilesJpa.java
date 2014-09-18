@@ -22,6 +22,10 @@ public abstract class IndexFilesJpa {
 
     public abstract void save(IndexFiles i);
 
+    public abstract void flush();
+
+    public abstract void close();
+
     //public abstract IndexFiles ensureExistence(String md5) throws Exception;
 
 }

@@ -49,8 +49,10 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	try {
 	    HibernateIndexFiles hif = HibernateIndexFiles.ensureExistence(i.getMd5());
 	    hif.setIndexed(i.getIndexed());
+	    hif.setTimeindex(i.getTimeindex());
 	    hif.setTimestamp(i.getTimestamp());
 	    hif.setConvertsw(i.getConvertsw());
+	    hif.setConverttime(i.getConverttime());
 	    hif.setFailed(i.getFailed());
 	    hif.setFailedreason(i.getFailedreason());
 	    hif.setTimeoutreason(i.getTimeoutreason());
@@ -68,8 +70,10 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	IndexFiles ifile = new IndexFiles(md5);
 	//ifile.setMd5(hif.getMd5());
 	ifile.setIndexed(hif.getIndexed());
+	ifile.setTimeindex(hif.getTimeindex());
 	ifile.setTimestamp(hif.getTimestamp());
 	ifile.setConvertsw(hif.getConvertsw());
+	ifile.setConverttime(hif.getConverttime());
 	ifile.setFailed(hif.getFailed());
 	ifile.setFailedreason(hif.getFailedreason());
 	ifile.setTimeoutreason(hif.getTimeoutreason());
@@ -78,6 +82,14 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    ifile.addFile(new FileLocation(file));
 	}
 	return ifile;
+    }
+
+    public void flush() {
+	HibernateIndexFiles.flush();
+    }
+
+    public void close() {
+	HibernateIndexFiles.commit();
     }
 
 }
