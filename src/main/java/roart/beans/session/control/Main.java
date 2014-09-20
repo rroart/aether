@@ -204,7 +204,6 @@ public class Main {
     }
 
     public List<String> index(String suffix) throws Exception {
-    	startThreads();
 	List retlist = null;
 	try {
 	    Set<String> preindexset = new HashSet<String>();
@@ -261,7 +260,6 @@ public class Main {
     }
 
     public List<String> index(String add, boolean reindex) throws Exception {
-    	startThreads();
 	List retlist = lucene(add, reindex);
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
@@ -278,7 +276,6 @@ public class Main {
     }
 
     public List<String> indexdate(String date, boolean reindex) throws Exception {
-    	startThreads();
 	List retlist = lucenedate(date, reindex);
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
@@ -444,7 +441,6 @@ public class Main {
 	Set<String> newset = new HashSet<String>();
 	List<String> retlist = filesystem(filesetnew, newset);
 
-    	startThreads();
 	for (String filename : newset) {
 	    //log.info("size2 " + filename);
 	    lucene(filename, false);
@@ -470,7 +466,6 @@ public class Main {
 	List<String> retlist = new ArrayList<String>();
 	Set<String> retset = Traverse.doList(add, newset, dirset, null, newmd5oronlyfile);
 
-    	startThreads();
 	for (String filename : newset) {
 	    //log.info("size2 " + filename);
 	    lucene(filename, false);
@@ -495,7 +490,7 @@ public class Main {
     private static OtherRunner otherRunnable = null;
     private static Thread otherWorker = null;
 
-    private void startThreads() {
+    public void startThreads() {
     	if (tikaRunnable == null) {
 	    String timeoutstr = roart.util.Prop.getProp().getProperty("tikatimeout");
 	    int timeout = new Integer(timeoutstr).intValue();

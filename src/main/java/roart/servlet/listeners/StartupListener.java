@@ -6,7 +6,12 @@ import java.util.Enumeration;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StartupListener implements javax.servlet.ServletContextListener {
+
+    private static final Logger log = LoggerFactory.getLogger(StartupListener.class);
 
     public void contextInitialized(ServletContextEvent context)  {
 	roart.beans.session.control.Main.parseconfig();
@@ -20,7 +25,19 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	}
 	roart.dao.SearchDao.instance(myindex);
 	roart.dao.IndexFilesDao.instance(mydb);
-	System.out.println("config parsed");
+
+        roart.jpa.SearchLucene.indexme("cd");
+        roart.jpa.SearchLucene.indexme("dvd");
+        roart.jpa.SearchLucene.indexme("book");
+        roart.jpa.SearchLucene.indexme("booku");
+        roart.jpa.SearchLucene.indexme("book0");
+        roart.jpa.SearchLucene.indexme("book0gen");
+
+	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	maininst.startThreads();
+
+	System.out.println("config done");
+	log.info("config done");
     }
 
     public void contextDestroyed(ServletContextEvent context) {
