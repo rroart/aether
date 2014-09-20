@@ -19,6 +19,9 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.TextField;
@@ -29,8 +32,11 @@ import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 //@Theme("mytheme")
 @Theme("valo")
@@ -38,18 +44,19 @@ import org.slf4j.LoggerFactory;
 public class MyVaadinUI extends UI
 {
 
-    private static final Logger log = LoggerFactory.getLogger(MyVaadinUI.class);
+    private Log log = LogFactory.getLog(this.getClass());
+    //private static final Logger log = LoggerFactory.getLogger(MyVaadinUI.class);
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = MyVaadinUI.class, widgetset = "roart.client.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 
-    private static VerticalLayout searchTab = null, controlPanelTab = null, miscTab = null, comicsTab = null, trainingTab = null;
-
     @Override
     protected void init(VaadinRequest request) {
         final VerticalLayout layout = new VerticalLayout();
+	VerticalLayout searchTab = null, controlPanelTab = null, miscTab = null, comicsTab = null, trainingTab = null;
+
         layout.setMargin(true);
         setContent(layout);
         
@@ -173,7 +180,9 @@ public class MyVaadinUI extends UI
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		addList(controlPanelTab, strarr);
+		VerticalLayout result = getResultTemplate();
+		addList(result, strarr);
+		setContent(result);
             }
         });
 	return button;
@@ -190,7 +199,9 @@ public class MyVaadinUI extends UI
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		addList(controlPanelTab, strarr);
+                VerticalLayout result = getResultTemplate();
+                addList(result, strarr);
+                setContent(result);
             }
         });
 	return button;
@@ -207,7 +218,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		addList(controlPanelTab, strarr);
+                VerticalLayout result = getResultTemplate();
+                addList(result, strarr);
+                setContent(result);
             }
         });
 	return button;
@@ -229,7 +242,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -253,7 +268,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -277,7 +294,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -301,7 +320,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -368,7 +389,9 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    List<String> strarr = maininst.memoryusage();
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -387,7 +410,9 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    List<String> strarr = maininst.overlapping();
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -411,7 +436,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -435,7 +462,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -459,7 +488,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -483,7 +514,9 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    addList(controlPanelTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -502,7 +535,9 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
 		    List<String> strarr = maininst.searchme(type, value);
-		    addList(miscTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -516,12 +551,14 @@ public class MyVaadinUI extends UI
 	// Handle changes in the value
 	tf.addValueChangeListener(new Property.ValueChangeListener() {
 		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
+ 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
 		    List<String> strarr = maininst.searchme2(value, "" + type);
-		    addList(miscTab, strarr);
+		    VerticalLayout result = getResultTemplate();
+		    addList(result, strarr);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -584,8 +621,10 @@ public class MyVaadinUI extends UI
 			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), str, myunits.get(i).getCreator(), myunits.get(i).getTitle()}, i);
 		    }
 		    table.setPageLength(myunits.size());
-		    miscTab.addComponent(table);
-		    miscTab.addComponent(new Label("Size count price " + myunits.size() + " " + count + " " + price));
+		    VerticalLayout result = getResultTemplate();
+		    result.addComponent(table);
+		    result.addComponent(new Label("Size count price " + myunits.size() + " " + count + " " + price));
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -596,7 +635,7 @@ public class MyVaadinUI extends UI
     void addList(VerticalLayout ts, List<String> strarr) {
 	for (int i=0; i<strarr.size(); i++) {
 	    String str = strarr.get(i);
-	    miscTab.addComponent(new Label(str));
+	    ts.addComponent(new Label(str));
 	}
     }
 
@@ -617,8 +656,9 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
 		    List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic", (new Integer(value)).intValue());
-		    addListComic(comicsTab, myunits);
-
+		    VerticalLayout result = getResultTemplate();
+		    addListComic(result, myunits);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -645,7 +685,9 @@ public class MyVaadinUI extends UI
 		    String letter = value;
 		    roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
 		    List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic", letter);
-		    addListComic(comicsTab, myunits);
+		    VerticalLayout result = getResultTemplate();
+		    addListComic(result, myunits);
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -685,13 +727,15 @@ public class MyVaadinUI extends UI
 			
 		    }
 		    table.setPageLength(myunits.size());
-		    comicsTab.addComponent(table);
+		    VerticalLayout result = getResultTemplate();
+		    result.addComponent(table);
 		    for (String key : mysums.keySet()) {
 			Integer i = mysums.get(key);
 			count += i.intValue();
-			comicsTab.addComponent(new Label("key " + key + " " + i.intValue()));
+			result.addComponent(new Label("key " + key + " " + i.intValue()));
 		    }
-		    comicsTab.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
+		    result.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -705,7 +749,9 @@ public class MyVaadinUI extends UI
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
 		List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic");
-		addListComic(comicsTab, myunits);
+                VerticalLayout result = getResultTemplate();
+                addListComic(result, myunits);
+                setContent(result);
             }
         });
 	return button;
@@ -720,7 +766,9 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    comicsTab.addComponent(new Label("unknown"));
+		    VerticalLayout result = getResultTemplate();
+		    result.addComponent(new Label("unknown"));
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -739,13 +787,13 @@ public class MyVaadinUI extends UI
 	    int prc = ((new Integer(myunit.getPrice())).intValue());
 	    count += cnt;
 	    sum += cnt * prc;
-	    comicsTab.addComponent(new Label(myunits.get(i).getTitle()));
+	    ts.addComponent(new Label(myunits.get(i).getTitle()));
 	    List<String> lines = myunits.get(i).getContent();
 	    for (int j=0; j<lines.size(); j++) {
-		comicsTab.addComponent(new Label(lines.get(j)));
+		ts.addComponent(new Label(lines.get(j)));
 	    }
 	}
-	comicsTab.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
+	ts.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
 	//table.setPageLength(myunits.size());
 	//miscTab.addComponent(table);
 	
@@ -766,6 +814,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
+		    VerticalLayout result = getResultTemplate();
 		    roart.beans.session.training.Main maininst = new roart.beans.session.training.Main();
 		    int count = 0;
 		    int sum = 0;
@@ -776,14 +825,15 @@ public class MyVaadinUI extends UI
 
 		    for (int i=0; i<myunits.size(); i++) {
 			roart.beans.session.training.Unit myunit = myunits.get(i);
-			trainingTab.addComponent(new Label("t " + myunits.get(i).getDate() + " " + myunits.get(i).getData()));
+			result.addComponent(new Label("t " + myunits.get(i).getDate() + " " + myunits.get(i).getData()));
 		    }
 		    for (String key : mysums.keySet()) {
 			Integer i = mysums.get(key);
 			count += i.intValue();
-			trainingTab.addComponent(new Label("key " + i.intValue()));
+			result.addComponent(new Label("key " + i.intValue()));
 		    }
-		    trainingTab.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
+		    result.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
+		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -791,5 +841,18 @@ public class MyVaadinUI extends UI
 	return ls;
     }
 
+    private VerticalLayout getResultTemplate() {
+	final Component content = getContent();
+	VerticalLayout res = new VerticalLayout();
+	res.addComponent(new Label("Search results"));
+        Button button = new Button("Back to main page");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+                setContent(content);
+            }
+        });
+	res.addComponent(button);
+	return res;
+    }
 
 }
