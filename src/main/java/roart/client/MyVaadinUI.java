@@ -120,9 +120,11 @@ public class MyVaadinUI extends UI
 	tab.addComponent(getFsAddNewPath());
 	tab.addComponent(getIndexNewPath());
 	tab.addComponent(getNotIndexed());
+	/*
 	tab.addComponent(getCleanup());
 	tab.addComponent(getCleanup2());
 	tab.addComponent(getCleanupfs());
+	*/
 	tab.addComponent(getMemoryUsage());
 	tab.addComponent(getOverlapping());
 	tab.addComponent(getReindex());
@@ -241,6 +243,53 @@ public class MyVaadinUI extends UI
 	return button;
     }
 
+    private Button getMemoryUsage() {
+        Button button = new Button("Memory usage");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		List<String> strarr = maininst.memoryusage();
+                VerticalLayout result = getResultTemplate();
+                addList(result, strarr);
+                setContent(result);
+            }
+        });
+	return button;
+    }
+
+    private Button getNotIndexed() {
+        Button button = new Button("Get not yet indexed");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		List<String> strarr = null;
+		try {
+		    strarr = maininst.notindexed();
+		} catch (Exception e) {
+		    log.error("Exception", e);
+		}
+                VerticalLayout result = getResultTemplate();
+                addList(result, strarr);
+                setContent(result);
+            }
+        });
+	return button;
+    }
+
+    private Button getOverlapping() {
+        Button button = new Button("Overlapping");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		List<String> strarr = maininst.overlapping();
+                VerticalLayout result = getResultTemplate();
+                addList(result, strarr);
+                setContent(result);
+            }
+        });
+	return button;
+    }
+
     private TextField getFsIndexNewPath() {
 	TextField tf = new TextField("Index filesystem new items");
 
@@ -319,32 +368,6 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
-    private TextField getNotIndexed() {
-	TextField tf = new TextField("Get not yet indexed");
-
-	// Handle changes in the value
-	tf.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
-		    try {
-			strarr = maininst.notindexed();
-		    } catch (Exception e) {
-			log.error("Exception", e);
-		    }
-		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	tf.setImmediate(true);
-	return tf;
-    }
-
     private TextField getCleanup() {
 	TextField tf = new TextField("Cleanup");
 
@@ -386,48 +409,6 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	tf.setImmediate(true);
-	return tf;
-    }
-
-    private TextField getMemoryUsage() {
-	TextField tf = new TextField("Memory usage");
-
-	// Handle changes in the value
-	tf.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = maininst.memoryusage();
-		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	tf.setImmediate(true);
-	return tf;
-    }
-
-    private TextField getOverlapping() {
-	TextField tf = new TextField("Overlapping");
-
-	// Handle changes in the value
-	tf.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = maininst.overlapping();
-		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
-		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
