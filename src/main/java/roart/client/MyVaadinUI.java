@@ -563,32 +563,24 @@ public class MyVaadinUI extends UI
     }
 
     private ListSelect getMiscCreator(String type) {
-	ListSelect ls = new ListSelect("Search " + type + " creator");
-	// Add some items (here by the item ID as the caption)
-	roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-        ls.addItems(maininst.getCreators(type));
-	ls.setNullSelectionAllowed(false);
-	// Show 5 items and a scrollbar if there are more
-	ls.setRows(5);
-
-	// Handle changes in the value
-	ls.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	ls.setImmediate(true);
-	return ls;
+	return getMiscYearOrCreator(type, "creator");
     }
 
-    private ListSelect getMiscYear(final String type) {
-	ListSelect ls = new ListSelect("Search " + type + " year");
+    private ListSelect getMiscYear(String type) {
+	return getMiscYearOrCreator(type, "year");
+    }
+
+    private ListSelect getMiscYearOrCreator(final String type, final String yc) {
+	ListSelect ls = new ListSelect("Search " + type + " " + yc);
 	// Add some items (here by the item ID as the caption)
 	final roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-        ls.addItems(maininst.getYears(type));
+	if (yc.equals("year")) {
+	    ls.addItems(maininst.getYears(type));
+	    ls.setWidth("200");
+	} else {
+	    ls.addItems(maininst.getCreators(type));
+	    ls.setWidth("400");
+	}
 	ls.setNullSelectionAllowed(false);
 	// Show 5 items and a scrollbar if there are more
 	ls.setRows(5);
@@ -599,7 +591,12 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    List<roart.beans.session.misc.Unit> myunits = maininst.searchyear(type, value);
+		    List<roart.beans.session.misc.Unit> myunits = null;
+		    if (yc.equals("year")) {
+			myunits = maininst.searchyear(type, value);
+		    } else {
+			myunits = maininst.searchcreator(type, value);
+		    }
 		    Integer count = new Integer (0);
 		    Float price = new Float (0);
 		    Table table = new Table(type);
@@ -625,10 +622,10 @@ public class MyVaadinUI extends UI
 			String str = "";
 			Link link1 = null, link2 = null, link3 = null, link4 = null;
 			if (isbn != null && !isbn.equals("0")) {
-			    link1 = new Link("US " + isbn, new ExternalResource("http://www.lookupbyisbn.com/Search/Book/" + isbn));
-			    link2 = new Link("NO " + isbn, new ExternalResource("http://www.ark.no/SamboWeb/sok.do?isbn=" + isbn));
+			    link1 = new Link("US " + isbn, new ExternalResource("http://www.lookupbyisbn.com/Search/Book/" + isbn + "/1"));
+			    link2 = new Link("US " + isbn, new ExternalResource("http://www.bookfinder.com/search/?st=sr&ac=qr&isbn=" + isbn));
 			    link3 = new Link("SE " + isbn, new ExternalResource("http://libris.kb.se/hitlist?d=libris&q=numm%3a" + isbn));
-			    link4 = new Link("G" + isbn, new ExternalResource("https://www.google.com/search?q=isbn%2b%2b" + isbn));
+			    link4 = new Link("G " + isbn, new ExternalResource("https://www.google.com/search?q=isbn%2b%2b" + isbn));
 			}
 			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle(), link1, link2, link3, link4}, i);
 		    }
@@ -672,7 +669,7 @@ public class MyVaadinUI extends UI
     }
 
     private ListSelect getComicTitles() {
-	ListSelect ls = new ListSelect("Search titles");
+	final ListSelect ls = new ListSelect("Search titles");
 	// Add some items (here by the item ID as the caption)
 	roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
         ls.addItems(maininst.getTitles("comic"));
@@ -686,8 +683,20 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
+		    int pos = -1;
+		    int j = -1;
+		    for (Object o : ls.getItemIds()) {
+			j = j + 1;
+			if(ls.isSelected(o)) {
+			    if (pos < 0) {
+				pos = j;
+			    } else {
+				log.error("double pos");
+			    }
+			}
+		    }
 		    roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-		    List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic", (new Integer(value)).intValue());
+		    List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic", pos);
 		    VerticalLayout result = getResultTemplate();
 		    addListComic(result, myunits);
 		    setContent(result);
