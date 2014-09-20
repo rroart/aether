@@ -5,6 +5,7 @@ import roart.model.HibernateUtil;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
+import roart.model.ResultItem;
 
 import roart.dao.SearchDao;
 
@@ -71,25 +72,25 @@ public class Search {
 	SearchDao.indexme(type);
     }
 
-    public static String [] searchme(String type, String str) {
-		String[] strarr = new String[0];
+    public static ResultItem[] searchme(String type, String str) {
+		ResultItem[] strarr = new ResultItem[0];
 		strarr = SearchDao.searchme(type, str);
     return strarr;
 }
 
-    public static String [] searchme2(String str, String searchtype) {
+    public static ResultItem[] searchme2(String str, String searchtype) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-		String[] strarr = new String[0];
+		ResultItem[] strarr = new ResultItem[0];
 		
 		strarr = SearchDao.searchme2(str, searchtype);
     return strarr;
 }
 
     // not yet usable, lacking termvector
-    public static String [] searchsimilar(String md5i) {
+    public static ResultItem[] searchsimilar(String md5i) {
 	String type = "all";
-		String[] strarr = new String[0];
+		ResultItem[] strarr = new ResultItem[0];
     return strarr;
 }
 

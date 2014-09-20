@@ -1,5 +1,7 @@
 package roart.client;
 
+import roart.model.ResultItem;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -21,6 +23,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Link;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -545,9 +549,9 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-		    List<String> strarr = maininst.searchme(type, value);
+		    List<ResultItem> strarr = maininst.searchme(type, value);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
 		    setContent(result);
 		}
 	    });
@@ -566,9 +570,9 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-		    List<String> strarr = maininst.searchme2(value, "" + type);
+		    List<ResultItem> strarr = maininst.searchme2(value, "" + type);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
 		    setContent(result);
 		}
 	    });
@@ -618,6 +622,19 @@ public class MyVaadinUI extends UI
 		    Integer count = new Integer (0);
 		    Float price = new Float (0);
 		    Table table = new Table(type);
+		    table.setWidth("800");
+		    table.addContainerProperty("Date", String.class, null);
+		    table.addContainerProperty("Count", String.class, null);
+		    table.addContainerProperty("Type", String.class, null);
+		    table.addContainerProperty("Price", String.class, null);
+		    table.addContainerProperty("Creator", String.class, null);
+		    table.addContainerProperty("Title", String.class, null);
+		    if (type.startsWith("book")) {
+			table.addContainerProperty("Isbn 1", Link.class, null);
+			table.addContainerProperty("Isbn 2", Link.class, null);
+			table.addContainerProperty("Isbn 3", Link.class, null);
+			table.addContainerProperty("Isbn 4", Link.class, null);
+		    }
 		    for (int i=0; i<myunits.size(); i++) {
 			count += new Integer(myunits.get(i).getCount());
 			if (!myunits.get(i).getPrice().substring(0,1).equals("D") && !myunits.get(i).getPrice().substring(0,1).equals("L") && !myunits.get(i).getPrice().substring(0,1).equals("g") ) {
@@ -625,13 +642,16 @@ public class MyVaadinUI extends UI
 			}
 			String isbn = myunits.get(i).getIsbn();
 			String str = "";
+			Link link1 = null, link2 = null, link3 = null, link4 = null;
 			if (isbn != null && !isbn.equals("0")) {
-			    str = "<a href=\"http://www.lookupbyisbn.com/Search/Book/" + isbn + "\">US " + isbn + "</a><a href=\"http://www.ark.no/SamboWeb/sok.do?isbn=" + isbn + "\">NO " + isbn + "</a><a href=\"http://libris.kb.se/hitlist?d=libris&q=numm%3a" + isbn + "\">SE " + isbn + "</a><a href=\"https://www.google.com/search?q=isbn%2b%2b" + isbn + "\">G " + isbn + "</a>";
-
+			    link1 = new Link("US " + isbn, new ExternalResource("http://www.lookupbyisbn.com/Search/Book/" + isbn));
+			    link2 = new Link("NO " + isbn, new ExternalResource("http://www.ark.no/SamboWeb/sok.do?isbn=" + isbn));
+			    link3 = new Link("SE " + isbn, new ExternalResource("http://libris.kb.se/hitlist?d=libris&q=numm%3a" + isbn));
+			    link4 = new Link("G" + isbn, new ExternalResource("https://www.google.com/search?q=isbn%2b%2b" + isbn));
 			}
-			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), str, myunits.get(i).getCreator(), myunits.get(i).getTitle()}, i);
+			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle(), link1, link2, link3, link4}, i);
 		    }
-		    table.setPageLength(myunits.size());
+		    table.setPageLength(table.size());
 		    VerticalLayout result = getResultTemplate();
 		    result.addComponent(table);
 		    result.addComponent(new Label("Size count price " + myunits.size() + " " + count + " " + price));
@@ -641,6 +661,26 @@ public class MyVaadinUI extends UI
 	// Fire value changes immediately when the field loses focus
 	ls.setImmediate(true);
 	return ls;
+    }
+
+    void addListTable(VerticalLayout ts, List<ResultItem> strarr) {
+	Table table = new Table("Table");
+	table.setWidth("800");
+	int max = 0;
+	for (int i=0; i<strarr.size(); i++) {
+	    if (strarr.get(i).get().size() > max) {
+		max = strarr.get(i).get().size();
+	    }
+	}
+	for (int i = 0; i < max; i++) {
+	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
+	}
+	for (int i = 1; i < strarr.size(); i++) {
+	    ResultItem str = strarr.get(i);
+	    table.addItem(str.getarr(), i);
+	}
+	table.setPageLength(table.size());
+	ts.addComponent(table);
     }
 
     void addList(VerticalLayout ts, List<String> strarr) {

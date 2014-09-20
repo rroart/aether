@@ -1,5 +1,7 @@
 package roart.jpa;
 
+import roart.model.ResultItem;
+
 import java.util.List;
 
 import java.io.InputStream;
@@ -19,17 +21,17 @@ public class LuceneSearchJpa extends SearchJpa {
 	SearchLucene.indexme(type);
     }
 
-    public String [] searchme(String type, String str) {
+    public ResultItem[] searchme(String type, String str) {
 	return SearchLucene.searchme(type, str);
     }
 
-    public String [] searchme2(String str, String searchtype) {
+    public ResultItem[] searchme2(String str, String searchtype) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 	return SearchLucene.searchme2(str, searchtype);
     }
 
-    public String [] searchsimilar(String md5i) {
+    public ResultItem[] searchsimilar(String md5i) {
 	return null;
     }
 }

@@ -11,6 +11,8 @@ import java.util.HashSet;
 import roart.jpa.SearchJpa;
 import roart.jpa.LuceneSearchJpa;
 import roart.jpa.SolrSearchJpa;
+
+import roart.model.ResultItem;
  
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,17 +43,17 @@ public class SearchDao {
 	searchJpa.indexme(type);
     }
 
-    public static String [] searchme(String type, String str) {
+    public static ResultItem[] searchme(String type, String str) {
 	return searchJpa.searchme(type, str);
     }
 
-    public static String [] searchme2(String str, String searchtype) {
+    public static ResultItem[] searchme2(String str, String searchtype) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 	return searchJpa.searchme2(str, searchtype);
     }
 
-    public static String [] searchsimilar(String md5i) {
+    public static ResultItem[] searchsimilar(String md5i) {
 	return null;
     }
 

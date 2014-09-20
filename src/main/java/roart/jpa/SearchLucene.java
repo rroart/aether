@@ -6,6 +6,7 @@ import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
+import roart.model.ResultItem;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -158,8 +159,8 @@ public class SearchLucene {
 	}
 	}
 
-    public static String [] searchme(String type, String str) {
-		String[] strarr = new String[0];
+    public static ResultItem[] searchme(String type, String str) {
+		ResultItem[] strarr = new ResultItem[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
@@ -176,7 +177,11 @@ public class SearchLucene {
     searcher.search(q, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
-    strarr = new String[hits.length];
+    strarr = new ResultItem[hits.length + 1];
+    strarr[0] = new ResultItem();
+    strarr[0].add("Hit");
+    strarr[0].add("Title");
+    strarr[0].add("Score");
     // output results
     log.info("Found " + hits.length + " hits.");
     for (int i = 0; i < hits.length; ++i) {
@@ -185,8 +190,10 @@ public class SearchLucene {
 	Document d = searcher.doc(docId);
 	log.info((i + 1) + ". " + d.get(Constants.TITLE) + ": "
 			   + score);
-	strarr[i] = "" + (i + 1) + ". " + d.get(Constants.TITLE) + ": "
-			   + score;
+	strarr[i + 1] = new ResultItem();
+	strarr[i + 1].add("" + (i + 1)+ ". ");
+	strarr[i + 1].add(d.get(Constants.TITLE) + ": ");
+	strarr[i + 1].add("" + score);
     }
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
@@ -196,10 +203,10 @@ public class SearchLucene {
     return strarr;
 }
 
-    public static String [] searchme2(String str, String searchtype) {
+    public static ResultItem[] searchme2(String str, String searchtype) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-		String[] strarr = new String[0];
+		ResultItem[] strarr = new ResultItem[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
@@ -242,7 +249,16 @@ public class SearchLucene {
     searcher.search(q, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
-    strarr = new String[hits.length];
+    strarr = new ResultItem[hits.length + 1];
+    strarr[0] = new ResultItem();
+    strarr[0].add("Hit");
+    strarr[0].add("Md5/Id");
+    strarr[0].add("Filename");
+    strarr[0].add("Lang");
+    strarr[0].add("Timestamp");
+    strarr[0].add("Convertsw");
+    strarr[0].add("Converttime");
+    strarr[0].add("Score");
     // output results
     log.info("Found " + hits.length + " hits.");
     for (int i = 0; i < hits.length; ++i) {
@@ -259,23 +275,36 @@ public class SearchLucene {
 	String title = md5 + " " + filename;
 	if (lang != null) {
 	    title = title + " (" + lang + ") ";
+	    lang = "(" + lang + ")";
 	}
+	String timestamp = null;
+	String convertsw = null;
+	String converttime = null;
 	if (indexmd5 != null) {
-	    String timestamp = indexmd5.getTimestamp();
+	    timestamp = indexmd5.getTimestamp();
 	    if (timestamp != null) {
 		Long l = new Long(timestamp);
 		Date date = new Date(l.longValue());
 		title = title + " (" + date.toString() + ") ";
+		timestamp = date.toString();
 	    }
-	    String convertsw = indexmd5.getConvertsw();
+	    convertsw = indexmd5.getConvertsw();
 	    if (convertsw != null) {
 		title = title + " (" + convertsw + " " + indexmd5.getConverttime() + "s) ";
 	    }
+	    converttime = indexmd5.getConverttime();
 	}
 	log.info((i + 1) + ". " + title + ": "
 			   + score);
-	strarr[i] = "" + (i + 1) + ". " + title + ": "
-			   + score;
+	strarr[i + 1] = new ResultItem();
+	strarr[i + 1].add((i + 1) + ". ");
+	strarr[i + 1].add(md5);
+	strarr[i + 1].add(filename);
+	strarr[i + 1].add(lang);
+	strarr[i + 1].add(timestamp);
+	strarr[i + 1].add(convertsw);
+	strarr[i + 1].add(converttime);
+	strarr[i + 1].add("" + score);
     }
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
@@ -286,9 +315,9 @@ public class SearchLucene {
 }
 
     // not yet usable, lacking termvector
-    public static String [] searchsimilar(String md5i) {
+    public static ResultItem[] searchsimilar(String md5i) {
 	String type = "all";
-		String[] strarr = new String[0];
+		ResultItem[] strarr = new ResultItem[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
@@ -348,7 +377,7 @@ public class SearchLucene {
     searcher.search(query, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
-    strarr = new String[hits.length];
+    strarr = new ResultItem[hits.length];
     // output results
     log.info("Found " + hits.length + " hits.");
     for (int i = 0; i < hits.length; ++i) {
@@ -365,8 +394,10 @@ public class SearchLucene {
 	}
 	log.info((i + 1) + ". " + title + ": "
 			   + score);
+	/*
 	strarr[i] = "" + (i + 1) + ". " + title + ": "
 			   + score;
+	*/
     }
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());

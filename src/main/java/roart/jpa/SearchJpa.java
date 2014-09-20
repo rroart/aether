@@ -1,5 +1,7 @@
 package roart.jpa;
 
+import roart.model.ResultItem;
+
 import java.util.List;
 
 import java.io.InputStream;
@@ -15,9 +17,9 @@ public abstract class SearchJpa {
 
     public abstract void indexme(String type);
 
-    public abstract String [] searchme(String type, String str);
+    public abstract ResultItem[] searchme(String type, String str);
 
-    public abstract String [] searchme2(String str, String searchtype);
+    public abstract ResultItem[] searchme2(String str, String searchtype);
 
 }
 

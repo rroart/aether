@@ -11,6 +11,7 @@ import roart.thread.TikaRunner;
 import roart.dao.IndexFilesDao;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
+import roart.model.ResultItem;
 import roart.lang.*;
 
 import org.apache.commons.logging.Log;

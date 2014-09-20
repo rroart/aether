@@ -27,6 +27,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import roart.search.Constants;
 import roart.lang.LanguageDetect;
 
+import roart.model.ResultItem;
 import roart.model.IndexFiles;
 import roart.dao.IndexFilesDao;
 
@@ -121,14 +122,14 @@ public class SearchSolr {
     public static void indexme(String type) {
     }
 
-    public static String [] searchme(String type, String str) {
-	String[] strarr = new String[0];
+    public static ResultItem[] searchme(String type, String str) {
+	ResultItem[] strarr = new ResultItem[0];
 	System.out.println("searchme");
 	return strarr;
     }
 
-    public static String [] searchme2(String str, String searchtype) {
-	String[] strarr = new String[0];
+    public static ResultItem[] searchme2(String str, String searchtype) {
+	ResultItem[] strarr = new ResultItem[0];
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 
@@ -147,7 +148,16 @@ public class SearchSolr {
 	    // To read Documents as beans, the bean must be annotated as given in the example. 
 	    
 	    //List<Item> beans = rsp.getBeans(Item.class);
-	    strarr = new String[docs.size()];
+	    strarr = new ResultItem[docs.size() + 1];
+	    strarr[0] = new ResultItem();
+	    strarr[0].add("Hit");
+	    strarr[0].add("Md5/Id");
+	    strarr[0].add("Filename");
+	    strarr[0].add("Lang");
+	    strarr[0].add("Timestamp");
+	    strarr[0].add("Convertsw");
+	    strarr[0].add("Converttime");
+	    strarr[0].add("Score");
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
 		i++;
@@ -161,22 +171,34 @@ public class SearchSolr {
 		if (lang != null) {
 		    title = title + " (" + lang + ") ";
 		}
+		String timestamp = null;
+		String convertsw = null;
+		String converttime = null;
 		if (indexmd5 != null) {
-		    String timestamp = indexmd5.getTimestamp();
+		    timestamp = indexmd5.getTimestamp();
 		    if (timestamp != null) {
 			Long l = new Long(timestamp);
 			Date date = new Date(l.longValue());
 			title = title + " (" + date.toString() + ") ";
+			timestamp = date.toString();
 		    }
-		    String convertsw = indexmd5.getConvertsw();
+		    convertsw = indexmd5.getConvertsw();
 		    if (convertsw != null) {
 			title = title + " (" + convertsw + " " + indexmd5.getConverttime() + "s) ";
 		    }
+		    converttime = indexmd5.getConverttime();
 		}
 		log.info((i + 1) + ". " + title + ": "
 			 + score);
-		strarr[i] = "" + (i + 1) + ". " + title + ": "
-		    + score;
+		strarr[i + 1] = new ResultItem();
+		strarr[i + 1].add((i + 1) + ". ");
+		strarr[i + 1].add(md5);
+		strarr[i + 1].add(filename);
+		strarr[i + 1].add(lang);
+		strarr[i + 1].add(timestamp);
+		strarr[i + 1].add(convertsw);
+		strarr[i + 1].add(converttime);
+		strarr[i + 1].add("" + score);
 	    }
 	} catch (SolrServerException e) {
 	    log.error("Exception", e);
@@ -186,7 +208,7 @@ public class SearchSolr {
 	return strarr;
     }
 
-    public static String [] searchsimilar(String md5i) {
+    public static ResultItem[] searchsimilar(String md5i) {
 	return null;
     }
 

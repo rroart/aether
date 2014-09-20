@@ -16,6 +16,7 @@ import java.io.*;
 import roart.dao.SearchDao;
 //import roart.dao.FilesDao;
 import roart.dao.IndexFilesDao;
+import roart.model.ResultItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -204,31 +205,31 @@ public class Main {
 	return bubble_sort_title(creators, type);
     }
 
-    public List<String> searchme(String type, String str) {
+    public List<ResultItem> searchme(String type, String str) {
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.Search.searchme(type, str);
-	for (String stri : strarr) {
+	ResultItem[] strarr = roart.search.Search.searchme(type, str);
+	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
 	}
 	return strlist;
     }
     
-    public List<String> searchme2(String str, String type) {
+    public List<ResultItem> searchme2(String str, String type) {
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.Search.searchme2(str, type);
-	for (String stri : strarr) {
+	ResultItem[] strarr = roart.search.Search.searchme2(str, type);
+	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
 	}
 	return strlist;
     }
     
-    public List<String> searchsimilar(String md5) {
+    public List<ResultItem> searchsimilar(String md5) {
 	List strlist = new ArrayList<String>();
-	String[] strarr = roart.search.Search.searchsimilar(md5);
+	ResultItem[] strarr = roart.search.Search.searchsimilar(md5);
 	if (strarr == null) {
 	    return strlist;
 	}
-	for (String stri : strarr) {
+	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
 	}
 	return strlist;
