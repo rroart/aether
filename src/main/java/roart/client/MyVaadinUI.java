@@ -97,6 +97,12 @@ public class MyVaadinUI extends UI
 	VerticalLayout tab = new VerticalLayout();
 	//tab.addComponent(tf);
 	tab.setCaption("Search");
+	tab.addComponent(getSearch("Search plain", 0));
+	tab.addComponent(getSearch("Search analyzing", 1));
+	tab.addComponent(getSearch("Search complex", 2));
+	tab.addComponent(getSearch("Search extendable", 3));
+	tab.addComponent(getSearch("Search multi", 4));
+	tab.addComponent(getSearch("Search simple", 5));
 	return tab;
     }
 
@@ -151,12 +157,6 @@ public class MyVaadinUI extends UI
 	tab.addComponent(bookTab);
 	tab.addComponent(bookuTab);
 	tab.addComponent(bookuTab);
-	tab.addComponent(getMiscSearch("Search plain", 0));
-	tab.addComponent(getMiscSearch("Search analyzing", 1));
-	tab.addComponent(getMiscSearch("Search complex", 2));
-	tab.addComponent(getMiscSearch("Search extendable", 3));
-	tab.addComponent(getMiscSearch("Search multi", 4));
-	tab.addComponent(getMiscSearch("Search simple", 5));
 	return tab;
     }
 
@@ -556,7 +556,7 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
-    private TextField getMiscSearch(String caption, final int type) {
+    private TextField getSearch(String caption, final int type) {
 	TextField tf = new TextField(caption);
 
 	// Handle changes in the value
