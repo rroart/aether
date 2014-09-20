@@ -40,14 +40,21 @@ public class LanguageDetect {
 	inited = true;
     }
     
-    public static String detect(String text) throws LangDetectException {
-	if (!inited) init("./profiles/");
-	Date d = logstart();
-	Detector detector = DetectorFactory.create();
-	detector.append(text);
-	String retstr = detector.detect();
-	logstop(d);
-	return retstr;
+    public static String detect(String text) {
+	try {
+	    if (!inited) init("./profiles/");
+	    Date d = logstart();
+	    Detector detector = DetectorFactory.create();
+	    detector.append(text);
+	    String retstr = detector.detect();
+	    logstop(d);
+	    log.info("language " + retstr);
+	    log.info("language2 " + LanguageDetect.detectLangs(text));
+	    return retstr;
+	} catch (Exception e) {
+	    log.error("exception", e);
+	}
+	return null;
     }
 
     public static ArrayList<Language> detectLangs(String text) throws LangDetectException {

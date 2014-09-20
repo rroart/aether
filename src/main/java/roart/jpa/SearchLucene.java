@@ -91,14 +91,7 @@ public class SearchLucene {
 
 	log.info("indexing " + md5);
 
-	String lang = null;
-	try {
-	    lang = LanguageDetect.detect(strLine);
-	    log.info("language " + lang);
-	    log.info("language2 " + LanguageDetect.detectLangs(strLine));
-	} catch (Exception e) {
-	    log.error("exception", e);
-	}
+	String lang = LanguageDetect.detect(strLine);
 
 	Document doc = new Document();
 	doc.add(new TextField(Constants.ID, md5, Field.Store.YES));

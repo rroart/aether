@@ -83,15 +83,7 @@ public class SearchSolr {
 
 	log.info("indexing " + md5);
 
-	// move this to a method
-	String lang = null;
-	try {
-	    lang = LanguageDetect.detect(strLine);
-	    log.info("language " + lang);
-	    log.info("language2 " + LanguageDetect.detectLangs(strLine));
-	} catch (Exception e) {
-	    log.error("exception", e);
-	}
+	String lang = LanguageDetect.detect(strLine);
 
 	String i = strLine;
 	try {
