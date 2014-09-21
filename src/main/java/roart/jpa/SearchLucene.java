@@ -117,6 +117,7 @@ public class SearchLucene {
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
 	    log.error("Exception", e);
+	    return -1;
 	}
     return retsize;
 	}
@@ -258,6 +259,7 @@ public class SearchLucene {
     strarr[0].add("Convertsw");
     strarr[0].add("Converttime");
     strarr[0].add("Indextime");
+    strarr[0].add("No indexing reason");
     strarr[0].add("Score");
     // output results
     log.info("Found " + hits.length + " hits.");
@@ -305,6 +307,7 @@ public class SearchLucene {
 	strarr[i + 1].add(convertsw);
 	strarr[i + 1].add(converttime);
 	strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
+	strarr[i + 1].add(indexmd5.getNoindexreason());
 	strarr[i + 1].add("" + score);
     }
   	} catch (Exception e) {

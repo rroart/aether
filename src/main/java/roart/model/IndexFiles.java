@@ -24,6 +24,7 @@ public class IndexFiles {
 	private String converttime;
 	private Integer failed;
     private String failedreason;
+    private String noindexreason;
     private String timeoutreason;
 	private Set<FileLocation> filelocations;
 
@@ -196,6 +197,15 @@ public class IndexFiles {
 	public void setTimeoutreason(String timeoutreason) {
 	    changed |= true;
 	    this.timeoutreason = timeoutreason;
+	}
+
+        public String getNoindexreason() {
+	    return noindexreason;
+	}
+
+	public void setNoindexreason(String noindexreason) {
+	    changed |= true;
+	    this.noindexreason = noindexreason;
 	}
 
         public String getFailedreason() {

@@ -61,6 +61,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    }
 	    hif.setFailedreason(fr); // temp fix substr
 	    hif.setTimeoutreason(i.getTimeoutreason());
+	    hif.setNoindexreason(i.getNoindexreason());
 	    hif.setFilenames(i.getFilenames());
 	} catch (Exception e) {
 	    log.error("Exception", e);
@@ -82,6 +83,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	ifile.setFailed(hif.getFailed());
 	ifile.setFailedreason(hif.getFailedreason());
 	ifile.setTimeoutreason(hif.getTimeoutreason());
+	ifile.setNoindexreason(hif.getNoindexreason());
 	Set<String> files = hif.getFilenames();
 	for (String file : files) {
 	    ifile.addFile(new FileLocation(file));

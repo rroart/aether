@@ -113,8 +113,10 @@ public class SearchSolr {
 	    UpdateResponse rsp = req.process( server );
 	} catch (IOException e) {
 	    log.error("Exception", e);
+	    return -1;
 	} catch (SolrServerException e) {
 	    log.error("Exception", e);
+	    return -1;
 	}
 	return retsize;
     }
@@ -158,6 +160,7 @@ public class SearchSolr {
 	    strarr[0].add("Convertsw");
 	    strarr[0].add("Converttime");
 	    strarr[0].add("Indextime");
+	    strarr[0].add("No indexing reason");
 	    strarr[0].add("Score");
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
@@ -200,6 +203,7 @@ public class SearchSolr {
 		strarr[i + 1].add(convertsw);
 		strarr[i + 1].add(converttime);
 		strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
+		strarr[i + 1].add(indexmd5.getNoindexreason());
 		strarr[i + 1].add("" + score);
 	    }
 	} catch (SolrServerException e) {

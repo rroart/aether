@@ -47,6 +47,7 @@ public class HbaseIndexFiles {
     private static byte[] failedq = Bytes.toBytes("failed");
     private static byte[] failedreasonq = Bytes.toBytes("failedreason");
     private static byte[] timeoutreasonq = Bytes.toBytes("timeoutreason");
+    private static byte[] noindexreasonq = Bytes.toBytes("noindexreason");
     private static byte[] nodeq = Bytes.toBytes("node");
     private static byte[] filenameq = Bytes.toBytes("filename");
     private static byte[] filelocationq = Bytes.toBytes("filelocation");
@@ -138,6 +139,9 @@ public class HbaseIndexFiles {
 	    if (ifile.getTimeoutreason() != null) {
 		put.add(indexcf, timeoutreasonq, Bytes.toBytes(ifile.getTimeoutreason()));
 	    }
+	    if (ifile.getNoindexreason() != null) {
+		put.add(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
+	    }
 	    int i = -1;
 	    for (FileLocation file : ifile.getFilelocations()) {
 		i++;
@@ -177,6 +181,7 @@ public class HbaseIndexFiles {
 	ifile.setFailed(new Integer(convert0(bytesToString(index.getValue(indexcf, failedq)))));
 	ifile.setFailedreason(bytesToString(index.getValue(indexcf, failedreasonq)));
 	ifile.setTimeoutreason(bytesToString(index.getValue(indexcf, timeoutreasonq)));
+	ifile.setNoindexreason(bytesToString(index.getValue(indexcf, noindexreasonq)));
 	List<KeyValue> list = index.list();
 	if (list != null) {
 	for (KeyValue kv : list) {

@@ -365,6 +365,7 @@ public class Traverse {
 	ri.add("Failed");
 	ri.add("Failed reason");
 	ri.add("Timeout reason");
+	ri.add("No indexing reason");
 	ri.add("Indextime");
 	ri.add("Filenames");
 	ri.add("A filename");
@@ -406,6 +407,7 @@ public class Traverse {
 	    ri.add("" + index.getFailed());
 	    ri.add(index.getFailedreason());
 	    ri.add(index.getTimeoutreason());
+	    ri.add(index.getNoindexreason());
 	    ri.add("" + index.getFilelocations().size());
 	    ri.add(afilename);
 	    retlist.add(ri);

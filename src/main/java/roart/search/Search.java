@@ -48,6 +48,10 @@ public class Search {
 
     retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), retlist);
 
+    if (retsize < 0) {
+	dbindex.setNoindexreason("Exception"); // later, propagate the exception
+    } else {
+
     log.info("size2 " + retsize);
 	el.size = retsize;
 	dbindex.setIndexed(Boolean.TRUE);
@@ -64,6 +68,7 @@ public class Search {
 		// TODO Auto-generated catch block
 		log.error("Exception", e);
 	}
+    }
     Queues.decIndexs();
     
 	}

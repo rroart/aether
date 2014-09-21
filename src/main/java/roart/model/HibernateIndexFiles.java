@@ -59,6 +59,7 @@ import org.apache.commons.logging.LogFactory;
 	private Integer failed;
 	private String failedreason;
 	private String timeoutreason;
+	private String noindexreason;
 	private Set<String> filenames;
 
 	@Column(name = "md5")
@@ -206,6 +207,15 @@ import org.apache.commons.logging.LogFactory;
 
 	public void setTimeoutreason(String timeoutreason) {
 	    this.timeoutreason = timeoutreason;
+	}
+
+	@Column(name = "noindexreason")
+        public String getNoindexreason() {
+	    return noindexreason;
+	}
+
+	public void setNoindexreason(String noindexreason) {
+	    this.noindexreason = noindexreason;
 	}
 
 	@Column(name = "failedreason")
