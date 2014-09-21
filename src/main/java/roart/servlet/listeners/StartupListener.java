@@ -31,7 +31,6 @@ public class StartupListener implements javax.servlet.ServletContextListener {
         roart.jpa.SearchLucene.indexme("book");
         roart.jpa.SearchLucene.indexme("booku");
         roart.jpa.SearchLucene.indexme("book0");
-        roart.jpa.SearchLucene.indexme("book0gen");
 
 	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 	maininst.startThreads();
