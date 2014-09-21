@@ -79,6 +79,9 @@ public class MyVaadinUI extends UI
 
 	//        layout.addComponent(tf);
 
+	Label topLine = new Label("Disk search engine");
+	layout.addComponent(topLine);
+
 	TabSheet tabsheet = new TabSheet();
 	layout.addComponent(tabsheet);
 	// Create the first tab
@@ -97,7 +100,12 @@ public class MyVaadinUI extends UI
 	tabsheet.addTab(miscTab);
 	tabsheet.addTab(comicsTab);
 	tabsheet.addTab(trainingTab);
-
+	
+	HorizontalLayout bottomLine = new HorizontalLayout();
+	bottomLine.addComponent(new Label("Db type " + roart.util.Prop.getProp().getProperty("mydb")));
+	bottomLine.addComponent(new Label("Index type " + roart.util.Prop.getProp().getProperty("myindex")));
+	bottomLine.addComponent(new Label("Affero GPL"));
+	layout.addComponent(bottomLine);
     }
 
     private VerticalLayout getSearchTab() {
