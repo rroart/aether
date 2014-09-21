@@ -54,7 +54,11 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    hif.setConvertsw(i.getConvertsw());
 	    hif.setConverttime(i.getConverttime());
 	    hif.setFailed(i.getFailed());
-	    hif.setFailedreason(i.getFailedreason());
+	    String fr = i.getFailedreason();
+	    if (fr != null && fr.length() > 250) {
+		fr = fr.substring(0,250);
+	    }
+	    hif.setFailedreason(fr); // temp fix substr
 	    hif.setTimeoutreason(i.getTimeoutreason());
 	    hif.setFilenames(i.getFilenames());
 	} catch (Exception e) {
@@ -75,7 +79,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	ifile.setConvertsw(hif.getConvertsw());
 	ifile.setConverttime(hif.getConverttime());
 	ifile.setFailed(hif.getFailed());
-	ifile.setFailedreason(hif.getFailedreason().substring(0,250)); // temp fix substr
+	ifile.setFailedreason(hif.getFailedreason());
 	ifile.setTimeoutreason(hif.getTimeoutreason());
 	Set<String> files = hif.getFilenames();
 	for (String file : files) {
