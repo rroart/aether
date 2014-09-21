@@ -273,14 +273,17 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<String> strarr = null;
+		List<List> lists = null;
 		try {
-		    strarr = maininst.notindexed();
+		    lists = maininst.notindexed();
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
+		List<ResultItem> strarr = lists.get(0);
+		List<String> strarr2 = lists.get(1);
                 VerticalLayout result = getResultTemplate();
-                addList(result, strarr);
+                addListTable(result, strarr);
+                addList(result, strarr2);
                 setContent(result);
             }
         });

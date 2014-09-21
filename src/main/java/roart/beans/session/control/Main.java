@@ -1,5 +1,7 @@
 package roart.beans.session.control;
 
+import roart.model.ResultItem;
+
 import javax.servlet.http.*;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -381,15 +383,18 @@ public class Main {
 	return retlist;
     }
 
-    public List<String> notindexed() throws Exception {
-	List<String> retlist = null;
+    public List<List> notindexed() throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
+	List<String> retlist2 = new ArrayList<String>();
+	List<ResultItem> retlist = null;
 	List<String> retlistyes = null;
 	try {
 	    retlist = Traverse.notindexed();
 	    retlistyes = Traverse.indexed();
 	    Map<String, Integer> plusretlist = new HashMap<String, Integer>();
 	    Map<String, Integer> plusretlistyes = new HashMap<String, Integer>();
-	    for(String filename : retlist) {
+	    for(ResultItem ri : retlist) {
+		String filename = ri.get().get(9);
 		if (filename == null) {
 		    continue;
 		}
@@ -424,16 +429,18 @@ public class Main {
 	    System.out.println("size " + plusretlist.size());
 	    System.out.println("sizeyes " + plusretlistyes.size());
 	    for(String string : plusretlist.keySet()) {
-		retlist.add("Format " + string + " : " + plusretlist.get(string).intValue());
+		retlist2.add("Format " + string + " : " + plusretlist.get(string).intValue());
 	    }
 	    for(String string : plusretlistyes.keySet()) {
-		retlist.add("Formatyes " + string + " : " + plusretlistyes.get(string).intValue());
+		retlist2.add("Formatyes " + string + " : " + plusretlistyes.get(string).intValue());
 	    }
+	    retlistlist.add(retlist);
+	    retlistlist.add(retlist2);
 	} catch (Exception e) {
 	    log.info(e);
 	    log.error("Exception", e);
 	}
-	return retlist;
+	return retlistlist;
     }
 
     public List<String> filesystemlucenenew() throws Exception {

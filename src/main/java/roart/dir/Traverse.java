@@ -354,8 +354,21 @@ public class Traverse {
 	    //size = doTika(filename, filename, md5, index, retlist);
     }
 
-    public static List<String> notindexed() throws Exception {
-	List<String> retlist = new ArrayList<String>();
+    public static List<ResultItem> notindexed() throws Exception {
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	ResultItem ri = new ResultItem();
+	ri.add("Md5/Id");
+	ri.add("Timestamp");
+	ri.add("Indexed time");
+	ri.add("Convertsw");
+	ri.add("Converttime");
+	ri.add("Failed");
+	ri.add("Failed reason");
+	ri.add("Timeout reason");
+	ri.add("Indextime");
+	ri.add("Filenames");
+	ri.add("A filename");
+	retlist.add(ri);
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
@@ -364,7 +377,15 @@ public class Traverse {
 	    String md5 = index.getMd5();
 	    filesMapMd5.put(md5, index.getFilename());
 	    Boolean indexed = index.getIndexed();
+	    if (indexed != null && indexed.booleanValue() == true) {
+		continue;
+	    }
+	    String afilename = null;
 	    for (FileLocation filename : index.getFilelocations()) {
+		afilename = filename.getFilename();
+		if (true) {
+		    break;
+		}
 		filesMapFilename.put(filename.toString(), md5);
 		if (indexed != null) {
 		    if (!indexed.booleanValue()) {
@@ -372,11 +393,22 @@ public class Traverse {
 			if (name != null) {
 			    name = name.replace('<',' ');
 			    name = name.replace('>',' ');
-			    retlist.add(name);
+			    //retlist.add(name);
 			}
 		    }
 		}
 	    }
+	    ri.add(index.getMd5());
+	    ri.add(index.getTimestamp());
+	    ri.add(index.getTimeindex());
+	    ri.add(index.getConvertsw());
+	    ri.add(index.getConverttime());
+	    ri.add("" + index.getFailed());
+	    ri.add(index.getFailedreason());
+	    ri.add(index.getTimeoutreason());
+	    ri.add("" + index.getFilelocations().size());
+	    ri.add(afilename);
+	    retlist.add(ri);
 	}
 	return retlist;
     }
