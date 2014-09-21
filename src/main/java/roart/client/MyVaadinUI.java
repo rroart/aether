@@ -164,7 +164,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(cdTab);
 	tab.addComponent(dvdTab);
 	tab.addComponent(bookTab);
-	tab.addComponent(bookuTab);
+	tab.addComponent(book0Tab);
 	tab.addComponent(bookuTab);
 	return tab;
     }
@@ -633,13 +633,18 @@ public class MyVaadinUI extends UI
 			String isbn = myunits.get(i).getIsbn();
 			String str = "";
 			Link link1 = null, link2 = null, link3 = null, link4 = null;
+			Object[] row;
 			if (isbn != null && !isbn.equals("0")) {
 			    link1 = new Link("US " + isbn, new ExternalResource("http://www.lookupbyisbn.com/Search/Book/" + isbn + "/1"));
 			    link2 = new Link("US " + isbn, new ExternalResource("http://www.bookfinder.com/search/?st=sr&ac=qr&isbn=" + isbn));
 			    link3 = new Link("SE " + isbn, new ExternalResource("http://libris.kb.se/hitlist?d=libris&q=numm%3a" + isbn));
 			    link4 = new Link("G " + isbn, new ExternalResource("https://www.google.com/search?q=isbn%2b%2b" + isbn));
+			    row = new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle(), link1, link2, link3, link4};
+			} else {
+			    row = new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle()};
 			}
-			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle(), link1, link2, link3, link4}, i);
+
+			table.addItem(row, i);
 		    }
 		    table.setPageLength(table.size());
 		    VerticalLayout result = getResultTemplate();
