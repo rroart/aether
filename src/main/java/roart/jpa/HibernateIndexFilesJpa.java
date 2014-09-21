@@ -41,6 +41,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	List<HibernateIndexFiles> indexes = HibernateIndexFiles.getAll();
 	for (HibernateIndexFiles index : indexes) {
 	    IndexFiles ifile = convert(index);
+	    retlist.add(ifile);
 	}
 	return retlist;
     }
