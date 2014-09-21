@@ -185,9 +185,9 @@ public class SearchSolr {
 		    }
 		    convertsw = indexmd5.getConvertsw();
 		    if (convertsw != null) {
-			title = title + " (" + convertsw + " " + indexmd5.getConverttime() + "s) ";
+			title = title + " (" + convertsw + " " + indexmd5.getConverttime("%.2f") + "s) ";
 		    }
-		    converttime = indexmd5.getConverttime();
+		    converttime = indexmd5.getConverttime("%.2f");
 		}
 		log.info((i + 1) + ". " + title + ": "
 			 + score);
@@ -199,7 +199,7 @@ public class SearchSolr {
 		strarr[i + 1].add(timestamp);
 		strarr[i + 1].add(convertsw);
 		strarr[i + 1].add(converttime);
-		strarr[i + 1].add(indexmd5.getTimeindex());
+		strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
 		strarr[i + 1].add("" + score);
 	    }
 	} catch (SolrServerException e) {

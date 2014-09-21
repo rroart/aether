@@ -83,6 +83,13 @@ public class IndexFiles {
 	    return timeindex;
 	}
 
+        public String getTimeindex(String format) {
+	    if (timeindex == null) {
+		return null;
+	    }
+	    return String.format(format, (float) new Long(timeindex).longValue()/1000);
+	}
+
 	public void setTimeindex(String timeindex) {
 	    changed |= true;
 	    this.timeindex = timeindex;
@@ -90,8 +97,7 @@ public class IndexFiles {
 
 	public void setTimeindex(long millis) {
 	    changed |= true;
-	    String timeindex = String.format("%.2f", (float) millis/1000);
-	    this.timeindex = timeindex;
+	    this.timeindex = new String(timeindex);
 	}
 
         public String getConvertsw() {
@@ -107,6 +113,13 @@ public class IndexFiles {
 	    return converttime;
 	}
 
+        public String getConverttime(String format) {
+	    if (converttime == null) {
+		return null;
+	    }
+	    return String.format(format, (float) new Long(converttime).longValue()/1000);
+	}
+
 	public void setConverttime(String converttime) {
 	    changed |= true;
 	    this.converttime = converttime;
@@ -114,8 +127,7 @@ public class IndexFiles {
 
 	public void setConverttime(long millis) {
 	    changed |= true;
-	    String converttime = String.format("%.2f", (float) millis/1000);
-	    this.converttime = converttime;
+	    this.converttime = new String(converttime);
 	}
 
         public Integer getFailed() {

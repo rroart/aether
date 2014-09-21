@@ -400,9 +400,9 @@ public class Traverse {
 	    }
 	    ri.add(index.getMd5());
 	    ri.add(index.getTimestamp());
-	    ri.add(index.getTimeindex());
+	    ri.add(index.getTimeindex("%.2f"));
 	    ri.add(index.getConvertsw());
-	    ri.add(index.getConverttime());
+	    ri.add(index.getConverttime("%.2f"));
 	    ri.add("" + index.getFailed());
 	    ri.add(index.getFailedreason());
 	    ri.add(index.getTimeoutreason());
