@@ -257,6 +257,7 @@ public class SearchLucene {
     strarr[0].add("Timestamp");
     strarr[0].add("Convertsw");
     strarr[0].add("Converttime");
+    strarr[0].add("Indextime");
     strarr[0].add("Score");
     // output results
     log.info("Found " + hits.length + " hits.");
@@ -303,6 +304,7 @@ public class SearchLucene {
 	strarr[i + 1].add(timestamp);
 	strarr[i + 1].add(convertsw);
 	strarr[i + 1].add(converttime);
+	strarr[i + 1].add(indexmd5.getTimeindex());
 	strarr[i + 1].add("" + score);
     }
   	} catch (Exception e) {
