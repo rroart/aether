@@ -74,7 +74,6 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	String md5 = hif.getMd5();
 	IndexFiles ifile = new IndexFiles(md5);
 	//ifile.setMd5(hif.getMd5());
-	ifile.setDb();
 	ifile.setIndexed(hif.getIndexed());
 	ifile.setTimeindex(hif.getTimeindex());
 	ifile.setTimestamp(hif.getTimestamp());
@@ -87,6 +86,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	for (String file : files) {
 	    ifile.addFile(new FileLocation(file));
 	}
+	ifile.setUnchanged();
 	return ifile;
     }
 

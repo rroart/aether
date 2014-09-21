@@ -95,7 +95,7 @@ public class IndexFilesDao {
 	    log.info("saving " + i.getMd5());
 	    indexFilesJpa.save(i);
 	} else {
-	    log.info("not saving " + i.getMd5());
+	    //log.info("not saving " + i.getMd5());
 	}
     }
 

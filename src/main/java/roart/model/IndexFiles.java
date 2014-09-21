@@ -97,7 +97,7 @@ public class IndexFiles {
 
 	public void setTimeindex(long millis) {
 	    changed |= true;
-	    this.timeindex = new String(timeindex);
+	    this.timeindex = "" + millis;
 	}
 
         public String getConvertsw() {
@@ -127,7 +127,7 @@ public class IndexFiles {
 
 	public void setConverttime(long millis) {
 	    changed |= true;
-	    this.converttime = new String(converttime);
+	    this.converttime = "" + millis;
 	}
 
         public Integer getFailed() {
@@ -218,11 +218,15 @@ public class IndexFiles {
 	return changed;
     }
 
-    public void setDb() {
+    public void setUnchanged() {
+	changed = false;
+    }
+
+    public void setDbNot() {
 	indb = true;
     }
 
-    public boolean inDb() {
+    public boolean inDbNot() {
 	return indb;
     }
 

@@ -169,7 +169,6 @@ public class HbaseIndexFiles {
 	String md5 = bytesToString(index.getValue(indexcf, md5q));
 	IndexFiles ifile = new IndexFiles(md5);
 	//ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
-	ifile.setDb();
 	ifile.setIndexed(new Boolean(bytesToString(index.getValue(indexcf, indexedq))));
 	ifile.setTimeindex(bytesToString(index.getValue(indexcf, timeindexq)));
 	ifile.setTimestamp(bytesToString(index.getValue(indexcf, timestampq)));
@@ -190,6 +189,7 @@ public class HbaseIndexFiles {
 	    }
 	}
 	}
+	ifile.setUnchanged();
 	return ifile;
     }
 
@@ -304,6 +304,7 @@ public class HbaseIndexFiles {
 
     public static void close() {
 	try {
+	    log.info("closing db");
 	    filesTable.close();
 	    indexTable.close();
 	} catch (IOException e) {
