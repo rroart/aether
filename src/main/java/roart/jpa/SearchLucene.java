@@ -104,9 +104,9 @@ public class SearchLucene {
 	    log.info("with md " + metadata.toString());
 	    doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
 	}
-	Term oldTerm = new Term(Constants.TITLE, md5);
+	Term oldTerm = new Term(Constants.TITLE, md5); // remove after reindex
 	Term term = new Term(Constants.ID, md5);
-	w.deleteDocuments(term);
+	w.deleteDocuments(oldTerm); // remove after reindex
 	doc.removeField(Constants.NAME);
 	doc.removeField(Constants.TITLE);
 	w.updateDocument(term, doc);
@@ -146,8 +146,7 @@ public class SearchLucene {
 
 	Document doc = new Document();
 
-	doc.add(new TextField(Constants.TITLE, i, Field.Store.YES));
-	doc.add(new TextField(Constants.NAME, i, Field.Store.YES));
+	doc.add(new TextField(Constants.CONTENT, i, Field.Store.YES));
 	w.addDocument(doc);
 	    }
  
@@ -165,7 +164,7 @@ public class SearchLucene {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
     StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
     // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.NAME},
+    Query q = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.CONTENT},
 					analyzer).parse(str);
  
     // searching ...
@@ -188,11 +187,11 @@ public class SearchLucene {
 	int docId = hits[i].doc;
 	float score = hits[i].score;
 	Document d = searcher.doc(docId);
-	log.info((i + 1) + ". " + d.get(Constants.TITLE) + ": "
+	log.info((i + 1) + ". " + d.get(Constants.CONTENT) + ": "
 			   + score);
 	strarr[i + 1] = new ResultItem();
 	strarr[i + 1].add("" + (i + 1)+ ". ");
-	strarr[i + 1].add(d.get(Constants.TITLE) + ": ");
+	strarr[i + 1].add(d.get(Constants.CONTENT) + ": ");
 	strarr[i + 1].add("" + score);
     }
   	} catch (Exception e) {
@@ -227,7 +226,7 @@ public class SearchLucene {
 	cp = new ExtendableQueryParser(Version.LUCENE_4_10_0, Constants.CONTENT, analyzer);
 	break;
     case 4:
-	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.ID, Constants.CONTENT, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer);
+	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.ID, Constants.CONTENT, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer); // remove after reindex
 	break;
     case 5:
 	tmpQuery = new SimpleQueryParser(analyzer, Constants.NAME).createPhraseQuery(Constants.NAME, str);
@@ -265,7 +264,7 @@ public class SearchLucene {
 	int docId = hits[i].doc;
 	float score = hits[i].score;
 	Document d = searcher.doc(docId);
-	String md5 = d.get(Constants.TITLE);
+	String md5 = d.get(Constants.TITLE); // remove after reindex
 	if (md5 == null || md5.length() == 0) {
 	    md5 = d.get(Constants.ID);
 	}
