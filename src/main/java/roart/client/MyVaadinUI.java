@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.Date;
 
 //import roart.beans.session.misc.Unit;
 import roart.beans.session.comic.Unit;
@@ -30,6 +31,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.InlineDateField;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Container;
@@ -442,19 +445,28 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
-    private TextField getReindexDate() {
-	TextField tf = new TextField("Reindex on date");
+    private InlineDateField getReindexDate() {
+	InlineDateField tf = new InlineDateField("Reindex on date");
+	// Create a DateField with the default style
+	// Set the date and time to present
+	Date date = new Date();
+	// temp fix
+	date.setHours(0);
+	date.setMinutes(0);
+	date.setSeconds(0);
+	tf.setValue(date);
 
 	// Handle changes in the value
 	tf.addValueChangeListener(new Property.ValueChangeListener() {
 		public void valueChange(ValueChangeEvent event) {
 		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
+		    Date date = (Date) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    long time = date.getTime();
 		    List<String> strarr = null;
 		    try {
-			strarr = maininst.indexdate(value, true);
+			strarr = maininst.indexdate(time, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
