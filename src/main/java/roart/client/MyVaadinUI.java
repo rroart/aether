@@ -466,7 +466,7 @@ public class MyVaadinUI extends UI
 		    long time = date.getTime();
 		    List<String> strarr = null;
 		    try {
-			strarr = maininst.indexdate(time, true);
+			strarr = maininst.indexdate("" + time, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
