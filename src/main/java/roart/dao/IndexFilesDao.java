@@ -91,12 +91,12 @@ public class IndexFilesDao {
     }
 
     public static void save(IndexFiles i) {
-	if (i.inDb() && i.hasChanged()) {
+	if (i.hasChanged()) {
 	    log.info("saving " + i.getMd5());
+	    indexFilesJpa.save(i);
 	} else {
 	    log.info("not saving " + i.getMd5());
 	}
-	indexFilesJpa.save(i);
     }
 
     public static IndexFiles instanceNot(String md5) {
