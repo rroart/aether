@@ -27,6 +27,9 @@ public class IndexFiles {
     private String timeoutreason;
 	private Set<FileLocation> filelocations;
 
+    private boolean changed = false;
+    private boolean indb = false;
+
 	private IndexFiles() {
 	    filelocations = new HashSet<FileLocation>();
 	}
@@ -63,6 +66,7 @@ public class IndexFiles {
 	}
 
 	public void setIndexed(Boolean indexed) {
+	    changed |= true;
 	    this.indexed = indexed;
 	}
 
@@ -71,6 +75,7 @@ public class IndexFiles {
 	}
 
 	public void setTimestamp(String timestamp) {
+	    changed |= true;
 	    this.timestamp = timestamp;
 	}
 
@@ -79,10 +84,12 @@ public class IndexFiles {
 	}
 
 	public void setTimeindex(String timeindex) {
+	    changed |= true;
 	    this.timeindex = timeindex;
 	}
 
 	public void setTimeindex(long millis) {
+	    changed |= true;
 	    String timeindex = String.format("%.2f", (float) millis/1000);
 	    this.timeindex = timeindex;
 	}
@@ -92,6 +99,7 @@ public class IndexFiles {
 	}
 
 	public void setConvertsw(String convertsw) {
+	    changed |= true;
 	    this.convertsw = convertsw;
 	}
 
@@ -100,10 +108,12 @@ public class IndexFiles {
 	}
 
 	public void setConverttime(String converttime) {
+	    changed |= true;
 	    this.converttime = converttime;
 	}
 
 	public void setConverttime(long millis) {
+	    changed |= true;
 	    String converttime = String.format("%.2f", (float) millis/1000);
 	    this.converttime = converttime;
 	}
@@ -116,10 +126,12 @@ public class IndexFiles {
 	}
 
 	public void setFailed(Integer failed) {
+	    changed |= true;
 	    this.failed = failed;
 	}
 
         public void incrFailed() {
+	    changed |= true;
 	    if (failed == null) {
 		failed = new Integer(0);
 	    }
@@ -139,10 +151,12 @@ public class IndexFiles {
 	}
 
 	public void setFilelocations(Set<FileLocation> filelocations) {
+	    changed |= true;
 	    this.filelocations = filelocations;
 	}
 
 	public void addFile(FileLocation filelocation) {
+	    changed |= true;
 	    filelocations.add(filelocation);
 	    //IndexFilesDao.ensureExistence(filelocation);
 	}
@@ -168,6 +182,7 @@ public class IndexFiles {
 	}
 
 	public void setTimeoutreason(String timeoutreason) {
+	    changed |= true;
 	    this.timeoutreason = timeoutreason;
 	}
 
@@ -176,6 +191,7 @@ public class IndexFiles {
 	}
 
 	public void setFailedreason(String failedreason) {
+	    changed |= true;
 	    this.failedreason = failedreason;
 	}
 
@@ -185,5 +201,17 @@ public class IndexFiles {
 	IndexFilesDao.save(this);
     }
     */
+
+    public boolean hasChanged() {
+	return changed;
+    }
+
+    public void setDb() {
+	indb = true;
+    }
+
+    public boolean inDb() {
+	return indb;
+    }
 
     }
