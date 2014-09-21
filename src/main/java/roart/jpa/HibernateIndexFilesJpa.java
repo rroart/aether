@@ -75,7 +75,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	ifile.setConvertsw(hif.getConvertsw());
 	ifile.setConverttime(hif.getConverttime());
 	ifile.setFailed(hif.getFailed());
-	ifile.setFailedreason(hif.getFailedreason());
+	ifile.setFailedreason(hif.getFailedreason().substring(0,250)); // temp fix substr
 	ifile.setTimeoutreason(hif.getTimeoutreason());
 	Set<String> files = hif.getFilenames();
 	for (String file : files) {
