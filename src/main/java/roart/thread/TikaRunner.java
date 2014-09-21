@@ -34,6 +34,9 @@ public class TikaRunner implements Runnable {
     public void run() {
     	Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
     	int nThreads = Runtime.getRuntime().availableProcessors() / 4;
+	if (nThreads == 0) {
+	    nThreads = 1;
+	}
     	int running = 0;
     	log.info("nthreads " + nThreads);
     	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
