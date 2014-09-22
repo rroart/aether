@@ -5,6 +5,11 @@ import java.util.ArrayList;
 
 public class ResultItem {
     private List<String> items = new ArrayList<String>();
+    public ResultItem() {
+    }
+    public ResultItem(String s) {
+	add(s);
+    }
     public void add(String s) {
 	items.add(s);
     }

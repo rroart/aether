@@ -39,18 +39,26 @@ import org.apache.commons.logging.LogFactory;
 public class Main {
     private Log log = LogFactory.getLog(this.getClass());
 
-    public List<String> traverse(String add) throws Exception {
+    public List<List> traverse(String add) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null, false);    
 	IndexFilesDao.commit();
-	return new ArrayList<String>(filesetnew2);
+	List<ResultItem> retList = new ArrayList<ResultItem>();
+	for (String s : filesetnew2) {
+	    retList.add(new ResultItem(s));
+	}
+	retlistlist.add(retList);
+	return retlistlist;
     }
 
-    public List<String> traverse() throws Exception {
+    public List<List> traverse() throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
 	Set<String> filesetnew = new HashSet<String>();
-	List<String> retList = filesystem(filesetnew, null);
+	List<ResultItem> retList = filesystem(filesetnew, null);
 	IndexFilesDao.commit();
-	return retList;
+	retlistlist.add(retList);
+	return retlistlist;
     }
 
     static String[] dirlist = null;
@@ -65,8 +73,8 @@ public class Main {
 	dirlistnot = dirlistnotstr.split(",");
     }
 
-    private List<String> filesystem(Set<String> filesetnew, Set<String> newset) {
-	List<String> retList = new ArrayList<String>();
+    private List<ResultItem> filesystem(Set<String> filesetnew, Set<String> newset) {
+	List<ResultItem> retList = new ArrayList<ResultItem>();
 
 	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
@@ -120,8 +128,12 @@ public class Main {
 	return retList;
     }
 
-    public List<String> overlapping() {
-	List<String> retList = new ArrayList<String>();
+    public List<ResultItem> overlapping() {
+	List<ResultItem> retList = new ArrayList<ResultItem>();
+	ResultItem ri = new ResultItem();
+	ri.add("Number");
+	ri.add("String");
+	retList.add(ri);
 
 	Set<String> filesetnew = new HashSet<String>();
 	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
@@ -168,7 +180,10 @@ public class Main {
 	}
 	for (Integer intI : sortlist.keySet()) {
 	    for (String str : sortlist.get(intI)) {
-		retList.add("" + intI.intValue() + " : " + str);
+		ResultItem ri2 = new ResultItem();
+		ri2.add("" + intI.intValue());
+		ri2.add(str);
+		retList.add(ri2);
 	    }
 	}
 	for (int i = 0; i < keyList.size(); i++ ) {
@@ -199,13 +214,18 @@ public class Main {
 	}
 	for (Integer intI : sortlist2.keySet()) {
 	    for (String str : sortlist2.get(intI)) {
-		retList.add("" + intI.intValue() + " : " + str);
+                ResultItem ri2 = new ResultItem();
+                ri2.add("" + intI.intValue());
+                ri2.add(str);
+		retList.add(ri2);
 	    }
 	}
 	return retList;
     }
 
-    public List<String> index(String suffix) throws Exception {
+    public List<List> index(String suffix) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	List retlist = null;
 	try {
 	    Set<String> preindexset = new HashSet<String>();
@@ -234,7 +254,7 @@ public class Main {
 	    for (String md5 : indexset) {
 		log.info("removing " + md5);
 		IndexFiles index = IndexFilesDao.getByMd5(md5);
-		retlist.add("Deleted " + md5);
+		retlist.add(new String("Deleted " + md5));
 		//roart.model.HibernateUtil.currentSession().delete(index);
 		//roart.search.SearchLucene.deleteme(md5);
 	    }
@@ -252,48 +272,61 @@ public class Main {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
-		retlist.add("timeout tika " + ret);
+	    retlist2.add(new ResultItem(ret));
 	}
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
 	
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
+	return retlistlist;
     }
 
-    public List<String> index(String add, boolean reindex) throws Exception {
+    public List<List> index(String add, boolean reindex) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	List retlist = lucene(add, reindex);
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
-		retlist.add("timeout tika " + ret);
+	    retlist2.add(new ResultItem(ret));
 	}
 
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
 
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
+	return retlistlist;
     }
 
-    public List<String> indexdate(String date, boolean reindex) throws Exception {
+    public List<List> indexdate(String date, boolean reindex) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	List retlist = lucenedate(date, reindex);
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
-		retlist.add("timeout tika " + ret);
+	    retlist2.add(new ResultItem(ret));
 	}
 
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
 
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
+	return retlistlist;
     }
 
-    private List<String> lucene(String add, boolean reindex) throws Exception {
+    private List<ResultItem> lucene(String add, boolean reindex) throws Exception {
 	List retlist = null;
 	try {
 	    retlist = Traverse.index(add, reindex);
@@ -308,7 +341,7 @@ public class Main {
 	return retlist;
     }
 
-    private List<String> lucenedate(String date, boolean reindex) throws Exception {
+    private List<ResultItem> lucenedate(String date, boolean reindex) throws Exception {
 	List retlist = null;
 	try {
 	    retlist = Traverse.reindexdate(date);
@@ -364,18 +397,18 @@ public class Main {
 	return new ArrayList<String>(filesetnew);
     }
 
-    public List<String> memoryusage() {
-	List<String> retlist = new ArrayList<String>();
+    public List<ResultItem> memoryusage() {
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	try {
 	    Runtime runtime = Runtime.getRuntime();
 	    long maxMemory = runtime.maxMemory();
 	    long allocatedMemory = runtime.totalMemory();
 	    long freeMemory = runtime.freeMemory();
 	    java.text.NumberFormat format = java.text.NumberFormat.getInstance();
-	    retlist.add("free memory: " + format.format(freeMemory / 1024));
-	    retlist.add("allocated memory: " + format.format(allocatedMemory / 1024));
-	    retlist.add("max memory: " + format.format(maxMemory / 1024));
-	    retlist.add("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024));
+	    retlist.add(new ResultItem("free memory: " + format.format(freeMemory / 1024)));
+	    retlist.add(new ResultItem("allocated memory: " + format.format(allocatedMemory / 1024)));
+	    retlist.add(new ResultItem("max memory: " + format.format(maxMemory / 1024)));
+	    retlist.add(new ResultItem("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024)));
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
@@ -385,9 +418,9 @@ public class Main {
 
     public List<List> notindexed() throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
-	List<String> retlist2 = new ArrayList<String>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	List<ResultItem> retlist = null;
-	List<String> retlistyes = null;
+	List<ResultItem> retlistyes = null;
 	try {
 	    retlist = Traverse.notindexed();
 	    retlistyes = Traverse.indexed();
@@ -410,7 +443,8 @@ public class Main {
 		i++;
 		plusretlist.put(suffix, i);
 	    }
-	    for(String filename : retlistyes) {
+	    for(ResultItem ri : retlistyes) {
+		String filename = ri.get().get(0); // or for a whole list?
 		if (filename == null) {
 		    continue;
 		}
@@ -428,11 +462,24 @@ public class Main {
 	    }
 	    System.out.println("size " + plusretlist.size());
 	    System.out.println("sizeyes " + plusretlistyes.size());
+	    ResultItem ri = new ResultItem();
+	    ri.add("Column 1");
+	    ri.add("Column 2");
+	    ri.add("Column 3");
+	    retlist2.add(ri);
 	    for(String string : plusretlist.keySet()) {
-		retlist2.add("Format " + string + " : " + plusretlist.get(string).intValue());
+		ResultItem ri2 = new ResultItem();
+		ri2.add("Format");
+		ri2.add(string);
+		ri2.add("" + plusretlist.get(string).intValue());
+		retlist2.add(ri2);
 	    }
 	    for(String string : plusretlistyes.keySet()) {
-		retlist2.add("Formatyes " + string + " : " + plusretlistyes.get(string).intValue());
+		ResultItem ri2 = new ResultItem();
+		ri2.add("Formatyes");
+		ri2.add(string);
+		ri2.add("" + plusretlistyes.get(string).intValue());
+		retlist2.add(ri2);
 	    }
 	    retlistlist.add(retlist);
 	    retlistlist.add(retlist2);
@@ -443,10 +490,12 @@ public class Main {
 	return retlistlist;
     }
 
-    public List<String> filesystemlucenenew() throws Exception {
+    public List<List> filesystemlucenenew() throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	Set<String> filesetnew = new HashSet<String>();
 	Set<String> newset = new HashSet<String>();
-	List<String> retlist = filesystem(filesetnew, newset);
+	List<ResultItem> retlist = filesystem(filesetnew, newset);
 
 	for (String filename : newset) {
 	    //log.info("size2 " + filename);
@@ -457,37 +506,45 @@ public class Main {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
-		retlist.add("timeout tika " + ret);
+	    retlist2.add(new ResultItem(ret));
 	}
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
+	return retlistlist;
     }
 
     // true: new md5 checks
     // false: only new
-    public List<String> filesystemlucenenew(String add, boolean newmd5oronlyfile) throws Exception {
+    public List<List> filesystemlucenenew(String add, boolean newmd5oronlyfile) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
-	List<String> retlist = new ArrayList<String>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	Set<String> retset = Traverse.doList(add, newset, dirset, null, newmd5oronlyfile);
 
 	for (String filename : newset) {
 	    //log.info("size2 " + filename);
-	    lucene(filename, false);
+	    retlist = lucene(filename, false);
 	}
 	Queues.resetTikaTimeoutQueue();
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
+	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
-		retlist.add("timeout tika " + ret);
+	    retlist2.add(new ResultItem(ret));
 	}
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
+	return retlistlist;
     }
 
     private static TikaRunner tikaRunnable = null;

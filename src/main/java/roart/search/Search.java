@@ -42,7 +42,7 @@ public class Search {
     	IndexFiles dbindex = el.index;
     	String dbfilename = el.dbfilename;
 	Metadata metadata = el.metadata;
-    	List<String> retlist = el.retlist;
+    	List<ResultItem> retlist = el.retlist;
 
     int retsize = 0;
 
@@ -61,7 +61,7 @@ public class Search {
 	long time = System.currentTimeMillis() - now;
 	dbindex.setTimeindex(time);
 	log.info("timerStop filename " + time);
-	retlist.add("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time);
+	retlist.add(new ResultItem("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time));
     try {
 		inputStream.close();
 	} catch (IOException e) {

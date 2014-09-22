@@ -67,7 +67,7 @@ public class SearchLucene {
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     //public static void indexme() {
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<String> retlist) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<ResultItem> retlist) {
     int retsize = 0;
     // create some index
     // we could also create an index in our ram ...

@@ -202,14 +202,17 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<String> strarr = null;
+		List<List> lists = null;
 		try {
-		    strarr = maininst.filesystemlucenenew();
+		    lists = maininst.filesystemlucenenew();
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
+		List<ResultItem> strarr = lists.get(0);
+		List<ResultItem> strarr2 = lists.get(1);
 		VerticalLayout result = getResultTemplate();
-		addList(result, strarr);
+		addListTable(result, strarr);
+		addListTable(result, strarr2);
 		setContent(result);
             }
         });
@@ -221,14 +224,17 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<String> strarr = null;
+		List<List> lists = null;
 		try {
-		    strarr =maininst.traverse();
+		    lists = maininst.traverse();
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-                VerticalLayout result = getResultTemplate();
-                addList(result, strarr);
+		List<ResultItem> strarr = lists.get(0);
+		//List<ResultItem> strarr2 = lists.get(1);
+		VerticalLayout result = getResultTemplate();
+		addListTable(result, strarr);
+		//addListTable(result, strarr2);
                 setContent(result);
             }
         });
@@ -240,14 +246,17 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<String> strarr = null;
+		List<List> lists = null;
 		try {
-		    strarr = maininst.index(null);
+		    lists = maininst.index(null);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-                VerticalLayout result = getResultTemplate();
-                addList(result, strarr);
+		List<ResultItem> strarr = lists.get(0);
+		List<ResultItem> strarr2 = lists.get(1);
+		VerticalLayout result = getResultTemplate();
+		addListTable(result, strarr);
+		addListTable(result, strarr2);
                 setContent(result);
             }
         });
@@ -259,9 +268,9 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<String> strarr = maininst.memoryusage();
+		List<ResultItem> strarr = maininst.memoryusage();
                 VerticalLayout result = getResultTemplate();
-                addList(result, strarr);
+                addListTable(result, strarr);
                 setContent(result);
             }
         });
@@ -280,10 +289,10 @@ public class MyVaadinUI extends UI
 		    log.error("Exception", e);
 		}
 		List<ResultItem> strarr = lists.get(0);
-		List<String> strarr2 = lists.get(1);
+		List<ResultItem> strarr2 = lists.get(1);
                 VerticalLayout result = getResultTemplate();
                 addListTable(result, strarr);
-                addList(result, strarr2);
+                addListTable(result, strarr2);
                 setContent(result);
             }
         });
@@ -295,9 +304,9 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<String> strarr = maininst.overlapping();
+		List<ResultItem> strarr = maininst.overlapping();
                 VerticalLayout result = getResultTemplate();
-                addList(result, strarr);
+                addListTable(result, strarr);
                 setContent(result);
             }
         });
@@ -314,14 +323,17 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.filesystemlucenenew(value, false);
+			lists = maininst.filesystemlucenenew(value, false);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });
@@ -340,14 +352,17 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.traverse(value);
+			lists = maininst.traverse(value);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    //List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    //addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });
@@ -366,14 +381,17 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.index(value, false);
+			lists = maininst.index(value, false);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });
@@ -440,14 +458,17 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.index(value, true);
+			lists = maininst.index(value, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });
@@ -475,14 +496,17 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    long time = date.getTime();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.indexdate("" + time, true);
+			lists = maininst.indexdate("" + time, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });
@@ -501,14 +525,17 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.index(value);
+			lists = maininst.index(value);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });
@@ -527,14 +554,17 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<String> strarr = null;
+		    List<List> lists = null;
 		    try {
-			strarr = maininst.filesystemlucenenew(value, true);
+			lists = maininst.filesystemlucenenew(value, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
+		    List<ResultItem> strarr = lists.get(0);
+		    List<ResultItem> strarr2 = lists.get(1);
 		    VerticalLayout result = getResultTemplate();
-		    addList(result, strarr);
+		    addListTable(result, strarr);
+		    addListTable(result, strarr2);
 		    setContent(result);
 		}
 	    });

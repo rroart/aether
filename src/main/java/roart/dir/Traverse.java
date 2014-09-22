@@ -186,8 +186,8 @@ public class Traverse {
 	return retset;
     }
 
-    public static List<String> index(String suffix) throws Exception {
-	List<String> retlist = new ArrayList<String>();
+    public static List<ResultItem> index(String suffix) throws Exception {
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	log.info("here");
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
@@ -215,16 +215,20 @@ public class Traverse {
 	return retlist;
     }
 
-    public static List<String> index(String add, boolean reindex) throws Exception {
-	List<String> retlist = new ArrayList<String>();
+    public static List<List> index(String add, boolean reindex) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
 	Set<String> md5set = new HashSet<String>();
 	String dirname = add;
 	File dir = new File(dirname);
 	if (!dir.exists()) {
-	    retlist.add("File " + add + " does not exist");
-	    return retlist;
+	    retlist2.add(new ResultItem(new String("File " + add + " does not exist")));
+	    retlistlist.add(retlist);
+	    retlistlist.add(retlist2);
+	    return retlistlist;
 	}
 	File listDir[];
 	if (dir.isDirectory()) {
@@ -240,7 +244,9 @@ public class Traverse {
 	    log.info("file " + filename);
 	    if (listDir[i].isDirectory()) {
 		//log.info("isdir " + filename);
-		retlist.addAll(index(filename, reindex));
+		List<List> retlistlist2 = index(filename, reindex);
+		retlist.addAll(retlistlist2.get(0));
+		retlist2.addAll(retlistlist2.get(1));
 	    } else {
 		//log.info("retset " + filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
@@ -254,7 +260,7 @@ public class Traverse {
 		if (files == null || files.getMd5() == null) {
 		    continue;
 		}
-		retlist.add(filename);
+		retlist.add(new ResultItem(filename));
 		IndexFiles index = files;
 
 		Map<String, String> filesMapMd5 = new HashMap<String, String>();
@@ -267,14 +273,16 @@ public class Traverse {
 
 		indexsingle(retlist, md5, indexMap, filesMapMd5, reindex, max);
 	    }
+	    retlistlist.add(retlist);
+	    retlistlist.add(retlist2);
 	    log.info("file " + filename);
 	}
-	return retlist;
+	return retlistlist;
     }
 
-    public static List<String> reindexdate(String date) throws Exception {
+    public static List<ResultItem> reindexdate(String date) throws Exception {
 	boolean reindex = true;
-	List<String> retlist = new ArrayList<String>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	Set<String> md5set = new HashSet<String>();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
 	int i = 0;
@@ -306,7 +314,7 @@ public class Traverse {
 		break;
 	    }
 
-	    retlist.add(filename);
+	    retlist.add(new ResultItem(filename));
 
 	    Map<String, String> filesMapMd5 = new HashMap<String, String>();
 	    filesMapMd5.put(md5, filename);
@@ -322,7 +330,7 @@ public class Traverse {
 	return retlist;
     }
 
-    public static void indexsingle(List<String> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max) throws Exception {
+    public static void indexsingle(List<ResultItem> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max) throws Exception {
 	    if (md5 == null) {
 		log.error("md5 should not be null");
 		return;
@@ -415,8 +423,8 @@ public class Traverse {
 	return retlist;
     }
 
-    public static List<String> indexed() throws Exception {
-	List<String> retlist = new ArrayList<String>();
+    public static List<ResultItem> indexed() throws Exception {
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
@@ -433,7 +441,7 @@ public class Traverse {
 			if (name != null) {
 			    name = name.replace('<',' ');
 			    name = name.replace('>',' ');
-			    retlist.add(name);
+			    retlist.add(new ResultItem(name));
 			}
 		    }
 		}
@@ -460,7 +468,7 @@ public class Traverse {
 	String filename = el.filename;
 	String md5 = el.md5;
 	IndexFiles index = el.index;
-	List<String> retlist = el.retlist;
+	List<ResultItem> retlist = el.retlist;
 	Metadata metadata = el.metadata;
 	log.info("incTikas " + dbfilename);
 	Queues.tikaTimeoutQueue.add(dbfilename);
@@ -476,7 +484,7 @@ public class Traverse {
 		long time = System.currentTimeMillis() - now;
 		el.index.setConverttime(time);
 		log.info("timerStop filename " + time);
-		retlist.add("tika handling filename " + dbfilename + " " + size + " : " + time);
+		retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
 		    log.info("sizes " + size + " " + limit);
@@ -495,7 +503,7 @@ public class Traverse {
 	    	    Queues.otherQueue.add(el);
 	    	} else {
 	    		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-	    		retlist.add("Too small " + dbfilename + " " + md5 + " " + size);
+	    		retlist.add(new ResultItem(new String("Too small " + dbfilename + " " + md5 + " " + size)));
 			el.index.setFailedreason(el.index.getFailedreason() + "small " + size + " ");
 			Boolean isIndexed = index.getIndexed();
 			if (isIndexed == null || isIndexed.booleanValue() == false) {

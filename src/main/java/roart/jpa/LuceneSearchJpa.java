@@ -13,7 +13,7 @@ public class LuceneSearchJpa extends SearchJpa {
 
     private Log log = LogFactory.getLog(this.getClass());
 
-    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<String> retlist) {
+    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<ResultItem> retlist) {
 	return SearchLucene.indexme(type, md5, inputStream, dbfilename, metadata, retlist);
     }
 

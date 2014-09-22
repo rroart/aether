@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import roart.dir.Traverse;
 import roart.model.IndexFiles;
+import roart.model.ResultItem;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.util.ExecCommand;
@@ -43,7 +44,7 @@ public class OtherHandler {
     	String filename = el.filename;
     	String md5 = el.md5;
     	IndexFiles index = el.index;
-    	List<String> retlist = el.retlist;
+    	List<ResultItem> retlist = el.retlist;
 	Metadata metadata = el.metadata;
 
 	String output = null;
@@ -111,7 +112,7 @@ public class OtherHandler {
 	log.info("timerStop " + dbfilename + " " + time);
 	if (output != null && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
-		retlist.add("other handling filename " + dbfilename + " : " + time);
+		retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
 		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, metadata);
 		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.add(e);
@@ -151,7 +152,7 @@ public class OtherHandler {
     	return execute(filename, arg);
     }
     
-    public static String executeTimeout(String filename, String [] arg, List<String> retlist, TikaQueueElement el) {
+    public static String executeTimeout(String filename, String [] arg, List<ResultItem> retlist, TikaQueueElement el) {
     	   class OtherTimeout implements Runnable {
     	    	public void run() {
     	    		try {
@@ -201,7 +202,7 @@ public class OtherHandler {
     			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable + " " + otherWorker.isAlive() + " " + otherWorker.isInterrupted() + " " + otherWorker.interrupted());
 
     			log.error("timeout running " + filename + " " + arg[0]);
-            retlist.add("timeout running " + filename + " " + arg[0]);
+			retlist.add(new ResultItem("timeout running " + filename + " " + arg[0]));
         return (String) null;
     }
 
