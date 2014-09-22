@@ -88,6 +88,10 @@ public class IndexFiles {
 	    if (timeindex == null) {
 		return null;
 	    }
+	    int fl = timeindex.indexOf(".");
+	    if (fl >= 0) {
+		timeindex = timeindex.substring(0, fl-1) + "000"; // temp
+	    }
 	    return String.format(format, (float) new Long(timeindex).longValue()/1000);
 	}
 
@@ -117,6 +121,10 @@ public class IndexFiles {
         public String getConverttime(String format) {
 	    if (converttime == null) {
 		return null;
+	    }
+	    int fl = converttime.indexOf(".");
+	    if (fl >= 0) {
+		converttime = converttime.substring(0, fl-1) + "000"; // temp
 	    }
 	    return String.format(format, (float) new Long(converttime).longValue()/1000);
 	}
