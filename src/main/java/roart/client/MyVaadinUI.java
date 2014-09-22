@@ -79,7 +79,7 @@ public class MyVaadinUI extends UI
 
 	//        layout.addComponent(tf);
 
-	Label topLine = new Label("Disk search engine");
+	Label topLine = new Label("Akashic disk search engine");
 	layout.addComponent(topLine);
 
 	TabSheet tabsheet = new TabSheet();
@@ -657,7 +657,7 @@ public class MyVaadinUI extends UI
 
 			table.addItem(row, i);
 		    }
-		    table.setPageLength(table.size());
+		    //table.setPageLength(table.size());
 		    VerticalLayout result = getResultTemplate();
 		    result.addComponent(table);
 		    result.addComponent(new Label("Size count price " + myunits.size() + " " + count + " " + price));
@@ -685,7 +685,7 @@ public class MyVaadinUI extends UI
 	    ResultItem str = strarr.get(i);
 	    table.addItem(str.getarr(), i);
 	}
-	table.setPageLength(table.size());
+	//table.setPageLength(table.size());
 	ts.addComponent(table);
     }
 
@@ -795,7 +795,7 @@ public class MyVaadinUI extends UI
 			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getPrice(), myunits.get(i).getData1() , ":", myunits.get(i).getData2()}, i);
 			
 		    }
-		    table.setPageLength(myunits.size());
+		    //table.setPageLength(myunits.size());
 		    VerticalLayout result = getResultTemplate();
 		    result.addComponent(table);
 		    for (String key : mysums.keySet()) {
@@ -861,6 +861,7 @@ public class MyVaadinUI extends UI
 	    for (int j=0; j<lines.size(); j++) {
 		ts.addComponent(new Label(lines.get(j)));
 	    }
+	    ts.addComponent(new Label(""));
 	}
 	ts.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
 	//table.setPageLength(myunits.size());
