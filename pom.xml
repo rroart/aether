@@ -383,14 +383,14 @@
     </dependency>
     <dependency>
       <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase</artifactId>
+      <artifactId>hbase-client</artifactId>
       <version>${hbase.version}</version>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-core</artifactId>
       <version>1.0.3</version>
-    </dependency>
+    </dependency-->
     <!--dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jsp-2.1</artifactId>
@@ -466,7 +466,7 @@
     <lucene.version>4.10.0</lucene.version>
     <solr.version>4.10.0</solr.version>
     <!--hbase.version>0.90.4</hbase.version-->
-    <hbase.version>0.92.2</hbase.version>
+    <hbase.version>0.98.6.1-hadoop2</hbase.version>
     <!--hbase.version>0.98.5-hadoop2</hbase.version-->
     <tika.version>1.6</tika.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
