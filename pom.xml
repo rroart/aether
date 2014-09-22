@@ -5,6 +5,7 @@
   <groupId>roart</groupId>
   <artifactId>myweb</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
+  <!--artifactId>akashic-disk-search-engine</artifactId-->
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Vaadin Web Application</name>
