@@ -188,7 +188,6 @@ public class Traverse {
 
     public static List<ResultItem> index(String suffix) throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
-	log.info("here");
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
@@ -374,7 +373,6 @@ public class Traverse {
 	ri.add("Failed reason");
 	ri.add("Timeout reason");
 	ri.add("No indexing reason");
-	ri.add("Indextime");
 	ri.add("Filenames");
 	ri.add("A filename");
 	retlist.add(ri);
@@ -407,6 +405,7 @@ public class Traverse {
 		    }
 		}
 	    }
+	    ri = new ResultItem();
 	    ri.add(index.getMd5());
 	    ri.add(index.getTimestamp());
 	    ri.add(index.getTimeindex("%.2f"));
