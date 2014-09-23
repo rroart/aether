@@ -124,24 +124,36 @@ public class MyVaadinUI extends UI
     private VerticalLayout getControlPanelTab() {
 	VerticalLayout tab = new VerticalLayout();
 	tab.setCaption("Control Panel");
-	tab.addComponent(getFsIndexNew());
-	tab.addComponent(getFsAddNew());
-	tab.addComponent(getIndexNew());
-	tab.addComponent(getFsIndexNewPath());
-	tab.addComponent(getFsAddNewPath());
-	tab.addComponent(getIndexNewPath());
-	tab.addComponent(getNotIndexed());
+	HorizontalLayout horNewInd = new HorizontalLayout();
+	horNewInd.addComponent(getFsIndexNew());
+	horNewInd.addComponent(getFsIndexNewPath());
+	horNewInd.addComponent(getFsIndexNewMd5());
+	HorizontalLayout horNew = new HorizontalLayout();
+	horNew.addComponent(getFsAddNew());
+	horNew.addComponent(getFsAddNewPath());
+	HorizontalLayout horInd = new HorizontalLayout();
+	horInd.addComponent(getIndexNew());
+	horInd.addComponent(getIndexNewPath());
+	horInd.addComponent(getIndexSuffix());
+	HorizontalLayout horReindex = new HorizontalLayout();
+	horReindex.addComponent(getReindex());
+	horReindex.addComponent(getReindexDate());
+	HorizontalLayout horStat = new HorizontalLayout();
+	horStat.addComponent(getNotIndexed());
+	horStat.addComponent(getMemoryUsage());
+	horStat.addComponent(getOverlapping());
+
 	/*
 	tab.addComponent(getCleanup());
 	tab.addComponent(getCleanup2());
 	tab.addComponent(getCleanupfs());
 	*/
-	tab.addComponent(getMemoryUsage());
-	tab.addComponent(getOverlapping());
-	tab.addComponent(getReindex());
-	tab.addComponent(getReindexDate());
-	tab.addComponent(getFsIndexNewMd5());
-	tab.addComponent(getIndexSuffix());
+
+	tab.addComponent(horNewInd);
+	tab.addComponent(horNew);
+	tab.addComponent(horInd);
+	tab.addComponent(horReindex);
+	tab.addComponent(horStat);
 	return tab;
     }
 
