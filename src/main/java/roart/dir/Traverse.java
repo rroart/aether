@@ -273,10 +273,10 @@ public class Traverse {
 
 		indexsingle(retlist, md5, indexMap, filesMapMd5, reindex, max);
 	    }
-	    retlistlist.add(retlist);
-	    retlistlist.add(retlist2);
 	    log.info("file " + filename);
 	}
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
 	return retlistlist;
     }
 
