@@ -427,12 +427,15 @@ public class Main {
 	    Map<String, Integer> plusretlist = new HashMap<String, Integer>();
 	    Map<String, Integer> plusretlistyes = new HashMap<String, Integer>();
 	    for(ResultItem ri : retlist) {
-		String filename = ri.get().get(9);
+		if (ri == retlist.get(0)) {
+		    continue;
+		}
+		String filename = ri.get().get(10);
 		if (filename == null) {
 		    continue;
 		}
 		int ind = filename.lastIndexOf(".");
-		if (ind == -1 && ind >= filename.length() - 6) {
+		if (ind == -1 || ind <= filename.length() - 6) {
 		    continue;
 		}
 		String suffix = filename.substring(ind+1);
@@ -449,7 +452,7 @@ public class Main {
 		    continue;
 		}
 		int ind = filename.lastIndexOf(".");
-		if (ind == -1 && ind >= filename.length() - 6) {
+		if (ind == -1 || ind <= filename.length() - 6) {
 		    continue;
 		}
 		String suffix = filename.substring(ind+1);
@@ -481,12 +484,13 @@ public class Main {
 		ri2.add("" + plusretlistyes.get(string).intValue());
 		retlist2.add(ri2);
 	    }
-	    retlistlist.add(retlist);
-	    retlistlist.add(retlist2);
 	} catch (Exception e) {
 	    log.info(e);
 	    log.error("Exception", e);
 	}
+	System.out.println("sizes " + retlist.size() + " " + retlist2.size());
+	retlistlist.add(retlist);
+	retlistlist.add(retlist2);
 	return retlistlist;
     }
 
