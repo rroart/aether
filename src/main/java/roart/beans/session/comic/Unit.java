@@ -183,16 +183,16 @@ public class Unit {
 	    //return;
 	    // num count
 	}
-	log.info(value);
+	//log.info(value);
 	content.add(yearprefix + value.replace(',',' '));
 	String[] val_arr = null;
 	val_arr = value.split(" ");
 	for (int i = 0; i < val_arr.length; i++) {
 	    String val = val_arr[i];
-	    log.info(val);
+	    //log.info(val);
 	    Integer start = getstart(val);
 	    Integer stop = getstop(val);
-	    log.info("v1 "+i+" "+val);
+	    //log.info("v1 "+i+" "+val);
 	    count += getcount(val);
 	    if (contentsum == null) {
 		contentsum = new ArrayList<String>();
@@ -204,17 +204,17 @@ public class Unit {
 		String sumval = contentsum.get(j);
 		Integer sumstart = getstart(sumval);
 		Integer sumstop = getstop(sumval);
-		log.info("v2 "+j+" "+contentsum.size()+" "+sumval);
+		//log.info("v2 "+j+" "+contentsum.size()+" "+sumval);
 		if (Integer.valueOf(start) < Integer.valueOf(sumstart)) {
 		    boolean update = false;
 		    boolean add = false;
 		    contentsum.add(j, ""+start);
 		    break;
 		}
-		log.info(" " + j + " " + contentsum.size() + " " + start + " " + stop + " " + sumstart + " " + sumstop);
+		//log.info(" " + j + " " + contentsum.size() + " " + start + " " + stop + " " + sumstart + " " + sumstop);
 		// if ((j + 1) == contentsum.size())
 		{
-		    log.info(" " + (j+1) + " " + contentsum.size() + " " + ((j + 1) == contentsum.size()));
+		    //log.info(" " + (j+1) + " " + contentsum.size() + " " + ((j + 1) == contentsum.size()));
 		    boolean cont = false;
 		    if (sumstop == null) {
 			cont = (start.intValue() == (sumstart.intValue() + 1));
@@ -236,7 +236,7 @@ public class Unit {
 		    if ((j + 1) < contentsum.size()) {
 			nextstart = getstart (contentsum.get(j+1));
 		    }
-		    log.info("" + (start.intValue()+ " "+ sumstart.intValue() + " " + (start.intValue() > sumstart.intValue())));
+		    //log.info("" + (start.intValue()+ " "+ sumstart.intValue() + " " + (start.intValue() > sumstart.intValue())));
 		    if (start.intValue() > sumstart.intValue() && (nextstart == null || start.intValue() < nextstart.intValue()))
 		    {
 			if (stop == null) {
