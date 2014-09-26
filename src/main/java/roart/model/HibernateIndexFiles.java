@@ -54,8 +54,10 @@ import org.apache.commons.logging.LogFactory;
 	private Boolean indexed;
 	private String timeindex;
 	private String timestamp;
+	private String timeclass;
 	private String convertsw;
 	private String converttime;
+	private String classification;
 	private Integer failed;
 	private String failedreason;
 	private String timeoutreason;
@@ -118,6 +120,20 @@ import org.apache.commons.logging.LogFactory;
 
 	/**
 	 * @hibernate.property
+	 *  column="timeclass"
+	 */
+	@Column(name = "timeclass")
+	
+        public String getTimeclass() {
+	    return timeclass;
+	}
+
+	public void setTimeclass(String timeclass) {
+	    this.timeclass = timeclass;
+	}
+
+	/**
+	 * @hibernate.property
 	 *  column="timeindex"
 	 */
 	@Column(name = "timeindex")
@@ -128,6 +144,20 @@ import org.apache.commons.logging.LogFactory;
 
 	public void setTimeindex(String timeindex) {
 	    this.timeindex = timeindex;
+	}
+
+	/**
+	 * @hibernate.property
+	 *  column="classification"
+	 */
+	@Column(name = "classification")
+	
+        public String getClassification() {
+	    return classification;
+	}
+
+	public void setClassification(String classification) {
+	    this.classification = classification;
 	}
 
 	/**

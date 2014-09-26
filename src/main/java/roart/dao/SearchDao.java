@@ -35,8 +35,8 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<ResultItem> retlist) {
-	return searchJpa.indexme(type, md5, inputStream, dbfilename, metadata, retlist);
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
+	return searchJpa.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist);
     }
 
     public static void indexme(String type) {

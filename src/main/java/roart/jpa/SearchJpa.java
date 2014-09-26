@@ -13,7 +13,7 @@ public abstract class SearchJpa {
 
     private Log log = LogFactory.getLog(this.getClass());
 
-    public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<ResultItem> retlist);
+    public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist);
 
     public abstract void indexme(String type);
 

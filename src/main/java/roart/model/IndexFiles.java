@@ -18,10 +18,12 @@ public class IndexFiles {
 	private static Log log = LogFactory.getLog("IndexFiles");
 	private String md5;
 	private Boolean indexed;
+    private String timeclass;
 	private String timeindex;
 	private String timestamp;
 	private String convertsw;
 	private String converttime;
+    private String classification;
 	private Integer failed;
     private String failedreason;
     private String noindexreason;
@@ -137,6 +139,40 @@ public class IndexFiles {
 	public void setConverttime(long millis) {
 	    changed |= true;
 	    this.converttime = "" + millis;
+	}
+
+	public String getClassification() {
+	    return classification;
+	}
+
+	public void setClassification(String classification) {
+	    changed |= true;
+	    this.classification = classification;
+	}
+
+	public void setTimeclass(String timeclass) {
+	    changed |= true;
+	    this.timeclass = timeclass;
+	}
+
+	public void setTimeclass(long millis) {
+	    changed |= true;
+	    this.timeclass = "" + millis;
+	}
+
+        public String getTimeclass() {
+	    return timeclass;
+	}
+
+        public String getTimeclass(String format) {
+	    if (timeclass == null) {
+		return null;
+	    }
+	    int fl = timeclass.indexOf(".");
+	    if (fl >= 0) {
+		timeclass = timeclass.substring(0, fl-1) + "000"; // temp
+	    }
+	    return String.format(format, (float) new Long(timeclass).longValue()/1000);
 	}
 
         public Integer getFailed() {

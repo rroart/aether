@@ -63,37 +63,24 @@ public class SearchSolr {
 	server.setAllowCompression(true);
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<ResultItem> retlist) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
 	int retsize = 0;
 	// this to a method
 	String strLine = null;
-	try {
-	    DataInputStream in = new DataInputStream(inputStream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	    String line = null;
-	    // index some data
-	    StringBuilder result = new StringBuilder();
-	    while ((line = br.readLine()) != null) {
-		result.append(line);
-	    }
-	    strLine = result.toString();
-	    retsize = strLine.length();
-	} catch (IOException e) {
-	    log.error("Exception", e);
-	}
-
 	log.info("indexing " + md5);
 
-	String lang = LanguageDetect.detect(strLine);
+	String cat = classification;
 
-	String i = strLine;
 	try {
 	    SolrInputDocument doc = new SolrInputDocument();
 	    doc.addField(Constants.ID, md5);
 	    if (lang != null) {
 		doc.addField(Constants.LANG, lang);
 	    }
-	    doc.addField(Constants.CONTENT, i);
+	    if (cat != null) {
+		doc.addField(Constants.CAT, cat);
+	    }
+	    doc.addField(Constants.CONTENT, content);
 	    if (metadata != null) {
 		log.info("with md " + metadata);
 		doc.addField(Constants.METADATA, metadata);
@@ -132,6 +119,8 @@ public class SearchSolr {
 
     public static ResultItem[] searchme2(String str, String searchtype) {
 	ResultItem[] strarr = new ResultItem[0];
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 
@@ -156,10 +145,16 @@ public class SearchSolr {
 	    strarr[0].add("Md5/Id");
 	    strarr[0].add("Filename");
 	    strarr[0].add("Lang");
+	    if (doclassify) {
+		strarr[0].add("Classification");
+	    }
 	    strarr[0].add("Timestamp");
 	    strarr[0].add("Convertsw");
 	    strarr[0].add("Converttime");
 	    strarr[0].add("Indextime");
+	    if (doclassify) {
+		strarr[0].add("Classificationtime");
+	    }
 	    strarr[0].add("Score");
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
@@ -198,10 +193,16 @@ public class SearchSolr {
 		strarr[i + 1].add(md5);
 		strarr[i + 1].add(filename);
 		strarr[i + 1].add(lang);
+		if (doclassify) {
+		    strarr[i + 1].add(indexmd5.getClassification());
+		}
 		strarr[i + 1].add(timestamp);
 		strarr[i + 1].add(convertsw);
 		strarr[i + 1].add(converttime);
 		strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
+		if (doclassify) {
+		    strarr[i + 1].add(indexmd5.getTimeclass("%.2f"));
+		}
 		strarr[i + 1].add("" + score);
 	    }
 	} catch (SolrServerException e) {

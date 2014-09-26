@@ -52,6 +52,8 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    hif.setIndexed(i.getIndexed());
 	    hif.setTimeindex(i.getTimeindex());
 	    hif.setTimestamp(i.getTimestamp());
+	    hif.setTimeindex(i.getTimeindex());
+	    hif.setClassification(i.getClassification());
 	    hif.setConvertsw(i.getConvertsw());
 	    hif.setConverttime(i.getConverttime());
 	    hif.setFailed(i.getFailed());

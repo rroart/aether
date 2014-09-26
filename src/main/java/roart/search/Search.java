@@ -42,11 +42,14 @@ public class Search {
     	IndexFiles dbindex = el.index;
     	String dbfilename = el.dbfilename;
 	Metadata metadata = el.metadata;
+	String lang = el.lang;
+	String content = el.content;
+	String classification = el.index.getClassification();
     	List<ResultItem> retlist = el.retlist;
 
     int retsize = 0;
 
-    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), retlist);
+    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist);
 
     if (retsize < 0) {
 	dbindex.setNoindexreason("Exception"); // later, propagate the exception

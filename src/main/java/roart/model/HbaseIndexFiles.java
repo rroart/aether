@@ -42,6 +42,8 @@ public class HbaseIndexFiles {
     private static byte[] indexedq = Bytes.toBytes("indexed");
     private static byte[] timestampq = Bytes.toBytes("timestamp");
     private static byte[] timeindexq = Bytes.toBytes("timeindex");
+    private static byte[] timeclassq = Bytes.toBytes("timeclass");
+    private static byte[] classificationq = Bytes.toBytes("classification");
     private static byte[] convertswq = Bytes.toBytes("convertsw");
     private static byte[] converttimeq = Bytes.toBytes("converttime");
     private static byte[] failedq = Bytes.toBytes("failed");
@@ -124,6 +126,12 @@ public class HbaseIndexFiles {
 	    if (ifile.getTimeindex() != null) {
 		put.add(indexcf, timeindexq, Bytes.toBytes(ifile.getTimeindex()));
 	    }
+	    if (ifile.getTimeclass() != null) {
+		put.add(indexcf, timeclassq, Bytes.toBytes(ifile.getTimeclass()));
+	    }
+	    if (ifile.getClassification() != null) {
+		put.add(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
+	    }
 	    if (ifile.getConvertsw() != null) {
 		put.add(indexcf, convertswq, Bytes.toBytes(ifile.getConvertsw()));
 	    }
@@ -176,6 +184,8 @@ public class HbaseIndexFiles {
 	ifile.setIndexed(new Boolean(bytesToString(index.getValue(indexcf, indexedq))));
 	ifile.setTimeindex(bytesToString(index.getValue(indexcf, timeindexq)));
 	ifile.setTimestamp(bytesToString(index.getValue(indexcf, timestampq)));
+	ifile.setTimeclass(bytesToString(index.getValue(indexcf, timeclassq)));
+	ifile.setClassification(bytesToString(index.getValue(indexcf, classificationq)));
 	ifile.setConvertsw(bytesToString(index.getValue(indexcf, convertswq)));
 	ifile.setConverttime(bytesToString(index.getValue(indexcf, converttimeq)));
 	ifile.setFailed(new Integer(convert0(bytesToString(index.getValue(indexcf, failedq)))));

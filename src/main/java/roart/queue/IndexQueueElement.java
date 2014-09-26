@@ -10,6 +10,9 @@ import roart.model.ResultItem;
 public class IndexQueueElement {
 	public String type;
 	public String md5;
+    public String lang;
+    // public String classification;
+    public String content; // made from inputStream
 	public InputStream inputStream;
 	public IndexFiles index;
     public List<ResultItem> retlist;

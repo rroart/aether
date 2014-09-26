@@ -8,6 +8,7 @@ public interface Constants {
     String LUCENEPATH = "lucenepath";
     String MD5 = "id";
     String ID = "id";
+    String CAT = "cat";
     String CONTENT = "content";
     String TEXT = "text";
 }

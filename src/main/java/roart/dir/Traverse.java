@@ -9,6 +9,7 @@ import roart.queue.TikaQueueElement;
 import roart.search.*;
 import roart.thread.TikaRunner;
 import roart.dao.IndexFilesDao;
+import roart.dao.ClassifyDao;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.model.ResultItem;
@@ -488,8 +489,24 @@ public class Traverse {
 	    if (size > limit) {
 		    log.info("sizes " + size + " " + limit);
 			log.info("handling filename " + dbfilename + " " + size + " : " + time);
+
+			String content = getString(inputStream);
+
+	String lang = LanguageDetect.detect(content);
+	if (lang != null && lang.equals("en")) {
+	    now = System.currentTimeMillis();
+	    String classification = ClassifyDao.classify(content);
+	    time = System.currentTimeMillis() - now;
+	    log.info("classtime " + time);
+	    System.out.println("classtime " + time);
+	    el.index.setTimeclass(time);
+	    el.index.setClassification(classification);
+	}
+
 		    //size = SearchLucene.indexme("all", md5, inputStream);
 			IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename, metadata);
+			elem.lang = lang;
+			elem.content = content;
 			if (el.convertsw != null) {
 			    elem.convertsw = el.convertsw;
 			} else {
@@ -549,6 +566,23 @@ public class Traverse {
 	    return 16;
 	}
 	return 4096;
+    }
+
+    private static String getString(InputStream inputStream) {
+	try {
+	    DataInputStream in = new DataInputStream(inputStream);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    String line = null;
+    // index some data
+	    StringBuilder result = new StringBuilder();
+	    while ((line = br.readLine()) != null) {
+		result.append(line);
+	    }
+	    return  result.toString();
+	} catch (Exception e) {
+	    log.error("Exception", e);
+	    return null;
+	}
     }
     
 }

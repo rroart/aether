@@ -23,8 +23,13 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	if (mydb.equals("hbase")) {
 	    new roart.model.HbaseIndexFiles();
 	}
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	if (myclassify.equals("mahout")) {
+	    new roart.jpa.MahoutClassify();
+	}
 	roart.dao.SearchDao.instance(myindex);
 	roart.dao.IndexFilesDao.instance(mydb);
+	roart.dao.ClassifyDao.instance(myclassify);
 
         roart.jpa.SearchLucene.indexme("cd");
         roart.jpa.SearchLucene.indexme("dvd");

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.HashSet;
  
@@ -67,7 +68,7 @@ public class SearchLucene {
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     //public static void indexme() {
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, List<ResultItem> retlist) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
     int retsize = 0;
     // create some index
     // we could also create an index in our ram ...
@@ -78,28 +79,21 @@ public class SearchLucene {
     IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_0, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
-	    DataInputStream in = new DataInputStream(inputStream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	    String line = null;
-    // index some data
-	    StringBuilder result = new StringBuilder();
-	    while ((line = br.readLine()) != null) {
-		result.append(line);
-	    }
-	    String strLine = result.toString();
-	    String i = strLine;
-	    retsize = strLine.length();
+	    retsize = content.length();
 
 	log.info("indexing " + md5);
 
-	String lang = LanguageDetect.detect(strLine);
+	String cat = classification;
 
 	Document doc = new Document();
 	doc.add(new TextField(Constants.ID, md5, Field.Store.YES));
+	if (cat != null) {
+	doc.add(new TextField(Constants.CAT, cat, Field.Store.YES));
+	}
 	if (lang != null) {
 	doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 	}
-	doc.add(new TextField(Constants.CONTENT, i, Field.Store.NO));
+	doc.add(new TextField(Constants.CONTENT, content, Field.Store.NO));
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());
 	    doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
@@ -204,6 +198,8 @@ public class SearchLucene {
 }
 
     public static ResultItem[] searchme2(String str, String searchtype) {
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 		ResultItem[] strarr = new ResultItem[0];
@@ -227,7 +223,7 @@ public class SearchLucene {
 	cp = new ExtendableQueryParser(Version.LUCENE_4_10_0, Constants.CONTENT, analyzer);
 	break;
     case 4:
-	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.ID, Constants.CONTENT, Constants.NAME, Constants.LANG, Constants.METADATA}, analyzer); // remove after reindex
+	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_0, new String[]{Constants.TITLE, Constants.ID, Constants.CONTENT, Constants.NAME, Constants.CAT, Constants.LANG, Constants.METADATA}, analyzer); // remove after reindex
 	break;
     case 5:
 	tmpQuery = new SimpleQueryParser(analyzer, Constants.NAME).createPhraseQuery(Constants.NAME, str);
@@ -255,10 +251,16 @@ public class SearchLucene {
     strarr[0].add("Md5/Id");
     strarr[0].add("Filename");
     strarr[0].add("Lang");
+    if (doclassify) {
+	strarr[0].add("Classification");
+    }
     strarr[0].add("Timestamp");
     strarr[0].add("Convertsw");
     strarr[0].add("Converttime");
     strarr[0].add("Indextime");
+    if (doclassify) {
+	strarr[0].add("Classificationtime");
+    }
     strarr[0].add("Score");
     // output results
     log.info("Found " + hits.length + " hits.");
@@ -302,10 +304,16 @@ public class SearchLucene {
 	strarr[i + 1].add(md5);
 	strarr[i + 1].add(filename);
 	strarr[i + 1].add(lang);
+	if (doclassify) {
+	    strarr[i + 1].add(indexmd5.getClassification());
+	}
 	strarr[i + 1].add(timestamp);
 	strarr[i + 1].add(convertsw);
 	strarr[i + 1].add(converttime);
 	strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
+	if (doclassify) {
+	    strarr[i + 1].add(indexmd5.getTimeclass("%.2f"));
+	}
 	strarr[i + 1].add("" + score);
     }
   	} catch (Exception e) {
