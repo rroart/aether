@@ -460,6 +460,16 @@
       <artifactId>jetty-maven-plugin</artifactId>
       <version>${jetty.version}</version>
     </dependency-->
+    <dependency>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-core</artifactId>
+      <version>${mahout.version}</version>
+    </dependency>
+<dependency>
+  <groupId>com.google.collections</groupId>
+  <artifactId>google-collections</artifactId>
+  <version>1.0</version>
+</dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
@@ -470,6 +480,7 @@
     <hbase.version>0.98.6.1-hadoop2</hbase.version>
     <!--hbase.version>0.98.5-hadoop2</hbase.version-->
     <tika.version>1.6</tika.version>
+    <mahout.version>0.9</mahout.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>4.3.6.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
