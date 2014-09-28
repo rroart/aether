@@ -77,7 +77,7 @@ public class Search {
 	}
 	ri.add(el.index.getTimestamp());
 	ri.add(el.index.getConvertsw());
-	ri.add(el.index.getConverttime());
+	ri.add(el.index.getConverttime("%.2f"));
 	ri.add(el.index.getTimeindex("%.2f"));
 	if (doclassify) {
 	    ri.add(el.index.getTimeclass("%.2f"));

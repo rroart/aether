@@ -593,7 +593,6 @@ public class Traverse {
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
     ResultItem ri = new ResultItem();
-    ri.add("Hit");
     ri.add("Md5/Id");
     ri.add("Filename");
     ri.add("Lang");
