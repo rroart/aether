@@ -83,7 +83,6 @@ public class Search {
 	    ri.add(el.index.getTimeclass("%.2f"));
 	}
 	retlist.add(ri);
-	retlist.add(new ResultItem("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time));
     try {
 		inputStream.close();
 	} catch (IOException e) {
