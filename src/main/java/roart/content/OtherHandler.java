@@ -112,7 +112,7 @@ public class OtherHandler {
 	log.info("timerStop " + dbfilename + " " + time);
 	if (output != null && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
-		retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
+		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
 		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, metadata);
 		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.add(e);

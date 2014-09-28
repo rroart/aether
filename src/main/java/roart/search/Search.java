@@ -69,6 +69,7 @@ public class Search {
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
 	ResultItem ri = new ResultItem();
+	ri.add("true");
 	ri.add(md5);
 	ri.add(dbfilename);
 	ri.add(lang);

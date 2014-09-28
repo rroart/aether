@@ -262,7 +262,7 @@ public class Traverse {
 		if (files == null || files.getMd5() == null) {
 		    continue;
 		}
-		retlist.add(new ResultItem(filename));
+		//retlist.add(new ResultItem(filename));
 		IndexFiles index = files;
 
 		Map<String, String> filesMapMd5 = new HashMap<String, String>();
@@ -317,7 +317,7 @@ public class Traverse {
 		break;
 	    }
 
-	    retlist.add(new ResultItem(filename));
+	    //retlist.add(new ResultItem(filename));
 
 	    Map<String, String> filesMapMd5 = new HashMap<String, String>();
 	    filesMapMd5.put(md5, filename);
@@ -487,7 +487,7 @@ public class Traverse {
 		long time = System.currentTimeMillis() - now;
 		el.index.setConverttime(time);
 		log.info("timerStop filename " + time);
-		retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
+		//retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
 		    log.info("sizes " + size + " " + limit);
@@ -522,8 +522,24 @@ public class Traverse {
 	    	    Queues.otherQueue.add(el);
 	    	} else {
 	    		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-	    		retlist.add(new ResultItem(new String("Too small " + dbfilename + " " + md5 + " " + size)));
-			el.index.setFailedreason(el.index.getFailedreason() + "small " + size + " ");
+			String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+			boolean doclassify = myclassify != null && myclassify.length() > 0;
+			ResultItem ri = new ResultItem();
+			ri.add("small");
+			ri.add(md5);
+			ri.add(dbfilename);
+			ri.add("");
+			if (doclassify) {
+			    ri.add(el.index.getClassification());
+			}
+			ri.add(el.index.getTimestamp());
+			ri.add(el.index.getConvertsw());
+			ri.add(el.index.getConverttime("%.2f"));
+			ri.add(el.index.getTimeindex("%.2f"));
+			if (doclassify) {
+			    ri.add(el.index.getTimeclass("%.2f"));
+			}
+			retlist.add(ri);
 			Boolean isIndexed = index.getIndexed();
 			if (isIndexed == null || isIndexed.booleanValue() == false) {
 			    index.incrFailed();
@@ -593,6 +609,7 @@ public class Traverse {
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
     ResultItem ri = new ResultItem();
+    ri.add("Indexed");
     ri.add("Md5/Id");
     ri.add("Filename");
     ri.add("Lang");
