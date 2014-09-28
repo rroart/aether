@@ -32,6 +32,9 @@ public class ClassifyDao {
     }
 
     public static String classify(String type) {
+	if (classifyJpa == null) {
+	    return null;
+	}
 	return classifyJpa.classify(type);
     }
 
