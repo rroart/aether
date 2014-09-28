@@ -62,26 +62,22 @@ public class MahoutClassify {
 
 	    Configuration configuration = new Configuration();
 	    NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
-	    //	    List< String > document = new NGrams( entry, Integer.parseInt(100000)).generateNGramsWithoutLabel();
-
-	    //NaiveBayesModel model = new NaiveBayesModel();
-	    
 	    classifier = new StandardNaiveBayesClassifier( model) ;
 
 	    labels = BayesUtils.readLabelIndex(configuration, new Path(labelIndexPath));
 	    dictionary = readDictionnary(configuration, new Path(dictionaryPath));
 	    documentFrequency = readDocumentFrequency(configuration, new Path(documentFrequencyPath));
 
-	    // analyzer used to extract word from tweet
+	    // analyzer used to extract word from content
 	    int labelCount = labels.size();
-	    System.out.println("Docs " + documentFrequency.size());
+	    log.info("Docs " + documentFrequency.size());
 	    if (documentFrequency.get(-1) != 0) {
 		documentCount = documentFrequency.get(-1).intValue();
 	    } else {
 		documentCount = documentFrequency.get(0).intValue();
 	    }
-	    System.out.println("Number of labels: " + labelCount);
-	    System.out.println("Number of documents in training set: " + documentCount);
+	    log.info("Number of labels: " + labelCount);
+	    log.info("Number of documents in training set: " + documentCount);
 	} catch (Exception e) {
 	    log.error("Exception", e);
 	}
@@ -90,13 +86,8 @@ public class MahoutClassify {
 
     public static String classify(String content) {
 	try {
-
-	    //BufferedReader reader = new BufferedReader(new FileReader(tweetsPath));
 	    Multiset<String> words = ConcurrentHashMultiset.create();
-	    //Set<String> words = new HashSet<String>();
-		// extract words from tweet
-
-
+	    // extract words from content
 	    int wordCount = getWords(content, dictionary, words);
 
 	    // create vector wordId => weight using tfidf
@@ -110,9 +101,8 @@ public class MahoutClassify {
 		double tfIdfValue = tfidf.calculate(count, freq.intValue(), wordCount, documentCount);
 		vector.setQuick(wordId, tfIdfValue);
 	    }
-
-
-		Vector resultVector = classifier.classifyFull(vector);
+	    
+	    Vector resultVector = classifier.classifyFull(vector);
 	    double bestScore = -Double.MAX_VALUE;
 	    int bestCategoryId = -1;
 	    for(Element element: resultVector.all()) {
@@ -122,9 +112,9 @@ public class MahoutClassify {
 		    bestScore = score;
 		    bestCategoryId = categoryId;
 		}
-		System.out.println(" " + labels.get(categoryId) + ": " + score);
+		log.info(" " + labels.get(categoryId) + ": " + score);
 	    }
-	    System.out.println(" => " + labels.get(bestCategoryId));
+	    log.info(" => " + labels.get(bestCategoryId));
 	    return labels.get(bestCategoryId);
 
 	    //Algorithm algorithm = new BayesAlgorithm();
