@@ -498,7 +498,7 @@ public class Traverse {
 	    String classification = ClassifyDao.classify(content);
 	    time = System.currentTimeMillis() - now;
 	    log.info("classtime " + time);
-	    System.out.println("classtime " + time);
+	    //System.out.println("classtime " + time);
 	    el.index.setTimeclass(time);
 	    el.index.setClassification(classification);
 	}
