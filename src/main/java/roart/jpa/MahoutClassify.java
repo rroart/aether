@@ -71,7 +71,7 @@ public class MahoutClassify {
 	    // analyzer used to extract word from content
 	    int labelCount = labels.size();
 	    log.info("Docs " + documentFrequency.size());
-	    if (documentFrequency.get(-1) != 0) {
+	    if (documentFrequency.get(-1) != null) {
 		documentCount = documentFrequency.get(-1).intValue();
 	    } else {
 		documentCount = documentFrequency.get(0).intValue();
