@@ -189,6 +189,7 @@ public class Traverse {
 
     public static List<ResultItem> index(String suffix) throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(getHeader());
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
@@ -219,6 +220,7 @@ public class Traverse {
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
+	retlist.add(getHeader());
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
 	Set<String> md5set = new HashSet<String>();
@@ -283,6 +285,7 @@ public class Traverse {
     public static List<ResultItem> reindexdate(String date) throws Exception {
 	boolean reindex = true;
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(getHeader());
 	Set<String> md5set = new HashSet<String>();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
 	int i = 0;
@@ -583,6 +586,28 @@ public class Traverse {
 	    log.error("Exception", e);
 	    return null;
 	}
+    }
+
+    private static ResultItem getHeader() {
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
+
+    ResultItem ri = new ResultItem();
+    ri.add("Hit");
+    ri.add("Md5/Id");
+    ri.add("Filename");
+    ri.add("Lang");
+    if (doclassify) {
+	ri.add("Classification");
+    }
+    ri.add("Timestamp");
+    ri.add("Convertsw");
+    ri.add("Converttime");
+    ri.add("Indextime");
+    if (doclassify) {
+	ri.add("Classificationtime");
+    }
+    return ri;
     }
     
 }

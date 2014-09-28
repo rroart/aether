@@ -64,6 +64,25 @@ public class Search {
 	long time = System.currentTimeMillis() - now;
 	dbindex.setTimeindex(time);
 	log.info("timerStop filename " + time);
+
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
+
+	ResultItem ri = new ResultItem();
+	ri.add(md5);
+	ri.add(dbfilename);
+	ri.add(lang);
+	if (doclassify) {
+	    ri.add(el.index.getClassification());
+	}
+	ri.add(el.index.getTimestamp());
+	ri.add(el.index.getConvertsw());
+	ri.add(el.index.getConverttime());
+	ri.add(el.index.getTimeindex("%.2f"));
+	if (doclassify) {
+	    ri.add(el.index.getTimeclass("%.2f"));
+	}
+	retlist.add(ri);
 	retlist.add(new ResultItem("Indexed " + dbfilename + " " + md5 + " " + retsize + " " + el.convertsw + " " + time));
     try {
 		inputStream.close();
