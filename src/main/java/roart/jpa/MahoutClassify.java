@@ -42,12 +42,23 @@ public class MahoutClassify {
 
     private static Log log = LogFactory.getLog("MahoutClassify");
 
-    public static String classify(String content) {
+    private static String modelPath = null;
+    private static String labelIndexPath = null;
+    private static String dictionaryPath = null;
+    private static String documentFrequencyPath = null;
+
+    private static StandardNaiveBayesClassifier classifier = null;
+    private static Map<Integer, String> labels = null;
+    private static Map<String, Integer> dictionary = null;
+    private static Map<Integer, Long> documentFrequency = null;
+    private static int documentCount = 0;
+
+    public MahoutClassify() {
 	try {
-	    String modelPath = "/home/roart/usr/data/mahout/model";
-	    String labelIndexPath = "/home/roart/usr/data/mahout/labelindex";
-	    String dictionaryPath = "/home/roart/usr/data/mahout/dataset-vectors/dictionary.file-0";
-	    String documentFrequencyPath = "/home/roart/usr/data/mahout/dataset-vectors/frequency.file-0";
+	    modelPath = roart.util.Prop.getProp().getProperty("mahaoutmodelpath");
+	    labelIndexPath = roart.util.Prop.getProp().getProperty("mahoutlabelindexfilepath");
+	    dictionaryPath = roart.util.Prop.getProp().getProperty("mahoutdictionarypath");
+	    documentFrequencyPath = roart.util.Prop.getProp().getProperty("mahoutdocumentfrequencypath");
 
 	    Configuration configuration = new Configuration();
 	    NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
@@ -55,18 +66,15 @@ public class MahoutClassify {
 
 	    //NaiveBayesModel model = new NaiveBayesModel();
 	    
-	    StandardNaiveBayesClassifier classifier = new StandardNaiveBayesClassifier( model) ;
+	    classifier = new StandardNaiveBayesClassifier( model) ;
 
-		Map<Integer, String> labels = BayesUtils.readLabelIndex(configuration, new Path(labelIndexPath));
-	    Map<String, Integer> dictionary = readDictionnary(configuration, new Path(dictionaryPath));
-	    Map<Integer, Long> documentFrequency = readDocumentFrequency(configuration, new Path(documentFrequencyPath));
-
-
+	    labels = BayesUtils.readLabelIndex(configuration, new Path(labelIndexPath));
+	    dictionary = readDictionnary(configuration, new Path(dictionaryPath));
+	    documentFrequency = readDocumentFrequency(configuration, new Path(documentFrequencyPath));
 
 	    // analyzer used to extract word from tweet
 	    int labelCount = labels.size();
 	    System.out.println("Docs " + documentFrequency.size());
-	    int documentCount;
 	    if (documentFrequency.get(-1) != 0) {
 		documentCount = documentFrequency.get(-1).intValue();
 	    } else {
@@ -74,6 +82,15 @@ public class MahoutClassify {
 	    }
 	    System.out.println("Number of labels: " + labelCount);
 	    System.out.println("Number of documents in training set: " + documentCount);
+	} catch (Exception e) {
+	    log.error("Exception", e);
+	}
+
+    }
+
+    public static String classify(String content) {
+	try {
+
 	    //BufferedReader reader = new BufferedReader(new FileReader(tweetsPath));
 	    Multiset<String> words = ConcurrentHashMultiset.create();
 	    //Set<String> words = new HashSet<String>();
