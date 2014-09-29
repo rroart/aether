@@ -71,10 +71,12 @@ public class MahoutClassify {
 	    // analyzer used to extract word from content
 	    int labelCount = labels.size();
 	    log.info("Docs " + documentFrequency.size());
+	    // the -1 is in df-count/part-r-00000
 	    if (documentFrequency.get(-1) != null) {
 		documentCount = documentFrequency.get(-1).intValue();
 	    } else {
-		documentCount = documentFrequency.get(0).intValue();
+		log.error("no size info in data");
+		documentCount = 1; // or try to just set one
 	    }
 	    log.info("Number of labels: " + labelCount);
 	    log.info("Number of documents in training set: " + documentCount);
@@ -91,12 +93,16 @@ public class MahoutClassify {
 	    int wordCount = getWords(content, dictionary, words);
 
 	    // create vector wordId => weight using tfidf
-	    Vector vector = new RandomAccessSparseVector(10000);
+	    Vector vector = new RandomAccessSparseVector(Integer.MAX_VALUE);
 	    TFIDF tfidf = new TFIDF();
 	    for (Multiset.Entry<String> entry:words.entrySet()) {
 		String word = entry.getElement();
 		int count = entry.getCount();
 		Integer wordId = dictionary.get(word);
+		if (wordId.intValue() == -1) {
+		    System.out.println("skipping -1");
+		    continue;
+		}
 		Long freq = documentFrequency.get(wordId);
 		double tfIdfValue = tfidf.calculate(count, freq.intValue(), wordCount, documentCount);
 		vector.setQuick(wordId, tfIdfValue);
@@ -116,12 +122,6 @@ public class MahoutClassify {
 	    }
 	    log.info(" => " + labels.get(bestCategoryId));
 	    return labels.get(bestCategoryId);
-
-	    //Algorithm algorithm = new BayesAlgorithm();
-	    //Datastore datastore = new InMemoryBayesDatastore( params );
-	    //ClassifierContext classifier =  new ClassifierContext( algorithm, datastore );
-	    //classifier.initialize();
-	    //ClassifierResult result = classifier.classifyDocument(document.toArray( new String[ document.size() ]));
 	} catch (Exception e) {
 	    log.error("Exception", e);
 	}
