@@ -200,6 +200,7 @@ public class SearchLucene {
     public static ResultItem[] searchme2(String str, String searchtype) {
 	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
+	boolean admin = "admin".equals((String) com.vaadin.ui.UI.getCurrent().getSession().getAttribute("user"));
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 		ResultItem[] strarr = new ResultItem[0];
@@ -255,11 +256,13 @@ public class SearchLucene {
 	strarr[0].add("Classification");
     }
     strarr[0].add("Timestamp");
+    if (admin) {
     strarr[0].add("Convertsw");
     strarr[0].add("Converttime");
     strarr[0].add("Indextime");
     if (doclassify) {
 	strarr[0].add("Classificationtime");
+    }
     }
     strarr[0].add("Score");
     // output results
@@ -308,11 +311,13 @@ public class SearchLucene {
 	    strarr[i + 1].add(indexmd5.getClassification());
 	}
 	strarr[i + 1].add(timestamp);
+	if (admin) {
 	strarr[i + 1].add(convertsw);
 	strarr[i + 1].add(converttime);
 	strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
 	if (doclassify) {
 	    strarr[i + 1].add(indexmd5.getTimeclass("%.2f"));
+	}
 	}
 	strarr[i + 1].add("" + score);
     }
