@@ -8,6 +8,8 @@ import java.util.TreeMap;
 import java.util.Map;
 import java.util.Date;
 
+import java.io.File;
+
 //import roart.beans.session.misc.Unit;
 import roart.beans.session.comic.Unit;
 import roart.beans.session.comic.UnitBuy;
@@ -20,17 +22,20 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Alignment;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.InlineDateField;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.data.Property;
@@ -39,6 +44,10 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.Window;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -60,6 +69,71 @@ public class MyVaadinUI extends UI
     public static class Servlet extends VaadinServlet {
     }
 
+    private void tryLogin(String user, String password) { 
+	if ("user".equals(user) && "user".equals(password)) {
+	    getSession().setAttribute("user", "user");
+	}
+	if ("admin".equals(user) && "admin".equals(password)) {
+	    getSession().setAttribute("user", "admin");
+	}
+	initVars();
+	setVisibilities();
+    } 
+
+    private void initVars() {
+	String mydownload = roart.util.Prop.getProp().getProperty("downloader");
+	boolean dodownload = mydownload != null && mydownload.length() > 0;
+
+
+	String myauthenticate = roart.util.Prop.getProp().getProperty("authenticate");
+	boolean doauthenticate = myauthenticate != null && myauthenticate.length() > 0;
+	getSession().setAttribute("authenticate", doauthenticate);
+
+	boolean accessAdmin = false;
+	boolean accessUser = false;
+	String addr = (String) getSession().getAttribute("addr");
+	accessAdmin = addr.equals("127.0.0.1");
+	//accessUser = addr.equals("127.0.0.1");
+	if (accessUser) {
+	    getSession().setAttribute("user", "user");
+	}
+	if (accessAdmin) {
+	    getSession().setAttribute("user", "admin");
+	}
+
+	boolean userNone = "none".equals(getSession().getAttribute("user"));
+	boolean userUser = "user".equals(getSession().getAttribute("user"));
+	boolean userAdmin = "admin".equals(getSession().getAttribute("user"));
+
+	accessUser |= !userNone;
+
+	dodownload = accessUser && dodownload;
+	getSession().setAttribute("download", dodownload);
+
+	//getSession().setAttribute("accessadmin", accessAdmin);
+	//getSession().setAttribute("accessuser", accessUser);
+    }
+
+    private void setVisibilities()  {
+	if ((boolean) getSession().getAttribute("authenticate")) {
+	    Button login = (Button) getSession().getAttribute("login");
+	    Button logout = (Button) getSession().getAttribute("logout");
+	    if (!getSession().getAttribute("user").equals("none")) {
+		login.setVisible(false);
+		logout.setVisible(true);
+	    } else {
+		logout.setVisible(false);
+		login.setVisible(true);
+	    }
+	}
+	VerticalLayout cpTab = (VerticalLayout) getSession().getAttribute("controlpanel");
+	if ("admin".equals(getSession().getAttribute("user"))) {
+	    cpTab.setVisible(true);
+	} else {
+	    cpTab.setVisible(false);
+	}
+    }
+
     @Override
     protected void init(VaadinRequest request) {
         final VerticalLayout layout = new VerticalLayout();
@@ -67,27 +141,36 @@ public class MyVaadinUI extends UI
 
         layout.setMargin(true);
         setContent(layout);
+
+	getSession().setAttribute("addr", request.getRemoteAddr());
+	getSession().setAttribute("user", "none");
+	initVars();
         
-	/*
-        Button button = new Button("Click Me");
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
-            }
-        });
-	*/
-
-	//        layout.addComponent(tf);
-
-	Label topLine = new Label("Akashic disk search engine");
+	HorizontalLayout topLine = new HorizontalLayout();
+	Label topTitle = new Label("Akashic disk search engine");
+	topTitle.setWidth("90%");
+	topLine.addComponent(topTitle);
+	topLine.setHeight("10%");
+	topLine.setWidth("100%");	
+	boolean doauthenticate = (boolean) getSession().getAttribute("authenticate");
+	if (doauthenticate) {
+	    Button login = getLoginButton();
+	    Button logout = getLogoutButton();
+	    topLine.addComponent(login);
+	    topLine.addComponent(logout);
+	    getSession().setAttribute("login", login);
+	    getSession().setAttribute("logout", logout);
+	}
 	layout.addComponent(topLine);
 
 	TabSheet tabsheet = new TabSheet();
+	tabsheet.setHeight("80%");
 	layout.addComponent(tabsheet);
 	// Create the first tab
 	searchTab = getSearchTab();
 	// This tab gets its caption from the component caption
 	controlPanelTab = getControlPanelTab();
+	getSession().setAttribute("controlpanel", controlPanelTab);
 
 	miscTab = getMiscTab();
 	comicsTab = getComicsTab();
@@ -102,10 +185,20 @@ public class MyVaadinUI extends UI
 	tabsheet.addTab(trainingTab);
 	
 	HorizontalLayout bottomLine = new HorizontalLayout();
-	bottomLine.addComponent(new Label("Db type " + roart.util.Prop.getProp().getProperty("mydb")));
-	bottomLine.addComponent(new Label("Index type " + roart.util.Prop.getProp().getProperty("myindex")));
-	bottomLine.addComponent(new Label("Affero GPL"));
+	bottomLine.setHeight("10%");
+	bottomLine.setWidth("90%");
+	Label dbLabel = new Label("Db type " + roart.util.Prop.getProp().getProperty("mydb"));
+	//dbLabel.setWidth("30%");
+	bottomLine.addComponent(dbLabel);
+	Label idxLabel = new Label("Index type " + roart.util.Prop.getProp().getProperty("myindex"));
+	//idxLabel.setWidth("30%");
+	bottomLine.addComponent(idxLabel);
+	Label licenseLabel = new Label("Affero GPL");
+	//licenseLabel.setWidth("30%");
+	bottomLine.addComponent(licenseLabel);
+	//bottomLine.setComponentAlignment(licenseLabel, Alignment.BOTTOM_RIGHT);
 	layout.addComponent(bottomLine);
+	setVisibilities();
     }
 
     private VerticalLayout getSearchTab() {
@@ -125,20 +218,36 @@ public class MyVaadinUI extends UI
 	VerticalLayout tab = new VerticalLayout();
 	tab.setCaption("Control Panel");
 	HorizontalLayout horNewInd = new HorizontalLayout();
-	horNewInd.addComponent(getFsIndexNew());
+	horNewInd.setHeight("20%");
+	horNewInd.setWidth("90%");
+	Button fsIndexNew = getFsIndexNew();
+	horNewInd.addComponent(fsIndexNew);
+	horNewInd.setComponentAlignment(fsIndexNew, Alignment.BOTTOM_LEFT);
 	horNewInd.addComponent(getFsIndexNewPath());
 	horNewInd.addComponent(getFsIndexNewMd5());
 	HorizontalLayout horNew = new HorizontalLayout();
-	horNew.addComponent(getFsAddNew());
+	horNew.setHeight("20%");
+	horNew.setWidth("60%");
+	Button fsAddNew = getFsAddNew();
+	horNew.addComponent(fsAddNew);
+	horNew.setComponentAlignment(fsAddNew, Alignment.BOTTOM_LEFT);
 	horNew.addComponent(getFsAddNewPath());
 	HorizontalLayout horInd = new HorizontalLayout();
-	horInd.addComponent(getIndexNew());
+	horInd.setHeight("20%");
+	horInd.setWidth("90%");
+	Button indexNew = getIndexNew();
+	horInd.addComponent(indexNew);
+	horInd.setComponentAlignment(indexNew, Alignment.BOTTOM_LEFT);
 	horInd.addComponent(getIndexNewPath());
 	horInd.addComponent(getIndexSuffix());
 	HorizontalLayout horReindex = new HorizontalLayout();
+	horReindex.setHeight("20%");
+	horReindex.setWidth("60%");
 	horReindex.addComponent(getReindex());
 	horReindex.addComponent(getReindexDate());
 	HorizontalLayout horStat = new HorizontalLayout();
+	horStat.setHeight("20%");
+	horStat.setWidth("90%");
 	horStat.addComponent(getNotIndexed());
 	horStat.addComponent(getMemoryUsage());
 	horStat.addComponent(getOverlapping());
@@ -162,22 +271,32 @@ public class MyVaadinUI extends UI
 	//tab.addComponent(tf2);
 	tab.setCaption("Misc");
 	HorizontalLayout cdTab = new HorizontalLayout(); 
+	cdTab.setHeight("20%");
+	cdTab.setWidth("90%");
 	cdTab.addComponent(getMiscCreator("cd"));
 	cdTab.addComponent(getMiscYear("cd"));
 	cdTab.addComponent(getMiscSearch("cd"));
 	HorizontalLayout dvdTab = new HorizontalLayout(); 
+	dvdTab.setHeight("20%");
+	dvdTab.setWidth("90%");
 	dvdTab.addComponent(getMiscCreator("dvd"));
 	dvdTab.addComponent(getMiscYear("dvd"));
 	dvdTab.addComponent(getMiscSearch("dvd"));
 	HorizontalLayout bookTab = new HorizontalLayout(); 
+	bookTab.setHeight("20%");
+	bookTab.setWidth("90%");
 	bookTab.addComponent(getMiscCreator("book"));
 	bookTab.addComponent(getMiscYear("book"));
 	bookTab.addComponent(getMiscSearch("book"));
 	HorizontalLayout book0Tab = new HorizontalLayout(); 
+	book0Tab.setHeight("20%");
+	book0Tab.setWidth("90%");
 	book0Tab.addComponent(getMiscCreator("book0"));
 	book0Tab.addComponent(getMiscYear("book0"));
 	book0Tab.addComponent(getMiscSearch("book0"));
 	HorizontalLayout bookuTab = new HorizontalLayout(); 
+	bookuTab.setHeight("20%");
+	bookuTab.setWidth("90%");
 	bookuTab.addComponent(getMiscCreator("booku"));
 	bookuTab.addComponent(getMiscYear("booku"));
 	bookuTab.addComponent(getMiscSearch("booku"));
@@ -207,6 +326,51 @@ public class MyVaadinUI extends UI
 	tab.setCaption("Training");
 	tab.addComponent(getTrainingYear());
 	return tab;
+    }
+
+    private Button getLogoutButton() {
+        Button button = new Button("Logout");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		getSession().setAttribute("user", "none");
+		initVars();
+		setVisibilities();
+            }
+        });
+	return button;
+    }
+
+    private Button getLoginButton() {
+        Button button = new Button("Login");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		Window result = getLoginWindow();
+		addWindow(result);
+            }
+        });
+	return button;
+    }
+
+    private Window getLoginWindow() {
+        final Window window = new Window("Login");
+	window.setWidth("30%");
+	window.setHeight("30%");
+	window.center();
+	final TextField login = new TextField ( "Username");
+	final PasswordField password = new PasswordField ( "Password");
+	Button button = new Button("Login");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		tryLogin(login.getValue(), password.getValue());
+		window.close();
+            }
+        });
+	VerticalLayout vert = new VerticalLayout();
+	vert.addComponent(login);
+	vert.addComponent(password);
+	vert.addComponent(button);
+	window.setContent(vert);
+	return window;
     }
 
     private Button getFsIndexNew() {
@@ -628,7 +792,9 @@ public class MyVaadinUI extends UI
     }
 
     private ListSelect getMiscCreator(String type) {
-	return getMiscYearOrCreator(type, "creator");
+	ListSelect ls = getMiscYearOrCreator(type, "creator");
+	ls.setWidth("80%");
+	return ls;
     }
 
     private ListSelect getMiscYear(String type) {
@@ -665,7 +831,7 @@ public class MyVaadinUI extends UI
 		    Integer count = new Integer (0);
 		    Float price = new Float (0);
 		    Table table = new Table(type);
-		    table.setWidth("800");
+		    table.setWidth("90%");
 		    table.addContainerProperty("Date", String.class, null);
 		    table.addContainerProperty("Count", String.class, null);
 		    table.addContainerProperty("Type", String.class, null);
@@ -712,8 +878,10 @@ public class MyVaadinUI extends UI
     }
 
     void addListTable(VerticalLayout ts, List<ResultItem> strarr) {
+	boolean dodownload = (boolean) getSession().getAttribute("download");
+
 	Table table = new Table("Table");
-	table.setWidth("800");
+	table.setWidth("90%");
 	int max = 0;
 	for (int i=0; i<strarr.size(); i++) {
 	    if (strarr.get(i).get().size() > max) {
@@ -722,6 +890,23 @@ public class MyVaadinUI extends UI
 	}
 	for (int i = 0; i < max; i++) {
 	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
+	}
+	if (dodownload) {
+	    if (max >= 2 && strarr.get(0).get().get(2).equals("Filename")) {
+		table.addGeneratedColumn("Download", new ColumnGenerator() {
+@Override
+public Object generateCell(Table source, Object itemId,
+			   Object columnId) {
+    String filename = (String) source.getItem(itemId).getItemProperty("Filename").getValue();
+    FileResource resource = new FileResource(new File(filename));
+    Button button = new Button("Download");
+    button.setStyleName(BaseTheme.BUTTON_LINK);
+    FileDownloader downloader = new FileDownloader(resource);
+    downloader.extend(button);
+    return button;
+}
+		    });
+	    }
 	}
 	for (int i = 1; i < strarr.size(); i++) {
 	    ResultItem str = strarr.get(i);
