@@ -52,7 +52,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    hif.setIndexed(i.getIndexed());
 	    hif.setTimeindex(i.getTimeindex());
 	    hif.setTimestamp(i.getTimestamp());
-	    hif.setTimeindex(i.getTimeindex());
+	    hif.setTimeclass(i.getTimeclass());
 	    hif.setClassification(i.getClassification());
 	    hif.setConvertsw(i.getConvertsw());
 	    hif.setConverttime(i.getConverttime());
@@ -80,6 +80,8 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	ifile.setIndexed(hif.getIndexed());
 	ifile.setTimeindex(hif.getTimeindex());
 	ifile.setTimestamp(hif.getTimestamp());
+	ifile.setTimeclass(hif.getTimeclass());
+	ifile.setClassification(hif.getClassification());
 	ifile.setConvertsw(hif.getConvertsw());
 	ifile.setConverttime(hif.getConverttime());
 	ifile.setFailed(hif.getFailed());
