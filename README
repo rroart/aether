@@ -1,0 +1,44 @@
+Akashic disk search engine
+
+config, myweb.prop:
+
+general:
+dirlist=/home/roart/usr/music,/home/roart/usr/video,/home/roart/usr/abook,/home/roart/usr/books
+dirlistnot=/home/roart/usr/music/tmp,/home/roart/usr/music/tmp_any2dvd,/home/roart/usr/video/tmp,/home/roart/usr/abook/tmp,/home/roart/usr/books/tmp,/home/roart/usr/books/tmp2
+logdir=...
+showsecret=1
+reindexlimit=10000
+failedlimit=10
+tikatimeout=600
+othertimeout=600
+downloader=true
+authenticate=true
+
+database:
+mydb=hibernate
+h2dir=...
+
+mydb=hbase
+hbasequorum=localhost
+hbaseport=2181
+hbasemaster=localhost:2181
+
+indexing/search:
+myindex=lucene
+lucenepath=...
+
+myindex=solr
+solrurl=http://localhost:8983/solr/mystuff
+
+classifying:
+myclassify=mahout
+mahoutalgorithm=bayes
+mahaoutmodelpath=.../mahout/model
+mahoutlabelindexfilepath=.../mahout/labelindex
+mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
+mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
+(was: mahoutdocumentfrequencypath=.../mahout/dataset-vectors/frequency.file-0)
+
+personal:
+datadir=.../data/
+homedir=...
