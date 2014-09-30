@@ -25,6 +25,7 @@ import org.apache.lucene.util.Version;
 import org.apache.mahout.classifier.naivebayes.BayesUtils;
 import org.apache.mahout.classifier.naivebayes.NaiveBayesModel;
 import org.apache.mahout.classifier.naivebayes.StandardNaiveBayesClassifier;
+import org.apache.mahout.classifier.naivebayes.ComplementaryNaiveBayesClassifier;
 import org.apache.mahout.common.Pair;
 import org.apache.mahout.common.iterator.sequencefile.SequenceFileIterable;
 import org.apache.mahout.math.RandomAccessSparseVector;
@@ -47,11 +48,14 @@ public class MahoutClassify {
     private static String dictionaryPath = null;
     private static String documentFrequencyPath = null;
 
+    private static ComplementaryNaiveBayesClassifier classifier2 = null;
     private static StandardNaiveBayesClassifier classifier = null;
     private static Map<Integer, String> labels = null;
     private static Map<String, Integer> dictionary = null;
     private static Map<Integer, Long> documentFrequency = null;
     private static int documentCount = 0;
+
+    private static boolean bayes = true;
 
     public MahoutClassify() {
 	try {
@@ -59,10 +63,19 @@ public class MahoutClassify {
 	    labelIndexPath = roart.util.Prop.getProp().getProperty("mahoutlabelindexfilepath");
 	    dictionaryPath = roart.util.Prop.getProp().getProperty("mahoutdictionarypath");
 	    documentFrequencyPath = roart.util.Prop.getProp().getProperty("mahoutdocumentfrequencypath");
+	    String bayestype = roart.util.Prop.getProp().getProperty("mahoutalgorithm");
+	    // not waterproof on purpose, won't check if var correctly set
+	    bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
 	    NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
-	    classifier = new StandardNaiveBayesClassifier( model) ;
+	    
+	    if ("cbayes".equals(bayestype)) {
+		classifier2 = new ComplementaryNaiveBayesClassifier(model);
+	    }
+	    if ("bayes".equals(bayestype)) {
+		classifier = new StandardNaiveBayesClassifier( model) ;
+	    }
 
 	    labels = BayesUtils.readLabelIndex(configuration, new Path(labelIndexPath));
 	    dictionary = readDictionnary(configuration, new Path(dictionaryPath));
@@ -99,16 +112,17 @@ public class MahoutClassify {
 		String word = entry.getElement();
 		int count = entry.getCount();
 		Integer wordId = dictionary.get(word);
-		if (wordId.intValue() == -1) {
-		    System.out.println("skipping -1");
-		    continue;
-		}
 		Long freq = documentFrequency.get(wordId);
 		double tfIdfValue = tfidf.calculate(count, freq.intValue(), wordCount, documentCount);
 		vector.setQuick(wordId, tfIdfValue);
 	    }
 	    
-	    Vector resultVector = classifier.classifyFull(vector);
+	    Vector resultVector = null;
+	    if (bayes) {
+		resultVector = classifier.classifyFull(vector);
+	    } else {
+		resultVector = classifier2.classifyFull(vector);
+	    }		
 	    double bestScore = -Double.MAX_VALUE;
 	    int bestCategoryId = -1;
 	    for(Element element: resultVector.all()) {
@@ -118,9 +132,9 @@ public class MahoutClassify {
 		    bestScore = score;
 		    bestCategoryId = categoryId;
 		}
-		log.info(" " + labels.get(categoryId) + ": " + score);
+		//log.info(" " + labels.get(categoryId) + ": " + score);
 	    }
-	    log.info(" => " + labels.get(bestCategoryId));
+	    log.info(" cat " + labels.get(bestCategoryId));
 	    return labels.get(bestCategoryId);
 	} catch (Exception e) {
 	    log.error("Exception", e);
