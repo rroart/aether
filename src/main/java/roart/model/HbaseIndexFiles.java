@@ -322,6 +322,9 @@ public class HbaseIndexFiles {
 	    log.info("closing db");
 	    filesTable.close();
 	    indexTable.close();
+	    HTablePool pool = new HTablePool();
+	    filesTable = pool.getTable("files");
+	    indexTable = pool.getTable("index");
 	} catch (IOException e) {
 	    log.error("Exception", e);
 	}
