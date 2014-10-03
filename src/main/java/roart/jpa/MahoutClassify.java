@@ -160,7 +160,7 @@ public static Map<Integer, Long> readDocumentFrequency(Configuration conf, Path 
 
     private static int getWords(String content, Map<String, Integer> dictionary, Multiset<String> words) {
 	try {
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_0 );
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1 );
 	TokenStream ts = analyzer.tokenStream("text", new StringReader(content));
 	CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
 	ts.reset();
