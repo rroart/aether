@@ -139,8 +139,7 @@
             </goals>
             <configuration>
               <files>
-                <file>myweb.prop</file>
-                <!--file>aether.prop</file-->
+                <file>aether.prop</file>
               </files>
             </configuration>
           </execution>
