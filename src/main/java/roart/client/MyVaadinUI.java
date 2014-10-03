@@ -132,6 +132,12 @@ public class MyVaadinUI extends UI
 	} else {
 	    cpTab.setVisible(false);
 	}
+	VerticalLayout sTab = (VerticalLayout) getSession().getAttribute("search");
+	if (!"none".equals(getSession().getAttribute("user"))) {
+	    sTab.setVisible(true);
+	} else {
+	    sTab.setVisible(false);
+	}
     }
 
     @Override
@@ -147,7 +153,7 @@ public class MyVaadinUI extends UI
 	initVars();
         
 	HorizontalLayout topLine = new HorizontalLayout();
-	Label topTitle = new Label("Akashic disk search engine");
+	Label topTitle = new Label("Aether disk search engine");
 	topTitle.setWidth("90%");
 	topLine.addComponent(topTitle);
 	topLine.setHeight("10%");
@@ -168,6 +174,7 @@ public class MyVaadinUI extends UI
 	layout.addComponent(tabsheet);
 	// Create the first tab
 	searchTab = getSearchTab();
+	getSession().setAttribute("search", searchTab);
 	// This tab gets its caption from the component caption
 	controlPanelTab = getControlPanelTab();
 	getSession().setAttribute("controlpanel", controlPanelTab);
@@ -384,12 +391,7 @@ public class MyVaadinUI extends UI
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		List<ResultItem> strarr = lists.get(0);
-		List<ResultItem> strarr2 = lists.get(1);
-		VerticalLayout result = getResultTemplate();
-		addListTable(result, strarr);
-		addListTable(result, strarr2);
-		setContent(result);
+		displayResultLists(lists);
             }
         });
 	return button;
@@ -406,12 +408,7 @@ public class MyVaadinUI extends UI
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		List<ResultItem> strarr = lists.get(0);
-		//List<ResultItem> strarr2 = lists.get(1);
-		VerticalLayout result = getResultTemplate();
-		addListTable(result, strarr);
-		//addListTable(result, strarr2);
-                setContent(result);
+		displayResultLists(lists);
             }
         });
 	return button;
@@ -425,15 +422,10 @@ public class MyVaadinUI extends UI
 		List<List> lists = null;
 		try {
 		    lists = maininst.index(null);
-		    } catch (Exception e) {
-			log.error("Exception", e);
-		    }
-		List<ResultItem> strarr = lists.get(0);
-		List<ResultItem> strarr2 = lists.get(1);
-		VerticalLayout result = getResultTemplate();
-		addListTable(result, strarr);
-		addListTable(result, strarr2);
-                setContent(result);
+		} catch (Exception e) {
+		    log.error("Exception", e);
+		}
+		displayResultLists(lists);
             }
         });
 	return button;
@@ -464,12 +456,7 @@ public class MyVaadinUI extends UI
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		List<ResultItem> strarr = lists.get(0);
-		List<ResultItem> strarr2 = lists.get(1);
-                VerticalLayout result = getResultTemplate();
-                addListTable(result, strarr);
-                addListTable(result, strarr2);
-                setContent(result);
+		displayResultLists(lists);
             }
         });
 	return button;
@@ -505,12 +492,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -534,12 +516,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    //List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    //addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -563,12 +540,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -640,12 +612,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -678,12 +645,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -707,12 +669,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -736,12 +693,7 @@ public class MyVaadinUI extends UI
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    List<ResultItem> strarr = lists.get(0);
-		    List<ResultItem> strarr2 = lists.get(1);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    addListTable(result, strarr2);
-		    setContent(result);
+		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -878,21 +830,26 @@ public class MyVaadinUI extends UI
     }
 
     void addListTable(VerticalLayout ts, List<ResultItem> strarr) {
+	if (strarr.size() <= 1) {
+	    return;
+	}
+
 	boolean dodownload = (boolean) getSession().getAttribute("download");
 
 	Table table = new Table("Table");
 	table.setWidth("90%");
-	int max = 0;
+	int columns = strarr.get(0).get().size();
 	for (int i=0; i<strarr.size(); i++) {
-	    if (strarr.get(i).get().size() > max) {
-		max = strarr.get(i).get().size();
+	    if (strarr.get(i).get().size() != columns) {
+		System.out.println("column differs " + columns + " found " + strarr.get(i).get().size());
+		break;
 	    }
 	}
-	for (int i = 0; i < max; i++) {
+	for (int i = 0; i < columns; i++) {
 	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
 	}
 	if (dodownload) {
-	    if (max >= 2 && strarr.get(0).get().get(2).equals("Filename")) {
+	    if (columns >= 2 && strarr.get(0).get().get(2).equals("Filename")) {
 		table.addGeneratedColumn("Download", new ColumnGenerator() {
 @Override
 public Object generateCell(Table source, Object itemId,
@@ -1150,6 +1107,16 @@ public Object generateCell(Table source, Object itemId,
         });
 	res.addComponent(button);
 	return res;
+    }
+
+    private void displayResultLists(List<List> lists) {
+	VerticalLayout result = getResultTemplate();
+	if (lists != null) {
+	    for (List<ResultItem> list : lists) {
+		addListTable(result, list);
+	    }
+	}
+	setContent(result);
     }
 
 }

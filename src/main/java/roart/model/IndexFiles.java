@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Date;
 
 import roart.dao.IndexFilesDao;
 
@@ -71,6 +72,13 @@ public class IndexFiles {
 	public void setIndexed(Boolean indexed) {
 	    changed |= true;
 	    this.indexed = indexed;
+	}
+
+        public Date getTimestampDate() {
+	    if (timestamp == null) {
+		return new Date(0);
+	    }
+	    return new Date(timestamp);
 	}
 
         public String getTimestamp() {

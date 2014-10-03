@@ -39,12 +39,15 @@ import org.apache.commons.logging.LogFactory;
 public class Main {
     private Log log = LogFactory.getLog(this.getClass());
 
+    // called from ui
+    // returns list: new file
     public List<List> traverse(String add) throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = Traverse.doList(add, null, dirset, null, false);    
 	IndexFilesDao.commit();
 	List<ResultItem> retList = new ArrayList<ResultItem>();
+	retList.add(new ResultItem("New file"));
 	for (String s : filesetnew2) {
 	    retList.add(new ResultItem(s));
 	}
@@ -52,10 +55,14 @@ public class Main {
 	return retlistlist;
     }
 
+    // called from ui
+    // returns list: new file
     public List<List> traverse() throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	Set<String> filesetnew = new HashSet<String>();
-	List<ResultItem> retList = filesystem(filesetnew, null);
+	List<ResultItem> retList = new ArrayList<ResultItem>();
+	retList.add(new ResultItem("New file"));
+	retList.addAll(filesystem(filesetnew, null));
 	IndexFilesDao.commit();
 	retlistlist.add(retList);
 	return retlistlist;
@@ -128,6 +135,7 @@ public class Main {
 	return retList;
     }
 
+    // called from ui
     public List<ResultItem> overlapping() {
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 	ResultItem ri = new ResultItem();
@@ -223,10 +231,22 @@ public class Main {
 	return retList;
     }
 
+    // called from ui
+    // returns list: indexed file list
+    // returns list: tika timeout
+    // returns list: not indexed
+    // returns list: deleted
     public List<List> index(String suffix) throws Exception {
+	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(Traverse.getHeader());
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
-	List retlist = null;
+	retlist2.add(new ResultItem("Timeout tika"));
+	List<ResultItem> retlist3 = new ArrayList<ResultItem>();
+	retlist3.add(Traverse.getHeaderNot());
+	List<ResultItem> retlist4 = new ArrayList<ResultItem>();
+	retlist4.add(new ResultItem("Deleted"));
 	try {
 	    Set<String> preindexset = new HashSet<String>();
 	    List<IndexFiles> preindexes = IndexFilesDao.getAll();
@@ -236,8 +256,9 @@ public class Main {
 		preindexset.add(index.getMd5());
 	    }
 
-	    retlist = Traverse.index(suffix);
-
+	    retlist.add(Traverse.getHeader());
+	    List<List> retlisttmp = Traverse.index(suffix);
+	    retlistset.add(retlisttmp);
 
 	    Set<String> indexset = new HashSet<String>();
 	    List<IndexFiles> indexes = IndexFilesDao.getAll();
@@ -254,7 +275,7 @@ public class Main {
 	    for (String md5 : indexset) {
 		log.info("removing " + md5);
 		IndexFiles index = IndexFilesDao.getByMd5(md5);
-		retlist.add(new String("Deleted " + md5));
+		retlist4.add(new ResultItem(md5));
 		//roart.model.HibernateUtil.currentSession().delete(index);
 		//roart.search.SearchLucene.deleteme(md5);
 	    }
@@ -279,20 +300,45 @@ public class Main {
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
 	
+	List<List> retlisttmp = mergeListSet(retlistset, 2);
+	retlist.addAll(retlisttmp.get(0));
+	retlist3.addAll(retlisttmp.get(1));
+
 	retlistlist.add(retlist);
 	retlistlist.add(retlist2);
+	retlistlist.add(retlist3);
+	retlistlist.add(retlist4);
 	return retlistlist;
     }
 
+    // called from ui
+    // returns list: indexed file list
+    // returns list: tika timeout
+    // returns list: file does not exist
+    // returns list: not indexed
     public List<List> index(String add, boolean reindex) throws Exception {
+	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(Traverse.getHeader());
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
-	List retlist = lucene(add, reindex);
+	retlist2.add(new ResultItem("Timeout tika"));
+	List<ResultItem> retlist3 = new ArrayList<ResultItem>();
+	retlist3.add(new ResultItem("File does not exist"));
+	List<ResultItem> retlist4 = new ArrayList<ResultItem>();
+	retlist4.add(Traverse.getHeaderNot());
+
+	List<List> retlisttmp = lucene(add, reindex);
+	retlistset.add(retlisttmp);
+
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
-	retlist2.add(new ResultItem("timeout tika"));
+
+	retlist.addAll(retlisttmp.get(0));
+	retlist3.addAll(retlisttmp.get(1));
+	retlist4.addAll(retlisttmp.get(2));
 	for (String ret : Queues.tikaTimeoutQueue) {
 	    retlist2.add(new ResultItem(ret));
 	}
@@ -302,31 +348,47 @@ public class Main {
 
 	retlistlist.add(retlist);
 	retlistlist.add(retlist2);
+	retlistlist.add(retlist3);
+	retlistlist.add(retlist4);
 	return retlistlist;
     }
 
+    // called from ui
+    // returns list: indexed file list
+    // returns list: tika timeout
+    // returns list: not indexed
     public List<List> indexdate(String date, boolean reindex) throws Exception {
+	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(Traverse.getHeader());
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
-	List retlist = lucenedate(date, reindex);
+	retlist2.add(new ResultItem("timeout tika"));
+	List<ResultItem> retlist3 = new ArrayList<ResultItem>();
+	retlist3.add(Traverse.getHeaderNot());
+	List<List> retlisttmp = lucenedate(date, reindex);
+	retlistset.add(retlisttmp);
+
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
-	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
 	    retlist2.add(new ResultItem(ret));
 	}
+	retlist.addAll(retlisttmp.get(0));
+	retlist3.addAll(retlisttmp.get(1));
 
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
 
 	retlistlist.add(retlist);
 	retlistlist.add(retlist2);
+	retlistlist.add(retlist3);
 	return retlistlist;
     }
 
-    private List<ResultItem> lucene(String add, boolean reindex) throws Exception {
+    private List<List> lucene(String add, boolean reindex) throws Exception {
 	List retlist = null;
 	try {
 	    retlist = Traverse.index(add, reindex);
@@ -341,10 +403,10 @@ public class Main {
 	return retlist;
     }
 
-    private List<ResultItem> lucenedate(String date, boolean reindex) throws Exception {
-	List retlist = null;
+    private List<List> lucenedate(String date, boolean reindex) throws Exception {
+	List<List> retlist = new ArrayList<List>();
 	try {
-	    retlist = Traverse.reindexdate(date);
+	    retlist.addAll(Traverse.reindexdate(date));
 	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 	    log.info(e);
@@ -397,6 +459,7 @@ public class Main {
 	return new ArrayList<String>(filesetnew);
     }
 
+    // called from ui
     public List<ResultItem> memoryusage() {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	try {
@@ -416,13 +479,21 @@ public class Main {
 	return retlist;
     }
 
+    // called from ui
+    // returns list: not indexed
+    // returns list: another with columns
     public List<List> notindexed() throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
-	List<ResultItem> retlist = null;
+	ResultItem ri3 = new ResultItem();
+	ri3.add("Column 1");
+	ri3.add("Column 2");
+	ri3.add("Column 3");
+	retlist2.add(ri3);
 	List<ResultItem> retlistyes = null;
 	try {
-	    retlist = Traverse.notindexed();
+	    retlist.addAll(Traverse.notindexed());
 	    retlistyes = Traverse.indexed();
 	    Map<String, Integer> plusretlist = new HashMap<String, Integer>();
 	    Map<String, Integer> plusretlistyes = new HashMap<String, Integer>();
@@ -465,11 +536,6 @@ public class Main {
 	    }
 	    System.out.println("size " + plusretlist.size());
 	    System.out.println("sizeyes " + plusretlistyes.size());
-	    ResultItem ri = new ResultItem();
-	    ri.add("Column 1");
-	    ri.add("Column 2");
-	    ri.add("Column 3");
-	    retlist2.add(ri);
 	    for(String string : plusretlist.keySet()) {
 		ResultItem ri2 = new ResultItem();
 		ri2.add("Format");
@@ -494,60 +560,113 @@ public class Main {
 	return retlistlist;
     }
 
+    // called from ui
+    // returns list: indexed file list
+    // returns list: tika timeout
+    // returns list: new file
+    // returns list: file does not exist
+    // returns list: not indexed
     public List<List> filesystemlucenenew() throws Exception {
+	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(Traverse.getHeader());
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
+	retlist2.add(new ResultItem("Timeout tika"));
+	List<ResultItem> retlist3 = new ArrayList<ResultItem>();
+	retlist3.add(new ResultItem("New file"));
+	List<ResultItem> retlist4 = new ArrayList<ResultItem>();
+	retlist4.add(new ResultItem("File does not exist"));
+	List<ResultItem> retlist5 = new ArrayList<ResultItem>();
+	retlist5.add(Traverse.getHeaderNot());
 	Set<String> filesetnew = new HashSet<String>();
 	Set<String> newset = new HashSet<String>();
-	List<ResultItem> retlist = filesystem(filesetnew, newset);
+	retlist3.addAll(filesystem(filesetnew, newset));
 
 	for (String filename : newset) {
 	    //log.info("size2 " + filename);
-	    lucene(filename, false);
+	    List<List> retlisttmp = lucene(filename, false);
+	    retlistset.add(retlisttmp);
 	}
 	Queues.resetTikaTimeoutQueue();
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
-	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
 	    retlist2.add(new ResultItem(ret));
 	}
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
+
+	List<List> retlisttmp = mergeListSet(retlistset, 3);
+	retlist.addAll(retlisttmp.get(0));
+	retlist4.addAll(retlisttmp.get(1));
+	retlist5.addAll(retlisttmp.get(2));
+
 	retlistlist.add(retlist);
 	retlistlist.add(retlist2);
+	retlistlist.add(retlist3);
+	retlistlist.add(retlist4);
+	retlistlist.add(retlist5);
 	return retlistlist;
     }
 
     // true: new md5 checks
     // false: only new
+    // called from ui
+    // returns list: indexed file list
+    // returns list: tika timeout
+    // returns list: new file
+    // returns list: file does not exist
+    // returns list: not indexed
     public List<List> filesystemlucenenew(String add, boolean newmd5oronlyfile) throws Exception {
+	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> newset = new HashSet<String>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	retlist.add(Traverse.getHeader());
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
+	retlist2.add(new ResultItem("Timeout tika"));
+	List<ResultItem> retlist3 = new ArrayList<ResultItem>();
+	retlist3.add(new ResultItem("New file"));
+	List<ResultItem> retlist4 = new ArrayList<ResultItem>();
+	retlist4.add(new ResultItem("File does not exist"));
+	List<ResultItem> retlist5 = new ArrayList<ResultItem>();
+	retlist5.add(Traverse.getHeaderNot());
+
 	Set<String> retset = Traverse.doList(add, newset, dirset, null, newmd5oronlyfile);
+	for (String s : retset) {
+            retlist3.add(new ResultItem(s));
+        }
 
 	for (String filename : newset) {
 	    //log.info("size2 " + filename);
-	    retlist = lucene(filename, false);
+	    List<List> retlisttmp = lucene(filename, false);
+	    retlistset.add(retlisttmp);
 	}
 	Queues.resetTikaTimeoutQueue();
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
-	retlist2.add(new ResultItem("timeout tika"));
 	for (String ret : Queues.tikaTimeoutQueue) {
 	    retlist2.add(new ResultItem(ret));
 	}
 	Queues.resetTikaTimeoutQueue();
 	IndexFilesDao.commit();
+
+	List<List> retlisttmp = mergeListSet(retlistset, 3);
+	retlist.addAll(retlisttmp.get(0));
+	retlist4.addAll(retlisttmp.get(1));
+	retlist5.addAll(retlisttmp.get(2));
+
 	retlistlist.add(retlist);
 	retlistlist.add(retlist2);
+	retlistlist.add(retlist3);
+	retlistlist.add(retlist4);
+	retlistlist.add(retlist5);
 	return retlistlist;
     }
 
@@ -586,11 +705,19 @@ public class Main {
     	otherWorker.start();
     	}
     }
+
+    private List<List> mergeListSet(Set<List> listSet, int size) {
+	List<List> retlistlist = new ArrayList<List>();
+	for (int i = 0 ; i < size ; i++ ) {
+	    List<ResultItem> retlist = new ArrayList<ResultItem>();
+	    retlistlist.add(retlist);
+	}
+	for (List<List> listArray : listSet) {
+	    for (int i = 0 ; i < size ; i++ ) {
+		retlistlist.get(i).addAll(listArray.get(i));
+	    }
+	}
+	return retlistlist;
+    }
     
 }
-
-/*
-  rutet
-  kjott 297 -
-
- */

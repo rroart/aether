@@ -45,6 +45,7 @@ public class OtherHandler {
     	String md5 = el.md5;
     	IndexFiles index = el.index;
     	List<ResultItem> retlist = el.retlist;
+    	List<ResultItem> retlistnot = el.retlistnot;
 	Metadata metadata = el.metadata;
 
 	String output = null;
@@ -113,7 +114,7 @@ public class OtherHandler {
 	if (output != null && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
-		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, metadata);
+		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, retlistnot, metadata);
 		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);
@@ -202,7 +203,7 @@ public class OtherHandler {
     			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable + " " + otherWorker.isAlive() + " " + otherWorker.isInterrupted() + " " + otherWorker.interrupted());
 
     			log.error("timeout running " + filename + " " + arg[0]);
-			retlist.add(new ResultItem("timeout running " + filename + " " + arg[0]));
+			//retlist.add(new ResultItem("timeout running " + filename + " " + arg[0]));
         return (String) null;
     }
 

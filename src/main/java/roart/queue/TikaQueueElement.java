@@ -15,15 +15,17 @@ public class TikaQueueElement {
     public String md5;
     public IndexFiles index;
     public List<ResultItem> retlist;
+    public List<ResultItem> retlistnot;
     public Metadata metadata;
     public String convertsw;
 
-    public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, List<ResultItem> retlist, Metadata metadata) {
+    public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, List<ResultItem> retlist, List<ResultItem> retlistnot, Metadata metadata) {
 	this.dbfilename = dbfilename;
 	this.filename = filename;
 	this.md5 = md5;
 	this.index = index;
 	this.retlist = retlist;
+	this.retlistnot = retlistnot;
 	this.metadata = metadata;
     }
 

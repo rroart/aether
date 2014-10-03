@@ -187,9 +187,10 @@ public class Traverse {
 	return retset;
     }
 
-    public static List<ResultItem> index(String suffix) throws Exception {
+    public static List<List> index(String suffix) throws Exception {
+	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
-	retlist.add(getHeader());
+	List<ResultItem> retlistnot = new ArrayList<ResultItem>();
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
@@ -211,25 +212,28 @@ public class Traverse {
 	    indexMap.put(index.getMd5(), index.getIndexed());
 	}
 	for (String md5 : filesMapMd5.keySet()) {
-	    indexsingle(retlist, md5, indexMap, filesMapMd5, false, max);
+	    indexsingle(retlist, retlistnot, md5, indexMap, filesMapMd5, false, max);
 	}
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlistnot);
+	return retlistlist;
     }
 
     public static List<List> index(String add, boolean reindex) throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	List<ResultItem> retlistnot = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
-	retlist.add(getHeader());
 	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
         int max = new Integer(maxStr).intValue();
 	Set<String> md5set = new HashSet<String>();
 	String dirname = add;
 	File dir = new File(dirname);
 	if (!dir.exists()) {
-	    retlist2.add(new ResultItem(new String("File " + add + " does not exist")));
+	    retlist2.add(new ResultItem("File " + add + " does not exist"));
 	    retlistlist.add(retlist);
 	    retlistlist.add(retlist2);
+	    retlistlist.add(retlistnot);
 	    return retlistlist;
 	}
 	File listDir[];
@@ -249,6 +253,7 @@ public class Traverse {
 		List<List> retlistlist2 = index(filename, reindex);
 		retlist.addAll(retlistlist2.get(0));
 		retlist2.addAll(retlistlist2.get(1));
+		retlistnot.addAll(retlistlist2.get(2));
 	    } else {
 		//log.info("retset " + filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
@@ -273,19 +278,21 @@ public class Traverse {
 		    indexMap.put(index.getMd5(), index.getIndexed());
 		}
 
-		indexsingle(retlist, md5, indexMap, filesMapMd5, reindex, max);
+		indexsingle(retlist, retlistnot, md5, indexMap, filesMapMd5, reindex, max);
 	    }
 	    log.info("file " + filename);
 	}
 	retlistlist.add(retlist);
 	retlistlist.add(retlist2);
+	retlistlist.add(retlistnot);
 	return retlistlist;
     }
 
-    public static List<ResultItem> reindexdate(String date) throws Exception {
+    public static List<List> reindexdate(String date) throws Exception {
 	boolean reindex = true;
+	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
-	retlist.add(getHeader());
+	List<ResultItem> retlistnot = new ArrayList<ResultItem>();
 	Set<String> md5set = new HashSet<String>();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
 	int i = 0;
@@ -327,13 +334,15 @@ public class Traverse {
 		indexMap.put(md5, index.getIndexed());
 	    }
 
-	    indexsingle(retlist, md5, indexMap, filesMapMd5, reindex, 0);
+	    indexsingle(retlist, retlistnot, md5, indexMap, filesMapMd5, reindex, 0);
 	    log.info("file " + filename);
 	}
-	return retlist;
+	retlistlist.add(retlist);
+	retlistlist.add(retlistnot);
+	return retlistlist;
     }
 
-    public static void indexsingle(List<ResultItem> retlist, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max) throws Exception {
+    public static void indexsingle(List<ResultItem> retlist, List<ResultItem> retlistnot, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max) throws Exception {
 	    if (md5 == null) {
 		log.error("md5 should not be null");
 		return;
@@ -360,7 +369,7 @@ public class Traverse {
 	    index.setTimeoutreason("");
 	    index.setFailedreason("");
 	    int size = 0;
-	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, new Metadata());
+	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, retlistnot, new Metadata());
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, filename, md5, index, retlist);
     }
@@ -411,7 +420,7 @@ public class Traverse {
 	    }
 	    ri = new ResultItem();
 	    ri.add(index.getMd5());
-	    ri.add(index.getTimestamp());
+	    ri.add(index.getTimestampDate().toString());
 	    ri.add(index.getTimeindex("%.2f"));
 	    ri.add(index.getConvertsw());
 	    ri.add(index.getConverttime("%.2f"));
@@ -472,6 +481,7 @@ public class Traverse {
 	String md5 = el.md5;
 	IndexFiles index = el.index;
 	List<ResultItem> retlist = el.retlist;
+	List<ResultItem> retlistnot = el.retlistnot;
 	Metadata metadata = el.metadata;
 	log.info("incTikas " + dbfilename);
 	Queues.tikaTimeoutQueue.add(dbfilename);
@@ -484,70 +494,73 @@ public class Traverse {
 	    log.info("size1 " + size);
 	    BufferedInputStream bis = new BufferedInputStream(inputStream);
 
-		long time = System.currentTimeMillis() - now;
-		el.index.setConverttime(time);
-		log.info("timerStop filename " + time);
-		//retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
+	    long time = System.currentTimeMillis() - now;
+	    el.index.setConverttime(time);
+	    log.info("timerStop filename " + time);
+	    //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
 	    int limit = mylimit(dbfilename);
 	    if (size > limit) {
-		    log.info("sizes " + size + " " + limit);
-			log.info("handling filename " + dbfilename + " " + size + " : " + time);
+		log.info("sizes " + size + " " + limit);
+		log.info("handling filename " + dbfilename + " " + size + " : " + time);
 
-			String content = getString(inputStream);
+		String content = getString(inputStream);
 
-	String lang = LanguageDetect.detect(content);
-	if (lang != null && lang.equals("en")) {
-	    now = System.currentTimeMillis();
-	    String classification = ClassifyDao.classify(content);
-	    time = System.currentTimeMillis() - now;
-	    log.info("classtime " + time);
-	    //System.out.println("classtime " + time);
-	    el.index.setTimeclass(time);
-	    el.index.setClassification(classification);
-	}
+		String lang = LanguageDetect.detect(content);
+		if (lang != null && lang.equals("en")) {
+		    now = System.currentTimeMillis();
+		    String classification = ClassifyDao.classify(content);
+		    time = System.currentTimeMillis() - now;
+		    log.info("classtime " + time);
+		    //System.out.println("classtime " + time);
+		    el.index.setTimeclass(time);
+		    el.index.setClassification(classification);
+		}
 
-		    //size = SearchLucene.indexme("all", md5, inputStream);
-			IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, dbfilename, metadata);
-			elem.lang = lang;
-			elem.content = content;
-			if (el.convertsw != null) {
-			    elem.convertsw = el.convertsw;
-			} else {
-			    elem.convertsw = "tika";
-			}
-	    	Queues.indexQueue.add(elem);
+		//size = SearchLucene.indexme("all", md5, inputStream);
+		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata);
+		elem.lang = lang;
+		elem.content = content;
+		if (el.convertsw != null) {
+		    elem.convertsw = el.convertsw;
+		} else {
+		    elem.convertsw = "tika";
+		}
+		Queues.indexQueue.add(elem);
 	    } else {
 	    	if (dbfilename.equals(filename)) {
 	    	    el.size = size;
 	    	    Queues.otherQueue.add(el);
 	    	} else {
-	    		log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-			String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
-			boolean doclassify = myclassify != null && myclassify.length() > 0;
-			ResultItem ri = new ResultItem();
-			ri.add("small");
-			ri.add(md5);
-			ri.add(dbfilename);
-			ri.add("");
-			if (doclassify) {
-			    ri.add(el.index.getClassification());
-			}
-			ri.add(el.index.getTimestamp());
-			ri.add(el.index.getConvertsw());
-			ri.add(el.index.getConverttime("%.2f"));
-			ri.add(el.index.getTimeindex("%.2f"));
-			if (doclassify) {
-			    ri.add(el.index.getTimeclass("%.2f"));
-			}
-			retlist.add(ri);
-			Boolean isIndexed = index.getIndexed();
-			if (isIndexed == null || isIndexed.booleanValue() == false) {
-			    index.incrFailed();
-			    //index.save();
-			}
+		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
+		    String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+		    boolean doclassify = myclassify != null && myclassify.length() > 0;
+		    ResultItem ri = new ResultItem();
+		    ri.add("too small");
+		    ri.add(md5);
+		    ri.add(dbfilename);
+		    ri.add("n/a");
+		    if (doclassify) {
+			ri.add(el.index.getClassification());
+		    }
+		    ri.add(el.index.getTimestampDate().toString());
+		    ri.add(el.index.getConvertsw());
+		    ri.add(el.index.getConverttime("%.2f"));
+		    ri.add(el.index.getTimeindex("%.2f"));
+		    if (doclassify) {
+			ri.add(el.index.getTimeclass("%.2f"));
+		    }
+		    ri.add("" + el.index.getFailed());
+		    ri.add(el.index.getFailedreason());
+		    ri.add(el.index.getTimeoutreason());
+		    ri.add(el.index.getNoindexreason());
+		    retlistnot.add(ri);
+		    Boolean isIndexed = index.getIndexed();
+		    if (isIndexed == null || isIndexed.booleanValue() == false) {
+			index.incrFailed();
+			//index.save();
+		    }
 	    	}
-	    }
-	    
+	    }   
 	    outputStream.close();
 	} catch (Exception e) {
 	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
@@ -604,7 +617,7 @@ public class Traverse {
 	}
     }
 
-    private static ResultItem getHeader() {
+    public static ResultItem getHeader() {
 	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
@@ -623,6 +636,36 @@ public class Traverse {
     if (doclassify) {
 	ri.add("Classificationtime");
     }
+    ri.add("Failed");
+    ri.add("Failed reason");
+    ri.add("Timeout reason");
+    ri.add("No indexing reason");
+    return ri;
+    }
+    
+    public static ResultItem getHeaderNot() {
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
+
+    ResultItem ri = new ResultItem();
+    ri.add("Indexed");
+    ri.add("Md5/Id");
+    ri.add("Filename");
+    ri.add("Lang");
+    if (doclassify) {
+	ri.add("Classification");
+    }
+    ri.add("Timestamp");
+    ri.add("Convertsw");
+    ri.add("Converttime");
+    ri.add("Indextime");
+    if (doclassify) {
+	ri.add("Classificationtime");
+    }
+    ri.add("Failed");
+    ri.add("Failed reason");
+    ri.add("Timeout reason");
+    ri.add("No indexing reason");
     return ri;
     }
     
