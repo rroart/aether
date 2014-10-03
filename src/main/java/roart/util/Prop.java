@@ -14,7 +14,7 @@ public class Prop {
 	    
 	    try {
 		
-		input = new FileInputStream("myweb.prop");
+		input = new FileInputStream("aether.prop");
 		
 		// load a properties file
 		prop.load(input);
