@@ -39,6 +39,9 @@ mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 (was: mahoutdocumentfrequencypath=.../mahout/dataset-vectors/frequency.file-0)
 
+myclassify=opennlp
+opennlpmodelpath=.../opennlp/en-doccat.bin
+
 personal:
 datadir=.../data/
 homedir=...

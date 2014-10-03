@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.HashSet;
 
 import roart.jpa.ClassifyJpa;
+import roart.jpa.OpennlpClassifyJpa;
 import roart.jpa.MahoutClassifyJpa;
 
 import roart.model.ResultItem;
@@ -27,6 +28,9 @@ public class ClassifyDao {
 	if (classifyJpa == null) {
 	    if (type.equals("mahout")) {
 		classifyJpa = new MahoutClassifyJpa();
+	    }
+	    if (type.equals("opennlp")) {
+		classifyJpa = new OpennlpClassifyJpa();
 	    }
 	}
     }

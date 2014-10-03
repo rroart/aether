@@ -27,6 +27,9 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	if (myclassify.equals("mahout")) {
 	    new roart.jpa.MahoutClassify();
 	}
+	if (myclassify.equals("opennlp")) {
+	    new roart.jpa.OpennlpClassify();
+	}
 	roart.dao.SearchDao.instance(myindex);
 	roart.dao.IndexFilesDao.instance(mydb);
 	roart.dao.ClassifyDao.instance(myclassify);
