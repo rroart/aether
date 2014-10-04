@@ -187,10 +187,12 @@ public class MyVaadinUI extends UI
 	// This tab gets its caption from the component caption
 	tabsheet.addTab(controlPanelTab);
 
+	/*
 	tabsheet.addTab(miscTab);
 	tabsheet.addTab(comicsTab);
 	tabsheet.addTab(trainingTab);
-	
+	*/
+
 	HorizontalLayout bottomLine = new HorizontalLayout();
 	bottomLine.setHeight("10%");
 	bottomLine.setWidth("90%");
