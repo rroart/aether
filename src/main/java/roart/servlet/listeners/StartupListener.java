@@ -24,10 +24,10 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	    new roart.model.HbaseIndexFiles();
 	}
 	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
-	if (myclassify.equals("mahout")) {
+	if (myclassify != null && myclassify.equals("mahout")) {
 	    new roart.jpa.MahoutClassify();
 	}
-	if (myclassify.equals("opennlp")) {
+	if (myclassify != null && myclassify.equals("opennlp")) {
 	    new roart.jpa.OpennlpClassify();
 	}
 	roart.dao.SearchDao.instance(myindex);

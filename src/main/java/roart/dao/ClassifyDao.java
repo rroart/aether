@@ -25,6 +25,9 @@ public class ClassifyDao {
     public static void instance(String type) {
 	System.out.println("instance " + type);
 	log.info("instance " + type);
+	if (type == null) {
+	  return;
+	}
 	if (classifyJpa == null) {
 	    if (type.equals("mahout")) {
 		classifyJpa = new MahoutClassifyJpa();
