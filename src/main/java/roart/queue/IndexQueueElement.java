@@ -28,6 +28,7 @@ public class IndexQueueElement {
 	this.inputStream = inputStream;
 	this.index = index;
 	this.retlist = retlist;
+	this.retlistnot = retlistnot;
 	this.dbfilename = dbfilename;
 	this.metadata = metadata;
     }
