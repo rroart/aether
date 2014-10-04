@@ -34,6 +34,9 @@ public class IndexFilesDao {
     }
 
     public static IndexFiles getByMd5(String md5) throws Exception {
+	if (md5 == null) {
+	    return null;
+	}
 	if (all.containsKey(md5)) {
 	    return all.get(md5);
 	}
