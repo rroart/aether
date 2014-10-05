@@ -78,7 +78,13 @@ public class IndexFiles {
 	    if (timestamp == null) {
 		return new Date(0);
 	    }
-	    return new Date(timestamp);
+	    try { 
+		return new Date(timestamp);
+	    } catch (Exception e) {
+		log.error("Exception from " + timestamp);
+		log.error("Exception", e);
+		return new Date(0);
+	    }
 	}
 
         public String getTimestamp() {
