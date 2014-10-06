@@ -21,12 +21,14 @@ public class Queues {
     public static Queue<TikaQueueElement> tikaQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
+    public static Queue<ClientQueueElement> clientQueue = new ConcurrentLinkedQueue<ClientQueueElement>();
 
     public static Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     
     private static AtomicInteger tikas = new AtomicInteger(0);
     private static AtomicInteger others = new AtomicInteger(0);
     private static AtomicInteger indexs = new AtomicInteger(0);
+    private static AtomicInteger clients = new AtomicInteger(0);
     
     public static int getTikas() {
     	return tikas.get();
@@ -56,6 +58,14 @@ public class Queues {
    	indexs.decrementAndGet();
    }
    
+   public static void decClients() {
+   	clients.decrementAndGet();
+   }
+   
+    public static void incClients() {
+    	clients.incrementAndGet();
+    }
+    
    public static void queueStat() {
     	log.info("Queues t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs);
     }
