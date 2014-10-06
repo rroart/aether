@@ -129,6 +129,7 @@ public class SearchSolr {
 	    SolrQuery query = new SolrQuery();
 	    query.setQuery( str /*"*:*"*/ );
 	    query.setIncludeScore(true);
+	    query.setRows(new Integer(100));
 	    //query.addSortField( "price", SolrQuery.ORDER.asc );
 
 	    //    Query the server 
