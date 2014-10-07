@@ -1,13 +1,8 @@
 classifier(s)
-sgd
 get md if too small?
-opennlp
 get similar
-new lucene vaadin
-robots
+new solr vaadin
 synonyms
 indexing exception instead of -1
-remove old lucene fields
 list vs [], need only one
-coin tab
 #package lang profiles
