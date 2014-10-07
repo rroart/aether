@@ -48,6 +48,8 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.Window;
+import com.vaadin.annotations.Push;
+import com.vaadin.shared.communication.PushMode;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
+@Push
 //@Theme("mytheme")
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -140,6 +143,9 @@ public class MyVaadinUI extends UI
 	}
     }
 
+    private VerticalLayout statTab = null;
+    private TabSheet tabsheet = null;
+
     @Override
     protected void init(VaadinRequest request) {
         final VerticalLayout layout = new VerticalLayout();
@@ -169,7 +175,7 @@ public class MyVaadinUI extends UI
 	}
 	layout.addComponent(topLine);
 
-	TabSheet tabsheet = new TabSheet();
+	tabsheet = new TabSheet();
 	tabsheet.setHeight("80%");
 	layout.addComponent(tabsheet);
 	// Create the first tab
@@ -178,6 +184,7 @@ public class MyVaadinUI extends UI
 	// This tab gets its caption from the component caption
 	controlPanelTab = getControlPanelTab();
 	getSession().setAttribute("controlpanel", controlPanelTab);
+	statTab = getStatTab();
 
 	miscTab = getMiscTab();
 	comicsTab = getComicsTab();
@@ -186,6 +193,7 @@ public class MyVaadinUI extends UI
 	tabsheet.addTab(searchTab);
 	// This tab gets its caption from the component caption
 	tabsheet.addTab(controlPanelTab);
+	//tabsheet.addTab(statTab);
 
 	/*
 	tabsheet.addTab(miscTab);
@@ -251,9 +259,10 @@ public class MyVaadinUI extends UI
 	horInd.addComponent(getIndexSuffix());
 	HorizontalLayout horReindex = new HorizontalLayout();
 	horReindex.setHeight("20%");
-	horReindex.setWidth("60%");
+	horReindex.setWidth("90%");
 	horReindex.addComponent(getReindex());
-	horReindex.addComponent(getReindexDate());
+	horReindex.addComponent(getReindexDateLower());
+	horReindex.addComponent(getReindexDateHigher());
 	HorizontalLayout horStat = new HorizontalLayout();
 	horStat.setHeight("20%");
 	horStat.setWidth("90%");
@@ -272,6 +281,12 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horInd);
 	tab.addComponent(horReindex);
 	tab.addComponent(horStat);
+	return tab;
+    }
+
+    private VerticalLayout getStatTab() {
+	VerticalLayout tab = new VerticalLayout();
+	tab.setCaption("Control Panel Stats and Results");
 	return tab;
     }
 
@@ -387,13 +402,11 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<List> lists = null;
 		try {
-		    lists = maininst.filesystemlucenenew();
+		    maininst.filesystemlucenenew();
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		displayResultLists(lists);
             }
         });
 	return button;
@@ -404,13 +417,11 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<List> lists = null;
 		try {
-		    lists = maininst.traverse();
+		    maininst.traverse();
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		displayResultLists(lists);
             }
         });
 	return button;
@@ -421,13 +432,11 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<List> lists = null;
 		try {
-		    lists = maininst.index(null);
+		    maininst.index(null);
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		displayResultLists(lists);
             }
         });
 	return button;
@@ -438,10 +447,7 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<ResultItem> strarr = maininst.memoryusage();
-                VerticalLayout result = getResultTemplate();
-                addListTable(result, strarr);
-                setContent(result);
+		 maininst.memoryusage();
             }
         });
 	return button;
@@ -452,13 +458,11 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<List> lists = null;
 		try {
-		    lists = maininst.notindexed();
+		    maininst.notindexed();
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
-		displayResultLists(lists);
             }
         });
 	return button;
@@ -469,10 +473,7 @@ public class MyVaadinUI extends UI
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		List<ResultItem> strarr = maininst.overlapping();
-                VerticalLayout result = getResultTemplate();
-                addListTable(result, strarr);
-                setContent(result);
+		maininst.overlapping();
             }
         });
 	return button;
@@ -488,13 +489,11 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.filesystemlucenenew(value, false);
+			maininst.filesystemlucenenew(value, false);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -512,13 +511,11 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.traverse(value);
+			maininst.traverse(value);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -536,13 +533,11 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.index(value, false);
+			maininst.index(value, false);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -608,13 +603,11 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.index(value, true);
+			maininst.index(value, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -622,8 +615,8 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
-    private InlineDateField getReindexDate() {
-	InlineDateField tf = new InlineDateField("Reindex on date");
+    private InlineDateField getReindexDateLower() {
+	InlineDateField tf = new InlineDateField("Reindex on before date");
 	// Create a DateField with the default style
 	// Set the date and time to present
 	Date date = new Date();
@@ -641,13 +634,42 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    long time = date.getTime();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.indexdate("" + time, true);
+			maininst.reindexdatelower("" + time, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
+		}
+	    });
+	// Fire value changes immediately when the field loses focus
+	tf.setImmediate(true);
+	return tf;
+    }
+
+    private InlineDateField getReindexDateHigher() {
+	InlineDateField tf = new InlineDateField("Reindex on after date");
+	// Create a DateField with the default style
+	// Set the date and time to present
+	Date date = new Date();
+	// temp fix
+	date.setHours(0);
+	date.setMinutes(0);
+	date.setSeconds(0);
+	tf.setValue(date);
+
+	// Handle changes in the value
+	tf.addValueChangeListener(new Property.ValueChangeListener() {
+		public void valueChange(ValueChangeEvent event) {
+		    // Assuming that the value type is a String
+		    Date date = (Date) event.getProperty().getValue();
+		    // Do something with the value
+		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    long time = date.getTime();
+		    try {
+			maininst.reindexdatehigher("" + time, true);
+		    } catch (Exception e) {
+			log.error("Exception", e);
+		    }
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -665,13 +687,11 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.index(value);
+			maininst.index(value);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -680,7 +700,7 @@ public class MyVaadinUI extends UI
     }
 
     private TextField getFsIndexNewMd5() {
-	TextField tf = new TextField("Filesystem index on md5");
+	TextField tf = new TextField("Filesystem index on changed md5");
 
 	// Handle changes in the value
 	tf.addValueChangeListener(new Property.ValueChangeListener() {
@@ -689,13 +709,11 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
-		    List<List> lists = null;
 		    try {
-			lists = maininst.filesystemlucenenew(value, true);
+			maininst.filesystemlucenenew(value, true);
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		    displayResultLists(lists);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -1101,6 +1119,7 @@ public Object generateCell(Table source, Object itemId,
 	final Component content = getContent();
 	VerticalLayout res = new VerticalLayout();
 	res.addComponent(new Label("Search results"));
+	/*
         Button button = new Button("Back to main page");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
@@ -1108,17 +1127,45 @@ public Object generateCell(Table source, Object itemId,
             }
         });
 	res.addComponent(button);
+	*/
 	return res;
     }
 
-    private void displayResultLists(List<List> lists) {
+    public void displayResultLists(List<List> lists) {
+	VerticalLayout tab = new VerticalLayout();
+        tab.setCaption("Search results");
+
 	VerticalLayout result = getResultTemplate();
 	if (lists != null) {
 	    for (List<ResultItem> list : lists) {
 		addListTable(result, list);
 	    }
 	}
-	setContent(result);
+	tab.addComponent(result);
+
+	tabsheet.addComponent(tab);
+	tabsheet.getTab(tab).setClosable(true);
+
+	//System.out.println("setcont" +this);
+	//getSession().getLockInstance().lock();
+	//setContent(result);
+	//getSession().getLockInstance().unlock();
+    }
+
+    public void displayResultListsTab(List<List> lists) {
+	VerticalLayout tab = new VerticalLayout();
+        tab.setCaption("Results");
+
+	VerticalLayout result = getResultTemplate();
+	if (lists != null) {
+	    for (List<ResultItem> list : lists) {
+		addListTable(result, list);
+	    }
+	}
+	tab.addComponent(result);
+
+	tabsheet.addComponent(tab);
+	tabsheet.getTab(tab).setClosable(true);
     }
 
 }
