@@ -314,6 +314,7 @@ public class Main {
 	// reindexdate
 	// filesystemlucenenew
 
+	DbRunner.doupdate = false;
 	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null && !reindex)) {
 	    if (filename != null) {
 		filesetnew = traverse(filename, indexnewset, retNewFilesList);
@@ -323,6 +324,7 @@ public class Main {
 	    if (function.equals("filesystem")) {
 		IndexFilesDao.commit();
 		retlistlist.add(retNewFilesList);
+		DbRunner.doupdate = true;
 		return  retlistlist;
 	    }
 	}
@@ -341,6 +343,7 @@ public class Main {
 	} else {
 	    indexes = IndexFilesDao.getAll();
 	}
+	DbRunner.doupdate = true;
 
 	String maxfailedStr = roart.util.Prop.getProp().getProperty("failedlimit");
 	int maxfailed = new Integer(maxfailedStr).intValue();

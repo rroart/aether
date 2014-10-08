@@ -97,6 +97,7 @@ public class IndexFilesDao {
 	if (i.hasChanged()) {
 	    log.info("saving " + i.getMd5());
 	    indexFilesJpa.save(i);
+	    i.setUnchanged();
 	} else {
 	    //log.info("not saving " + i.getMd5());
 	}
@@ -120,7 +121,7 @@ public class IndexFilesDao {
 	    IndexFiles i = all.get(k);
 	    IndexFilesDao.save(i);
 	}
-	all.clear();
+	//all.clear();
 	indexFilesJpa.close();
     }
 

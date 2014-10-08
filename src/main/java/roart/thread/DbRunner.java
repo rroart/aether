@@ -35,6 +35,8 @@ public class DbRunner implements Runnable {
     int update = 300;
     static long lastupdate = 0;
 
+    public static boolean doupdate = true;
+
     public void run() {
     	Set<Future<Object>> set = new HashSet<Future<Object>>();
 	int nThreads = 4;
@@ -42,7 +44,13 @@ public class DbRunner implements Runnable {
     	while (true) {
 	    long now = System.currentTimeMillis();
 	    if ((now - lastupdate) >= update * 1000) {
-		IndexFilesDao.commit();
+		try {
+		    if (doupdate) {
+			IndexFilesDao.commit();
+		    }
+		} catch (Exception e) {
+		    log.error("Exception", e);
+		}
 		lastupdate = now;
 	    }
 	    if (true) {
