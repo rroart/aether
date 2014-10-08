@@ -468,7 +468,7 @@ public class Traverse {
 	int size = 0;
 	try {
 	    TikaHandler tika = new TikaHandler();
-	    OutputStream outputStream = tika.process(filename, metadata);
+	    OutputStream outputStream = tika.process(filename, metadata, index);
 	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
 	    size = ((ByteArrayOutputStream)outputStream).size();
 	    log.info("size1 " + size);

@@ -1,5 +1,7 @@
 package roart.content;
 
+import roart.model.IndexFiles;
+
 import java.io.*;
 
 import java.util.Arrays;
@@ -155,7 +157,7 @@ public class TikaHandler {
         context.set(Parser.class, parser);
     }
 
-    public ByteArrayOutputStream process(String filename, Metadata metadata) throws Exception {
+    public ByteArrayOutputStream process(String filename, Metadata metadata, IndexFiles index) throws Exception {
 	//TikaHandler();
         context = new ParseContext();
         detector = new DefaultDetector();
@@ -184,6 +186,7 @@ public class TikaHandler {
 	    //type.process(input, System.out);
 	} catch (Exception e) {
 	    log.error("Exception", e);
+	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	} finally {
 	    input.close();
 	    System.out.flush();
