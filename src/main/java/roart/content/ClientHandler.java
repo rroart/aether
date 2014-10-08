@@ -57,10 +57,22 @@ public class ClientHandler {
 	if (function.equals("memoryusage")) {
 	    list = memoryusage();
 	}
+	if (function.equals("search")) {
+	    list = search(el);
+	}
 	Queues.decClients();
 	Map map = new HashMap<UI, List>();
 	map.put(el.ui, list);
 	return map;
+    }
+
+    private static List search(ClientQueueElement el) {
+	roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
+	try {
+	    return maininst.searchme2Do(el);
+	} catch (Exception e) {
+	    return null;
+	}
     }
 
     private static List client(ClientQueueElement el) {
@@ -68,6 +80,7 @@ public class ClientHandler {
 	try {
 	    return maininst.clientDo(el);
 	} catch (Exception e) {
+	    log.error("Exception", e);
 	    return null;
 	}
     }
@@ -77,6 +90,7 @@ public class ClientHandler {
 	try {
 	    return maininst.notindexedDo();
 	} catch (Exception e) {
+	    log.error("Exception", e);
 	    return null;
 	}
     }
@@ -86,6 +100,7 @@ public class ClientHandler {
 	try {
 	    return maininst.overlappingDo();
 	} catch (Exception e) {
+	    log.error("Exception", e);
 	    return null;
 	}
     }
@@ -95,6 +110,7 @@ public class ClientHandler {
 	try {
 	    return maininst.memoryusageDo();
 	} catch (Exception e) {
+	    log.error("Exception", e);
 	    return null;
 	}
     }
