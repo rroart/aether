@@ -58,6 +58,9 @@ public class Traverse {
 	File listDir[] = dir.listFiles();
 	//log.info("dir " + dirname);
 	//log.info("listDir " + listDir.length);
+	if (listDir == null) {
+	    return retset;
+	}
 	for (int i = 0; i < listDir.length; i++) {
 	    String filename = listDir[i].getAbsolutePath();
 	    if (filename.length() > MAXFILE) {
@@ -348,6 +351,7 @@ public class Traverse {
 	    //InputStream stream = null;
 	    index.setTimeoutreason("");
 	    index.setFailedreason("");
+	    index.setNoindexreason("");
 	    int size = 0;
 	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, retlistnot, new Metadata());
 	    Queues.tikaQueue.add(e);
