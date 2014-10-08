@@ -373,7 +373,7 @@ public class Main {
 	    if (function.equals("reindexsuffix")) {
 		i += Traverse.reindexsuffixFilter(el, index, el.suffix, toindexset, fileset, md5set);
 	    }
-	    if (function.equals("index")) {
+	    if (function.equals("index") || function.equals("filesystemlucenenew")) {
 		i += Traverse.indexnoFilter(el, index, reindex, toindexset, fileset, md5set);
 	    }
 	    
