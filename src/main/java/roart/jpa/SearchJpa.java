@@ -2,6 +2,7 @@ package roart.jpa;
 
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
+import roart.model.IndexFiles;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public abstract class SearchJpa {
 
     private Log log = LogFactory.getLog(this.getClass());
 
-    public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist);
+    public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index);
 
     public abstract void indexme(String type);
 

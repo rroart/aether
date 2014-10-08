@@ -64,7 +64,7 @@ public class SearchSolr {
 	server.setAllowCompression(true);
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
 	int retsize = 0;
 	// this to a method
 	String strLine = null;
@@ -101,9 +101,11 @@ public class SearchSolr {
 	    UpdateResponse rsp = req.process( server );
 	} catch (IOException e) {
 	    log.error("Exception", e);
+	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	} catch (SolrServerException e) {
 	    log.error("Exception", e);
+	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	}
 	return retsize;

@@ -69,7 +69,7 @@ public class SearchLucene {
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     //public static void indexme() {
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles dbindex) {
     int retsize = 0;
     // create some index
     // we could also create an index in our ram ...
@@ -112,6 +112,7 @@ public class SearchLucene {
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
 	    log.error("Exception", e);
+	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	}
     return retsize;
