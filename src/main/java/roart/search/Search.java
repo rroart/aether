@@ -51,10 +51,10 @@ public class Search {
 
     int retsize = 0;
 
-    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist);
+    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist, dbindex);
 
     if (retsize < 0) {
-	dbindex.setNoindexreason("Exception"); // later, propagate the exception
+	//dbindex.setNoindexreason("Exception"); // later, propagate the exception
 	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 	ResultItem ri = new ResultItem();

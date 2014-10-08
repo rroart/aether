@@ -2,6 +2,7 @@ package roart.jpa;
 
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
+import roart.model.IndexFiles;
 
 import java.util.List;
 
@@ -14,8 +15,8 @@ public class SolrSearchJpa extends SearchJpa {
 
     private Log log = LogFactory.getLog(this.getClass());
 
-    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
-	return SearchSolr.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist);
+    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
+	return SearchSolr.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
     public void indexme(String type) {

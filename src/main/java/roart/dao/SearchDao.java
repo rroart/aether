@@ -14,6 +14,7 @@ import roart.jpa.SolrSearchJpa;
 
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
+import roart.model.IndexFiles;
  
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,8 +37,8 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist) {
-	return searchJpa.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist);
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
+	return searchJpa.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
     public static void indexme(String type) {
