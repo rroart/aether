@@ -48,7 +48,7 @@ public class Traverse {
 	return false;
     }
 
-    public static Set<String> doList (String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, boolean newmd5, boolean nomd5) throws Exception {
+    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, boolean newmd5, boolean nomd5) throws Exception {
 	Set<String> retset = new HashSet<String>();
 	if (indirlistnot(dirname, dirlistnot)) {
 	    return retset;
@@ -94,8 +94,8 @@ public class Traverse {
 			    files = IndexFilesDao.getByMd5(md5);
 			}
 			files.addFile(filename);
-			IndexFilesDao.save(files);
-			IndexFilesDao.flush();
+			//IndexFilesDao.save(files);
+			//IndexFilesDao.flush();
 			log.info("adding md5 file " + filename);
 			if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
 			    if (newset != null) {
