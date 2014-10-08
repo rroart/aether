@@ -1,6 +1,7 @@
 package roart.client;
 
 import roart.model.ResultItem;
+import roart.thread.ClientRunner;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -132,8 +133,12 @@ public class MyVaadinUI extends UI
 	VerticalLayout cpTab = (VerticalLayout) getSession().getAttribute("controlpanel");
 	if ("admin".equals(getSession().getAttribute("user"))) {
 	    cpTab.setVisible(true);
+	    statLabel.setVisible(true);
+	    ClientRunner.uiset.add(this);
 	} else {
 	    cpTab.setVisible(false);
+	    statLabel.setVisible(false);
+	    ClientRunner.uiset.remove(this);
 	}
 	VerticalLayout sTab = (VerticalLayout) getSession().getAttribute("search");
 	if (!"none".equals(getSession().getAttribute("user"))) {
@@ -145,6 +150,7 @@ public class MyVaadinUI extends UI
 
     private VerticalLayout statTab = null;
     private TabSheet tabsheet = null;
+    public Label statLabel = null;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -165,6 +171,9 @@ public class MyVaadinUI extends UI
 	topLine.setHeight("10%");
 	topLine.setWidth("100%");	
 	boolean doauthenticate = (boolean) getSession().getAttribute("authenticate");
+	statLabel = new Label();
+	statLabel.setWidth("30%");
+	topLine.addComponent(statLabel);
 	if (doauthenticate) {
 	    Button login = getLoginButton();
 	    Button logout = getLogoutButton();
@@ -433,7 +442,7 @@ public class MyVaadinUI extends UI
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		try {
-		    maininst.index(null);
+		    maininst.index(null, false);
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
@@ -752,10 +761,12 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-		    List<ResultItem> strarr = maininst.searchme2(value, "" + type);
+		    maininst.searchme2(value, "" + type);
+		    /*
 		    VerticalLayout result = getResultTemplate();
 		    addListTable(result, strarr);
 		    setContent(result);
+		    */
 		}
 	    });
 	// Fire value changes immediately when the field loses focus

@@ -25,16 +25,41 @@ import roart.queue.Queues;
 import roart.content.ClientHandler;
 
 import com.vaadin.ui.UI;
+import com.vaadin.ui.UIDetachedException;
 
 public class ClientRunner implements Runnable {
 	
     private static Log log = LogFactory.getLog("ClientRunner");
+
+    public static Set<UI> uiset = new HashSet<UI>();
 	
+    int update = 60;
+    static long lastupdate = 0;
+
     public void run() {
     	Set<Future<Object>> set = new HashSet<Future<Object>>();
 	int nThreads = 4;
     	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
     	while (true) {
+	    final long now = System.currentTimeMillis();
+	    if ((now - lastupdate) >= update * 1000) {
+		for (final UI ui : uiset) {
+		    try {
+			ui.access(new Runnable() {
+				@Override
+				public void run() {
+				    ((roart.client.MyVaadinUI) ui).statLabel.setValue(Queues.stat());
+				}
+			    });
+		    } catch (UIDetachedException e) {
+			log.error("UIDetachedException", e);
+			uiset.remove(ui);
+		    } catch (Exception e) {
+			log.error("Exception", e);
+		    }
+		}
+		lastupdate = now;
+	    }
 	    List<Future> removes = new ArrayList<Future>();
 	    if (Queues.clientQueue.isEmpty()) {
 		try {

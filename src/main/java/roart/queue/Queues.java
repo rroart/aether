@@ -66,8 +66,12 @@ public class Queues {
     	clients.incrementAndGet();
     }
     
+   public static String stat() {
+       return "t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
+    }
+
    public static void queueStat() {
-    	log.info("Queues t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs);
+       log.info("Queues " + stat());
     }
 
     public static int queueSize() {
