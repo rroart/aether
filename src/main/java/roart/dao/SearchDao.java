@@ -13,6 +13,7 @@ import roart.jpa.LuceneSearchJpa;
 import roart.jpa.SolrSearchJpa;
 
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
  
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,10 +48,10 @@ public class SearchDao {
 	return searchJpa.searchme(type, str);
     }
 
-    public static ResultItem[] searchme2(String str, String searchtype) {
+    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-	return searchJpa.searchme2(str, searchtype);
+	return searchJpa.searchme2(str, searchtype, display);
     }
 
     public static ResultItem[] searchsimilar(String md5i) {

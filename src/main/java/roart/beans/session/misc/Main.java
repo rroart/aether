@@ -4,6 +4,9 @@ import roart.beans.session.misc.Unit;
 import roart.beans.session.misc.Dao;
 import roart.beans.session.misc.FileDao;
 
+import roart.queue.ClientQueueElement;
+import roart.queue.Queues;
+
 import javax.servlet.http.*;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -17,6 +20,7 @@ import roart.dao.SearchDao;
 //import roart.dao.FilesDao;
 import roart.dao.IndexFilesDao;
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -214,13 +218,29 @@ public class Main {
 	return strlist;
     }
     
-    public List<ResultItem> searchme2(String str, String type) {
+    public void searchme2(String str, String type) {
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "search", str, type, null, null, false, false); // stupid overloading
+	Queues.clientQueue.add(e);
+    }
+
+    public List<List> searchme2Do(ClientQueueElement e) {
+	String str = e.file;
+	String type = e.suffix;
 	List strlist = new ArrayList<String>();
-	ResultItem[] strarr = roart.search.Search.searchme2(str, type);
+
+	SearchDisplay display = new SearchDisplay();
+	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	display.classify = myclassify != null && myclassify.length() > 0;
+	display.admindisplay = "admin".equals((String) e.ui.getSession().getAttribute("user"));
+
+	ResultItem[] strarr = roart.search.Search.searchme2(str, type, display);
+
 	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
 	}
-	return strlist;
+	List<List> strlistlist = new ArrayList<List>();
+	strlistlist.add(strlist);
+	return strlistlist;
     }
     
     public List<ResultItem> searchsimilar(String md5) {

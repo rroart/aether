@@ -6,6 +6,7 @@ import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 
 import roart.dao.SearchDao;
 
@@ -132,12 +133,12 @@ public class Search {
     return strarr;
 }
 
-    public static ResultItem[] searchme2(String str, String searchtype) {
+    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 		ResultItem[] strarr = new ResultItem[0];
 		
-		strarr = SearchDao.searchme2(str, searchtype);
+		strarr = SearchDao.searchme2(str, searchtype, display);
     return strarr;
 }
 

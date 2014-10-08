@@ -1,6 +1,7 @@
 package roart.jpa;
 
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public abstract class SearchJpa {
 
     public abstract ResultItem[] searchme(String type, String str);
 
-    public abstract ResultItem[] searchme2(String str, String searchtype);
+    public abstract ResultItem[] searchme2(String str, String searchtype, SearchDisplay display);
 
 }
 

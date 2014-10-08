@@ -27,6 +27,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import roart.search.Constants;
 import roart.lang.LanguageDetect;
 
+import roart.model.SearchDisplay;
 import roart.model.ResultItem;
 import roart.model.IndexFiles;
 import roart.dao.IndexFilesDao;
@@ -117,11 +118,10 @@ public class SearchSolr {
 	return strarr;
     }
 
-    public static ResultItem[] searchme2(String str, String searchtype) {
+    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
 	ResultItem[] strarr = new ResultItem[0];
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-	boolean admin = "admin".equals((String) com.vaadin.ui.UI.getCurrent().getSession().getAttribute("user"));
+	boolean doclassify = display.classify;
+	boolean admin = display.admindisplay;
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 

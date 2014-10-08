@@ -1,6 +1,7 @@
 package roart.jpa;
 
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 
 import java.util.List;
 
@@ -25,10 +26,10 @@ public class SolrSearchJpa extends SearchJpa {
 	return SearchSolr.searchme(type, str);
     }
 
-    public ResultItem[] searchme2(String str, String searchtype) {
+    public ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-	return SearchSolr.searchme2(str, searchtype);
+	return SearchSolr.searchme2(str, searchtype, display);
     }
 
     public ResultItem[] searchsimilar(String md5i) {

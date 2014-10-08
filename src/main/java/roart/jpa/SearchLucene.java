@@ -7,6 +7,7 @@ import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -197,10 +198,9 @@ public class SearchLucene {
     return strarr;
 }
 
-    public static ResultItem[] searchme2(String str, String searchtype) {
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-	boolean admin = "admin".equals((String) com.vaadin.ui.UI.getCurrent().getSession().getAttribute("user"));
+    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
+	boolean doclassify = display.classify;
+	boolean admin = display.admindisplay;
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 		ResultItem[] strarr = new ResultItem[0];
