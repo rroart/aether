@@ -34,6 +34,7 @@ import roart.thread.TikaRunner;
 import roart.content.OtherHandler;
 import roart.content.ClientHandler;
 import roart.thread.ClientRunner;
+import roart.thread.DbRunner;
 
 import roart.dao.SearchDao;
 import roart.dao.IndexFilesDao;
@@ -53,8 +54,9 @@ public class Main {
 
     public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	Set<String> filesetnew = Traverse.doList(add, newset, null, dirset, null, false, false);    
-	for (String s : filesetnew) {
+	Set<String> filesetnew2 = new HashSet<String>();
+	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, false, false);    
+	for (String s : filesetnew2) {
 	    retList.add(new ResultItem(s));
 	}
 	return filesetnew;
@@ -281,6 +283,7 @@ public class Main {
 	String function = el.function;
 	String filename = el.file;
 	boolean reindex = el.reindex;
+	log.info("function " + function + " " + filename + " " + reindex);
 
 	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
@@ -311,7 +314,7 @@ public class Main {
 	// reindexdate
 	// filesystemlucenenew
 
-	if (function.equals("filesystem") || function.equals("filesystemlucenenew")) {
+	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null && !reindex)) {
 	    if (filename != null) {
 		filesetnew = traverse(filename, indexnewset, retNewFilesList);
 	    } else {
@@ -319,7 +322,7 @@ public class Main {
 	    }
 	    if (function.equals("filesystem")) {
 		IndexFilesDao.commit();
-		retlistlist.add(retList);
+		retlistlist.add(retNewFilesList);
 		return  retlistlist;
 	    }
 	}
@@ -327,6 +330,14 @@ public class Main {
 	Collection<IndexFiles> indexes = null;
 	if (function.equals("filesystemlucenenew")) {
 	    indexes = indexnewset;
+	} else if (function.equals("index") && filename != null && !reindex) {
+	    Set<IndexFiles> indexset = new HashSet<IndexFiles>();
+	    for (String name : filesetnew) {
+		String md5 = IndexFilesDao.getMd5ByFilename(name);
+		IndexFiles index = IndexFilesDao.getByMd5(md5);
+		indexset.add(index);
+	    }
+	    indexes = indexset;
 	} else {
 	    indexes = IndexFilesDao.getAll();
 	}
@@ -583,6 +594,8 @@ public class Main {
     private static Thread otherWorker = null;
     private static ClientRunner clientRunnable = null;
     private static Thread clientWorker = null;
+    private static DbRunner dbRunnable = null;
+    private static Thread dbWorker = null;
 
     public void startThreads() {
     	if (tikaRunnable == null) {
@@ -616,6 +629,12 @@ public class Main {
     	clientWorker = new Thread(clientRunnable);
     	clientWorker.setName("ClientWorker");
     	clientWorker.start();
+    	}
+    	if (dbRunnable == null) {
+    	dbRunnable = new DbRunner();
+    	dbWorker = new Thread(dbRunnable);
+    	dbWorker.setName("DbWorker");
+    	dbWorker.start();
     	}
     }
 
