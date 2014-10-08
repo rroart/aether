@@ -415,6 +415,7 @@ public class MyVaadinUI extends UI
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		try {
 		    maininst.filesystemlucenenew();
+		    Notification.show("Request sent");
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
@@ -430,6 +431,7 @@ public class MyVaadinUI extends UI
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		try {
 		    maininst.traverse();
+		    Notification.show("Request sent");
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
@@ -445,6 +447,7 @@ public class MyVaadinUI extends UI
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		try {
 		    maininst.index(null, false);
+		    Notification.show("Request sent");
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
@@ -459,6 +462,7 @@ public class MyVaadinUI extends UI
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		 maininst.memoryusage();
+		 Notification.show("Request sent");
             }
         });
 	return button;
@@ -471,6 +475,7 @@ public class MyVaadinUI extends UI
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		try {
 		    maininst.notindexed();
+		    Notification.show("Request sent");
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
@@ -485,6 +490,7 @@ public class MyVaadinUI extends UI
             public void buttonClick(ClickEvent event) {
 		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		maininst.overlapping();
+		Notification.show("Request sent");
             }
         });
 	return button;
@@ -502,6 +508,7 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.filesystemlucenenew(value, false);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -524,6 +531,7 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.traverse(value);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -546,6 +554,7 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.index(value, false);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -616,6 +625,7 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.index(value, true);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -647,6 +657,7 @@ public class MyVaadinUI extends UI
 		    long time = date.getTime();
 		    try {
 			maininst.reindexdatelower("" + time, true);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -678,6 +689,7 @@ public class MyVaadinUI extends UI
 		    long time = date.getTime();
 		    try {
 			maininst.reindexdatehigher("" + time, true);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -700,6 +712,7 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.index(value);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -722,6 +735,7 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.filesystemlucenenew(value, true);
+			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -764,11 +778,7 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
 		    maininst.searchme2(value, "" + type);
-		    /*
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    setContent(result);
-		    */
+		    Notification.show("Request sent");
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
