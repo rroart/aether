@@ -51,6 +51,8 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.Window;
 import com.vaadin.annotations.Push;
 import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -172,7 +174,7 @@ public class MyVaadinUI extends UI
 	topLine.setWidth("100%");	
 	boolean doauthenticate = (boolean) getSession().getAttribute("authenticate");
 	statLabel = new Label();
-	statLabel.setWidth("30%");
+	statLabel.setWidth("50%");
 	topLine.addComponent(statLabel);
 	if (doauthenticate) {
 	    Button login = getLoginButton();
@@ -1177,6 +1179,7 @@ public Object generateCell(Table source, Object itemId,
 
 	tabsheet.addComponent(tab);
 	tabsheet.getTab(tab).setClosable(true);
+	Notification.show("New result available");
     }
 
 }
