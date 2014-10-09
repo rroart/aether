@@ -55,7 +55,7 @@ public class Search {
 
     if (retsize < 0) {
 	//dbindex.setNoindexreason("Exception"); // later, propagate the exception
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 	ResultItem ri = new ResultItem();
 	ri.add("too small");
@@ -89,7 +89,7 @@ public class Search {
 	dbindex.setTimeindex(time);
 	log.info("timerStop filename " + time);
 
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
 	ResultItem ri = new ResultItem();

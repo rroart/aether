@@ -516,7 +516,7 @@ public class Traverse {
 	    	    Queues.otherQueue.add(el);
 	    	} else {
 		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-		    String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+		    String myclassify = roart.util.Prop.getProp().getProperty("classify");
 		    boolean doclassify = myclassify != null && myclassify.length() > 0;
 		    ResultItem ri = new ResultItem();
 		    ri.add("too small");
@@ -602,7 +602,7 @@ public class Traverse {
     }
 
     public static ResultItem getHeader() {
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
     ResultItem ri = new ResultItem();
@@ -628,7 +628,7 @@ public class Traverse {
     }
     
     public static ResultItem getHeaderNot() {
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
     ResultItem ri = new ResultItem();

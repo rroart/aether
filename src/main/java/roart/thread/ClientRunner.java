@@ -37,7 +37,7 @@ public class ClientRunner implements Runnable {
     static long lastupdate = 0;
 
     public void run() {
-    	Set<Future<Object>> set = new HashSet<Future<Object>>();
+	Set<Future<Object>> set = new HashSet<Future<Object>>();
 	int nThreads = 4;
     	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
     	while (true) {
@@ -123,5 +123,33 @@ public class ClientRunner implements Runnable {
 		}
 	    });
     }
+
+    public static void notify(final String text) {
+	for (final UI ui : uiset) {
+	    try {
+		ui.access(new Runnable() {
+			@Override
+			public void run() {
+			    ((roart.client.MyVaadinUI) ui).notify(text);
+			}
+		    });
+	    } catch (UIDetachedException e) {
+		log.error("UIDetachedException", e);
+		uiset.remove(ui);
+	    } catch (Exception e) {
+		log.error("Exception", e);
+	    }
+	}
+    }
+
+    // not yet
+    /*
+    public static void abort() {
+	for (Future future : set) {
+	    future.cancel(true);
+	    //future.interrupt();
+	}
+    }
+    */
 
 }

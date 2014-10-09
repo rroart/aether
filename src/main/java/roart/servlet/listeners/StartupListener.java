@@ -1,5 +1,7 @@
 package roart.servlet.listeners;
 
+import roart.lang.LanguageDetect;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
@@ -15,15 +17,15 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 
     public void contextInitialized(ServletContextEvent context)  {
 	roart.beans.session.control.Main.parseconfig();
-	String myindex = roart.util.Prop.getProp().getProperty("myindex");
+	String myindex = roart.util.Prop.getProp().getProperty("index");
 	if (myindex.equals("solr")) {
 	    new roart.jpa.SearchSolr();
 	}
-	String mydb = roart.util.Prop.getProp().getProperty("mydb");
+	String mydb = roart.util.Prop.getProp().getProperty("db");
 	if (mydb.equals("hbase")) {
 	    new roart.model.HbaseIndexFiles();
 	}
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	if (myclassify != null && myclassify.equals("mahout")) {
 	    new roart.jpa.MahoutClassify();
 	}
@@ -33,6 +35,12 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	roart.dao.SearchDao.instance(myindex);
 	roart.dao.IndexFilesDao.instance(mydb);
 	roart.dao.ClassifyDao.instance(myclassify);
+
+	try {
+	    LanguageDetect.init("./profiles/");
+	} catch (Exception e) {
+	    log.error("Exception", e);
+	}
 
 	/*
         roart.jpa.SearchLucene.indexme("cd");

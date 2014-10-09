@@ -229,7 +229,7 @@ public class Main {
 	List strlist = new ArrayList<String>();
 
 	SearchDisplay display = new SearchDisplay();
-	String myclassify = roart.util.Prop.getProp().getProperty("myclassify");
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	display.classify = myclassify != null && myclassify.length() > 0;
 	display.admindisplay = "admin".equals((String) e.ui.getSession().getAttribute("user"));
 

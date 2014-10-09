@@ -215,10 +215,10 @@ public class MyVaadinUI extends UI
 	HorizontalLayout bottomLine = new HorizontalLayout();
 	bottomLine.setHeight("10%");
 	bottomLine.setWidth("90%");
-	Label dbLabel = new Label("Db type " + roart.util.Prop.getProp().getProperty("mydb"));
+	Label dbLabel = new Label("Db type " + roart.util.Prop.getProp().getProperty("db"));
 	//dbLabel.setWidth("30%");
 	bottomLine.addComponent(dbLabel);
-	Label idxLabel = new Label("Index type " + roart.util.Prop.getProp().getProperty("myindex"));
+	Label idxLabel = new Label("Index type " + roart.util.Prop.getProp().getProperty("index"));
 	//idxLabel.setWidth("30%");
 	bottomLine.addComponent(idxLabel);
 	Label licenseLabel = new Label("Affero GPL");
@@ -1190,6 +1190,10 @@ public Object generateCell(Table source, Object itemId,
 	tabsheet.addComponent(tab);
 	tabsheet.getTab(tab).setClosable(true);
 	Notification.show("New result available");
+    }
+
+    public void notify(String text) {
+	Notification.show(text);
     }
 
 }
