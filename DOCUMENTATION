@@ -1,0 +1,128 @@
+Aether disk search engine
+
+1. Installing
+
+Unpack language profiles (...).
+Other software, like ebook-convert, pdftotext, djvutxt.
+Run (after configuring) with mvn package, mvn jetty:run
+
+2. Configuration
+Configure aether.prop:
+
+2.1 Mandatory configuration.
+2.1.1 General
+Which directories to include, and subdirectories to exclude.
+dirlist=/home/roart/usr/music,/home/roart/usr/video,/home/roart/usr/abook,/home/roart/usr/books
+dirlistnot=/home/roart/usr/music/tmp,/home/roart/usr/music/tmp_any2dvd,/home/roart/usr/video/tmp,/home/roart/usr/abook/tmp,/home/roart/usr/books/tmp,/home/roart/usr/books/tmp2
+
+How many to max reindex each turn, or 0 for no limit.
+reindexlimit=10000
+
+Don't try to index if failing this much
+failedlimit=10
+
+Number of seconds for Tika timeout
+tikatimeout=600
+
+Number of seconds for Other timeout
+othertimeout=600
+
+2.1.2 Database
+Can be hbase or Hibernate/H2.
+
+2.1.2.1 Hibernate/H2
+Hibernate/H2 elevant settings:
+db=hibernate
+h2dir=...
+
+2.1.2.2 Hbase
+Hbase relevant settings:
+db=hbase
+hbasequorum=localhost
+hbaseport=2181
+hbasemaster=localhost:2181
+
+2.1.3 Indexing/search:
+Can be Lucene directly or Solr.
+
+2.1.3.1 Lucene
+Lucene relevant settings:
+index=lucene
+lucenepath=...
+(Some code change will trigger Lucene index creation.)
+
+2.1.3.2 Solr
+Solr relevant settings:
+index=solr
+solrurl=http://localhost:8983/solr/mystuff
+
+Solr server need new fields for schema.xml:
+<field name="lang" type="text_general" indexed="true" stored="true"/>
+<field name="metadata" type="text_general" indexed="true" stored="false"/>
+and change for the following field:
+<field name="content" type="text_general" indexed="false" stored="false" multiValued="true"/>
+
+2.2 Non-mandatory
+
+2.2.1 General
+Where to log
+logdir=...
+
+Whether to enable downloading
+downloader=true
+
+Whether to use authenication
+authenticate=true
+
+2.2.2 Classifying
+There are two types, Mahout and OpenNLP
+
+2.2.2.1 Mahout
+Mahout relevant settings:
+classify=mahout
+mahoutalgorithm=bayes
+mahaoutmodelpath=.../mahout/model
+mahoutlabelindexfilepath=.../mahout/labelindex
+mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
+mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
+(was: mahoutdocumentfrequencypath=.../mahout/dataset-vectors/frequency.file-0)
+
+2.2.2.2 OpenNLP
+OpenNLP relevant settings:
+classify=opennlp
+opennlpmodelpath=.../opennlp/en-doccat.bin
+
+3. GUI
+
+3.1 Search
+Use Lucene syntax
+Searchable fields:
+Id, lang, metadata, content (Lucene), text (Solr).
+
+3.2 Control panel
+
+Index filesystem new items
+Button: Crawl the whole filesystem for new, and index.
+Textfield: Use only the given path.
+Filesystem index on changed md5 checks if md5 has changed, and reindexes.
+
+Filesystem add new
+Button: Add new files from the filesystem, but do not index.
+Textfield: Use only the given path.
+
+Index non-indexed items:
+Button: Index all previously non-indexed (including failed).
+Textfield: Use only the given path.
+Index of suffix: Try to index all known items with suffix.
+
+Reindex, textfield, use only the given path.
+Reindex on before or after given date.
+
+Stats, listing non-indexed, memory usage or overlapping directories.
+
+9999 Not here anymore
+personal:
+datadir=.../data/
+homedir=...
+Don't show everything to all
+showsecret=1
