@@ -898,6 +898,9 @@ public class MyVaadinUI extends UI
 public Object generateCell(Table source, Object itemId,
 			   Object columnId) {
     String filename = (String) source.getItem(itemId).getItemProperty("Filename").getValue();
+    if (filename == null) {
+	return null;
+    }
     FileResource resource = new FileResource(new File(filename));
     Button button = new Button("Download");
     button.setStyleName(BaseTheme.BUTTON_LINK);
