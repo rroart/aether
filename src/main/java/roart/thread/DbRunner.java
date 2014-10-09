@@ -59,6 +59,7 @@ public class DbRunner implements Runnable {
 		} catch (InterruptedException e) {
 		    // TODO Auto-generated catch block
 		    log.error("Exception", e);
+		    ClientRunner.notify("Db exception");
 		}
 	    }
 
