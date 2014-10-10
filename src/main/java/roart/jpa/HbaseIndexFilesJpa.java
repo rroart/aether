@@ -2,6 +2,8 @@ package roart.jpa;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.io.IOException;
 
@@ -35,6 +37,10 @@ public class HbaseIndexFilesJpa extends IndexFilesJpa {
 	return HbaseIndexFiles.get(md5);
     }
 
+    public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
+	return HbaseIndexFiles.getFilelocationsByMd5(md5);
+    }
+
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
 	return HbaseIndexFiles.getIndexByFilelocation(fl);
 	/*
@@ -53,15 +59,7 @@ public class HbaseIndexFilesJpa extends IndexFilesJpa {
     }
 
     public List<IndexFiles> getAll() throws Exception {
-	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
-	Configuration conf = HBaseConfiguration.create();
-	HTablePool pool = new HTablePool();
-	HTableInterface indexTable = pool.getTable("index");
-	ResultScanner scanner = indexTable.getScanner(new Scan());
-	for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
-	    retlist.add(HbaseIndexFiles.get(rr));
-	}
-	return retlist;
+	return HbaseIndexFiles.getAll();
     }
 
     public void save(IndexFiles i) {

@@ -3,6 +3,7 @@ package roart.jpa;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 import roart.dao.IndexFilesDao;
 
@@ -20,6 +21,15 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
     public IndexFiles getByMd5(String md5) throws Exception {
 	HibernateIndexFiles index = HibernateIndexFiles.getByMd5(md5);
 	return convert(index);
+    }
+
+    public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
+	Set<String> filenames = HibernateIndexFiles.getFilenamesByMd5(md5);
+	Set<FileLocation> flset = new HashSet<FileLocation>();
+	for (String filename : filenames) {
+	    flset.add(new FileLocation(filename));
+	}
+	return flset;
     }
 
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {

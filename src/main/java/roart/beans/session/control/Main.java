@@ -292,7 +292,7 @@ public class Main {
 	List<ResultItem> retTikaTimeoutList = new ArrayList<ResultItem>();
 	retTikaTimeoutList.add(new ResultItem("Tika timeout"));
 	List<ResultItem> retNotList = new ArrayList<ResultItem>();
-	retNotList.add(Traverse.getHeaderNot());
+	retNotList.add(Traverse.getHeader());
 	List<ResultItem> retNewFilesList = new ArrayList<ResultItem>();
 	retNewFilesList.add(new ResultItem("New file"));
 	List<ResultItem> retDeletedList = new ArrayList<ResultItem>();
@@ -587,6 +587,125 @@ public class Main {
     public void filesystemlucenenew(String add, boolean md5checknew) throws Exception {
 	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "filesystemlucenenew", add, null, null, null, false, md5checknew);
 	Queues.clientQueue.add(e);
+    }
+
+    public void dbindex(String md5) throws Exception {
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "dbindex", md5, null, null, null, false, false); // dumb overload habit
+	Queues.clientQueue.add(e);
+    }
+
+    public List<List> dbindexDo(ClientQueueElement el) throws Exception {
+	String function = el.function;
+	String md5 = el.file;
+	log.info("function " + function + " " + md5);
+
+	List<List> retlistlist = new ArrayList<List>();
+	List<ResultItem> indexList = new ArrayList<ResultItem>();
+	indexList.add(Traverse.getHeader());
+	List<ResultItem> indexfilesList = new ArrayList<ResultItem>();
+	indexfilesList.add(new ResultItem("Files"));
+	List<ResultItem> filesList = new ArrayList<ResultItem>();
+	filesList.add(new ResultItem("Files"));
+
+	IndexFiles index = IndexFilesDao.getByMd5(md5);
+	if (index != null) {
+	    indexList.add(Traverse.getResultItem(index, "n/a"));
+	    Set<String> files = index.getFilenames();
+	    if (files != null) {
+		for (String filename : files) {
+		    indexfilesList.add(new ResultItem(filename));
+		}
+	    }
+	    Set<FileLocation> flSet = IndexFilesDao.getFilelocationsByMd5(md5);
+	    if (flSet != null) {
+		for (FileLocation fl : flSet) {
+		    if (fl == null) {
+			filesList.add(new ResultItem(""));
+		    } else {
+			filesList.add(new ResultItem(fl.getFilename()));
+		    }
+		}
+	    }
+			  
+	}
+
+	retlistlist.add(indexList);
+	retlistlist.add(indexfilesList);
+	retlistlist.add(filesList);
+	return retlistlist;
+    }
+
+    public void dbsearch(String md5) throws Exception {
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "dbsearch", md5, null, null, null, false, false); // dumb overload habit
+	Queues.clientQueue.add(e);
+    }
+
+    public List<List> dbsearchDo(ClientQueueElement el) throws Exception {
+	String function = el.function;
+	String searchexpr = el.file;
+	int i = searchexpr.indexOf(":");
+	log.info("function " + function + " " + searchexpr);
+
+	List<List> retlistlist = new ArrayList<List>();
+	if (i < 0) {
+	    return retlistlist;
+	}
+	String field = searchexpr.substring(0, i);
+	String text = searchexpr.substring(i + 1);
+	List<ResultItem> indexList = new ArrayList<ResultItem>();
+	indexList.add(Traverse.getHeader());
+
+	List<IndexFiles> indexes = IndexFilesDao.getAll();
+	for (IndexFiles index : indexes) {
+	    boolean match = false;
+	    
+	    if (field.equals("indexed")) {
+		Boolean indexedB = index.getIndexed();
+		boolean ind = indexedB != null && indexedB.booleanValue();
+		if (ind && text.equals("true")) {
+		    match = true;
+		}
+		if (!ind && text.equals("false")) {
+		    match = true;
+		}
+	    }
+	    if (field.equals("convertsw")) {
+		String convertsw = index.getConvertsw();
+		if (convertsw != null) {
+		    match = convertsw.contains(text);
+		}
+	    }
+	    if (field.equals("classification")) {
+		String classification = index.getClassification();
+		if (classification != null) {
+		    match = classification.contains(text);
+		}
+	    }
+	    if (field.equals("failedreason")) {
+		String failedreason = index.getFailedreason();
+		if (failedreason != null) {
+		    match = failedreason.contains(text);
+		}
+	    }
+	    if (field.equals("noindexreason")) {
+		String noindexreason = index.getNoindexreason();
+		if (noindexreason != null) {
+		    match = noindexreason.contains(text);
+		}
+	    }
+	    if (field.equals("timeoutreason")) {
+		String timeoutreason = index.getTimeoutreason();
+		if (timeoutreason != null) {
+		    match = timeoutreason.contains(text);
+		}
+	    }
+	    if (match) {
+		indexList.add(Traverse.getResultItem(index, "n/a"));
+	    }
+	}
+
+	retlistlist.add(indexList);
+	return retlistlist;
     }
 
     private static TikaRunner tikaRunnable = null;

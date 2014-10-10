@@ -1,5 +1,7 @@
 package roart.model;
 
+import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -208,6 +210,27 @@ public class HbaseIndexFiles {
 	return ifile;
     }
 
+    public static FileLocation getfl(Result files, String md5) {
+	FileLocation fl = null;
+	List<KeyValue> list = files.list();
+	if (list != null) {
+	for (KeyValue kv : list) {
+	    byte[] family = kv.getFamily();
+	    String fam = new String(family);
+	    if (fam.equals("fi")) {
+		String md5tmp = Bytes.toString(kv.getValue());
+		if (md5.equals(md5tmp)) {
+		    byte [] key = kv.getRow();
+		    String loc = new String(key);
+		    FileLocation fltmp = getFileLocation(loc);
+		    fl = fltmp;
+		}
+	    }
+	}
+	}
+	return fl;
+    }
+
     public static IndexFiles get(String md5) {
 	try {
 	    //HTable /*Interface*/ filesTable = new HTable(conf, "index");
@@ -251,6 +274,32 @@ public class HbaseIndexFiles {
 	    log.error("Exception", e);
 	}
 	return null;
+    }
+
+    public static Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
+	Set<FileLocation> flset = new HashSet<FileLocation>();
+	ResultScanner scanner = filesTable.getScanner(new Scan());
+	for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
+	    FileLocation fl = getfl(rr, md5);
+	    if (fl != null) {
+		flset.add(fl);
+	    }
+	}
+	return flset;
+    }
+
+    public static List<IndexFiles> getAll() throws Exception {
+	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
+	/*
+	Configuration conf = HBaseConfiguration.create();
+	HTablePool pool = new HTablePool();
+	HTableInterface indexTable = pool.getTable("index");
+	*/
+	ResultScanner scanner = indexTable.getScanner(new Scan());
+	for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
+	    retlist.add(get(rr));
+	}
+	return retlist;
     }
 
     public static IndexFiles ensureExistenceNot(String md5) throws Exception {

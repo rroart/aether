@@ -3,6 +3,7 @@ package roart.dao;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.Set;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
@@ -46,6 +47,13 @@ public class IndexFilesDao {
 	}
 	all.put(md5, i);
 	return i;
+    }
+
+    public static Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
+	if (md5 == null) {
+	    return null;
+	}
+	return indexFilesJpa.getFilelocationsByMd5(md5);
     }
 
     public static IndexFiles getByFilenameNot(String filename) throws Exception {

@@ -60,6 +60,12 @@ public class ClientHandler {
 	if (function.equals("search")) {
 	    list = search(el);
 	}
+	if (function.equals("dbindex")) {
+	    list = dbindex(el);
+	}
+	if (function.equals("dbsearch")) {
+	    list = dbsearch(el);
+	}
 	Queues.decClients();
 	Map map = new HashMap<UI, List>();
 	map.put(el.ui, list);
@@ -111,6 +117,24 @@ public class ClientHandler {
 	    return maininst.memoryusageDo();
 	} catch (Exception e) {
 	    log.error("Exception", e);
+	    return null;
+	}
+    }
+
+    private static List dbindex(ClientQueueElement el) {
+	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	try {
+	    return maininst.dbindexDo(el);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    private static List dbsearch(ClientQueueElement el) {
+	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	try {
+	    return maininst.dbsearchDo(el);
+	} catch (Exception e) {
 	    return null;
 	}
     }

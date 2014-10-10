@@ -312,6 +312,24 @@ import org.apache.commons.logging.LogFactory;
 	    return null;
 	}
 
+	public static Set<String> getFilenamesByMd5(String md5) {
+	    try {
+		SQLQuery sqlQuery = HibernateUtil.currentSession().createSQLQuery("select filename from files where md5 = :md5");
+		sqlQuery.setParameter("md5", md5);
+		List<?> qResults = sqlQuery.list();
+		log.info("results " + qResults.size() + " " + md5);
+		Set<String> filenames = new HashSet<String>();
+		for (Object row : qResults) {
+		    String filename = (String) row;
+		    filenames.add(filename);
+		}
+		return filenames;
+	    } catch (Exception e) {
+		log.error("Exception", e);
+	    }
+	    return null;
+	}
+
 	public static void flush() {
             try {
                 roart.model.HibernateUtil.currentSession().flush();

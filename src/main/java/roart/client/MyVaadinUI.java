@@ -280,6 +280,11 @@ public class MyVaadinUI extends UI
 	horStat.addComponent(getNotIndexed());
 	horStat.addComponent(getMemoryUsage());
 	horStat.addComponent(getOverlapping());
+	HorizontalLayout horDb = new HorizontalLayout();
+	horDb.setHeight("20%");
+	horDb.setWidth("60%");
+	horDb.addComponent(getDbItem());
+	horDb.addComponent(getDbSearch());
 
 	/*
 	tab.addComponent(getCleanup());
@@ -292,6 +297,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horInd);
 	tab.addComponent(horReindex);
 	tab.addComponent(horStat);
+	tab.addComponent(horDb);
 	return tab;
     }
 
@@ -735,6 +741,52 @@ public class MyVaadinUI extends UI
 		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
 		    try {
 			maininst.filesystemlucenenew(value, true);
+			Notification.show("Request sent");
+		    } catch (Exception e) {
+			log.error("Exception", e);
+		    }
+		}
+	    });
+	// Fire value changes immediately when the field loses focus
+	tf.setImmediate(true);
+	return tf;
+    }
+
+    private TextField getDbItem() {
+	TextField tf = new TextField("Database md5 id");
+
+	// Handle changes in the value
+	tf.addValueChangeListener(new Property.ValueChangeListener() {
+		public void valueChange(ValueChangeEvent event) {
+		    // Assuming that the value type is a String
+		    String value = (String) event.getProperty().getValue();
+		    // Do something with the value
+		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    try {
+			maininst.dbindex(value);
+			Notification.show("Request sent");
+		    } catch (Exception e) {
+			log.error("Exception", e);
+		    }
+		}
+	    });
+	// Fire value changes immediately when the field loses focus
+	tf.setImmediate(true);
+	return tf;
+    }
+
+    private TextField getDbSearch() {
+	TextField tf = new TextField("Database search");
+
+	// Handle changes in the value
+	tf.addValueChangeListener(new Property.ValueChangeListener() {
+		public void valueChange(ValueChangeEvent event) {
+		    // Assuming that the value type is a String
+		    String value = (String) event.getProperty().getValue();
+		    // Do something with the value
+		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    try {
+			maininst.dbsearch(value);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);

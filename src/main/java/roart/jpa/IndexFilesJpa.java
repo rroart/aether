@@ -1,6 +1,7 @@
 package roart.jpa;
 
 import java.util.List;
+import java.util.Set;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
@@ -17,6 +18,8 @@ public abstract class IndexFilesJpa {
     public abstract String getMd5ByFilelocation(FileLocation fl) throws Exception;
 
     public abstract IndexFiles getByMd5(String md5) throws Exception;
+
+    public abstract Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception;
 
     public abstract List<IndexFiles> getAll() throws Exception;
 
