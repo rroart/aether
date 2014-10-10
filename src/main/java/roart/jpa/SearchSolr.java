@@ -32,6 +32,8 @@ import roart.model.ResultItem;
 import roart.model.IndexFiles;
 import roart.dao.IndexFilesDao;
 
+import roart.dir.Traverse;
+
 public class SearchSolr {
     private static Log log = LogFactory.getLog("SearchSolr");
 
@@ -144,24 +146,7 @@ public class SearchSolr {
 	    
 	    //List<Item> beans = rsp.getBeans(Item.class);
 	    strarr = new ResultItem[docs.size() + 1];
-	    strarr[0] = new ResultItem();
-	    strarr[0].add("Hit");
-	    strarr[0].add("Md5/Id");
-	    strarr[0].add("Filename");
-	    strarr[0].add("Lang");
-	    if (doclassify) {
-		strarr[0].add("Classification");
-	    }
-	    strarr[0].add("Timestamp");
-	    if (admin) {
-	    strarr[0].add("Convertsw");
-	    strarr[0].add("Converttime");
-	    strarr[0].add("Indextime");
-	    if (doclassify) {
-		strarr[0].add("Classificationtime");
-	    }
-	    }
-	    strarr[0].add("Score");
+	    strarr[0] = Traverse.getHeaderSearch(display);
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
 		i++;
@@ -194,24 +179,7 @@ public class SearchSolr {
 		}
 		log.info((i + 1) + ". " + title + ": "
 			 + score);
-		strarr[i + 1] = new ResultItem();
-		strarr[i + 1].add((i + 1) + ". ");
-		strarr[i + 1].add(md5);
-		strarr[i + 1].add(filename);
-		strarr[i + 1].add(lang);
-		if (doclassify) {
-		    strarr[i + 1].add(indexmd5.getClassification());
-		}
-		strarr[i + 1].add(timestamp);
-		if (admin) {
-		strarr[i + 1].add(convertsw);
-		strarr[i + 1].add(converttime);
-		strarr[i + 1].add(indexmd5.getTimeindex("%.2f"));
-		if (doclassify) {
-		    strarr[i + 1].add(indexmd5.getTimeclass("%.2f"));
-		}
-		}
-		strarr[i + 1].add("" + score);
+		strarr[i + 1] = Traverse.getSearchResultItem(indexmd5, lang, score, display);
 	    }
 	} catch (SolrServerException e) {
 	    log.error("Exception", e);

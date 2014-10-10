@@ -10,6 +10,8 @@ import roart.model.SearchDisplay;
 
 import roart.dao.SearchDao;
 
+import roart.dir.Traverse;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,25 +59,8 @@ public class Search {
 	//dbindex.setNoindexreason("Exception"); // later, propagate the exception
 	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
-	ResultItem ri = new ResultItem();
-	ri.add("too small");
-	ri.add(md5);
-	ri.add(dbfilename);
-	ri.add("lang");
-	if (doclassify) {
-	    ri.add(el.index.getClassification());
-	}
-	ri.add(el.index.getTimestampDate().toString());
-	ri.add(el.index.getConvertsw());
-	ri.add(el.index.getConverttime("%.2f"));
-	ri.add(el.index.getTimeindex("%.2f"));
-	if (doclassify) {
-	    ri.add(el.index.getTimeclass("%.2f"));
-	}
-	ri.add("" + el.index.getFailed());
-	ri.add(el.index.getFailedreason());
-	ri.add(el.index.getTimeoutreason());
-	ri.add(el.index.getNoindexreason());
+	ResultItem ri = Traverse.getResultItem(el.index, "n/a");
+	ri.get().set(2, dbfilename);
 	retlistnot.add(ri);
     } else {
 
@@ -92,25 +77,8 @@ public class Search {
 	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 
-	ResultItem ri = new ResultItem();
-	ri.add("true");
-	ri.add(md5);
-	ri.add(dbfilename);
-	ri.add(lang);
-	if (doclassify) {
-	    ri.add(el.index.getClassification());
-	}
-	ri.add(el.index.getTimestamp().toString());
-	ri.add(el.index.getConvertsw());
-	ri.add(el.index.getConverttime("%.2f"));
-	ri.add(el.index.getTimeindex("%.2f"));
-	if (doclassify) {
-	    ri.add(el.index.getTimeclass("%.2f"));
-	}
-	ri.add("" + el.index.getFailed());
-	ri.add(el.index.getFailedreason());
-	ri.add(el.index.getTimeoutreason());
-	ri.add(el.index.getNoindexreason());
+	ResultItem ri = Traverse.getResultItem(el.index, lang);
+	ri.get().set(2, dbfilename);
 	retlist.add(ri);
     try {
 		inputStream.close();
