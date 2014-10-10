@@ -79,7 +79,8 @@ public class IndexFiles {
 		return new Date(0);
 	    }
 	    try { 
-		return new Date(timestamp);
+		Long date = new Long(timestamp);
+		return new Date(date.longValue());
 	    } catch (Exception e) {
 		log.error("Exception from " + timestamp);
 		log.error("Exception", e);
