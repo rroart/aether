@@ -9,7 +9,6 @@ import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 
-import roart.dir.Traverse;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -78,7 +77,7 @@ public class SearchLucene {
     // Directory index = new RAMDirectory();
 	try {
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1);
+    StandardAnalyzer analyzer = new StandardAnalyzer();
     IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
@@ -120,114 +119,31 @@ public class SearchLucene {
     return retsize;
 	}
 
-    public static void indexme(String type) {
-
-    // create some index
-    // we could also create an index in our ram ...
-    // Directory index = new RAMDirectory();
-	try {
-	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1);
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
-    IndexWriter w = new IndexWriter(index, iwc);
- 
-    String filename = type;
-
-	    String datadir = roart.util.Prop.getProp().getProperty("datadir");
-	    FileInputStream fstream = new FileInputStream(datadir+type+".txt");
-	    DataInputStream in = new DataInputStream(fstream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	    String strLine = null;
-    // index some data
-	    while ((strLine = br.readLine()) != null) {
-		String i = strLine;
-	log.info("indexing " + i);
-
-	Document doc = new Document();
-
-	doc.add(new TextField(Constants.CONTENT, i, Field.Store.YES));
-	w.addDocument(doc);
-	    }
- 
-    w.close();
-    log.info("index generated");
-  	} catch (Exception e) {
-	    log.info("Error3: " + e.getMessage());
-	    log.error("Exception", e);
-	}
-	}
-
-    public static ResultItem[] searchme(String type, String str) {
-		ResultItem[] strarr = new ResultItem[0];
-	    try {
-		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1 );
-    // parse query over multiple fields
-    Query q = new MultiFieldQueryParser(Version.LUCENE_4_10_1, new String[]{Constants.CONTENT},
-					analyzer).parse(str);
- 
-    // searching ...
-    int hitsPerPage = 100;
-    IndexReader ind = DirectoryReader.open(index);
-    IndexSearcher searcher = new IndexSearcher(ind);
-    //TopDocCollector collector = new TopDocCollector(hitsPerPage);
-    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
-    searcher.search(q, collector);
-    ScoreDoc[] hits = collector.topDocs().scoreDocs;
- 
-    strarr = new ResultItem[hits.length + 1];
-    strarr[0] = new ResultItem();
-    strarr[0].add("Hit");
-    strarr[0].add("Title");
-    strarr[0].add("Score");
-    // output results
-    log.info("Found " + hits.length + " hits.");
-    for (int i = 0; i < hits.length; ++i) {
-	int docId = hits[i].doc;
-	float score = hits[i].score;
-	Document d = searcher.doc(docId);
-	log.info((i + 1) + ". " + d.get(Constants.CONTENT) + ": "
-			   + score);
-	strarr[i + 1] = new ResultItem();
-	strarr[i + 1].add("" + (i + 1)+ ". ");
-	strarr[i + 1].add(d.get(Constants.CONTENT) + ": ");
-	strarr[i + 1].add("" + score);
-    }
-  	} catch (Exception e) {
-	    log.info("Error3: " + e.getMessage());
-	    log.error("Exception", e);
-	}
-
-    return strarr;
-}
-
-    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
+    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 		ResultItem[] strarr = new ResultItem[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1 );
+    StandardAnalyzer analyzer = new StandardAnalyzer();
     // parse query over multiple fields
     QueryParser cp = null;
     Query tmpQuery = null;
     switch (stype) {
     case 0:
-	cp = new QueryParser(Version.LUCENE_4_10_1, Constants.CONTENT, analyzer);
+	cp = new QueryParser(Constants.CONTENT, analyzer);
 	break;
     case 1:
-	cp = new AnalyzingQueryParser(Version.LUCENE_4_10_1, Constants.CONTENT, analyzer);
+	cp = new AnalyzingQueryParser(Constants.CONTENT, analyzer);
 	break;
     case 2:
-	cp = new ComplexPhraseQueryParser(Version.LUCENE_4_10_1, Constants.CONTENT, analyzer);
+	cp = new ComplexPhraseQueryParser(Constants.CONTENT, analyzer);
 	break;
     case 3:
-	cp = new ExtendableQueryParser(Version.LUCENE_4_10_1, Constants.CONTENT, analyzer);
+	cp = new ExtendableQueryParser(Constants.CONTENT, analyzer);
 	break;
     case 4:
-	cp = new MultiFieldQueryParser(Version.LUCENE_4_10_1, new String[]{Constants.ID, Constants.CONTENT, Constants.CAT, Constants.LANG, Constants.METADATA}, analyzer);
+	cp = new MultiFieldQueryParser(new String[]{Constants.ID, Constants.CONTENT, Constants.CAT, Constants.LANG, Constants.METADATA}, analyzer);
 	break;
     case 5:
 	tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.CONTENT, str);
@@ -250,7 +166,7 @@ public class SearchLucene {
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
     strarr = new ResultItem[hits.length + 1];
-    strarr[0] = Traverse.getHeaderSearch(display);
+    strarr[0] = IndexFiles.getHeaderSearch(display);
     // output results
     log.info("Found " + hits.length + " hits.");
     for (int i = 0; i < hits.length; ++i) {
@@ -261,31 +177,8 @@ public class SearchLucene {
 	String lang = d.get(Constants.LANG);
 	IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
 	String filename = indexmd5.getFilelocation().toString();
-	String title = md5 + " " + filename;
-	if (lang != null) {
-	    title = title + " (" + lang + ") ";
-	    lang = "(" + lang + ")";
-	}
-	String timestamp = null;
-	String convertsw = null;
-	String converttime = null;
-	if (indexmd5 != null) {
-	    timestamp = indexmd5.getTimestamp();
-	    if (timestamp != null) {
-		Long l = new Long(timestamp);
-		Date date = new Date(l.longValue());
-		title = title + " (" + date.toString() + ") ";
-		timestamp = date.toString();
-	    }
-	    convertsw = indexmd5.getConvertsw();
-	    if (convertsw != null) {
-		title = title + " (" + convertsw + " " + indexmd5.getConverttime("%.2f") + "s) ";
-	    }
-	    converttime = indexmd5.getConverttime("%.2f");
-	}
-	log.info((i + 1) + ". " + title + ": "
-			   + score);
-	strarr[i + 1] = Traverse.getSearchResultItem(indexmd5, lang, score, display);
+	log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
+	strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, display);
     }
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
@@ -301,7 +194,7 @@ public class SearchLucene {
 		ResultItem[] strarr = new ResultItem[0];
 	    try {
 		Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1 );
+    StandardAnalyzer analyzer = new StandardAnalyzer();
 
     // searching ...
     int hitsPerPage = 100;
@@ -493,7 +386,7 @@ public class SearchLucene {
 	try {
 	    String type = "all";
 	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
-	    StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1);
+	    StandardAnalyzer analyzer = new StandardAnalyzer();
 	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
@@ -512,7 +405,7 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1 );
+	StandardAnalyzer analyzer = new StandardAnalyzer();
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));
@@ -539,7 +432,7 @@ public class SearchLucene {
 	    }
 	    String queryExpression = "\""+a2[0]+"\"";     
 
-	    QueryParser parser=new QueryParser(Version.LUCENE_4_10_1,field,analyzer);
+	    QueryParser parser=new QueryParser(field, analyzer);
 	    Query queryJ=parser.parse(queryExpression);
 
 	    /**
@@ -610,7 +503,7 @@ public class SearchLucene {
 	String type = "all";
 	String field = Constants.TITLE;
 	String indexDir = getLucenePath()+type;
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_1 );
+	StandardAnalyzer analyzer = new StandardAnalyzer();
 	int docs = 0;
         int dups = 0;
 	Directory index = FSDirectory.open(new File(getLucenePath()+type));

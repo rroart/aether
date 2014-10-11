@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.Date;
 
 import roart.dao.IndexFilesDao;
+import roart.dir.Traverse;
+import roart.util.Prop;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -298,5 +300,117 @@ public class IndexFiles {
     public boolean inDbNot() {
 	return indb;
     }
+
+	public static ResultItem getHeader() {
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
+	
+	ResultItem ri = new ResultItem();
+	ri.add("Indexed");
+	ri.add("Md5/Id");
+	ri.add("Filename");
+	ri.add("Lang");
+	if (doclassify) {
+	ri.add("Classification");
+	}
+	ri.add("Timestamp");
+	ri.add("Convertsw");
+	ri.add("Converttime");
+	ri.add("Indextime");
+	if (doclassify) {
+	ri.add("Classificationtime");
+	}
+	ri.add("Failed");
+	ri.add("Failed reason");
+	ri.add("Timeout reason");
+	ri.add("No indexing reason");
+	ri.add("Filenames");
+	return ri;
+	}
+
+	public static ResultItem getHeaderSearch(SearchDisplay display) {
+	boolean doclassify = display.classify;
+	boolean admin = display.admindisplay;
+	
+	ResultItem ri = new ResultItem();
+	ri.add("Score");
+	ri.add("Md5/Id");
+	ri.add("Filename");
+	ri.add("Lang");
+	if (doclassify) {
+	ri.add("Classification");
+	}
+	ri.add("Timestamp");
+	if (admin) {
+	ri.add("Convertsw");
+	ri.add("Converttime");
+	ri.add("Indextime");
+	if (doclassify) {
+	ri.add("Classificationtime");
+	}
+	ri.add("Failed");
+	ri.add("Failed reason");
+	ri.add("Timeout reason");
+	ri.add("No indexing reason");
+	ri.add("Filenames");
+	}
+	return ri;
+	}
+
+	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, SearchDisplay display) {
+	boolean doclassify = display.classify;
+	boolean admin = display.admindisplay;
+	
+	ResultItem ri = new ResultItem();
+	ri.add("" + score);
+	ri.add(index.getMd5());
+	ri.add(Traverse.getExistingFile(index));
+	ri.add(lang);
+	if (doclassify) {
+	    ri.add(index.getClassification());
+	}
+	ri.add(index.getTimestampDate().toString());
+	if (admin) {
+	ri.add(index.getConvertsw());
+	ri.add(index.getConverttime("%.2f"));
+	ri.add(index.getTimeindex("%.2f"));
+	if (doclassify) {
+	    ri.add(index.getTimeclass("%.2f"));
+	}
+	ri.add("" + index.getFailed());
+	ri.add(index.getFailedreason());
+	ri.add(index.getTimeoutreason());
+	ri.add(index.getNoindexreason());
+	ri.add("" + index.getFilelocations().size());
+	}
+	return ri;
+	}
+
+	public static ResultItem getResultItem(IndexFiles index, String lang) {
+	String myclassify = roart.util.Prop.getProp().getProperty("classify");
+	boolean doclassify = myclassify != null && myclassify.length() > 0;
+	
+	ResultItem ri = new ResultItem();
+	ri.add("" + index.getIndexed());
+	ri.add(index.getMd5());
+	ri.add(Traverse.getExistingFile(index));
+	ri.add(lang);
+	if (doclassify) {
+	    ri.add(index.getClassification());
+	}
+	ri.add(index.getTimestampDate().toString());
+	ri.add(index.getConvertsw());
+	ri.add(index.getConverttime("%.2f"));
+	ri.add(index.getTimeindex("%.2f"));
+	if (doclassify) {
+	    ri.add(index.getTimeclass("%.2f"));
+	}
+	ri.add("" + index.getFailed());
+	ri.add(index.getFailedreason());
+	ri.add(index.getTimeoutreason());
+	ri.add(index.getNoindexreason());
+	ri.add("" + index.getFilelocations().size());
+	return ri;
+	}
 
     }

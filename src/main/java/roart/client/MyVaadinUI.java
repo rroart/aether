@@ -3,6 +3,9 @@ package roart.client;
 import roart.model.ResultItem;
 import roart.thread.ClientRunner;
 
+import roart.service.SearchService;
+import roart.service.ControlService;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -12,8 +15,6 @@ import java.util.Date;
 import java.io.File;
 
 //import roart.beans.session.misc.Unit;
-import roart.beans.session.comic.Unit;
-import roart.beans.session.comic.UnitBuy;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -150,14 +151,13 @@ public class MyVaadinUI extends UI
 	}
     }
 
-    private VerticalLayout statTab = null;
     private TabSheet tabsheet = null;
     public Label statLabel = null;
 
     @Override
     protected void init(VaadinRequest request) {
         final VerticalLayout layout = new VerticalLayout();
-	VerticalLayout searchTab = null, controlPanelTab = null, miscTab = null, comicsTab = null, trainingTab = null;
+	VerticalLayout searchTab = null, controlPanelTab = null;
 
         layout.setMargin(true);
         setContent(layout);
@@ -195,11 +195,6 @@ public class MyVaadinUI extends UI
 	// This tab gets its caption from the component caption
 	controlPanelTab = getControlPanelTab();
 	getSession().setAttribute("controlpanel", controlPanelTab);
-	statTab = getStatTab();
-
-	miscTab = getMiscTab();
-	comicsTab = getComicsTab();
-	trainingTab = getTrainingTab();
 
 	tabsheet.addTab(searchTab);
 	// This tab gets its caption from the component caption
@@ -301,74 +296,6 @@ public class MyVaadinUI extends UI
 	return tab;
     }
 
-    private VerticalLayout getStatTab() {
-	VerticalLayout tab = new VerticalLayout();
-	tab.setCaption("Control Panel Stats and Results");
-	return tab;
-    }
-
-    private VerticalLayout getMiscTab() {
-	VerticalLayout tab = new VerticalLayout();
-	//tab.addComponent(tf2);
-	tab.setCaption("Misc");
-	HorizontalLayout cdTab = new HorizontalLayout(); 
-	cdTab.setHeight("20%");
-	cdTab.setWidth("90%");
-	cdTab.addComponent(getMiscCreator("cd"));
-	cdTab.addComponent(getMiscYear("cd"));
-	cdTab.addComponent(getMiscSearch("cd"));
-	HorizontalLayout dvdTab = new HorizontalLayout(); 
-	dvdTab.setHeight("20%");
-	dvdTab.setWidth("90%");
-	dvdTab.addComponent(getMiscCreator("dvd"));
-	dvdTab.addComponent(getMiscYear("dvd"));
-	dvdTab.addComponent(getMiscSearch("dvd"));
-	HorizontalLayout bookTab = new HorizontalLayout(); 
-	bookTab.setHeight("20%");
-	bookTab.setWidth("90%");
-	bookTab.addComponent(getMiscCreator("book"));
-	bookTab.addComponent(getMiscYear("book"));
-	bookTab.addComponent(getMiscSearch("book"));
-	HorizontalLayout book0Tab = new HorizontalLayout(); 
-	book0Tab.setHeight("20%");
-	book0Tab.setWidth("90%");
-	book0Tab.addComponent(getMiscCreator("book0"));
-	book0Tab.addComponent(getMiscYear("book0"));
-	book0Tab.addComponent(getMiscSearch("book0"));
-	HorizontalLayout bookuTab = new HorizontalLayout(); 
-	bookuTab.setHeight("20%");
-	bookuTab.setWidth("90%");
-	bookuTab.addComponent(getMiscCreator("booku"));
-	bookuTab.addComponent(getMiscYear("booku"));
-	bookuTab.addComponent(getMiscSearch("booku"));
-	tab.addComponent(cdTab);
-	tab.addComponent(dvdTab);
-	tab.addComponent(bookTab);
-	tab.addComponent(book0Tab);
-	tab.addComponent(bookuTab);
-	return tab;
-    }
-
-    private VerticalLayout getComicsTab() {
-	VerticalLayout tab = new VerticalLayout();
-	//tab.addComponent(tf2);
-	tab.setCaption("Comics");
-	tab.addComponent(getComicTitles());
-	tab.addComponent(getComicLetters());
-	tab.addComponent(getComicAll());
-	tab.addComponent(getComicSearch());
-	tab.addComponent(getComicYear());
-	return tab;
-    }
-
-    private VerticalLayout getTrainingTab() {
-	VerticalLayout tab = new VerticalLayout();
-	//tab.addComponent(tf2);
-	tab.setCaption("Training");
-	tab.addComponent(getTrainingYear());
-	return tab;
-    }
-
     private Button getLogoutButton() {
         Button button = new Button("Logout");
         button.addClickListener(new Button.ClickListener() {
@@ -418,7 +345,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Index filesystem new items");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		ControlService maininst = new ControlService();
 		try {
 		    maininst.filesystemlucenenew();
 		    Notification.show("Request sent");
@@ -434,7 +361,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Filesystem add new");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		ControlService maininst = new ControlService();
 		try {
 		    maininst.traverse();
 		    Notification.show("Request sent");
@@ -450,7 +377,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Index non-indexed items");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		ControlService maininst = new ControlService();
 		try {
 		    maininst.index(null, false);
 		    Notification.show("Request sent");
@@ -466,7 +393,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Memory usage");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		ControlService maininst = new ControlService();
 		 maininst.memoryusage();
 		 Notification.show("Request sent");
             }
@@ -478,7 +405,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Get not yet indexed");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		ControlService maininst = new ControlService();
 		try {
 		    maininst.notindexed();
 		    Notification.show("Request sent");
@@ -494,7 +421,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Overlapping");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		ControlService maininst = new ControlService();
 		maininst.overlapping();
 		Notification.show("Request sent");
             }
@@ -511,7 +438,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.filesystemlucenenew(value, false);
 			Notification.show("Request sent");
@@ -534,7 +461,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.traverse(value);
 			Notification.show("Request sent");
@@ -557,7 +484,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.index(value, false);
 			Notification.show("Request sent");
@@ -628,7 +555,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.index(value, true);
 			Notification.show("Request sent");
@@ -659,7 +586,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    Date date = (Date) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    long time = date.getTime();
 		    try {
 			maininst.reindexdatelower("" + time, true);
@@ -691,7 +618,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    Date date = (Date) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    long time = date.getTime();
 		    try {
 			maininst.reindexdatehigher("" + time, true);
@@ -715,7 +642,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.index(value);
 			Notification.show("Request sent");
@@ -738,7 +665,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.filesystemlucenenew(value, true);
 			Notification.show("Request sent");
@@ -761,7 +688,7 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.dbindex(value);
 			Notification.show("Request sent");
@@ -784,34 +711,13 @@ public class MyVaadinUI extends UI
 		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+		    ControlService maininst = new ControlService();
 		    try {
 			maininst.dbsearch(value);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	tf.setImmediate(true);
-	return tf;
-    }
-
-    private TextField getMiscSearch(final String type) {
-	TextField tf = new TextField("Search " + type);
-
-	// Handle changes in the value
-	tf.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-		    List<ResultItem> strarr = maininst.searchme(type, value);
-		    VerticalLayout result = getResultTemplate();
-		    addListTable(result, strarr);
-		    setContent(result);
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
@@ -828,100 +734,14 @@ public class MyVaadinUI extends UI
  		    // Assuming that the value type is a String
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
-		    roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-		    maininst.searchme2(value, "" + type);
+		    SearchService maininst = new SearchService();
+		    maininst.searchme(value, "" + type);
 		    Notification.show("Request sent");
 		}
 	    });
 	// Fire value changes immediately when the field loses focus
 	tf.setImmediate(true);
 	return tf;
-    }
-
-    private ListSelect getMiscCreator(String type) {
-	ListSelect ls = getMiscYearOrCreator(type, "creator");
-	ls.setWidth("80%");
-	return ls;
-    }
-
-    private ListSelect getMiscYear(String type) {
-	return getMiscYearOrCreator(type, "year");
-    }
-
-    private ListSelect getMiscYearOrCreator(final String type, final String yc) {
-	ListSelect ls = new ListSelect("Search " + type + " " + yc);
-	// Add some items (here by the item ID as the caption)
-	final roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
-	if (yc.equals("year")) {
-	    ls.addItems(maininst.getYears(type));
-	    ls.setWidth("200");
-	} else {
-	    ls.addItems(maininst.getCreators(type));
-	    ls.setWidth("400");
-	}
-	ls.setNullSelectionAllowed(false);
-	// Show 5 items and a scrollbar if there are more
-	ls.setRows(5);
-
-	// Handle changes in the value
-	ls.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    List<roart.beans.session.misc.Unit> myunits = null;
-		    if (yc.equals("year")) {
-			myunits = maininst.searchyear(type, value);
-		    } else {
-			myunits = maininst.searchcreator(type, value);
-		    }
-		    Integer count = new Integer (0);
-		    Float price = new Float (0);
-		    Table table = new Table(type);
-		    table.setWidth("90%");
-		    table.addContainerProperty("Date", String.class, null);
-		    table.addContainerProperty("Count", String.class, null);
-		    table.addContainerProperty("Type", String.class, null);
-		    table.addContainerProperty("Price", String.class, null);
-		    table.addContainerProperty("Creator", String.class, null);
-		    table.addContainerProperty("Title", String.class, null);
-		    if (type.startsWith("book")) {
-			table.addContainerProperty("Isbn 1", Link.class, null);
-			table.addContainerProperty("Isbn 2", Link.class, null);
-			table.addContainerProperty("Isbn 3", Link.class, null);
-			table.addContainerProperty("Isbn 4", Link.class, null);
-		    }
-		    for (int i=0; i<myunits.size(); i++) {
-			count += new Integer(myunits.get(i).getCount());
-			if (!myunits.get(i).getPrice().substring(0,1).equals("D") && !myunits.get(i).getPrice().substring(0,1).equals("L") && !myunits.get(i).getPrice().substring(0,1).equals("g") ) {
-			    price += new Float(myunits.get(i).getPrice());
-			}
-			String isbn = myunits.get(i).getIsbn();
-			String str = "";
-			Link link1 = null, link2 = null, link3 = null, link4 = null;
-			Object[] row;
-			if (isbn != null && !isbn.equals("0")) {
-			    link1 = new Link("US " + isbn, new ExternalResource("http://www.lookupbyisbn.com/Search/Book/" + isbn + "/1"));
-			    link2 = new Link("US " + isbn, new ExternalResource("http://www.bookfinder.com/search/?st=sr&ac=qr&isbn=" + isbn));
-			    link3 = new Link("SE " + isbn, new ExternalResource("http://libris.kb.se/hitlist?d=libris&q=numm%3a" + isbn));
-			    link4 = new Link("G " + isbn, new ExternalResource("https://www.google.com/search?q=isbn%2b%2b" + isbn));
-			    row = new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle(), link1, link2, link3, link4};
-			} else {
-			    row = new Object[]{myunits.get(i).getDate(), myunits.get(i).getCount(), myunits.get(i).getType(), myunits.get(i).getPrice(), myunits.get(i).getCreator(), myunits.get(i).getTitle()};
-			}
-
-			table.addItem(row, i);
-		    }
-		    //table.setPageLength(table.size());
-		    VerticalLayout result = getResultTemplate();
-		    result.addComponent(table);
-		    result.addComponent(new Label("Size count price " + myunits.size() + " " + count + " " + price));
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	ls.setImmediate(true);
-	return ls;
     }
 
     void addListTable(VerticalLayout ts, List<ResultItem> strarr) {
@@ -976,221 +796,6 @@ public Object generateCell(Table source, Object itemId,
 	    String str = strarr.get(i);
 	    ts.addComponent(new Label(str));
 	}
-    }
-
-    private ListSelect getComicTitles() {
-	final ListSelect ls = new ListSelect("Search titles");
-	// Add some items (here by the item ID as the caption)
-	roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-        ls.addItems(maininst.getTitles("comic"));
-	ls.setNullSelectionAllowed(false);
-	// Show 5 items and a scrollbar if there are more
-	ls.setRows(5);
-
-	// Handle changes in the value
-	ls.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    int pos = -1;
-		    int j = -1;
-		    for (Object o : ls.getItemIds()) {
-			j = j + 1;
-			if(ls.isSelected(o)) {
-			    if (pos < 0) {
-				pos = j;
-			    } else {
-				log.error("double pos");
-			    }
-			}
-		    }
-		    roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-		    List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic", pos);
-		    VerticalLayout result = getResultTemplate();
-		    addListComic(result, myunits);
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	ls.setImmediate(true);
-	return ls;
-    }
-
-    private ListSelect getComicLetters() {
-	ListSelect ls = new ListSelect("Search letters");
-	// Add some items (here by the item ID as the caption)
-	roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-	String[] items2 = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
-        ls.addItems(items2);
-	ls.setNullSelectionAllowed(false);
-	// Show 5 items and a scrollbar if there are more
-	ls.setRows(5);
-
-	// Handle changes in the value
-	ls.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    String letter = value;
-		    roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-		    List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic", letter);
-		    VerticalLayout result = getResultTemplate();
-		    addListComic(result, myunits);
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	ls.setImmediate(true);
-	return ls;
-    }
-
-    private ListSelect getComicYear() {
-	ListSelect ls = new ListSelect("Search years");
-	// Add some items (here by the item ID as the caption)
-	roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-	ls.addItems(maininst.getYears("com"));
-	ls.setNullSelectionAllowed(false);
-	// Show 5 items and a scrollbar if there are more
-	ls.setRows(5);
-
-	// Handle changes in the value
-	ls.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-		    Table table = new Table("Comics year 20" + value);
-		    int count = 0;
-		    int sum = 0;
-		    String year = value;
-		    TreeMap<String, Integer> mysums = new TreeMap<String, Integer>();
-		    List<UnitBuy> myunits = maininst.searchyear(mysums, "com", year);
-
-		    for (int i=0; i<myunits.size(); i++) {
-			UnitBuy myunit = myunits.get(i);
-			//String strcount = myunit.getCount();
-			int prc = ((new Integer(myunit.getPriceInt())).intValue());
-			sum += prc;
-			table.addItem(new Object[]{myunits.get(i).getDate(), myunits.get(i).getPrice(), myunits.get(i).getData1() , ":", myunits.get(i).getData2()}, i);
-			
-		    }
-		    //table.setPageLength(myunits.size());
-		    VerticalLayout result = getResultTemplate();
-		    result.addComponent(table);
-		    for (String key : mysums.keySet()) {
-			Integer i = mysums.get(key);
-			count += i.intValue();
-			result.addComponent(new Label("key " + key + " " + i.intValue()));
-		    }
-		    result.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	ls.setImmediate(true);
-	return ls;
-    }
-
-    private Button getComicAll() {
-        Button button = new Button("Get all comics");
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-		roart.beans.session.comic.Main maininst = new roart.beans.session.comic.Main();
-		List<roart.beans.session.comic.Unit> myunits = maininst.searchtitle("comic");
-                VerticalLayout result = getResultTemplate();
-                addListComic(result, myunits);
-                setContent(result);
-            }
-        });
-	return button;
-    }
-
-    private TextField getComicSearch() {
-	TextField tf = new TextField("Search comics");
-
-	// Handle changes in the value
-	tf.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    VerticalLayout result = getResultTemplate();
-		    result.addComponent(new Label("unknown"));
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	tf.setImmediate(true);
-	return tf;
-    }
-
-    void addListComic(VerticalLayout ts, List<roart.beans.session.comic.Unit> myunits) {
-	//Table table = new Table(type);
-	int count = 0;
-        int sum = 0;
-	for (int i=0; i<myunits.size(); i++) {
-	    roart.beans.session.comic.Unit myunit = myunits.get(i);
-	    String strcount = myunit.getCount();
-	    int cnt = ((new Integer(strcount)).intValue());
-	    int prc = ((new Integer(myunit.getPrice())).intValue());
-	    count += cnt;
-	    sum += cnt * prc;
-	    ts.addComponent(new Label(myunits.get(i).getTitle()));
-	    List<String> lines = myunits.get(i).getContent();
-	    for (int j=0; j<lines.size(); j++) {
-		ts.addComponent(new Label(lines.get(j)));
-	    }
-	    ts.addComponent(new Label(""));
-	}
-	ts.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
-	//table.setPageLength(myunits.size());
-	//miscTab.addComponent(table);
-	
-    }
-
-    private ListSelect getTrainingYear() {
-	ListSelect ls = new ListSelect("Training years");
-	// Add some items (here by the item ID as the caption)
-	roart.beans.session.training.Main maininst = new roart.beans.session.training.Main();
-	ls.addItems(maininst.getYears("tren"));
-	ls.setNullSelectionAllowed(false);
-	// Show 5 items and a scrollbar if there are more
-	ls.setRows(5);
-
-	// Handle changes in the value
-	ls.addValueChangeListener(new Property.ValueChangeListener() {
-		public void valueChange(ValueChangeEvent event) {
-		    // Assuming that the value type is a String
-		    String value = (String) event.getProperty().getValue();
-		    // Do something with the value
-		    VerticalLayout result = getResultTemplate();
-		    roart.beans.session.training.Main maininst = new roart.beans.session.training.Main();
-		    int count = 0;
-		    int sum = 0;
-		    TreeMap<String, Integer> mysums = new TreeMap<String, Integer>();
-		    String type = "tren";
-		    String year = value;
-		    List<roart.beans.session.training.Unit> myunits = maininst.searchyear(mysums, type, year);
-
-		    for (int i=0; i<myunits.size(); i++) {
-			roart.beans.session.training.Unit myunit = myunits.get(i);
-			result.addComponent(new Label("t " + myunits.get(i).getDate() + " " + myunits.get(i).getData()));
-		    }
-		    for (String key : mysums.keySet()) {
-			Integer i = mysums.get(key);
-			count += i.intValue();
-			result.addComponent(new Label("key " + i.intValue()));
-		    }
-		    result.addComponent(new Label("size count sum " + myunits.size() + " " + count + " " + sum));
-		    setContent(result);
-		}
-	    });
-	// Fire value changes immediately when the field loses focus
-	ls.setImmediate(true);
-	return ls;
     }
 
     private VerticalLayout getResultTemplate() {

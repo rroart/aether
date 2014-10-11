@@ -17,11 +17,7 @@ public abstract class SearchJpa {
 
     public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index);
 
-    public abstract void indexme(String type);
-
-    public abstract ResultItem[] searchme(String type, String str);
-
-    public abstract ResultItem[] searchme2(String str, String searchtype, SearchDisplay display);
+    public abstract ResultItem[] searchme(String str, String searchtype, SearchDisplay display);
 
 }
 

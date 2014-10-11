@@ -41,18 +41,8 @@ public class SearchDao {
 	return searchJpa.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
-    public static void indexme(String type) {
-	searchJpa.indexme(type);
-    }
-
-    public static ResultItem[] searchme(String type, String str) {
-	return searchJpa.searchme(type, str);
-    }
-
-    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
-	String type = "all";
-	int stype = new Integer(searchtype).intValue();
-	return searchJpa.searchme2(str, searchtype, display);
+    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
+	return searchJpa.searchme(str, searchtype, display);
     }
 
     public static ResultItem[] searchsimilar(String md5i) {

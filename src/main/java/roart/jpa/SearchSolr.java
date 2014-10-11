@@ -32,7 +32,6 @@ import roart.model.ResultItem;
 import roart.model.IndexFiles;
 import roart.dao.IndexFilesDao;
 
-import roart.dir.Traverse;
 
 public class SearchSolr {
     private static Log log = LogFactory.getLog("SearchSolr");
@@ -69,7 +68,6 @@ public class SearchSolr {
     public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
 	int retsize = 0;
 	// this to a method
-	String strLine = null;
 	log.info("indexing " + md5);
 
 	String cat = classification;
@@ -113,19 +111,8 @@ public class SearchSolr {
 	return retsize;
     }
 
-    public static void indexme(String type) {
-    }
-
-    public static ResultItem[] searchme(String type, String str) {
+    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 	ResultItem[] strarr = new ResultItem[0];
-	System.out.println("searchme");
-	return strarr;
-    }
-
-    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
-	ResultItem[] strarr = new ResultItem[0];
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 
@@ -146,7 +133,7 @@ public class SearchSolr {
 	    
 	    //List<Item> beans = rsp.getBeans(Item.class);
 	    strarr = new ResultItem[docs.size() + 1];
-	    strarr[0] = Traverse.getHeaderSearch(display);
+	    strarr[0] = IndexFiles.getHeaderSearch(display);
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
 		i++;
@@ -156,30 +143,8 @@ public class SearchSolr {
 		String lang = (String) d.getFieldValue(Constants.LANG);
 		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
 		String filename = indexmd5.getFilelocation();
-		String title = md5 + " " + filename;
-		if (lang != null) {
-		    title = title + " (" + lang + ") ";
-		}
-		String timestamp = null;
-		String convertsw = null;
-		String converttime = null;
-		if (indexmd5 != null) {
-		    timestamp = indexmd5.getTimestamp();
-		    if (timestamp != null) {
-			Long l = new Long(timestamp);
-			Date date = new Date(l.longValue());
-			title = title + " (" + date.toString() + ") ";
-			timestamp = date.toString();
-		    }
-		    convertsw = indexmd5.getConvertsw();
-		    if (convertsw != null) {
-			title = title + " (" + convertsw + " " + indexmd5.getConverttime("%.2f") + "s) ";
-		    }
-		    converttime = indexmd5.getConverttime("%.2f");
-		}
-		log.info((i + 1) + ". " + title + ": "
-			 + score);
-		strarr[i + 1] = Traverse.getSearchResultItem(indexmd5, lang, score, display);
+		log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
+		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, display);
 	    }
 	} catch (SolrServerException e) {
 	    log.error("Exception", e);

@@ -16,7 +16,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     private static final Logger log = LoggerFactory.getLogger(StartupListener.class);
 
     public void contextInitialized(ServletContextEvent context)  {
-	roart.beans.session.control.Main.parseconfig();
+	roart.service.ControlService.parseconfig();
 	String myindex = roart.util.Prop.getProp().getProperty("index");
 	if (myindex.equals("solr")) {
 	    new roart.jpa.SearchSolr();
@@ -50,7 +50,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
         roart.jpa.SearchLucene.indexme("book0");
 	*/
 
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	maininst.startThreads();
 
 	System.out.println("config done");

@@ -3,7 +3,7 @@ package roart.queue;
 import java.util.List;
 
 import roart.model.IndexFiles;
-import roart.model.ResultItem;;
+import roart.model.ResultItem;
 
 import org.apache.tika.metadata.Metadata;
 

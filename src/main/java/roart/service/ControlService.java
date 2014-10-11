@@ -1,4 +1,4 @@
-package roart.beans.session.control;
+package roart.service;
 
 import roart.model.ResultItem;
 
@@ -42,7 +42,7 @@ import roart.dao.IndexFilesDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class Main {
+public class ControlService {
     private Log log = LogFactory.getLog(this.getClass());
 
     // called from ui
@@ -288,11 +288,11 @@ public class Main {
 	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retList = new ArrayList<ResultItem>();
-	retList.add(Traverse.getHeader());
+	retList.add(IndexFiles.getHeader());
 	List<ResultItem> retTikaTimeoutList = new ArrayList<ResultItem>();
 	retTikaTimeoutList.add(new ResultItem("Tika timeout"));
 	List<ResultItem> retNotList = new ArrayList<ResultItem>();
-	retNotList.add(Traverse.getHeader());
+	retNotList.add(IndexFiles.getHeader());
 	List<ResultItem> retNewFilesList = new ArrayList<ResultItem>();
 	retNewFilesList.add(new ResultItem("New file"));
 	List<ResultItem> retDeletedList = new ArrayList<ResultItem>();
@@ -601,7 +601,7 @@ public class Main {
 
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
-	indexList.add(Traverse.getHeader());
+	indexList.add(IndexFiles.getHeader());
 	List<ResultItem> indexfilesList = new ArrayList<ResultItem>();
 	indexfilesList.add(new ResultItem("Files"));
 	List<ResultItem> filesList = new ArrayList<ResultItem>();
@@ -609,7 +609,7 @@ public class Main {
 
 	IndexFiles index = IndexFilesDao.getByMd5(md5);
 	if (index != null) {
-	    indexList.add(Traverse.getResultItem(index, "n/a"));
+	    indexList.add(IndexFiles.getResultItem(index, "n/a"));
 	    Set<String> files = index.getFilenames();
 	    if (files != null) {
 		for (String filename : files) {
@@ -653,7 +653,7 @@ public class Main {
 	String field = searchexpr.substring(0, i);
 	String text = searchexpr.substring(i + 1);
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
-	indexList.add(Traverse.getHeader());
+	indexList.add(IndexFiles.getHeader());
 
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	for (IndexFiles index : indexes) {
@@ -700,7 +700,7 @@ public class Main {
 		}
 	    }
 	    if (match) {
-		indexList.add(Traverse.getResultItem(index, "n/a"));
+		indexList.add(IndexFiles.getResultItem(index, "n/a"));
 	    }
 	}
 

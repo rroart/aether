@@ -19,18 +19,10 @@ public class LuceneSearchJpa extends SearchJpa {
 	return SearchLucene.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
-    public void indexme(String type) {
-	SearchLucene.indexme(type);
-    }
-
-    public ResultItem[] searchme(String type, String str) {
-	return SearchLucene.searchme(type, str);
-    }
-
-    public ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
+    public ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-	return SearchLucene.searchme2(str, searchtype, display);
+	return SearchLucene.searchme(str, searchtype, display);
     }
 
     public ResultItem[] searchsimilar(String md5i) {

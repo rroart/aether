@@ -14,7 +14,6 @@ import roart.dao.ClassifyDao;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.model.ResultItem;
-import roart.model.SearchDisplay;
 import roart.lang.*;
 
 import org.apache.commons.logging.Log;
@@ -353,7 +352,6 @@ public class Traverse {
 	    index.setTimeoutreason("");
 	    index.setFailedreason("");
 	    index.setNoindexreason("");
-	    int size = 0;
 	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, retlistnot, new Metadata());
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, filename, md5, index, retlist);
@@ -362,7 +360,7 @@ public class Traverse {
     public static List<ResultItem> notindexed() throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	ResultItem ri = new ResultItem();
-	retlist.add(getHeader());
+	retlist.add(IndexFiles.getHeader());
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
 	Map<String, String> filesMapMd5 = new HashMap<String, String>();
@@ -392,7 +390,7 @@ public class Traverse {
 		    }
 		}
 	    }
-	    ri = getResultItem(index, "n/a");
+	    ri = IndexFiles.getResultItem(index, "n/a");
 	    retlist.add(ri);
 	}
 	return retlist;
@@ -455,7 +453,6 @@ public class Traverse {
 	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
 	    size = ((ByteArrayOutputStream)outputStream).size();
 	    log.info("size1 " + size);
-	    BufferedInputStream bis = new BufferedInputStream(inputStream);
 
 	    long time = System.currentTimeMillis() - now;
 	    el.index.setConverttime(time);
@@ -495,30 +492,8 @@ public class Traverse {
 	    	    Queues.otherQueue.add(el);
 	    	} else {
 		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-		    String myclassify = roart.util.Prop.getProp().getProperty("classify");
-		    boolean doclassify = myclassify != null && myclassify.length() > 0;
-		    ResultItem ri = getResultItem(el.index, "n/a");
+		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
 		    ri.get().set(2, dbfilename);
-		    /*
-		    ri.add("too small");
-		    ri.add(md5);
-		    ri.add(dbfilename);
-		    ri.add("n/a");
-		    if (doclassify) {
-			ri.add(el.index.getClassification());
-		    }
-		    ri.add(el.index.getTimestampDate().toString());
-		    ri.add(el.index.getConvertsw());
-		    ri.add(el.index.getConverttime("%.2f"));
-		    ri.add(el.index.getTimeindex("%.2f"));
-		    if (doclassify) {
-			ri.add(el.index.getTimeclass("%.2f"));
-		    }
-		    ri.add("" + el.index.getFailed());
-		    ri.add(el.index.getFailedreason());
-		    ri.add(el.index.getTimeoutreason());
-		    ri.add(el.index.getNoindexreason());
-		    */
 		    retlistnot.add(ri);
 		    Boolean isIndexed = index.getIndexed();
 		    if (isIndexed == null || isIndexed.booleanValue() == false) {
@@ -581,118 +556,6 @@ public class Traverse {
 	    log.error("Exception", e);
 	    return null;
 	}
-    }
-
-    public static ResultItem getHeader() {
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-
-    ResultItem ri = new ResultItem();
-    ri.add("Indexed");
-    ri.add("Md5/Id");
-    ri.add("Filename");
-    ri.add("Lang");
-    if (doclassify) {
-	ri.add("Classification");
-    }
-    ri.add("Timestamp");
-    ri.add("Convertsw");
-    ri.add("Converttime");
-    ri.add("Indextime");
-    if (doclassify) {
-	ri.add("Classificationtime");
-    }
-    ri.add("Failed");
-    ri.add("Failed reason");
-    ri.add("Timeout reason");
-    ri.add("No indexing reason");
-    ri.add("Filenames");
-    return ri;
-    }
-    
-    public static ResultItem getHeaderSearch(SearchDisplay display) {
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
-
-    ResultItem ri = new ResultItem();
-    ri.add("Score");
-    ri.add("Md5/Id");
-    ri.add("Filename");
-    ri.add("Lang");
-    if (doclassify) {
-	ri.add("Classification");
-    }
-    ri.add("Timestamp");
-    if (admin) {
-    ri.add("Convertsw");
-    ri.add("Converttime");
-    ri.add("Indextime");
-    if (doclassify) {
-	ri.add("Classificationtime");
-    }
-    ri.add("Failed");
-    ri.add("Failed reason");
-    ri.add("Timeout reason");
-    ri.add("No indexing reason");
-    ri.add("Filenames");
-    }
-    return ri;
-    }
-
-    public static ResultItem getResultItem(IndexFiles index, String lang) {
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-
-	ResultItem ri = new ResultItem();
-	ri.add("" + index.getIndexed());
-	ri.add(index.getMd5());
-	ri.add(getExistingFile(index));
-	ri.add(lang);
-	if (doclassify) {
-	    ri.add(index.getClassification());
-	}
-	ri.add(index.getTimestampDate().toString());
-	ri.add(index.getConvertsw());
-	ri.add(index.getConverttime("%.2f"));
-	ri.add(index.getTimeindex("%.2f"));
-	if (doclassify) {
-	    ri.add(index.getTimeclass("%.2f"));
-	}
-	ri.add("" + index.getFailed());
-	ri.add(index.getFailedreason());
-	ri.add(index.getTimeoutreason());
-	ri.add(index.getNoindexreason());
-	ri.add("" + index.getFilelocations().size());
-	return ri;
-    }
-
-    public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, SearchDisplay display) {
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
-
-	ResultItem ri = new ResultItem();
-	ri.add("" + score);
-	ri.add(index.getMd5());
-	ri.add(getExistingFile(index));
-	ri.add(lang);
-	if (doclassify) {
-	    ri.add(index.getClassification());
-	}
-	ri.add(index.getTimestampDate().toString());
-	if (admin) {
-	ri.add(index.getConvertsw());
-	ri.add(index.getConverttime("%.2f"));
-	ri.add(index.getTimeindex("%.2f"));
-	if (doclassify) {
-	    ri.add(index.getTimeclass("%.2f"));
-	}
-	ri.add("" + index.getFailed());
-	ri.add(index.getFailedreason());
-	ri.add(index.getTimeoutreason());
-	ri.add(index.getNoindexreason());
-	ri.add("" + index.getFilelocations().size());
-	}
-	return ri;
     }
 
     public static String getExistingFile(IndexFiles i) {

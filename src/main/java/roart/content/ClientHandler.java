@@ -73,16 +73,16 @@ public class ClientHandler {
     }
 
     private static List search(ClientQueueElement el) {
-	roart.beans.session.misc.Main maininst = new roart.beans.session.misc.Main();
+	roart.service.SearchService maininst = new roart.service.SearchService();
 	try {
-	    return maininst.searchme2Do(el);
+	    return maininst.searchmeDo(el);
 	} catch (Exception e) {
 	    return null;
 	}
     }
 
     private static List client(ClientQueueElement el) {
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.clientDo(el);
 	} catch (Exception e) {
@@ -92,7 +92,7 @@ public class ClientHandler {
     }
 
     private static List notindexed() {
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.notindexedDo();
 	} catch (Exception e) {
@@ -102,7 +102,7 @@ public class ClientHandler {
     }
 
     private static List overlapping() {
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.overlappingDo();
 	} catch (Exception e) {
@@ -112,7 +112,7 @@ public class ClientHandler {
     }
 
     private static List memoryusage() {
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.memoryusageDo();
 	} catch (Exception e) {
@@ -122,7 +122,7 @@ public class ClientHandler {
     }
 
     private static List dbindex(ClientQueueElement el) {
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.dbindexDo(el);
 	} catch (Exception e) {
@@ -131,7 +131,7 @@ public class ClientHandler {
     }
 
     private static List dbsearch(ClientQueueElement el) {
-	roart.beans.session.control.Main maininst = new roart.beans.session.control.Main();
+	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.dbsearchDo(el);
 	} catch (Exception e) {

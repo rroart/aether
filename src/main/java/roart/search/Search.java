@@ -10,7 +10,6 @@ import roart.model.SearchDisplay;
 
 import roart.dao.SearchDao;
 
-import roart.dir.Traverse;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -57,9 +56,7 @@ public class Search {
 
     if (retsize < 0) {
 	//dbindex.setNoindexreason("Exception"); // later, propagate the exception
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-	ResultItem ri = Traverse.getResultItem(el.index, "n/a");
+	ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
 	ri.get().set(2, dbfilename);
 	retlistnot.add(ri);
     } else {
@@ -74,10 +71,7 @@ public class Search {
 	dbindex.setTimeindex(time);
 	log.info("timerStop filename " + time);
 
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-
-	ResultItem ri = Traverse.getResultItem(el.index, lang);
+	ResultItem ri = IndexFiles.getResultItem(el.index, lang);
 	ri.get().set(2, dbfilename);
 	retlist.add(ri);
     try {
@@ -91,28 +85,15 @@ public class Search {
     
 	}
 
-    public static void indexme(String type) {
-	SearchDao.indexme(type);
-    }
-
-    public static ResultItem[] searchme(String type, String str) {
-		ResultItem[] strarr = new ResultItem[0];
-		strarr = SearchDao.searchme(type, str);
-    return strarr;
-}
-
-    public static ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
-	String type = "all";
-	int stype = new Integer(searchtype).intValue();
+    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 		ResultItem[] strarr = new ResultItem[0];
 		
-		strarr = SearchDao.searchme2(str, searchtype, display);
+		strarr = SearchDao.searchme(str, searchtype, display);
     return strarr;
 }
 
     // not yet usable, lacking termvector
     public static ResultItem[] searchsimilar(String md5i) {
-	String type = "all";
 		ResultItem[] strarr = new ResultItem[0];
     return strarr;
 }

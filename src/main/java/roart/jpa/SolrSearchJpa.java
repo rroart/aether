@@ -19,18 +19,10 @@ public class SolrSearchJpa extends SearchJpa {
 	return SearchSolr.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
-    public void indexme(String type) {
-	SearchSolr.indexme(type);
-    }
-
-    public ResultItem[] searchme(String type, String str) {
-	return SearchSolr.searchme(type, str);
-    }
-
-    public ResultItem[] searchme2(String str, String searchtype, SearchDisplay display) {
+    public ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
-	return SearchSolr.searchme2(str, searchtype, display);
+	return SearchSolr.searchme(str, searchtype, display);
     }
 
     public ResultItem[] searchsimilar(String md5i) {
