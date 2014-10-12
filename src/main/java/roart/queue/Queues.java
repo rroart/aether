@@ -80,7 +80,7 @@ public class Queues {
     }
     
    public static String webstat() {
-       return "t " + tikaQueue.size() + " / " + tikas + "<br/>o " + otherQueue.size() + " / " + others + "<br/>i " + indexQueue.size() + " / " + indexs;
+       return "t " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
     }
 
    public static String stat() {
