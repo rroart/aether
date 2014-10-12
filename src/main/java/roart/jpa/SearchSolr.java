@@ -66,7 +66,7 @@ public class SearchSolr {
     }
 
     public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
-	int retsize = 0;
+	int retsize = content.length();
 	// this to a method
 	log.info("indexing " + md5);
 
