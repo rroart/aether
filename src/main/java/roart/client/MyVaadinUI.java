@@ -54,6 +54,7 @@ import com.vaadin.annotations.Push;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.shared.ui.label.ContentMode;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -173,7 +174,7 @@ public class MyVaadinUI extends UI
 	topLine.setHeight("10%");
 	topLine.setWidth("100%");	
 	boolean doauthenticate = (boolean) getSession().getAttribute("authenticate");
-	statLabel = new Label();
+	statLabel = new Label("", ContentMode.PREFORMATTED);
 	statLabel.setWidth("50%");
 	topLine.addComponent(statLabel);
 	if (doauthenticate) {
