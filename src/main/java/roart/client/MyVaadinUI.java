@@ -137,11 +137,11 @@ public class MyVaadinUI extends UI
 	if ("admin".equals(getSession().getAttribute("user"))) {
 	    cpTab.setVisible(true);
 	    statLabel.setVisible(true);
-	    ClientRunner.uiset.add(this);
+	    ClientRunner.uiset.putIfAbsent(this, "value");
 	} else {
 	    cpTab.setVisible(false);
 	    statLabel.setVisible(false);
-	    ClientRunner.uiset.remove(this);
+	    ClientRunner.uiset.remove(this, "value");
 	}
 	VerticalLayout sTab = (VerticalLayout) getSession().getAttribute("search");
 	if (!"none".equals(getSession().getAttribute("user"))) {

@@ -17,6 +17,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +33,7 @@ public class ClientRunner implements Runnable {
 	
     private static Log log = LogFactory.getLog("ClientRunner");
 
-    public static Set<UI> uiset = new HashSet<UI>();
+    public static ConcurrentMap<UI, String> uiset = new ConcurrentHashMap<UI, String>();
 	
     int update = 60;
     static long lastupdate = 0;
@@ -43,7 +45,7 @@ public class ClientRunner implements Runnable {
     	while (true) {
 	    final long now = System.currentTimeMillis();
 	    if ((now - lastupdate) >= update * 1000) {
-		for (final UI ui : uiset) {
+		for (final UI ui : uiset.keySet()) {
 		    try {
 			ui.access(new Runnable() {
 				@Override
@@ -53,7 +55,7 @@ public class ClientRunner implements Runnable {
 			    });
 		    } catch (UIDetachedException e) {
 			log.error("UIDetachedException", e);
-			uiset.remove(ui);
+			uiset.remove(ui, "value");
 		    } catch (Exception e) {
 			log.error("Exception", e);
 		    }
@@ -125,7 +127,7 @@ public class ClientRunner implements Runnable {
     }
 
     public static void notify(final String text) {
-	for (final UI ui : uiset) {
+	for (final UI ui : uiset.keySet()) {
 	    try {
 		ui.access(new Runnable() {
 			@Override
@@ -135,7 +137,7 @@ public class ClientRunner implements Runnable {
 		    });
 	    } catch (UIDetachedException e) {
 		log.error("UIDetachedException", e);
-		uiset.remove(ui);
+		uiset.remove(ui, "value");
 	    } catch (Exception e) {
 		log.error("Exception", e);
 	    }
