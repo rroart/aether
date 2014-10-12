@@ -87,10 +87,16 @@ mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 (was: mahoutdocumentfrequencypath=.../mahout/dataset-vectors/frequency.file-0)
 
+Training could be based on the Bayes part of 
+examples/bin/classify-20newsgroups.sh in the Mahout distribution.
+
 2.2.2.2 OpenNLP
 OpenNLP relevant settings:
 classify=opennlp
 opennlpmodelpath=.../opennlp/en-doccat.bin
+
+Training is standard, done with ./bin/opennlp DoccatTrainer in the
+OpenNLP distribution.
 
 3. GUI
 
@@ -122,10 +128,3 @@ Stats, listing non-indexed, memory usage or overlapping directories.
 
 Database, get items related to md5 id.
 Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason.
-
-9999 Not here anymore
-personal:
-datadir=.../data/
-homedir=...
-Don't show everything to all
-showsecret=1

@@ -6,5 +6,7 @@ synonyms
 indexing exception instead of -1
 list vs [], need only one
 clean old myweb
+create lucene if not exist
+handle delete move
 host prop and location for 0.2
 #package lang profiles
