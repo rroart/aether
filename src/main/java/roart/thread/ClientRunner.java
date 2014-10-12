@@ -50,7 +50,7 @@ public class ClientRunner implements Runnable {
 			ui.access(new Runnable() {
 				@Override
 				public void run() {
-				    ((roart.client.MyVaadinUI) ui).statLabel.setValue(Queues.stat());
+				    ((roart.client.MyVaadinUI) ui).statLabel.setValue(Queues.webstat());
 				}
 			    });
 		    } catch (UIDetachedException e) {

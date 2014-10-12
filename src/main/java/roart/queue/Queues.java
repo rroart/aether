@@ -79,6 +79,10 @@ public class Queues {
 	return otherQueue.size() >= limit;
     }
     
+   public static String webstat() {
+       return "t " + tikaQueue.size() + " / " + tikas + "<br/>o " + otherQueue.size() + " / " + others + "<br/>i " + indexQueue.size() + " / " + indexs;
+    }
+
    public static String stat() {
        return "t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
     }
