@@ -3,14 +3,12 @@ package roart.dir;
 import java.util.Map;
 import java.io.*;
 import roart.content.*;
-import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.queue.ClientQueueElement;
 import roart.search.*;
 import roart.thread.TikaRunner;
 import roart.dao.IndexFilesDao;
-import roart.dao.ClassifyDao;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.model.ResultItem;
@@ -421,141 +419,6 @@ public class Traverse {
 	    }
 	}
 	return retlist;
-    }
-
-    //private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
-    public static void doTika(TikaQueueElement el) {
-    	/*
-	TikaQueueElement el = Queues.tikaQueue.poll();
-	if (el == null) {
-		log.error("empty queue");
-	    return;
-	}
-	*/
-	// vulnerable spot
-	//Queues.incTikas();
-	//Queues.tikaRunQueue.add(el);
-	long now = System.currentTimeMillis();
-	try {
-	String dbfilename = el.dbfilename;
-	String filename = el.filename;
-	String md5 = el.md5;
-	IndexFiles index = el.index;
-	List<ResultItem> retlist = el.retlist;
-	List<ResultItem> retlistnot = el.retlistnot;
-	Metadata metadata = el.metadata;
-	log.info("incTikas " + dbfilename);
-	Queues.tikaTimeoutQueue.add(dbfilename);
-	int size = 0;
-	try {
-	    TikaHandler tika = new TikaHandler();
-	    OutputStream outputStream = tika.process(filename, metadata, index);
-	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
-	    size = ((ByteArrayOutputStream)outputStream).size();
-	    log.info("size1 " + size);
-
-	    long time = System.currentTimeMillis() - now;
-	    el.index.setConverttime(time);
-	    log.info("timerStop filename " + time);
-	    //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
-	    int limit = mylimit(dbfilename);
-	    if (size > limit) {
-		log.info("sizes " + size + " " + limit);
-		log.info("handling filename " + dbfilename + " " + size + " : " + time);
-
-		String content = getString(inputStream);
-
-		String lang = LanguageDetect.detect(content);
-		if (lang != null && lang.equals("en")) {
-		    now = System.currentTimeMillis();
-		    String classification = ClassifyDao.classify(content);
-		    time = System.currentTimeMillis() - now;
-		    log.info("classtime " + time);
-		    //System.out.println("classtime " + time);
-		    el.index.setTimeclass(time);
-		    el.index.setClassification(classification);
-		}
-
-		//size = SearchLucene.indexme("all", md5, inputStream);
-		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata);
-		elem.lang = lang;
-		elem.content = content;
-		if (el.convertsw != null) {
-		    elem.convertsw = el.convertsw;
-		} else {
-		    elem.convertsw = "tika";
-		}
-		Queues.indexQueue.add(elem);
-	    } else {
-	    	if (dbfilename.equals(filename)) {
-	    	    el.size = size;
-	    	    Queues.otherQueue.add(el);
-	    	} else {
-		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
-		    ri.get().set(2, dbfilename);
-		    retlistnot.add(ri);
-		    Boolean isIndexed = index.getIndexed();
-		    if (isIndexed == null || isIndexed.booleanValue() == false) {
-			index.incrFailed();
-			//index.save();
-		    }
-	    	}
-	    }   
-	    outputStream.close();
-	} catch (Exception e) {
-	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
-	    log.error("Exception", e);
-	} finally {
-	    //stream.close();            // close the stream
-	}
-	//Queues.decTikas();
-	//Queues.tikaRunQueue.remove(el);
-	
-	boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
-	if (!success) {
-		log.error("queue not having " + dbfilename);
-	}
-	} catch (Exception e) {
-		log.error("Exception", e);
-	}
-	finally {
-		log.info("ending " + el.dbfilename);
-	}
-    }
-
-    private static int mylimit(String filename) {
-	String lowercase = filename.toLowerCase();
-	if (lowercase.endsWith(".pdf")) {
-	    return 4096;
-	}
-	if (lowercase.endsWith(".djvu") || lowercase.endsWith(".djv")) {
-	    return 4096;
-	}
-	if (lowercase.endsWith(".mp3")) {
-	    return 16;
-	}
-	if (lowercase.endsWith(".flac")) {
-	    return 16;
-	}
-	return 4096;
-    }
-
-    private static String getString(InputStream inputStream) {
-	try {
-	    DataInputStream in = new DataInputStream(inputStream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	    String line = null;
-    // index some data
-	    StringBuilder result = new StringBuilder();
-	    while ((line = br.readLine()) != null) {
-		result.append(line);
-	    }
-	    return  result.toString();
-	} catch (Exception e) {
-	    log.error("Exception", e);
-	    return null;
-	}
     }
 
     public static String getExistingFile(IndexFiles i) {
