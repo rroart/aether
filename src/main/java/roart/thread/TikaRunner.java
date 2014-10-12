@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import roart.dir.Traverse;
+import roart.content.TikaHandler;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 
@@ -166,7 +166,7 @@ public class TikaRunner implements Runnable {
 	   
     	public void run() {
     		try {
-    			Traverse.doTika(el);
+    			new TikaHandler().doTika(el);
     		} catch (Exception e) {
     			log.error("Exception", e);
     		}
@@ -224,7 +224,7 @@ public class TikaRunner implements Runnable {
             	    return null;
             	}
             	*/
-             Traverse.doTika(null); // CHECK fix if changes
+             new TikaHandler().doTika(null); // CHECK fix if changes
                 return null;
             }
         };

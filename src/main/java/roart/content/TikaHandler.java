@@ -1,10 +1,17 @@
 package roart.content;
 
+import roart.dao.ClassifyDao;
+import roart.lang.LanguageDetect;
 import roart.model.IndexFiles;
+import roart.model.ResultItem;
+import roart.queue.IndexQueueElement;
+import roart.queue.Queues;
+import roart.queue.TikaQueueElement;
 
 import java.io.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 import java.net.URL;
 
@@ -48,7 +55,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TikaHandler {
-    private Log log = LogFactory.getLog(this.getClass());
+    private Log log = LogFactory.getLog("TikaHandler");
 
     private class NoDocumentMetHandler extends DefaultHandler{
 
@@ -140,22 +147,16 @@ public class TikaHandler {
      */
     private String encoding = null;
 
-    private boolean pipeMode = true;
-
-    private boolean serverMode = false;
-
     private boolean fork = false;
 
-    private String profileName = null;
-
-    private boolean prettyPrint;
-
-    public void TikaHandler() throws Exception {
+    /*
+    public TikaHandler() throws Exception {
         context = new ParseContext();
         detector = new DefaultDetector();
         parser = new AutoDetectParser(detector);
         context.set(Parser.class, parser);
     }
+    */
 
     public ByteArrayOutputStream process(String filename, Metadata metadata, IndexFiles index) throws Exception {
 	//TikaHandler();
@@ -164,7 +165,6 @@ public class TikaHandler {
         parser = new AutoDetectParser(detector);
         context.set(Parser.class, parser);
 
-	pipeMode = false;
 	/*
 	if (filename.endsWith(".MP3") || filename.endsWith(".mp3") || filename.endsWith(".flac") || filename.endsWith("Improve Your Confidence An.pdf") || filename.endsWith("EdgarCayceReadings.chm")) {
 		log.error("manual mp3 skip " + filename);
@@ -194,7 +194,7 @@ public class TikaHandler {
 	return output;
     }
 
-    private static Writer getOutputWriter(OutputStream output, String encoding)
+	private Writer getOutputWriter(OutputStream output, String encoding)
 	throws UnsupportedEncodingException {
         if (encoding != null) {
             return new OutputStreamWriter(output, encoding);
@@ -206,5 +206,139 @@ public class TikaHandler {
             return new OutputStreamWriter(output);
         }
     }
+
+    //private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
+	public void doTika(TikaQueueElement el) {
+		/*
+	TikaQueueElement el = Queues.tikaQueue.poll();
+	if (el == null) {
+		log.error("empty queue");
+	    return;
+	}
+	*/
+	// vulnerable spot
+	//Queues.incTikas();
+	//Queues.tikaRunQueue.add(el);
+	long now = System.currentTimeMillis();
+	try {
+	String dbfilename = el.dbfilename;
+	String filename = el.filename;
+	String md5 = el.md5;
+	IndexFiles index = el.index;
+	List<ResultItem> retlist = el.retlist;
+	List<ResultItem> retlistnot = el.retlistnot;
+	Metadata metadata = el.metadata;
+	log.info("incTikas " + dbfilename);
+	Queues.tikaTimeoutQueue.add(dbfilename);
+	int size = 0;
+	try {
+	    OutputStream outputStream = process(filename, metadata, index);
+	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
+	    size = ((ByteArrayOutputStream)outputStream).size();
+	    log.info("size1 " + size);
+	
+	    long time = System.currentTimeMillis() - now;
+	    el.index.setConverttime(time);
+	    log.info("timerStop filename " + time);
+	    //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
+	    int limit = mylimit(dbfilename);
+	    if (size > limit) {
+		log.info("sizes " + size + " " + limit);
+		log.info("handling filename " + dbfilename + " " + size + " : " + time);
+	
+		String content = getString(inputStream);
+	
+		String lang = LanguageDetect.detect(content);
+		if (lang != null && lang.equals("en")) {
+		    now = System.currentTimeMillis();
+		    String classification = ClassifyDao.classify(content);
+		    time = System.currentTimeMillis() - now;
+		    log.info("classtime " + time);
+		    //System.out.println("classtime " + time);
+		    el.index.setTimeclass(time);
+		    el.index.setClassification(classification);
+		}
+	
+		//size = SearchLucene.indexme("all", md5, inputStream);
+		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata);
+		elem.lang = lang;
+		elem.content = content;
+		if (el.convertsw != null) {
+		    elem.convertsw = el.convertsw;
+		} else {
+		    elem.convertsw = "tika";
+		}
+		Queues.indexQueue.add(elem);
+	    } else {
+	    	if (dbfilename.equals(filename)) {
+	    	    el.size = size;
+	    	    Queues.otherQueue.add(el);
+	    	} else {
+		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
+		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
+		    ri.get().set(2, dbfilename);
+		    retlistnot.add(ri);
+		    Boolean isIndexed = index.getIndexed();
+		    if (isIndexed == null || isIndexed.booleanValue() == false) {
+			index.incrFailed();
+			//index.save();
+		    }
+	    	}
+	    }   
+	    outputStream.close();
+	} catch (Exception e) {
+	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
+	    log.error("Exception", e);
+	} finally {
+	    //stream.close();            // close the stream
+	}
+	//Queues.decTikas();
+	//Queues.tikaRunQueue.remove(el);
+	
+	boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
+	if (!success) {
+		log.error("queue not having " + dbfilename);
+	}
+	} catch (Exception e) {
+		log.error("Exception", e);
+	}
+	finally {
+		log.info("ending " + el.dbfilename);
+	}
+	}
+
+	public int mylimit(String filename) {
+	String lowercase = filename.toLowerCase();
+	if (lowercase.endsWith(".pdf")) {
+	    return 4096;
+	}
+	if (lowercase.endsWith(".djvu") || lowercase.endsWith(".djv")) {
+	    return 4096;
+	}
+	if (lowercase.endsWith(".mp3")) {
+	    return 16;
+	}
+	if (lowercase.endsWith(".flac")) {
+	    return 16;
+	}
+	return 4096;
+	}
+
+	private String getString(InputStream inputStream) {
+	try {
+	    DataInputStream in = new DataInputStream(inputStream);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    String line = null;
+	// index some data
+	    StringBuilder result = new StringBuilder();
+	    while ((line = br.readLine()) != null) {
+		result.append(line);
+	    }
+	    return  result.toString();
+	} catch (Exception e) {
+	    log.error("Exception", e);
+	    return null;
+	}
+	}
 
 }
