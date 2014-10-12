@@ -110,7 +110,7 @@ public class TikaRunner implements Runnable {
     		executorService.purge();
     		log.info("active 1 " + executorService.getActiveCount());
     		}
-   		if (Queues.tikaQueue.isEmpty()) {
+   		if (Queues.tikaQueue.isEmpty() || Queues.otherQueueHeavyLoaded() || Queues.indexQueueHeavyLoaded()) {
     			try {
     				TimeUnit.SECONDS.sleep(1);
     			} catch (InterruptedException e) {

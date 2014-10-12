@@ -22,7 +22,7 @@ public class OtherRunner implements Runnable {
 	
     public void run() {
     	while (true) {
-    		if (Queues.otherQueue.isEmpty()) {
+	    if (Queues.otherQueue.isEmpty() || Queues.indexQueueHeavyLoaded()) {
     			try {	
     				TimeUnit.SECONDS.sleep(1);
     			} catch (InterruptedException e) {

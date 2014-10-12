@@ -11,11 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 public class Queues {
 	
 	private static Log log = LogFactory.getLog("Queues");
 	
+    static int limit = 100;
+
     //public static Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
 
     public static Queue<TikaQueueElement> tikaQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
@@ -64,6 +65,18 @@ public class Queues {
    
     public static void incClients() {
     	clients.incrementAndGet();
+    }
+
+    public static boolean tikaQueueHeavyLoaded() {
+	return tikaQueue.size() >= limit;
+    }
+    
+    public static boolean indexQueueHeavyLoaded() {
+	return indexQueue.size() >= limit;
+    }
+    
+    public static boolean otherQueueHeavyLoaded() {
+	return otherQueue.size() >= limit;
     }
     
    public static String stat() {
