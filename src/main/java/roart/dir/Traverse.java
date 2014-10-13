@@ -120,6 +120,9 @@ public class Traverse {
 	return retset;
     }
 
+    // retset will be returned empty
+    // dirset will contain a map of directories, and the md5 files is contains
+    // fileset will contain a map of md5 and the directories it has files in
     public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
 	Set<String> retset = new HashSet<String>();
 
