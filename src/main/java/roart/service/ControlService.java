@@ -78,9 +78,15 @@ public class ControlService {
     static String[] dirlist = null;
     static String[] dirlistnot = null;
 
+    static public String nodename = "localhost";
+    
     public static void parseconfig() {
 	System.out.println("config2 parsed");
 	//log.info("config2 parsed");
+	String nodename  = roart.util.Prop.getProp().getProperty("nodename");
+	if (nodename == null) {
+		nodename = "localhost";
+	}
 	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
 	String dirlistnotstr = roart.util.Prop.getProp().getProperty("dirlistnot");
 	dirlist = dirliststr.split(",");
