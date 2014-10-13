@@ -765,7 +765,7 @@ public class MyVaadinUI extends UI
 	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
 	}
 	if (dodownload) {
-	    if (columns >= 2 && strarr.get(0).get().get(2).equals("Filename")) {
+	    if (columns >= 3 && strarr.get(0).get().get(2).equals("Filename")) {
 		table.addGeneratedColumn("Download", new ColumnGenerator() {
 @Override
 public Object generateCell(Table source, Object itemId,
