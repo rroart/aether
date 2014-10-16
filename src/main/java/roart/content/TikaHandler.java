@@ -176,6 +176,11 @@ public class TikaHandler {
 	URL url = null;
 	if (file.isFile()) {
 	    url = file.toURI().toURL();
+	    index.setFailedreason(index.getFailedreason() + "tika url null ");
+	}
+	if (url == null) {
+	    log.error("tika url null for " + filename);
+	    return null;
 	}
 	InputStream input = TikaInputStream.get(url, metadata);
 	//PipedInputStream  writeIn = new PipedInputStream();
