@@ -19,6 +19,10 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     public void contextInitialized(ServletContextEvent context)  {
 	roart.service.ControlService.parseconfig();
 	
+	String myfs = roart.util.Prop.getProp().getProperty("fs");
+	if (myfs == null) {
+	    myfs = "local";
+	}
 	new HDFS();
 	new roart.jpa.LocalFileSystemJpa();
 	String myindex = roart.util.Prop.getProp().getProperty("index");
@@ -38,7 +42,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	if (myclassify != null && myclassify.equals("opennlp")) {
 	    new roart.jpa.OpennlpClassify();
 	}
-	roart.dao.FileSystemDao.instance("");
+	roart.dao.FileSystemDao.instance(myfs);
 	roart.dao.SearchDao.instance(myindex);
 	roart.dao.IndexFilesDao.instance(mydb);
 	roart.dao.ClassifyDao.instance(myclassify);

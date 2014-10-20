@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import roart.jpa.FileSystemJpa;
+import roart.jpa.HDFSJpa;
 import roart.jpa.LocalFileSystemJpa;
 import roart.model.FileObject;
 
@@ -13,8 +14,11 @@ public class FileSystemDao {
 
     public static void instance(String type) {
         if (filesystemJpa == null) {
-            if (true) {
+            if (type.equals("local")) {
                 filesystemJpa = new LocalFileSystemJpa();
+            }
+            if (type.equals("hadoop")) {
+                filesystemJpa = new HDFSJpa();
             }
         }
     }

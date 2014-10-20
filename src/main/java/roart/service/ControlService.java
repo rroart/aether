@@ -759,19 +759,47 @@ public class ControlService {
     private static TikaRunner tikaRunnable = null;
     public static Thread tikaWorker = null;
     private static IndexRunner indexRunnable = null;
-    private static Thread indexWorker = null;
+    public static Thread indexWorker = null;
     private static OtherRunner otherRunnable = null;
-    private static Thread otherWorker = null;
+    public static Thread otherWorker = null;
     private static ClientRunner clientRunnable = null;
-    private static Thread clientWorker = null;
+    public static Thread clientWorker = null;
     private static DbRunner dbRunnable = null;
-    private static Thread dbWorker = null;
+    public static Thread dbWorker = null;
     private static ControlRunner controlRunnable = null;
     private static Thread controlWorker = null;
 
     public void startThreads() {
     	if (tikaRunnable == null) {
-	    String timeoutstr = roart.util.Prop.getProp().getProperty("tikatimeout");
+	    startTikaWorker();
+    	}
+    	if (indexRunnable == null) {
+    	startIndexWorker();
+    	}
+    	if (otherRunnable == null) {
+	    startOtherWorker();
+    	}
+    	if (clientRunnable == null) {
+    	startClientWorker();
+    	}
+    	if (dbRunnable == null) {
+    	startDbWorker();
+    	}
+    	if (controlRunnable == null) {
+    	startControlWorker();
+    	}
+    }
+
+	private void startControlWorker() {
+		controlRunnable = new ControlRunner();
+    	controlWorker = new Thread(controlRunnable);
+    	controlWorker.setName("ControlWorker");
+    	controlWorker.start();
+    	log.info("starting control worker");
+	}
+
+	public void startTikaWorker() {
+		String timeoutstr = roart.util.Prop.getProp().getProperty("tikatimeout");
 	    int timeout = new Integer(timeoutstr).intValue();
 	    TikaRunner.timeout = timeout;
 
@@ -779,15 +807,19 @@ public class ControlService {
     	tikaWorker = new Thread(tikaRunnable);
     	tikaWorker.setName("TikaWorker");
     	tikaWorker.start();
-    	}
-    	if (indexRunnable == null) {
-    	indexRunnable = new IndexRunner();
+    	log.info("starting tika worker");
+	}
+
+	public void startIndexWorker() {
+		indexRunnable = new IndexRunner();
     	indexWorker = new Thread(indexRunnable);
     	indexWorker.setName("IndexWorker");
     	indexWorker.start();
-    	}
-    	if (otherRunnable == null) {
-	    String timeoutstr = roart.util.Prop.getProp().getProperty("othertimeout");
+    	log.info("starting index worker");
+	}
+
+	public void startOtherWorker() {
+		String timeoutstr = roart.util.Prop.getProp().getProperty("othertimeout");
 	    int timeout = new Integer(timeoutstr).intValue();
 	    OtherHandler.timeout = timeout;
 
@@ -795,26 +827,24 @@ public class ControlService {
     	otherWorker = new Thread(otherRunnable);
     	otherWorker.setName("OtherWorker");
     	otherWorker.start();
-    	}
-    	if (clientRunnable == null) {
-    	clientRunnable = new ClientRunner();
+    	log.info("starting other worker");
+	}
+
+	public void startClientWorker() {
+		clientRunnable = new ClientRunner();
     	clientWorker = new Thread(clientRunnable);
     	clientWorker.setName("ClientWorker");
     	clientWorker.start();
-    	}
-    	if (dbRunnable == null) {
-    	dbRunnable = new DbRunner();
+    	log.info("starting client worker");
+	}
+
+	public void startDbWorker() {
+		dbRunnable = new DbRunner();
     	dbWorker = new Thread(dbRunnable);
     	dbWorker.setName("DbWorker");
     	dbWorker.start();
-    	}
-    	if (controlRunnable == null) {
-    	controlRunnable = new ControlRunner();
-    	controlWorker = new Thread(controlRunnable);
-    	controlWorker.setName("ControlWorker");
-    	controlWorker.start();
-    	}
-    }
+    	log.info("starting db worker");
+	}
 
     private List<List> mergeListSet(Set<List> listSet, int size) {
 	List<List> retlistlist = new ArrayList<List>();

@@ -68,6 +68,8 @@ public class MahoutClassify {
 	    bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
+	    String fsdefaultname = roart.util.Prop.getProp().getProperty("mahoutconffs");
+	    configuration.set("fs.default.name", fsdefaultname);
 	    NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
 	    
 	    if ("cbayes".equals(bayestype)) {

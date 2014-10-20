@@ -69,6 +69,12 @@ and change for the following field:
 2.2 Non-mandatory
 
 2.2.1 General
+Which type of file system
+fs=local (default)
+
+With fs=hadoop, also set
+hdfsconffs=hadoop uri (sets fs.default.name)
+
 Where to log
 logdir=...
 
@@ -90,6 +96,7 @@ mahoutlabelindexfilepath=.../mahout/labelindex
 mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 (was: mahoutdocumentfrequencypath=.../mahout/dataset-vectors/frequency.file-0)
+mahaoutconffs=hadoop uri (sets fs.default.name)
 
 Training could be based on the Bayes part of 
 examples/bin/classify-20newsgroups.sh in the Mahout distribution.

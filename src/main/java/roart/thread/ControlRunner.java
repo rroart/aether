@@ -26,8 +26,21 @@ public class ControlRunner implements Runnable {
     				// TODO Auto-generated catch block
     				log.error("Exception", e);
     			}
-    			if (ControlService.tikaWorker.isAlive()) {
-    				
+    			ControlService cs = new ControlService();
+    			if (!ControlService.tikaWorker.isAlive()) {
+    				cs.startTikaWorker();
+    			}
+    			if (!ControlService.indexWorker.isAlive()) {
+    				cs.startIndexWorker();
+    			}
+    			if (!ControlService.otherWorker.isAlive()) {
+    				cs.startOtherWorker();
+    			}
+    			if (!ControlService.dbWorker.isAlive()) {
+    				cs.startDbWorker();
+    			}
+    			if (!ControlService.clientWorker.isAlive()) {
+    				cs.startClientWorker();
     			}
      	}
     }
