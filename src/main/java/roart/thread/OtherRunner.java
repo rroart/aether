@@ -32,7 +32,11 @@ public class OtherRunner implements Runnable {
     			continue;
     		}
     		Queues.queueStat();
-    		OtherHandler.doOther();    	
+		try {
+		    OtherHandler.doOther();    	
+		} catch (Exception e) {
+		    log.error("Exception", e);
+		}
      	}
     }
 

@@ -32,7 +32,11 @@ public class IndexRunner implements Runnable {
     			continue;
     		}
     		Queues.queueStat();
-    		Search.indexme();
+		try {
+		    Search.indexme();
+		} catch (Exception e) {
+		    log.error("Exception", e);
+		}
     	}
     }
 

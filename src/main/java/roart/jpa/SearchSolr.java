@@ -107,6 +107,10 @@ public class SearchSolr {
 	    log.error("Exception", e);
 	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
+	} catch (Exception e) {
+	    log.error("Exception", e);
+	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
+	    return -1;
 	}
 	return retsize;
     }
