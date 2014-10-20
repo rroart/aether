@@ -12,8 +12,12 @@ Configure aether.prop:
 2.1 Mandatory configuration.
 2.1.1 General
 Which directories to include, and subdirectories to exclude.
-dirlist=/home/roart/usr/music,/home/roart/usr/video,/home/roart/usr/abook,/home/roart/usr/books
-dirlistnot=/home/roart/usr/music/tmp,/home/roart/usr/music/tmp_any2dvd,/home/roart/usr/video/tmp,/home/roart/usr/abook/tmp,/home/roart/usr/books/tmp,/home/roart/usr/books/tmp2
+dirlist=/home/dir/dir1,/home/dir/dir2...
+dirlistnot=/home/dir/dir1/tmp
+
+Name of the node.
+Nodename=...
+(But if db is hibernate, it is localhost anyway).
 
 How many to max reindex each turn, or 0 for no limit.
 reindexlimit=10000
