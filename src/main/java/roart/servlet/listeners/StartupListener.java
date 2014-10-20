@@ -1,5 +1,6 @@
 package roart.servlet.listeners;
 
+import roart.jpa.HDFS;
 import roart.lang.LanguageDetect;
 
 import java.io.IOException;
@@ -17,6 +18,9 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 
     public void contextInitialized(ServletContextEvent context)  {
 	roart.service.ControlService.parseconfig();
+	
+	new HDFS();
+	new roart.jpa.LocalFileSystemJpa();
 	String myindex = roart.util.Prop.getProp().getProperty("index");
 	if (myindex.equals("solr")) {
 	    new roart.jpa.SearchSolr();
@@ -24,6 +28,8 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	String mydb = roart.util.Prop.getProp().getProperty("db");
 	if (mydb.equals("hbase")) {
 	    new roart.model.HbaseIndexFiles();
+	} else {
+		roart.service.ControlService.nodename = "localhost"; // force this
 	}
 	String myclassify = roart.util.Prop.getProp().getProperty("classify");
 	if (myclassify != null && myclassify.equals("mahout")) {
@@ -32,6 +38,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	if (myclassify != null && myclassify.equals("opennlp")) {
 	    new roart.jpa.OpennlpClassify();
 	}
+	roart.dao.FileSystemDao.instance("");
 	roart.dao.SearchDao.instance(myindex);
 	roart.dao.IndexFilesDao.instance(mydb);
 	roart.dao.ClassifyDao.instance(myclassify);

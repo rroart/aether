@@ -308,6 +308,7 @@ public class IndexFiles {
 	ResultItem ri = new ResultItem();
 	ri.add("Indexed");
 	ri.add("Md5/Id");
+	ri.add("Node");
 	ri.add("Filename");
 	ri.add("Lang");
 	if (doclassify) {
@@ -335,6 +336,7 @@ public class IndexFiles {
 	ResultItem ri = new ResultItem();
 	ri.add("Score");
 	ri.add("Md5/Id");
+	ri.add("Node");
 	ri.add("Filename");
 	ri.add("Lang");
 	if (doclassify) {
@@ -364,7 +366,11 @@ public class IndexFiles {
 	ResultItem ri = new ResultItem();
 	ri.add("" + score);
 	ri.add(index.getMd5());
-	ri.add(Traverse.getExistingFile(index));
+	FileLocation fl = Traverse.getExistingLocalFilelocationMaybe(index);
+	String nodename = fl.getNodeNoLocalhost();
+	String filename = fl.getFilename();
+	ri.add(nodename);
+	ri.add(filename);
 	ri.add(lang);
 	if (doclassify) {
 	    ri.add(index.getClassification());
@@ -393,7 +399,11 @@ public class IndexFiles {
 	ResultItem ri = new ResultItem();
 	ri.add("" + index.getIndexed());
 	ri.add(index.getMd5());
-	ri.add(Traverse.getExistingFile(index));
+	FileLocation fl = Traverse.getExistingLocalFilelocationMaybe(index);
+	String nodename = fl.getNodeNoLocalhost();
+	String filename = fl.getFilename();
+	ri.add(nodename);
+	ri.add(filename);
 	ri.add(lang);
 	if (doclassify) {
 	    ri.add(index.getClassification());

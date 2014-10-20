@@ -11,6 +11,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import roart.service.ControlService;
+
 public class FileLocation {
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -18,11 +20,15 @@ public class FileLocation {
 	private String filename;
 
     public FileLocation(String node, String filename) {
+	if (node == null) {
+	    node = "localhost";
+	}
 	this.node = node;
 	this.filename = filename;
     }
 
     public FileLocation(String filename) {
+	this.node = "localhost";
 	this.filename = filename;
     }
 
@@ -46,7 +52,32 @@ public class FileLocation {
 	if (node == null) {
 	    return filename;
 	}
+	return "file://" + node + "/" + filename;
+    }
+
+    public String toPrintString() {
+	if (node == null) {
+	    return filename;
+	}
 	return node + ":" + filename;
     }
 
+    public String getNodeNoLocalhost() {
+    	String node = getNode();
+    	if (node != null && node.equals("localhost")) {
+    		return null;
+    	}
+    return node;
+}
+
+    public boolean isLocal() {
+    	if (node == null) {
+    		return true;
+    	}
+    	if (node.equals("localhost")) {
+    		return true;
+    	}
+    	return ControlService.nodename.equals(node);
+    }
+    
 }

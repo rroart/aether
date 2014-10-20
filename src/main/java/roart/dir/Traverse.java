@@ -1,18 +1,19 @@
 package roart.dir;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Map;
-import java.io.*;
-import roart.content.*;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.queue.ClientQueueElement;
-import roart.search.*;
+import roart.service.ControlService;
 import roart.thread.TikaRunner;
+import roart.dao.FileSystemDao;
 import roart.dao.IndexFilesDao;
+import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.model.ResultItem;
-import roart.lang.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,29 +47,29 @@ public class Traverse {
 	return false;
     }
 
-    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, boolean newmd5, boolean nomd5) throws Exception {
+    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, Set<String> notfoundset, boolean newmd5, boolean nomd5) throws Exception {
 	Set<String> retset = new HashSet<String>();
 	if (indirlistnot(dirname, dirlistnot)) {
 	    return retset;
 	}
 	HashSet<String> md5set = new HashSet<String>();
-	File dir = new File(dirname);
-	File listDir[] = dir.listFiles();
+	FileObject dir = FileSystemDao.get(dirname);
+	List<FileObject> listDir = FileSystemDao.listFiles(dir);
 	//log.info("dir " + dirname);
 	//log.info("listDir " + listDir.length);
 	if (listDir == null) {
 	    return retset;
 	}
-	for (int i = 0; i < listDir.length; i++) {
-	    String filename = listDir[i].getAbsolutePath();
+	for (FileObject fo : listDir) {
+	    String filename = FileSystemDao.getAbsolutePath(fo);
 	    if (filename.length() > MAXFILE) {
 		log.info("Too large filesize " + filename);
 		continue;
 	    }
 	    //log.info("file " + filename);
-	    if (listDir[i].isDirectory()) {
+	    if (FileSystemDao.isDirectory(fo)) {
 		//log.info("isdir " + filename);
-		retset.addAll(doList(filename, newindexset, newset, dirset, dirlistnot, newmd5, nomd5));
+		retset.addAll(doList(filename, newindexset, newset, dirset, dirlistnot, notfoundset, newmd5, nomd5));
 	    } else {
 		//log.info("retset " + filename);
 		retset.add(filename);
@@ -88,7 +89,7 @@ public class Traverse {
 		if (nomd5 == false) {
 		if (newmd5 == true || curMd5 == null) {
 		    try {
-			FileInputStream fis = new FileInputStream( new File(filename));
+			InputStream fis = FileSystemDao.getInputStream(fo);
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
 			IndexFiles files = null;
 			if (files == null) {
@@ -106,6 +107,9 @@ public class Traverse {
 				newindexset.add(files);
 			    }
 			}
+			} catch (FileNotFoundException e) {
+				log.error("Exception", e);
+				notfoundset.add(filename);
 		    } catch (Exception e) {
 			log.info("Error: " + e.getMessage());
 			log.error("Exception", e);
@@ -131,8 +135,9 @@ public class Traverse {
 	for (IndexFiles file : files) {
 	    String md5 = file.getMd5();
 	    for (FileLocation filename : file.getFilelocations()) {
-		File tmpfile = new File(filename.getFilename());
-		String dirname = tmpfile.getParent();
+		FileObject tmpfile = FileSystemDao.get(filename.getFilename());
+		FileObject dir = FileSystemDao.getParent(tmpfile);
+		String dirname = FileSystemDao.getAbsolutePath(dir);
 		HashSet<String> md5set = dirset.get(dirname);
 		if (md5set == null) {
 		    md5set = new HashSet<String>();
@@ -159,16 +164,16 @@ public class Traverse {
 	long size = 0;
 	Set<String> retset = new HashSet<String>();
 	HashSet<String> md5set = new HashSet<String>();
-	File dir = new File(dirname);
-	File listDir[] = dir.listFiles();
-	for (int i = 0; i < listDir.length; i++) {
-	    String filename = listDir[i].getAbsolutePath();
+	FileObject dir = FileSystemDao.get(dirname);
+	List<FileObject> listDir = FileSystemDao.listFiles(dir);
+	for (FileObject fo : listDir) {
+	    String filename = FileSystemDao.getAbsolutePath(fo);
 	    if (filename.length() > MAXFILE) {
 		log.info("Too large filesize " + filename);
 		error = true;
 		continue;
 	    }
-	    if (listDir[i].isDirectory()) {
+	    if (FileSystemDao.isDirectory(fo)) {
 		retset.addAll(dupdir(filename));
 	    } else {
 		if (error) {
@@ -188,7 +193,7 @@ public class Traverse {
 		    onlyone = true;
 		}
 		count++;
-		size+=new File(filename).length();
+		//size+=new File(filename).length();
 	    }
 	}
 	if (!error && !onlyone && count>0) {
@@ -199,7 +204,11 @@ public class Traverse {
 
     public static int indexnoFilter(ClientQueueElement el, IndexFiles index, boolean reindex, Set<IndexFiles> toindexset, Set<String> fileset, Set<String> md5set) throws Exception {
 	String md5 = index.getMd5();
-	String filename = getExistingFile(index);
+	String filename = getExistingLocalFile(index);
+    if (filename == null) {
+    	log.error("filename should not be null " + md5);
+    	return 0;
+    }
 	if (filename != null) {
 	    toindexset.add(index);
 	    md5set.add(md5);
@@ -211,22 +220,23 @@ public class Traverse {
 
     public static int reindexsuffixFilter(ClientQueueElement el, IndexFiles index, String suffix, Set<IndexFiles> toindexset, Set<String> fileset, Set<String> md5set) throws Exception {
 	String md5 = index.getMd5();
-	for (FileLocation filename : index.getFilelocations()) {
-	    if (suffix != null && !filename.getFilename().endsWith(suffix)) {
+	for (FileLocation fl : index.getFilelocations()) {
+	    if (suffix != null && !fl.isLocal() && !fl.getFilename().endsWith(suffix)) {
 		continue;
 	    }
-	    File file = new File(filename.toString());
-	    if (!file.exists()) {
+	    FileObject file = FileSystemDao.get(fl.toString());
+	    if (!FileSystemDao.exists(file)) {
 		continue;
 	    }
 	    toindexset.add(index);
 	    md5set.add(md5);
-	    fileset.add(filename.toString());
+	    fileset.add(fl.toString());
 	    return 1;
 	}
 	return 0;
     }
 
+    // outdated. delete soon
     public static List<List> indexnot(String add, boolean reindex) throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
@@ -236,27 +246,27 @@ public class Traverse {
         int max = new Integer(maxStr).intValue();
 	Set<String> md5set = new HashSet<String>();
 	String dirname = add;
-	File dir = new File(dirname);
-	if (!dir.exists()) {
+	FileObject dir = FileSystemDao.get(dirname);
+	if (!FileSystemDao.exists(dir)) {
 	    retlist2.add(new ResultItem("File " + add + " does not exist"));
 	    retlistlist.add(retlist);
 	    retlistlist.add(retlist2);
 	    retlistlist.add(retlistnot);
 	    return retlistlist;
 	}
-	File listDir[];
-	if (dir.isDirectory()) {
-	    listDir = dir.listFiles();
+	List<FileObject> listDir;
+	if (FileSystemDao.isDirectory(dir)) {
+	    listDir = FileSystemDao.listFiles(dir);
 	} else {
-	    listDir = new File[1];
-	    listDir[0] = dir;
+	    listDir = new ArrayList<FileObject>();
+	    listDir.add(dir);
 	}
 	//log.info("dir " + dirname);
-	log.info("listDir " + listDir.length);
-	for (int i = 0; i < listDir.length; i++) {
-	    String filename = listDir[i].getAbsolutePath();
+	log.info("listDir " + listDir.size());
+	for (int i = 0; i < listDir.size(); i++) {
+	    String filename = FileSystemDao.getAbsolutePath(listDir.get(i));
 	    log.info("file " + filename);
-	    if (listDir[i].isDirectory()) {
+	    if (FileSystemDao.isDirectory(listDir.get(i))) {
 		//log.info("isdir " + filename);
 		List<List> retlistlist2 = indexnot(filename, reindex);
 		retlist.addAll(retlistlist2.get(0));
@@ -318,7 +328,7 @@ public class Traverse {
 	    }
 	}
 	String md5 = index.getMd5();
-	String filename = getExistingFile(index);
+	String filename = getExistingLocalFile(index);
 
 	if (filename == null) {
 	    log.error("md5 filename null " + md5);
@@ -364,32 +374,10 @@ public class Traverse {
 	retlist.add(IndexFiles.getHeader());
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
-	Map<String, String> filesMapMd5 = new HashMap<String, String>();
-	Map<String, String> filesMapFilename = new HashMap<String, String>();
 	for (IndexFiles index : indexes) {
-	    String md5 = index.getMd5();
-	    filesMapMd5.put(md5, index.getFilename());
 	    Boolean indexed = index.getIndexed();
 	    if (indexed != null && indexed.booleanValue() == true) {
 		continue;
-	    }
-	    String afilename = null;
-	    for (FileLocation filename : index.getFilelocations()) {
-		afilename = filename.getFilename();
-		if (true) {
-		    break;
-		}
-		filesMapFilename.put(filename.toString(), md5);
-		if (indexed != null) {
-		    if (!indexed.booleanValue()) {
-			String name = filename.toString();
-			if (name != null) {
-			    name = name.replace('<',' ');
-			    name = name.replace('>',' ');
-			    //retlist.add(name);
-			}
-		    }
-		}
 	    }
 	    ri = IndexFiles.getResultItem(index, "n/a");
 	    retlist.add(ri);
@@ -401,42 +389,60 @@ public class Traverse {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
-	Map<String, String> filesMapMd5 = new HashMap<String, String>();
-	Map<String, String> filesMapFilename = new HashMap<String, String>();
 	for (IndexFiles index : indexes) {
-	    String md5 = index.getMd5();
-	    filesMapMd5.put(md5, index.getFilename());
 	    Boolean indexed = index.getIndexed();
 	    for (FileLocation filename : index.getFilelocations()) {
-		filesMapFilename.put(filename.toString(), md5);
-		if (indexed != null) {
-		    if (indexed.booleanValue()) {
-			String name = filename.toString();
-			if (name != null) {
-			    name = name.replace('<',' ');
-			    name = name.replace('>',' ');
-			    retlist.add(new ResultItem(name));
+	    	if (indexed != null) {
+	    		if (indexed.booleanValue()) {
+	    			retlist.add(IndexFiles.getResultItem(index, "n/a"));
+	    		}
 			}
-		    }
-		}
 	    }
 	}
 	return retlist;
     }
 
-    public static String getExistingFile(IndexFiles i) {
+    public static String getExistingLocalFile(IndexFiles i) {
+    	FileLocation fl = getExistingLocalFilelocation(i);
+    	if (fl != null) {
+    		return fl.getFilename();
+    	}
+    	return null;
+    }
+    
+    public static FileLocation getExistingLocalFilelocation(IndexFiles i) {
 	// next up : locations
-	Set<String> filenames = i.getFilenames();
-	if (filenames == null) {
-	    return null;
-	}
-	for (String filename : filenames) {
-	    File file = new File(filename);
-	    if (file.exists()) {
-		return filename;
-	    }
-	}
+    	Set<FileLocation> filelocations = i.getFilelocations();
+    	if (filelocations == null) {
+    		return null;
+    	}
+    	for (FileLocation filelocation : filelocations) {
+    		String node = filelocation.getNode();
+    		String filename = filelocation.getFilename();
+    		if (node == null || node.equals(ControlService.nodename)) {
+    			FileObject file = FileSystemDao.get(filename);
+    			if (FileSystemDao.exists(file)) {
+    				return filelocation;			
+    			}
+    		}
+    	}
 	return null;
+    }
+    
+    public static FileLocation getExistingLocalFilelocationMaybe(IndexFiles i) {
+	// next up : locations
+    	FileLocation fl = getExistingLocalFilelocation(i);
+    	if (fl != null) {
+    		return fl;
+    	}
+    	Set<FileLocation> filelocations = i.getFilelocations();
+    	if (filelocations == null || filelocations.size() == 0) {
+    		return null;
+    	}
+    	for (FileLocation filelocation : filelocations) {
+    		return filelocation;
+	    }
+    	return null;
     }
     
 }

@@ -28,6 +28,7 @@ import roart.queue.ClientQueueElement;
 import roart.model.FileLocation;
 import roart.model.IndexFiles;
 import roart.queue.Queues;
+import roart.thread.ControlRunner;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
@@ -54,10 +55,10 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList) throws Exception {
+    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = new HashSet<String>();
-	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, false, false);    
+	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, false, false);    
 	for (String s : filesetnew2) {
 	    retList.add(new ResultItem(s));
 	}
@@ -71,9 +72,9 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList) throws Exception {
+    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset) throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
-	retList.addAll(filesystem(newindexset, filesetnew, null));
+	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset));
 	return filesetnew;
     }
 
@@ -95,7 +96,7 @@ public class ControlService {
 	dirlistnot = dirlistnotstr.split(",");
     }
 
-    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset) {
+    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset) {
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 
 	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
@@ -115,7 +116,7 @@ public class ControlService {
 	    //Set<String> md5set = new HashSet<String>();
 
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, false, false);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, false, false);
 		filesetnew.addAll(filesetnew2);
 	    }
 	    //roart.model.HibernateUtil.currentSession().flush();
@@ -339,6 +340,7 @@ public class ControlService {
 	List<ResultItem> retNotExistList = new ArrayList<ResultItem>();
 	retNotExistList.add(new ResultItem("File does not exist"));
 
+	Set<String> notfoundset = new HashSet<String>();
 	Set<String> filesetnew = new HashSet<String>();
 	Set<IndexFiles> indexnewset = new HashSet<IndexFiles>();
 
@@ -356,9 +358,12 @@ public class ControlService {
 	DbRunner.doupdate = false;
 	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null && !reindex)) {
 	    if (filename != null) {
-		filesetnew = traverse(filename, indexnewset, retNewFilesList);
+		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset);
 	    } else {
-		filesetnew = traverse(indexnewset, retNewFilesList);
+		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset);
+	    }
+	    for (String file : notfoundset) {
+	    	retNotExistList.add(new ResultItem(file));
 	    }
 	    if (function.equals("filesystem")) {
 		IndexFilesDao.commit();
@@ -429,7 +434,11 @@ public class ControlService {
 	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
 	for (IndexFiles index : toindexset) {
 	    String md5 = index.getMd5();
-	    String name = Traverse.getExistingFile(index);
+	    String name = Traverse.getExistingLocalFile(index);
+	    if (name == null) {
+	    	log.error("filename should not be null " + md5);
+	    	continue;
+	    }
 	    filesMapMd5.put(md5, name);
 	    indexMap.put(md5, index.getIndexed());
 	}
@@ -649,10 +658,10 @@ public class ControlService {
 	IndexFiles index = IndexFilesDao.getByMd5(md5);
 	if (index != null) {
 	    indexList.add(IndexFiles.getResultItem(index, "n/a"));
-	    Set<String> files = index.getFilenames();
+	    Set<FileLocation> files = index.getFilelocations();
 	    if (files != null) {
-		for (String filename : files) {
-		    indexfilesList.add(new ResultItem(filename));
+		for (FileLocation filename : files) {
+		    indexfilesList.add(new ResultItem(filename.toString()));
 		}
 	    }
 	    Set<FileLocation> flSet = IndexFilesDao.getFilelocationsByMd5(md5);
@@ -661,7 +670,7 @@ public class ControlService {
 		    if (fl == null) {
 			filesList.add(new ResultItem(""));
 		    } else {
-			filesList.add(new ResultItem(fl.getFilename()));
+			filesList.add(new ResultItem(fl.toString()));
 		    }
 		}
 	    }
@@ -748,7 +757,7 @@ public class ControlService {
     }
 
     private static TikaRunner tikaRunnable = null;
-    private static Thread tikaWorker = null;
+    public static Thread tikaWorker = null;
     private static IndexRunner indexRunnable = null;
     private static Thread indexWorker = null;
     private static OtherRunner otherRunnable = null;
@@ -757,6 +766,8 @@ public class ControlService {
     private static Thread clientWorker = null;
     private static DbRunner dbRunnable = null;
     private static Thread dbWorker = null;
+    private static ControlRunner controlRunnable = null;
+    private static Thread controlWorker = null;
 
     public void startThreads() {
     	if (tikaRunnable == null) {
@@ -796,6 +807,12 @@ public class ControlService {
     	dbWorker = new Thread(dbRunnable);
     	dbWorker.setName("DbWorker");
     	dbWorker.start();
+    	}
+    	if (controlRunnable == null) {
+    	controlRunnable = new ControlRunner();
+    	controlWorker = new Thread(controlRunnable);
+    	controlWorker.setName("ControlWorker");
+    	controlWorker.start();
     	}
     }
 

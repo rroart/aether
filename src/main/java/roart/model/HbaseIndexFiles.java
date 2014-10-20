@@ -13,6 +13,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 //import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -158,12 +159,29 @@ public class HbaseIndexFiles {
 		String filename = getFile(file);
 		put.add(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
 	    }
-	    put(ifile.getMd5(), ifile.getFilelocations());
+	    
+	    put(ifile.getMd5(), ifile.getFilelocations());	    
 	    indexTable.put(put);
+
+	    Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
+	    curfls.removeAll(ifile.getFilelocations());
+
+	    for (FileLocation fl : curfls) {
+	    	String name = fl.getFilename();
+	    	log.info("Hbase delete " + name);
+	    	Delete d = new Delete(Bytes.toBytes(name));
+	    	//filesTable.delete(d);
+	    }
+	    
 	} catch (IOException e) {
+	    log.error("Exception", e);
+	} catch (Exception e) {
 	    log.error("Exception", e);
 	}
     }
+
+    // is this handling other nodes
+    // plus get set of existing, remove new from that, delete the rest.
 
     public static void put(String md5, Set<FileLocation> files) {
 	try {
