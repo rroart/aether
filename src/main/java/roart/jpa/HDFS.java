@@ -26,7 +26,9 @@ public class HDFS {
 	public HDFS() {
 		configuration = new Configuration();
 		String fsdefaultname = roart.util.Prop.getProp().getProperty("hdfsconffs");
-		configuration.set("fs.default.name", fsdefaultname);
+		if (fsdefaultname != null) {
+		    configuration.set("fs.default.name", fsdefaultname);
+		}
 	}
 	
 	public static List<FileObject> listFiles(FileObject f) {
