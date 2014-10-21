@@ -340,24 +340,17 @@ public class HbaseIndexFiles {
     }
 
     public static String getFile(FileLocation fl) {
-	String node = fl.getNode();
-	String file = fl.getFilename();
-	if (node != null && node.length() > 0) {
-	    file = "file://" + file + "/";
-	}
-	return file;
+    	if (fl == null) {
+    		return null;
+    	}
+    	return fl.toString();
     }
 
     public static FileLocation getFileLocation(String fl) {
-	String node = null;
-	String file = fl;
-	if (fl.startsWith("file://")) {
-	    file = file.substring(7);
-	    int split = file.indexOf("/");
-	    node = file.substring(0, split);
-	    file = file.substring(split + 1);
-	}
-        return new FileLocation(node, file);
+    	if (fl == null) {
+    		return null;
+    	}
+    	return new FileLocation(fl);
     }
 
     private static String convertNullNot(String s) {

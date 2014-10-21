@@ -28,8 +28,13 @@ public class FileLocation {
     }
 
     public FileLocation(String filename) {
-	this.node = "localhost";
-	this.filename = filename;
+    	String file = filename;
+    	if (filename.startsWith("file://")) {
+    	    file = file.substring(7);
+    	    int split = file.indexOf("/");
+    	    this.node = file.substring(0, split);
+    	    this.filename = file.substring(split + 1);
+    	}
     }
 
         public String getNode() {
@@ -49,7 +54,7 @@ public class FileLocation {
 	}
 
     public String toString() {
-	if (node == null) {
+	if (node == null || node.length() == 0) {
 	    return filename;
 	}
 	return "file://" + node + "/" + filename;
