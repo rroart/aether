@@ -33,8 +33,11 @@ public class FileLocation {
     	    file = file.substring(7);
     	    int split = file.indexOf("/");
     	    this.node = file.substring(0, split);
-    	    this.filename = file.substring(split + 1);
-    	}
+    	    this.filename = file.substring(split);
+    	} else {
+	    this.node = "localhost";
+	    this.filename = filename;
+	}
     }
 
         public String getNode() {
@@ -57,7 +60,7 @@ public class FileLocation {
 	if (node == null || node.length() == 0) {
 	    return filename;
 	}
-	return "file://" + node + "/" + filename;
+	return "file://" + node + filename;
     }
 
     public String toPrintString() {
