@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -222,10 +223,11 @@ public class HbaseIndexFiles {
 	List<Cell> list = index.listCells();
 	if (list != null) {
 	for (Cell kv : list) {
-	    byte[] family = kv.getFamilyArray();
+	    byte[] family = CellUtil.cloneFamily(kv);
 	    String fam = new String(family);
 	    if (fam.equals("fl")) {
-		String loc = Bytes.toString(kv.getValueArray());
+		byte[] qual = CellUtil.cloneValue(kv);
+		String loc = Bytes.toString(qual);
 		FileLocation fl = getFileLocation(loc);
 		ifile.addFile(fl);
 	    }
@@ -240,12 +242,13 @@ public class HbaseIndexFiles {
 	List<Cell> list = files.listCells();
 	if (list != null) {
 	for (Cell kv : list) {
-	    byte[] family = kv.getFamilyArray();
+	    byte[] family = CellUtil.cloneFamily(kv);
 	    String fam = new String(family);
 	    if (fam.equals("fi")) {
-		String md5tmp = Bytes.toString(kv.getValueArray());
+		byte[] qual = CellUtil.cloneValue(kv);
+		String md5tmp = new String(qual);
 		if (md5.equals(md5tmp)) {
-		    byte [] key = kv.getRowArray();
+		    byte [] key = CellUtil.cloneRow(kv);
 		    String loc = new String(key);
 		    FileLocation fltmp = getFileLocation(loc);
 		    fl = fltmp;
