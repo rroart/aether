@@ -326,6 +326,8 @@ public class Traverse {
 	    if (tshigh != null && new Long(timestamp).compareTo(tshigh) <= 0) {
 		return 0;
 	    }
+	} else {
+	    return 0;
 	}
 	String md5 = index.getMd5();
 	String filename = getExistingLocalFile(index);
