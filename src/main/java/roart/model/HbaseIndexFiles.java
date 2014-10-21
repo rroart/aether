@@ -12,8 +12,11 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.TableName;
 //import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -59,7 +62,8 @@ public class HbaseIndexFiles {
 
     private static HTableInterface filesTable = null;
     private static HTableInterface indexTable = null;
-
+    private static HConnection hconn = null;
+    
     public HbaseIndexFiles() {
 	try {
 	Configuration conf = HBaseConfiguration.create();
@@ -69,17 +73,19 @@ public class HbaseIndexFiles {
 	conf.set("hbase.zookeeper.quorum", quorum);
 	conf.set("hbase.zookeeper.property.clientPort", port);
 	conf.set("hbase.master", master);
-
-	HTablePool pool = new HTablePool();
+	
+	hconn = HConnectionManager.createConnection(conf);
+	
 	HBaseAdmin admin = new HBaseAdmin(conf);
-	HTableDescriptor tableDesc = new HTableDescriptor("index");
-	if (admin.tableExists(tableDesc.getName())) {
+	HTableDescriptor indexTableDesc = new HTableDescriptor(TableName.valueOf("index"));
+	if (admin.tableExists(indexTableDesc.getName())) {
 	    //admin.disableTable(table.getName());
 	    //admin.deleteTable(table.getName());
 	} else {
-	    admin.createTable(tableDesc);
+	    admin.createTable(indexTableDesc);
 	}
-	indexTable = pool.getTable("index");
+	
+	indexTable = hconn.getTable("index");
 	if (admin.isTableEnabled("index")) {
 	    admin.disableTable("index");
 	}
@@ -93,14 +99,14 @@ public class HbaseIndexFiles {
 	}
 	admin.enableTable("index");
 
-	HTableDescriptor filesTableDesc = new HTableDescriptor("files");
+	HTableDescriptor filesTableDesc = new HTableDescriptor(TableName.valueOf("files"));
 	if (admin.tableExists(filesTableDesc.getName())) {
 	    //admin.disableTable(table.getName());
 	    //admin.deleteTable(table.getName());
 	} else {
 	    admin.createTable(filesTableDesc);
 	}
-	filesTable = pool.getTable("files");
+	filesTable = hconn.getTable("files");
 	if (admin.isTableEnabled("files")) {
 	    admin.disableTable("files");
 	}
@@ -389,9 +395,8 @@ public class HbaseIndexFiles {
 	    log.info("closing db");
 	    filesTable.close();
 	    indexTable.close();
-	    HTablePool pool = new HTablePool();
-	    filesTable = pool.getTable("files");
-	    indexTable = pool.getTable("index");
+	    filesTable = hconn.getTable("files");
+	    indexTable = hconn.getTable("index");
 	} catch (IOException e) {
 	    log.error("Exception", e);
 	}
