@@ -367,8 +367,12 @@ public class IndexFiles {
 	ri.add("" + score);
 	ri.add(index.getMd5());
 	FileLocation fl = Traverse.getExistingLocalFilelocationMaybe(index);
-	String nodename = fl.getNodeNoLocalhost();
-	String filename = fl.getFilename();
+	String nodename = null;
+	String filename = null;
+	if (fl != null) {
+	    nodename = fl.getNodeNoLocalhost();
+	    filename = fl.getFilename();
+	}
 	ri.add(nodename);
 	ri.add(filename);
 	ri.add(lang);
@@ -400,8 +404,12 @@ public class IndexFiles {
 	ri.add("" + index.getIndexed());
 	ri.add(index.getMd5());
 	FileLocation fl = Traverse.getExistingLocalFilelocationMaybe(index);
-	String nodename = fl.getNodeNoLocalhost();
-	String filename = fl.getFilename();
+	String nodename = null;
+	String filename = null;
+	if (fl != null) {
+	    nodename = fl.getNodeNoLocalhost();
+	    filename = fl.getFilename();
+	}
 	ri.add(nodename);
 	ri.add(filename);
 	ri.add(lang);
