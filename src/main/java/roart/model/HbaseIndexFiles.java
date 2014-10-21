@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -218,13 +219,13 @@ public class HbaseIndexFiles {
 	ifile.setFailedreason(bytesToString(index.getValue(indexcf, failedreasonq)));
 	ifile.setTimeoutreason(bytesToString(index.getValue(indexcf, timeoutreasonq)));
 	ifile.setNoindexreason(bytesToString(index.getValue(indexcf, noindexreasonq)));
-	List<KeyValue> list = index.list();
+	List<Cell> list = index.listCells();
 	if (list != null) {
-	for (KeyValue kv : list) {
-	    byte[] family = kv.getFamily();
+	for (Cell kv : list) {
+	    byte[] family = kv.getFamilyArray();
 	    String fam = new String(family);
 	    if (fam.equals("fl")) {
-		String loc = Bytes.toString(kv.getValue());
+		String loc = Bytes.toString(kv.getValueArray());
 		FileLocation fl = getFileLocation(loc);
 		ifile.addFile(fl);
 	    }
@@ -236,15 +237,15 @@ public class HbaseIndexFiles {
 
     public static FileLocation getfl(Result files, String md5) {
 	FileLocation fl = null;
-	List<KeyValue> list = files.list();
+	List<Cell> list = files.listCells();
 	if (list != null) {
-	for (KeyValue kv : list) {
-	    byte[] family = kv.getFamily();
+	for (Cell kv : list) {
+	    byte[] family = kv.getFamilyArray();
 	    String fam = new String(family);
 	    if (fam.equals("fi")) {
-		String md5tmp = Bytes.toString(kv.getValue());
+		String md5tmp = Bytes.toString(kv.getValueArray());
 		if (md5.equals(md5tmp)) {
-		    byte [] key = kv.getRow();
+		    byte [] key = kv.getRowArray();
 		    String loc = new String(key);
 		    FileLocation fltmp = getFileLocation(loc);
 		    fl = fltmp;
