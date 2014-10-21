@@ -52,7 +52,17 @@ public class Search {
 
     int retsize = 0;
 
+    try {
     retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist, dbindex);
+	} catch (Exception e) {
+	    log.error("Exception", e);
+	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
+	    retsize = -1;
+	} catch (OutOfMemoryError e) {
+	    log.fatal("Error", e);
+	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
+	    retsize = -1;
+    }
 
     if (retsize < 0) {
 	//dbindex.setNoindexreason("Exception"); // later, propagate the exception
