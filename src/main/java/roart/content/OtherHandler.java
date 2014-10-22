@@ -21,6 +21,7 @@ import roart.model.ResultItem;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.util.ExecCommand;
+import roart.dao.FileSystemDao;
 
 import org.apache.tika.metadata.Metadata;
 
@@ -47,6 +48,10 @@ public class OtherHandler {
     	List<ResultItem> retlist = el.retlist;
     	List<ResultItem> retlistnot = el.retlistnot;
 	Metadata metadata = el.metadata;
+
+	if (filename.startsWith(FileSystemDao.FILE)) {
+	    filename = filename.substring(5);
+	}
 
 	String output = null;
 	boolean retry = false;
