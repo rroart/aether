@@ -87,5 +87,26 @@ public class FileLocation {
     	}
     	return ControlService.nodename.equals(node);
     }
+
+        @Override
+        public int hashCode() {
+	    String str = toString();
+	    if (str == null) {
+		return 0;
+	    }
+	    return str.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+	    if (this == obj) {
+		return true;
+	    }
+	    String str = toString();
+	    if (str == null) {
+		return false;
+	    }
+	    return str.equals(obj.toString());
+	}
     
 }
