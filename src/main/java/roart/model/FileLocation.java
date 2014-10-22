@@ -65,7 +65,7 @@ public class FileLocation {
 	}
 	if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
 		String prefix = filename.substring(0, 5);
-		return prefix + "//" + node + filename;
+		return prefix + "//" + node + filename.substring(5);
 	} else {
 		return "file://" + node + filename;
 	}
