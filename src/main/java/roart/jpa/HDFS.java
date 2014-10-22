@@ -28,6 +28,7 @@ public class HDFS {
 		String fsdefaultname = roart.util.Prop.getProp().getProperty("hdfsconffs");
 		if (fsdefaultname != null) {
 		    configuration.set("fs.default.name", fsdefaultname);
+		    log.info("Setting hadoop fs.default.name " + fsdefaultname);
 		}
 	}
 	
@@ -64,7 +65,13 @@ public class HDFS {
 	public static String getAbsolutePath(FileObject f) {
 		// TODO Auto-generated method stub
 		Path path = (Path) f.object;
-		return path.getName();
+		//log.info("mypath " + path.getName() + " " + path.getParent().getName() + " " + path.toString());
+		String p = path.toString();
+		p = p.substring(7);
+		int i = p.indexOf("/");
+		p = p.substring(i);
+		log.info("p " + p);
+		return p;
 		/*
 		try {
 			FileSystem fs = FileSystem.get(configuration);
