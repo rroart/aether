@@ -2,11 +2,13 @@ package roart.content;
 
 import roart.dao.ClassifyDao;
 import roart.lang.LanguageDetect;
+import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
+import roart.dao.FileSystemDao;
 
 import java.io.*;
 
@@ -172,17 +174,22 @@ public class TikaHandler {
 	}
 	*/
 	type = TEXT;
+	FileObject file = FileSystemDao.get(filename);
+	InputStream is = FileSystemDao.getInputStream(file);
+	InputStream input = TikaInputStream.get(is);
+	/*
 	File file = new File(filename);
 	URL url = null;
 	if (file.isFile()) {
 	    url = file.toURI().toURL();
-	    index.setFailedreason(index.getFailedreason() + "tika url null ");
 	}
 	if (url == null) {
+	    index.setFailedreason(index.getFailedreason() + "tika url null ");
 	    log.error("tika url null for " + filename);
 	    return null;
 	}
 	InputStream input = TikaInputStream.get(url, metadata);
+	*/
 	//PipedInputStream  writeIn = new PipedInputStream();
 	//PipedOutputStream output = new PipedOutputStream(writeIn);
 	ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -275,13 +282,15 @@ public class TikaHandler {
 		}
 		Queues.indexQueue.add(elem);
 	    } else {
-	    	if (dbfilename.equals(filename)) {
+		String myfs = roart.util.Prop.getProp().getProperty("fs");
+		boolean isHdfs = myfs != null && myfs.equals("hadoop");
+	    	if (!isHdfs && dbfilename.equals(filename)) {
 	    	    el.size = size;
 	    	    Queues.otherQueue.add(el);
 	    	} else {
 		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
 		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
-		    ri.get().set(2, dbfilename);
+		    ri.get().set(3, dbfilename);
 		    retlistnot.add(ri);
 		    Boolean isIndexed = index.getIndexed();
 		    if (isIndexed == null || isIndexed.booleanValue() == false) {
