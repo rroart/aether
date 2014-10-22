@@ -86,8 +86,8 @@ public class ControlService {
     public static void parseconfig() {
 	System.out.println("config2 parsed");
 	//log.info("config2 parsed");
-	String nodename  = roart.util.Prop.getProp().getProperty("nodename");
-	if (nodename == null) {
+	nodename  = roart.util.Prop.getProp().getProperty("nodename");
+	if (nodename == null || nodename.length() == 0) {
 		nodename = "localhost";
 	}
 	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
