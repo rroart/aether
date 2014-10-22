@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import roart.dao.FileSystemDao;
 import roart.model.FileObject;
 
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class LocalFileSystem {
 	}
 
 	public static String getAbsolutePath(FileObject f) {
-		return ((File) f.object).getAbsolutePath();
+		return FileSystemDao.FILE + ((File) f.object).getAbsolutePath();
 	}
 
 	public static boolean isDirectory(FileObject f) {

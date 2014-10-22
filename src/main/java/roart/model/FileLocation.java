@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import roart.dao.FileSystemDao;
 import roart.service.ControlService;
 
 public class FileLocation {
@@ -29,11 +30,13 @@ public class FileLocation {
 
     public FileLocation(String filename) {
     	String file = filename;
-    	if (filename.startsWith("file://")) {
+    	String prefix = "";
+    	if (filename.startsWith(FileSystemDao.FILESLASH) || filename.startsWith(FileSystemDao.HDFSSLASH)) {
+    		prefix = file.substring(0, 5); // no double slash
     	    file = file.substring(7);
     	    int split = file.indexOf("/");
     	    this.node = file.substring(0, split);
-    	    this.filename = file.substring(split);
+    	    this.filename = prefix + file.substring(split);
     	} else {
 	    this.node = "localhost";
 	    this.filename = filename;
@@ -60,7 +63,12 @@ public class FileLocation {
 	if (node == null || node.length() == 0) {
 	    return filename;
 	}
-	return "file://" + node + filename;
+	if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
+		String prefix = filename.substring(0, 5);
+		return prefix + "//" + node + filename;
+	} else {
+		return "file://" + node + filename;
+	}
     }
 
     public String toPrintString() {

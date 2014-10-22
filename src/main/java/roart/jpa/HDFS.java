@@ -13,6 +13,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 
+import roart.dao.FileSystemDao;
 import roart.model.FileObject;
 
 import org.slf4j.Logger;
@@ -66,12 +67,13 @@ public class HDFS {
 		// TODO Auto-generated method stub
 		Path path = (Path) f.object;
 		//log.info("mypath " + path.getName() + " " + path.getParent().getName() + " " + path.toString());
+		// this is hdfs://server/path
 		String p = path.toString();
 		p = p.substring(7);
 		int i = p.indexOf("/");
 		p = p.substring(i);
 		log.info("p " + p);
-		return p;
+		return FileSystemDao.HDFS + p;
 		/*
 		try {
 			FileSystem fs = FileSystem.get(configuration);
