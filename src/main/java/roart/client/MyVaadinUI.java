@@ -3,6 +3,8 @@ package roart.client;
 import roart.model.ResultItem;
 import roart.thread.ClientRunner;
 
+import roart.dao.FileSystemDao;
+
 import roart.service.SearchService;
 import roart.service.ControlService;
 
@@ -777,6 +779,12 @@ public Object generateCell(Table source, Object itemId,
     }
     if (filename == null) {
 	return null;
+    }
+    if (filename.startsWith(FileSystemDao.HDFS)) {
+	return null;
+    }
+    if (filename.startsWith(FileSystemDao.FILE)) {
+	filename = filename.substring(5);
     }
     FileResource resource = new FileResource(new File(filename));
     Button button = new Button("Download");
