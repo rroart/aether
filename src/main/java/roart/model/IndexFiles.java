@@ -11,6 +11,7 @@ import java.util.Date;
 
 import roart.dao.IndexFilesDao;
 import roart.dir.Traverse;
+import roart.service.ControlService;
 import roart.util.Prop;
 
 import org.apache.commons.logging.Log;
@@ -236,13 +237,13 @@ public class IndexFiles {
 	}
 
 	public void addFile(String filename) {
-	    String nodename = roart.util.Prop.getProp().getProperty("nodename");
+	    String nodename = ControlService.nodename;
 	    FileLocation fl = new FileLocation(nodename, filename);
 	    addFile(fl);
 	}
 
 	public boolean removeFile(String filename) {
-	    String nodename = roart.util.Prop.getProp().getProperty("nodename");
+	    String nodename = ControlService.nodename;
 	    FileLocation fl = new FileLocation(nodename, filename);
 	    return filelocations.remove(fl);
 	}
