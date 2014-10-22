@@ -89,6 +89,9 @@ public class Traverse {
 		if (nomd5 == false) {
 		if (newmd5 == true || curMd5 == null) {
 		    try {
+			if (!FileSystemDao.exists(fo)) {
+			    throw new FileNotFoundException("File does not exist " + filename);
+			}
 			InputStream fis = FileSystemDao.getInputStream(fo);
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
 			IndexFiles files = null;
