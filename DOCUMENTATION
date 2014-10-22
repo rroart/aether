@@ -79,6 +79,7 @@ fs=local (default)
 
 With fs=hadoop, also set
 hdfsconffs=hadoop uri (sets fs.default.name)
+Downside: can't download, can only use tika for conversion
 
 Where to log
 logdir=...
