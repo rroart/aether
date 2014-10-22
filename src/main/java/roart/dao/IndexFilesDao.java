@@ -7,6 +7,7 @@ import java.util.Set;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
+import roart.service.ControlService;
 
 import roart.jpa.HibernateIndexFilesJpa;
 import roart.jpa.HbaseIndexFilesJpa;
@@ -57,7 +58,7 @@ public class IndexFilesDao {
     }
 
     public static IndexFiles getByFilenameNot(String filename) throws Exception {
-	String nodename = roart.util.Prop.getProp().getProperty("nodename");
+	String nodename = ControlService.nodename;
 	FileLocation fl = new FileLocation(nodename, filename);
 	return indexFilesJpa.getByFilelocation(fl);
     }
@@ -67,7 +68,7 @@ public class IndexFilesDao {
     }
 
     public static String getMd5ByFilename(String filename) throws Exception {
-	String nodename = roart.util.Prop.getProp().getProperty("nodename");
+	String nodename = ControlService.nodename;
 	FileLocation fl = new FileLocation(nodename, filename);
 	return indexFilesJpa.getMd5ByFilelocation(fl);
     }
