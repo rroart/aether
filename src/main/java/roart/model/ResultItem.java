@@ -3,7 +3,13 @@ package roart.model;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ResultItem {
+
+    private static final Logger log = LoggerFactory.getLogger(ResultItem.class);
+
     private List<String> items = new ArrayList<String>();
     public ResultItem() {
     }
