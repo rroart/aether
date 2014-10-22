@@ -409,11 +409,21 @@
       <artifactId>hbase-client</artifactId>
       <version>${hbase.version}</version>
     </dependency>
-    <!--dependency>
+    <dependency>
       <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-core</artifactId>
-      <version>1.0.3</version>
-    </dependency-->
+      <artifactId>hadoop-hdfs</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-client</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
     <!--dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jsp-2.1</artifactId>
@@ -507,6 +517,7 @@
     <tika.version>1.6</tika.version>
     <mahout.version>0.9</mahout.version>
     <opennlp.version>1.5.3</opennlp.version>
+    <hadoop.version>2.5.1</hadoop.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>4.3.6.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
