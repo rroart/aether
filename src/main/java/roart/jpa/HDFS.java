@@ -115,6 +115,9 @@ public class HDFS {
 	}
 
 	public static FileObject get(String string) {
+	    if (string.startsWith(FileSystemDao.HDFS)) {
+		string = string.substring(5);
+	    }
 		return new FileObject(new Path(string));
 	}
 

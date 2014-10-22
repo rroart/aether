@@ -44,7 +44,7 @@ public class LocalFileSystem {
 
 	public static InputStream getInputStream(FileObject f) {
 		try {
-			return new FileInputStream( new File(getAbsolutePath(f)));
+		    return new FileInputStream( (File) f.object /*new File(getAbsolutePath(f))*/);
 		} catch (FileNotFoundException e) {
 			log.error("Exception", e);
 			return null;
@@ -52,6 +52,9 @@ public class LocalFileSystem {
 	}
 
 	public static FileObject get(String string) {
+	    if (string.startsWith(FileSystemDao.FILE)) {
+		string = string.substring(5);
+	    }
 		return new FileObject(new File(string));
 	}
 
