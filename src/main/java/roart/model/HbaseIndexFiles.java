@@ -174,6 +174,9 @@ public class HbaseIndexFiles {
 	    curfls.removeAll(ifile.getFilelocations());
 
 	    for (FileLocation fl : curfls) {
+	    	if (!fl.isLocal()) {
+		    continue;
+		}
 	    	String name = fl.getFilename();
 	    	log.info("Hbase delete " + name);
 	    	Delete d = new Delete(Bytes.toBytes(name));
