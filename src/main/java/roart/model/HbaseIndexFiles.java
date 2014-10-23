@@ -177,10 +177,10 @@ public class HbaseIndexFiles {
 	    	if (!fl.isLocal()) {
 		    continue;
 		}
-	    	String name = fl.getFilename();
+	    	String name = fl.toString();
 	    	log.info("Hbase delete " + name);
 	    	Delete d = new Delete(Bytes.toBytes(name));
-	    	//filesTable.delete(d);
+	    	filesTable.delete(d);
 	    }
 	    
 	} catch (IOException e) {
