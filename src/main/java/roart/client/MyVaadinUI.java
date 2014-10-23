@@ -278,6 +278,11 @@ public class MyVaadinUI extends UI
 	horReindex.addComponent(getReindex());
 	horReindex.addComponent(getReindexDateLower());
 	horReindex.addComponent(getReindexDateHigher());
+	HorizontalLayout horClean = new HorizontalLayout();
+	horClean.setHeight("20%");
+	horClean.setWidth("60%");
+	horClean.addComponent(getConsistent());
+	horClean.addComponent(getConsistentCleanup());
 	HorizontalLayout horStat = new HorizontalLayout();
 	horStat.setHeight("20%");
 	horStat.setWidth("90%");
@@ -393,6 +398,30 @@ public class MyVaadinUI extends UI
 		} catch (Exception e) {
 		    log.error("Exception", e);
 		}
+            }
+        });
+	return button;
+    }
+
+    private Button getConsistent() {
+        Button button = new Button("Get consistency");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		ControlService maininst = new ControlService();
+		 maininst.consistentclean(false);
+		 Notification.show("Request sent");
+            }
+        });
+	return button;
+    }
+
+    private Button getConsistentCleanup() {
+        Button button = new Button("Get consistency and clean");
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		ControlService maininst = new ControlService();
+		 maininst.consistentclean(true);
+		 Notification.show("Request sent");
             }
         });
 	return button;
