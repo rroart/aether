@@ -356,7 +356,7 @@ public class ControlService {
 	// filesystemlucenenew
 
 	DbRunner.doupdate = false;
-	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null && !reindex)) {
+	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null /*&& !reindex*/)) {
 	    if (filename != null) {
 		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset);
 	    } else {
