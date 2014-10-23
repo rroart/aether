@@ -102,8 +102,8 @@ public class Traverse {
 			files.addFile(filename);
 			//IndexFilesDao.save(files);
 			//IndexFilesDao.flush();
-			}
 			log.info("adding md5 file " + filename);
+			}
 			if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
 			    if (newset != null) {
 				newset.add(filename);
