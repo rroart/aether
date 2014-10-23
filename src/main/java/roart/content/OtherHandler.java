@@ -130,6 +130,14 @@ public class OtherHandler {
 		    index.incrFailed();
 		    //index.save();
 		}
+		log.info("delete file " + tmp);
+		txt.delete();
+	}
+	// hdfs only
+	if (filename.startsWith("/tmp/hdfs") /*|| filename.startsWith(FileSystemDao.FILE + "/tmp/other")*/) {
+	    File toDel = new File(filename);
+	    log.info("delete file " + filename);
+	    toDel.delete();
 	}
 	if (false && txt.exists()) {
 		 txt.delete();

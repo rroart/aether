@@ -282,9 +282,19 @@ public class TikaHandler {
 		}
 		Queues.indexQueue.add(elem);
 	    } else {
-		String myfs = roart.util.Prop.getProp().getProperty("fs");
-		boolean isHdfs = myfs != null && myfs.equals("hadoop");
-	    	if (!isHdfs && dbfilename.equals(filename)) {
+	    	if (dbfilename.equals(filename)) {
+		    if (filename.startsWith(FileSystemDao.HDFS)) {
+			int i = filename.lastIndexOf("/");
+			String fn = "/tmp/hdfs" + filename.substring(i + 1);
+			log.info("copy to local filenames " + filename + " " + fn);
+			FileObject file = FileSystemDao.get(filename);
+			InputStream in = FileSystemDao.getInputStream(file);
+			OutputStream out = new FileOutputStream(new File(fn));
+			IOUtils.copy(in, out);
+			in.close();
+			out.close();
+			el.filename = fn;
+		    }
 	    	    el.size = size;
 	    	    Queues.otherQueue.add(el);
 	    	} else {
@@ -300,6 +310,11 @@ public class TikaHandler {
 	    	}
 	    }   
 	    outputStream.close();
+	    if (el.filename.startsWith("/tmp/other")/* || el.filename.startsWith(FileSystemDao.FILE + "/tmp/")*/) {
+		log.info("delete file " + el.filename);
+		File delFile = new File(el.filename);
+		delFile.delete();
+	    }
 	} catch (Exception e) {
 	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	    log.error("Exception", e);
