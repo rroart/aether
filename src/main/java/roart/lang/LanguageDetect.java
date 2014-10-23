@@ -19,23 +19,6 @@ public class LanguageDetect {
     private static boolean inited = false;
 
     public static void init(String profileDirectory) throws LangDetectException {
-	File dir = new File(profileDirectory);
-	/*
-	if (dir != null && dir.listFiles() != null)
-        for (File file: dir.listFiles()) {
-	    log.info("fn " +file);
-	}
-	File dir2 = new File(".");
-	if (dir2 != null)
-        for (File file: dir2.listFiles()) {
-	    log.info("fn2 " +file);
-	}
-	File dir3 = new File("..");
-	if (dir3 != null)
-        for (File file: dir3.listFiles()) {
-	    log.info("fn3 " +file);
-	}
-	*/
 	DetectorFactory.loadProfile(profileDirectory);
 	inited = true;
     }
