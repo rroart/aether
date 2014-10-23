@@ -245,11 +245,13 @@ public class IndexFiles {
 	public boolean removeFile(String filename) {
 	    String nodename = ControlService.nodename;
 	    FileLocation fl = new FileLocation(nodename, filename);
-	    return filelocations.remove(fl);
+	    return removeFilelocation(fl);
 	}
 
 	public boolean removeFilelocation(FileLocation fl) {
-	    return filelocations.remove(fl);
+	    boolean removed = filelocations.remove(fl);
+	    changed |= removed;
+	    return removed;
 	}
 
         public String getTimeoutreason() {
