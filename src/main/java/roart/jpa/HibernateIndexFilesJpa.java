@@ -10,6 +10,7 @@ import roart.dao.IndexFilesDao;
 import roart.model.FileLocation;
 import roart.model.IndexFiles;
 import roart.model.HibernateIndexFiles;
+import roart.service.ControlService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +28,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	Set<String> filenames = HibernateIndexFiles.getFilenamesByMd5(md5);
 	Set<FileLocation> flset = new HashSet<FileLocation>();
 	for (String filename : filenames) {
-	    flset.add(new FileLocation("localhost", filename));
+	    flset.add(new FileLocation(ControlService.nodename, filename));
 	}
 	return flset;
     }
@@ -100,7 +101,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	ifile.setNoindexreason(hif.getNoindexreason());
 	Set<String> files = hif.getFilenames();
 	for (String file : files) {
-	    ifile.addFile(new FileLocation("localhost", file));
+	    ifile.addFile(new FileLocation(ControlService.nodename, file));
 	}
 	ifile.setUnchanged();
 	return ifile;
