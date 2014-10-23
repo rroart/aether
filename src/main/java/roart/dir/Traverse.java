@@ -47,7 +47,7 @@ public class Traverse {
 	return false;
     }
 
-    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, Set<String> notfoundset, boolean newmd5, boolean nomd5) throws Exception {
+    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, Set<String> notfoundset, boolean newmd5, boolean nomd5, boolean nodbchange) throws Exception {
 	Set<String> retset = new HashSet<String>();
 	if (indirlistnot(dirname, dirlistnot)) {
 	    return retset;
@@ -69,7 +69,7 @@ public class Traverse {
 	    //log.info("file " + filename);
 	    if (FileSystemDao.isDirectory(fo)) {
 		//log.info("isdir " + filename);
-		retset.addAll(doList(filename, newindexset, newset, dirset, dirlistnot, notfoundset, newmd5, nomd5));
+		retset.addAll(doList(filename, newindexset, newset, dirset, dirlistnot, notfoundset, newmd5, nomd5, nodbchange));
 	    } else {
 		//log.info("retset " + filename);
 		retset.add(filename);
@@ -95,10 +95,12 @@ public class Traverse {
 			InputStream fis = FileSystemDao.getInputStream(fo);
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
 			IndexFiles files = null;
+			if (!nodbchange) {
 			if (files == null) {
 			    files = IndexFilesDao.getByMd5(md5);
 			}
 			files.addFile(filename);
+			}
 			//IndexFilesDao.save(files);
 			//IndexFilesDao.flush();
 			log.info("adding md5 file " + filename);
@@ -107,7 +109,9 @@ public class Traverse {
 				newset.add(filename);
 			    }
 			    if (newindexset != null) {
+			    	if (files != null) {
 				newindexset.add(files);
+			    	}
 			    }
 			}
 			} catch (FileNotFoundException e) {

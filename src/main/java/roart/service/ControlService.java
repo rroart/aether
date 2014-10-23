@@ -57,10 +57,10 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5) throws Exception {
+    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = new HashSet<String>();
-	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, newmd5, false);    
+	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, newmd5, false, nodbchange);    
 	for (String s : filesetnew2) {
 	    retList.add(new ResultItem(s));
 	}
@@ -74,9 +74,9 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5) throws Exception {
+    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange) throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
-	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset, newmd5));
+	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset, newmd5, nodbchange));
 	return filesetnew;
     }
 
@@ -98,13 +98,13 @@ public class ControlService {
 	dirlistnot = dirlistnotstr.split(",");
     }
 
-    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset, boolean newmd5) {
+    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset, boolean newmd5, boolean nodbchange) {
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	try {
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, newmd5, false);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, newmd5, false, nodbchange);
 		filesetnew.addAll(filesetnew2);
 	    }
 	} catch (Exception e) {
@@ -322,9 +322,9 @@ public class ControlService {
 	DbRunner.doupdate = false;
 	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null /*&& !reindex*/)) {
 	    if (filename != null) {
-		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5);
+		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5, false);
 	    } else {
-		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset, newmd5);
+		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset, newmd5, false);
 	    }
 	    for (String file : notfoundset) {
 	    	retNotExistList.add(new ResultItem(file));
@@ -865,7 +865,7 @@ public class ControlService {
 		Set<String> newset = new HashSet<String>();
 		Set<String> notfoundset = new HashSet<String>();
 		
-		filesystem(null, filesetnew, newset, notfoundset, false);
+		filesystem(null, filesetnew, newset, notfoundset, false, true);
 		
 		for (String file : newset) {
 			newList.add(new ResultItem(file));
