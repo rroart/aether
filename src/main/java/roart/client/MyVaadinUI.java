@@ -1,6 +1,7 @@
 package roart.client;
 
 import roart.model.ResultItem;
+import roart.model.FileObject;
 import roart.thread.ClientRunner;
 
 import roart.dao.FileSystemDao;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Date;
 
 import java.io.File;
+import java.io.InputStream;
 
 //import roart.beans.session.misc.Unit;
 import javax.servlet.annotation.WebServlet;
@@ -49,6 +51,8 @@ import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.Window;
@@ -213,6 +217,8 @@ public class MyVaadinUI extends UI
 	HorizontalLayout bottomLine = new HorizontalLayout();
 	bottomLine.setHeight("10%");
 	bottomLine.setWidth("90%");
+	Label nodeLabel = new Label("Node " + ControlService.nodename);
+	bottomLine.addComponent(nodeLabel);
 	Label dbLabel = new Label("Db type " + roart.util.Prop.getProp().getProperty("db"));
 	//dbLabel.setWidth("30%");
 	bottomLine.addComponent(dbLabel);
@@ -780,13 +786,27 @@ public Object generateCell(Table source, Object itemId,
     if (filename == null) {
 	return null;
     }
-    if (filename.startsWith(FileSystemDao.HDFS)) {
+    if (false) {
 	return null;
     }
-    if (filename.startsWith(FileSystemDao.FILE)) {
+    final FileObject fo = FileSystemDao.get(filename);
+    if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
 	filename = filename.substring(5);
     }
-    FileResource resource = new FileResource(new File(filename));
+    int i = filename.lastIndexOf("/");
+    String fn = filename.substring(i + 1);
+    StreamResource resource = new StreamResource(new StreamSource() {
+            @Override
+            public InputStream getStream() {
+                try {
+		    return FileSystemDao.getInputStream(fo);
+                } catch (Exception e) {
+		    log.error("Exception", e);
+                    return null;
+                }
+            }
+	}, fn);
+    //FileResource resource = new FileResource(new File(filename));
     Button button = new Button("Download");
     button.setStyleName(BaseTheme.BUTTON_LINK);
     FileDownloader downloader = new FileDownloader(resource);
