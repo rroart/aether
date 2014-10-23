@@ -22,7 +22,7 @@ public class FileLocation {
 
     public FileLocation(String node, String filename) {
 	if (node == null) {
-	    node = "localhost";
+	    node = ControlService.nodename;
 	}
 	this.node = node;
 	this.filename = filename;
@@ -38,7 +38,7 @@ public class FileLocation {
     	    this.node = file.substring(0, split);
     	    this.filename = prefix + file.substring(split);
     	} else {
-	    this.node = "localhost";
+	    this.node = ControlService.nodename;
 	    this.filename = filename;
 	}
     }
@@ -80,7 +80,7 @@ public class FileLocation {
 
     public String getNodeNoLocalhost() {
     	String node = getNode();
-    	if (node != null && node.equals("localhost")) {
+    	if (node != null && node.equals(ControlService.nodename)) {
     		return null;
     	}
     return node;
@@ -88,9 +88,6 @@ public class FileLocation {
 
     public boolean isLocal() {
     	if (node == null) {
-    		return true;
-    	}
-    	if (node.equals("localhost")) {
     		return true;
     	}
     	return ControlService.nodename.equals(node);
