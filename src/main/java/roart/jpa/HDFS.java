@@ -72,7 +72,7 @@ public class HDFS {
 		p = p.substring(7);
 		int i = p.indexOf("/");
 		p = p.substring(i);
-		log.info("p " + p);
+		//log.info("p " + p);
 		return FileSystemDao.HDFS + p;
 		/*
 		try {
