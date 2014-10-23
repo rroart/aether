@@ -12,5 +12,6 @@ host prop and location for 0.2
 detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
 display diff docs and number indexed
 hdfs
+delete tmp files
 replace djvutxt etc
 #package lang profiles
