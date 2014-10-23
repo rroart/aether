@@ -26,6 +26,7 @@ import roart.dir.Traverse;
 import roart.queue.ClientQueueElement;
 
 import roart.model.FileLocation;
+import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.queue.Queues;
 import roart.thread.ControlRunner;
@@ -37,6 +38,7 @@ import roart.content.ClientHandler;
 import roart.thread.ClientRunner;
 import roart.thread.DbRunner;
 
+import roart.dao.FileSystemDao;
 import roart.dao.SearchDao;
 import roart.dao.IndexFilesDao;
 
@@ -55,10 +57,10 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset) throws Exception {
+    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = new HashSet<String>();
-	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, false, false);    
+	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, newmd5, false);    
 	for (String s : filesetnew2) {
 	    retList.add(new ResultItem(s));
 	}
@@ -72,9 +74,9 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset) throws Exception {
+    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5) throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
-	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset));
+	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset, newmd5));
 	return filesetnew;
     }
 
@@ -96,54 +98,15 @@ public class ControlService {
 	dirlistnot = dirlistnotstr.split(",");
     }
 
-    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset) {
+    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset, boolean newmd5) {
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 
-	Map<Integer, Set<String>> sortlist = new TreeMap<Integer, Set<String>>();
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	try {
-	    Set<String> fileset = new HashSet<String>();
-	    //Set<String> filesetnew = new HashSet<String>();
-	    List<IndexFiles> indexes = IndexFilesDao.getAll();
-	    log.info("size " + indexes.size());
-	    for (IndexFiles index : indexes) {
-		for (FileLocation filename : index.getFilelocations()) {
-		    //log.info("size2 " + file.getFilename());
-		    fileset.add(filename.toString());
-		}
-	    }
-	    indexes.clear();
-	    //Set<String> md5set = new HashSet<String>();
-
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, false, false);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, newmd5, false);
 		filesetnew.addAll(filesetnew2);
 	    }
-	    //roart.model.HibernateUtil.currentSession().flush();
-	    //	    for (String filename : dirset.keySet()) {
-	    //	log.info("size2 " + filename);
-	    //	filesetnew.add(filename);
-	    //}
-	    log.info("sizenew " + filesetnew.size());
-	    //fileset.removeAll(filesetnew);
-	    for (String filename : filesetnew) {
-		//log.info("size2 " + filename);
-		fileset.remove(filename);
-	    }
-	    log.info("sizeafter " + fileset.size());
-	    for (String filename : fileset) {
-		log.info("removing " + filename);
-		String md5 = IndexFilesDao.getMd5ByFilename(filename);
-		IndexFiles file = IndexFilesDao.getByMd5(md5);
-		boolean wasThere = file.removeFile(filename);
-		if (!wasThere) {
-		    log.error("the file " + filename + " was not in the set");
-		}
-		//roart.model.HibernateUtil.currentSession().delete(file);
-	    }
-	    //roart.model.HibernateUtil.commit();
-	    //log.info("Hibernate commit");
-	    //roart.model.HibernateUtil.currentSession().close();
 	} catch (Exception e) {
 		log.info(e);
 		log.error("Exception", e);
@@ -323,6 +286,7 @@ public class ControlService {
 	String function = el.function;
 	String filename = el.file;
 	boolean reindex = el.reindex;
+	boolean newmd5 = el.md5change;
 	log.info("function " + function + " " + filename + " " + reindex);
 
 	Set<List> retlistset = new HashSet<List>();
@@ -358,9 +322,9 @@ public class ControlService {
 	DbRunner.doupdate = false;
 	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null && !reindex)) {
 	    if (filename != null) {
-		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset);
+		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5);
 	    } else {
-		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset);
+		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset, newmd5);
 	    }
 	    for (String file : notfoundset) {
 	    	retNotExistList.add(new ResultItem(file));
@@ -859,5 +823,82 @@ public class ControlService {
 	}
 	return retlistlist;
     }
+
+	public void consistentclean(boolean clean) {
+		// TODO Auto-generated method stub
+		ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "consistentclean", null, null, null, null, clean, false); // more dumb overload
+		Queues.clientQueue.add(e);
+	    }
+
+	    public List<List> consistentcleanDo(ClientQueueElement el) {
+	    	boolean clean = el.reindex;
+		List<ResultItem> delList = new ArrayList<ResultItem>();
+		List<ResultItem> nonexistList = new ArrayList<ResultItem>();
+		List<ResultItem> newList = new ArrayList<ResultItem>();
+		ResultItem ri = new ResultItem("Filename delete");
+		delList.add(ri);
+		ri = new ResultItem("Filename nonexist");
+		nonexistList.add(ri);
+		ri = new ResultItem("Filename new");
+		newList.add(ri);
+
+		Set<String> delfileset = new HashSet<String>();
+			    
+		List<IndexFiles> indexes;
+		try {
+			indexes = IndexFilesDao.getAll();
+		log.info("size " + indexes.size());
+		for (IndexFiles index : indexes) {
+			for (FileLocation fl : index.getFilelocations()) {
+				if (fl.isLocal()) {
+					String filename = fl.getFilename();
+					FileObject fo = FileSystemDao.get(filename);
+					if (!FileSystemDao.exists(fo)) {
+						delList.add(new ResultItem(filename));
+						delfileset.add(filename);
+					}
+				}
+			}
+		}
+		
+		Set<String> filesetnew = new HashSet<String>(); // just a dir list
+		Set<String> newset = new HashSet<String>();
+		Set<String> notfoundset = new HashSet<String>();
+		
+		filesystem(null, filesetnew, newset, notfoundset, false);
+		
+		for (String file : newset) {
+			newList.add(new ResultItem(file));
+		}
+		for (String file : notfoundset) {
+			nonexistList.add(new ResultItem(file));
+		}
+		
+		if (clean) {
+			for (String filename : delfileset) {
+				String md5 = IndexFilesDao.getMd5ByFilename(filename);
+				if (md5 != null) {
+					IndexFiles ifile = IndexFilesDao.getByMd5(md5);
+					FileLocation fl = new FileLocation(filename);
+					log.info("fls1 size " + ifile.getFilelocations().size());
+					boolean removed = ifile.getFilelocations().remove(fl);
+					log.info("fls2 size " + removed + ifile.getFilelocations().size());
+				} else {
+					log.info("no md5 for" + filename);
+				}
+			}
+			IndexFilesDao.commit();
+		}
+		
+		} catch (Exception e) {
+			log.info("Exception", e);
+		}
+
+		List<List> retlistlist = new ArrayList<List>();
+		retlistlist.add(delList);
+		retlistlist.add(nonexistList);
+		retlistlist.add(newList);
+		return retlistlist;
+	    }
     
 }

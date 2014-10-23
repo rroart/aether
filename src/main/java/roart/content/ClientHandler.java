@@ -66,6 +66,9 @@ public class ClientHandler {
 	if (function.equals("dbsearch")) {
 	    list = dbsearch(el);
 	}
+	if (function.equals("consistentclean")) {
+	    list = consistentclean(el);
+	}
 	Queues.decClients();
 	Map map = new HashMap<UI, List>();
 	map.put(el.ui, list);
@@ -134,6 +137,15 @@ public class ClientHandler {
 	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
 	    return maininst.dbsearchDo(el);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    private static List consistentclean(ClientQueueElement el) {
+	roart.service.ControlService maininst = new roart.service.ControlService();
+	try {
+	    return maininst.consistentcleanDo(el);
 	} catch (Exception e) {
 	    return null;
 	}
