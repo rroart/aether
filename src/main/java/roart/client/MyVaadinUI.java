@@ -305,6 +305,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horNew);
 	tab.addComponent(horInd);
 	tab.addComponent(horReindex);
+	tab.addComponent(horClean);
 	tab.addComponent(horStat);
 	tab.addComponent(horDb);
 	return tab;
