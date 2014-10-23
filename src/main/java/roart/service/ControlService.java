@@ -880,7 +880,7 @@ public class ControlService {
 				if (md5 != null) {
 					IndexFiles ifile = IndexFilesDao.getByMd5(md5);
 					FileLocation fl = new FileLocation(filename);
-					log.info("fls1 size " + ifile.getFilelocations().size());
+					log.info("fls1 size " + ifile.getFilelocations().size() + " " + fl + ifile.getFilelocations());
 					boolean removed = ifile.getFilelocations().remove(fl);
 					log.info("fls2 size " + removed + ifile.getFilelocations().size());
 				} else {
