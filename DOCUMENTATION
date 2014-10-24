@@ -141,6 +141,10 @@ Index of suffix: Try to index all known items with suffix.
 Reindex, textfield, use only the given path.
 Reindex on before or after given date.
 
+Consistency checks, with cleaning.
+It lists files not currenly present in the filesystem (will be cleaned).
+It also lists non-existing files (encoding problems) and new files.
+
 Stats, listing non-indexed, memory usage or overlapping directories.
 
 Database, get items related to md5 id.
