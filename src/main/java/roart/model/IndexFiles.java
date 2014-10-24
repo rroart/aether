@@ -33,16 +33,19 @@ public class IndexFiles {
     private String noindexreason;
     private String timeoutreason;
 	private Set<FileLocation> filelocations;
+    private int maxfilelocations; // keep max count, for hbase deletions
 
     private boolean changed = false;
     private boolean indb = false;
 
 	private IndexFiles() {
 	    filelocations = new HashSet<FileLocation>();
+	    maxfilelocations = 0;
 	}
 
 	public IndexFiles(String md5) {
 	    filelocations = new HashSet<FileLocation>();
+	    maxfilelocations = 0;
 	    this.setMd5(md5);
 	}
 
@@ -60,6 +63,10 @@ public class IndexFiles {
 	    }
 	    return ((FileLocation) (getFilelocations()).iterator().next()).getFilename();
 	}
+
+    public int getMaxfilelocations() {
+	return maxfilelocations;
+    }
 
         public String getFilelocation() {
 	    if (filelocations.size() == 0) {
@@ -233,6 +240,9 @@ public class IndexFiles {
 	public void addFile(FileLocation filelocation) {
 	    changed |= true;
 	    filelocations.add(filelocation);
+	    if (filelocations.size() > maxfilelocations) {
+		maxfilelocations = filelocations.size();
+	    }
 	    //IndexFilesDao.ensureExistence(filelocation);
 	}
 

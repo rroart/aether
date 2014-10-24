@@ -160,11 +160,21 @@ public class HbaseIndexFiles {
 	    if (ifile.getNoindexreason() != null) {
 		put.add(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
 	    }
+	    //log.info("hbase " + ifile.getMd5());
 	    int i = -1;
 	    for (FileLocation file : ifile.getFilelocations()) {
 		i++;
 		String filename = getFile(file);
+		//log.info("hbase " + filename);
 		put.add(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
+	    }
+	    i++;
+	    // now, delete the rest (or we would get some old historic content)
+	    for (; i < ifile.getMaxfilelocations(); i++) {
+	    	Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
+		d.deleteColumns(flcf, Bytes.toBytes("q" + i));
+	    	//log.info("Hbase delete q" + i);
+	    	indexTable.delete(d);
 	    }
 	    
 	    put(ifile.getMd5(), ifile.getFilelocations());	    
@@ -173,6 +183,7 @@ public class HbaseIndexFiles {
 	    Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
 	    curfls.removeAll(ifile.getFilelocations());
 
+	    // delete the files no longer associated to the md5
 	    for (FileLocation fl : curfls) {
 	    	if (!fl.isLocal()) {
 		    continue;
