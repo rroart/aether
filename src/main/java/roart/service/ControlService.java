@@ -881,9 +881,16 @@ public class ControlService {
 					IndexFiles ifile = IndexFilesDao.getByMd5(md5);
 					FileLocation fl = new FileLocation(filename);
 					boolean removed = ifile.removeFilelocation(fl);
-					log.info("fls2 size " + removed + ifile.getFilelocations().size());
+					//log.info("fls2 size " + removed + ifile.getFilelocations().size());
 				} else {
-					log.info("no md5 for" + filename);
+					log.info("trying the hard way, no md5 for" + filename);
+					for (IndexFiles index : indexes) {
+					    FileLocation fl = new FileLocation(filename);
+					    if (index.getFilelocations().contains(fl)) {
+						boolean removed = index.removeFilelocation(fl);
+						//log.info("fls3 size " + removed + index.getFilelocations().size());
+					    }
+					}
 				}
 			}
 			IndexFilesDao.commit();
