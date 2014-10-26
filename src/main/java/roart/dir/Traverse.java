@@ -94,6 +94,7 @@ public class Traverse {
 			}
 			InputStream fis = FileSystemDao.getInputStream(fo);
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
+			fis.close();
 			IndexFiles files = null;
 			if (!nodbchange) {
 			if (files == null) {
