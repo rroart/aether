@@ -1,5 +1,6 @@
 package roart.client;
 
+import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.model.FileObject;
 import roart.thread.ClientRunner;
@@ -803,7 +804,7 @@ public class MyVaadinUI extends UI
 	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
 	}
 	if (dodownload) {
-	    if (columns >= 4 && strarr.get(0).get().get(3).equals("Filename")) {
+	    if (columns > IndexFiles.FILENAMECOLUMN && strarr.get(0).get().get(IndexFiles.FILENAMECOLUMN).equals("Filename")) {
 		table.addGeneratedColumn("Download", new ColumnGenerator() {
 @Override
 public Object generateCell(Table source, Object itemId,

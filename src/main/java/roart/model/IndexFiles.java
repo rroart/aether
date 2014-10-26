@@ -19,6 +19,8 @@ import org.apache.commons.logging.LogFactory;
 
 public class IndexFiles {
 
+	public static final int FILENAMECOLUMN = 3;
+	
 	private static Log log = LogFactory.getLog("IndexFiles");
 	private String md5;
 	private Boolean indexed;
