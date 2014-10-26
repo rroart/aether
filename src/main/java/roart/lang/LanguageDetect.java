@@ -36,6 +36,8 @@ public class LanguageDetect {
 	    return retstr;
 	} catch (Exception e) {
 	    log.error("exception", e);
+	} catch (Error e) {
+	    log.fatal("error", e);
 	}
 	return null;
     }

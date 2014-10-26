@@ -126,8 +126,10 @@ public class TikaRunner implements Runnable {
     				public Object call() /* throws Exception*/ {
     					try {
     						doTikaTimeout();
-    					} catch (Throwable t) {
-    						//log.info("throwable");
+					} catch (Exception e) {
+					    log.error("exception", e);
+					} catch (Error e) {
+					    log.fatal("error", e);
     					}
     					finally {
     						//log.info("myend");
