@@ -12,21 +12,19 @@ import roart.model.FileObject;
 
 public class FileSystemDao {
 
-	public static String FILE = "file:";
-	public static String HDFS = "hdfs:";
-	public static String FILESLASH = "file://";
-	public static String HDFSSLASH = "hdfs://";
+	public static final String FILE = "file:";
+	public static final int FILELEN = 5;
+	public static final String HDFS = "hdfs:";
+	public static final int HDFSLEN = 5;
+	public static final String FILESLASH = "file://";
+	public static final int FILESLASHLEN = 7;
+	public static final String HDFSSLASH = "hdfs://";
+	public static final int HDFSSLASHLEN = 7;
+	public static final String DOUBLESLASH = "//";
+	public static final int DOUBLESLASHLEN = 2;
     private static FileSystemJpa filesystemJpa = null;
 
     public static void instance(String type) {
-        if (false && filesystemJpa == null) {
-            if (type.equals("local")) {
-                filesystemJpa = new LocalFileSystemJpa();
-            }
-            if (type.equals("hadoop")) {
-                filesystemJpa = new HDFSJpa();
-            }
-        }
     }
 
     public static List<FileObject> listFiles(FileObject f) {

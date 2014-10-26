@@ -1,30 +1,22 @@
 package roart.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import roart.dao.FileSystemDao;
 import roart.service.ControlService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileLocation {
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private String node;
 	private String filename;
 
-    public FileLocation(String node, String filename) {
-	if (node == null) {
-	    node = ControlService.nodename;
+    public FileLocation(String mynode, String filename) {
+	if (mynode == null) {
+	    mynode = ControlService.nodename;
 	}
-	this.node = node;
+	this.node = mynode;
 	this.filename = filename;
     }
 
@@ -32,8 +24,8 @@ public class FileLocation {
     	String file = filename;
     	String prefix = "";
     	if (filename.startsWith(FileSystemDao.FILESLASH) || filename.startsWith(FileSystemDao.HDFSSLASH)) {
-    		prefix = file.substring(0, 5); // no double slash
-    	    file = file.substring(7);
+    		prefix = file.substring(0, FileSystemDao.FILELEN); // no double slash
+    	    file = file.substring(FileSystemDao.FILESLASHLEN);
     	    int split = file.indexOf("/");
     	    this.node = file.substring(0, split);
     	    this.filename = prefix + file.substring(split);
@@ -59,15 +51,16 @@ public class FileLocation {
 	    this.filename = filename;
 	}
 
+    @Override
     public String toString() {
 	if (node == null || node.length() == 0) {
 	    return filename;
 	}
 	if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
-		String prefix = filename.substring(0, 5);
-		return prefix + "//" + node + filename.substring(5);
+		String prefix = filename.substring(0, FileSystemDao.FILELEN);
+		return prefix + "//" + node + filename.substring(FileSystemDao.FILELEN);
 	} else {
-		return "file://" + node + filename;
+		return FileSystemDao.FILESLASH + node + filename;
 	}
     }
 
@@ -79,11 +72,11 @@ public class FileLocation {
     }
 
     public String getNodeNoLocalhost() {
-    	String node = getNode();
-    	if (node != null && node.equals(ControlService.nodename)) {
+    	String mynode = getNode();
+    	if (mynode != null && mynode.equals(ControlService.nodename)) {
     		return null;
     	}
-    return node;
+    return mynode;
 }
 
     public boolean isLocal() {
