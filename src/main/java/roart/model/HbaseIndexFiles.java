@@ -307,6 +307,17 @@ public class HbaseIndexFiles {
 	    get.addFamily(filescf);
 	    Result result = filesTable.get(get);
 	    //log.info("res " + new String(result.getValue(filescf, md5q)));
+	    // add a little workaround for temp backward compatibility
+	    // TODO remove later, old compat
+	    if (result.isEmpty()) {
+		String fn = fl.getFilename();
+		if (fn != null) {
+		    fn = fn.substring(5);
+		    get = new Get(Bytes.toBytes(fn));
+		    get.addFamily(filescf);
+		    result = filesTable.get(get);
+		}
+	    }
 	    if (result.isEmpty()) {
 		return null;
 	    }
