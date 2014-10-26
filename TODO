@@ -8,4 +8,6 @@ list vs [], need only one
 handle delete move
 detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
 display diff docs and number indexed
+db persistence, more db handling
+multitask
 #package lang profiles

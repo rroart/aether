@@ -149,3 +149,6 @@ Stats, listing non-indexed, memory usage or overlapping directories.
 
 Database, get items related to md5 id.
 Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason.
+
+4. Caution
+Multitasking issues, even for a single node.
