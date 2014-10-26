@@ -92,11 +92,12 @@ public class Traverse {
 			if (!FileSystemDao.exists(fo)) {
 			    throw new FileNotFoundException("File does not exist " + filename);
 			}
-			InputStream fis = FileSystemDao.getInputStream(fo);
-			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
-			fis.close();
 			IndexFiles files = null;
+			String md5 = null;
 			if (!nodbchange) {
+			InputStream fis = FileSystemDao.getInputStream(fo);
+			md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
+			fis.close();
 			if (files == null) {
 			    files = IndexFilesDao.getByMd5(md5);
 			}
@@ -105,6 +106,7 @@ public class Traverse {
 			//IndexFilesDao.flush();
 			log.info("adding md5 file " + filename);
 			}
+			// newmd5 and nodbchange are never both true
 			if (curMd5 == null || (newmd5 == true && !curMd5.equals(md5))) {
 			    if (newset != null) {
 				newset.add(filename);
