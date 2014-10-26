@@ -118,6 +118,7 @@ public class IndexFiles {
 		return null;
 	    }
 	    int fl = timeindex.indexOf(".");
+	    // TODO remove later, old compat
 	    if (fl >= 0) {
 		timeindex = timeindex.substring(0, fl-1) + "000"; // temp
 	    }
@@ -152,6 +153,7 @@ public class IndexFiles {
 		return null;
 	    }
 	    int fl = converttime.indexOf(".");
+	    // TODO remove later, old compat
 	    if (fl >= 0) {
 		converttime = converttime.substring(0, fl-1) + "000"; // temp
 	    }
@@ -196,6 +198,7 @@ public class IndexFiles {
 		return null;
 	    }
 	    int fl = timeclass.indexOf(".");
+	    // TODO remove later, old compat
 	    if (fl >= 0) {
 		timeclass = timeclass.substring(0, fl-1) + "000"; // temp
 	    }
