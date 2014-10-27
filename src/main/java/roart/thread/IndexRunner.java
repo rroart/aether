@@ -9,16 +9,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.dir.Traverse;
 import roart.queue.Queues;
 import roart.search.Search;
+import roart.util.Constants;
 
 public class IndexRunner implements Runnable {
 	
-	private static Log log = LogFactory.getLog("IndexRunner");
+	private static Logger log = LoggerFactory.getLogger("IndexRunner");
 	
     public void run() {
     	while (true) {
@@ -27,7 +28,7 @@ public class IndexRunner implements Runnable {
     				TimeUnit.SECONDS.sleep(1);
     			} catch (InterruptedException e) {
     				// TODO Auto-generated catch block
-    				log.error("Exception", e);
+    				log.error(Constants.EXCEPTION, e);
     			}
     			continue;
     		}
@@ -35,7 +36,7 @@ public class IndexRunner implements Runnable {
 		try {
 		    Search.indexme();
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
     	}
     }

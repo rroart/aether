@@ -2,36 +2,21 @@ package roart.content;
 
 import com.vaadin.ui.UI;
 
-import java.io.File;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import roart.dir.Traverse;
-import roart.model.IndexFiles;
-import roart.model.ResultItem;
+import roart.queue.ClientQueueElement.Function;
 import roart.queue.Queues;
 import roart.queue.ClientQueueElement;
-import roart.util.ExecCommand;
-
-import org.apache.tika.metadata.Metadata;
+import roart.util.Constants;
 
 public class ClientHandler {
 	
-	private static Log log = LogFactory.getLog("ClientHandler");
+	private static Logger log = LoggerFactory.getLogger("ClientHandler");
 
     static public int timeout = 3600;
 	
@@ -43,30 +28,30 @@ public class ClientHandler {
     	}
     	// vulnerable spot
     	Queues.incClients();
-	String function = el.function;
+	Function function = el.function;
 	List list = null;
-	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || function.equals("index") || function.equals("reindexdate")) {
+	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || function == Function.INDEX || function == Function.REINDEXDATE) {
 	    list = client(el);
 	}
-	if (function.equals("notindexed")) {
+	if (function == Function.NOTINDEXED) {
 	    list = notindexed();
 	}
-	if (function.equals("overlapping")) {
+	if (function == Function.OVERLAPPING) {
 	    list = overlapping();
 	}
-	if (function.equals("memoryusage")) {
+	if (function == Function.MEMORYUSAGE) {
 	    list = memoryusage();
 	}
-	if (function.equals("search")) {
+	if (function == Function.SEARCH) {
 	    list = search(el);
 	}
-	if (function.equals("dbindex")) {
+	if (function == Function.DBINDEX) {
 	    list = dbindex(el);
 	}
-	if (function.equals("dbsearch")) {
+	if (function == Function.DBSEARCH) {
 	    list = dbsearch(el);
 	}
-	if (function.equals("consistentclean")) {
+	if (function == Function.CONSISTENTCLEAN) {
 	    list = consistentclean(el);
 	}
 	Queues.decClients();
@@ -89,7 +74,7 @@ public class ClientHandler {
 	try {
 	    return maininst.clientDo(el);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	    return null;
 	}
     }
@@ -99,7 +84,7 @@ public class ClientHandler {
 	try {
 	    return maininst.notindexedDo();
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	    return null;
 	}
     }
@@ -109,7 +94,7 @@ public class ClientHandler {
 	try {
 	    return maininst.overlappingDo();
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	    return null;
 	}
     }
@@ -119,7 +104,7 @@ public class ClientHandler {
 	try {
 	    return maininst.memoryusageDo();
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	    return null;
 	}
     }

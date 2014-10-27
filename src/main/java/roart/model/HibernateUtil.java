@@ -32,14 +32,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // dummy
 //import net.sf.ehcache.hibernate.EhCacheRegionFactory;
 
 public class HibernateUtil {
-    private static Log log = LogFactory.getLog("HibernateUtil");
+    private static Logger log = LoggerFactory.getLogger("HibernateUtil");
 
     private static SessionFactory factory = null;
     private static Session session = null;

@@ -1,17 +1,13 @@
 package roart.queue;
 
-import java.io.InputStream;
-import java.util.List;
-import org.apache.tika.metadata.Metadata;
-
-import roart.model.IndexFiles;
-import roart.model.ResultItem;
-
 import com.vaadin.ui.UI;
 
 public class ClientQueueElement {
+	
+	public enum Function { INDEX, FILESYSTEM, OVERLAPPING, REINDEXSUFFIX, REINDEXDATE, MEMORYUSAGE, NOTINDEXED, FILESYSTEMLUCENENEW, DBINDEX, DBSEARCH, CONSISTENTCLEAN, SEARCH };
+	
     public UI ui;
-    public String function;
+    public Function function;
     public String file;
     public String suffix;
     public String lowerdate;
@@ -19,7 +15,7 @@ public class ClientQueueElement {
     public boolean reindex;
     public boolean md5change;
 	
-    public ClientQueueElement(UI ui, String function, String file, String suffix, String lowerdate, String higherdate, boolean reindex, boolean md5change) {
+    public ClientQueueElement(UI ui, Function function, String file, String suffix, String lowerdate, String higherdate, boolean reindex, boolean md5change) {
 	this.ui = ui;
 	this.function = function;
 	this.file = file;

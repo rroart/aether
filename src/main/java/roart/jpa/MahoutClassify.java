@@ -1,6 +1,8 @@
 package roart.jpa;
 
 import roart.model.ResultItem;
+import roart.util.ConfigConstants;
+import roart.util.Constants;
 
 import java.util.List;
 import java.util.Map;
@@ -36,12 +38,12 @@ import org.apache.mahout.common.nlp.NGrams;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MahoutClassify {
 
-    private static Log log = LogFactory.getLog("MahoutClassify");
+    private static Logger log = LoggerFactory.getLogger("MahoutClassify");
 
     private static String modelPath = null;
     private static String labelIndexPath = null;
@@ -59,25 +61,25 @@ public class MahoutClassify {
 
     public MahoutClassify() {
 	try {
-	    modelPath = roart.util.Prop.getProp().getProperty("mahaoutmodelpath");
-	    labelIndexPath = roart.util.Prop.getProp().getProperty("mahoutlabelindexfilepath");
-	    dictionaryPath = roart.util.Prop.getProp().getProperty("mahoutdictionarypath");
-	    documentFrequencyPath = roart.util.Prop.getProp().getProperty("mahoutdocumentfrequencypath");
-	    String bayestype = roart.util.Prop.getProp().getProperty("mahoutalgorithm");
+	    modelPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTMODELPATH);
+	    labelIndexPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTLABELINDEXFILEPATH);
+	    dictionaryPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTDICTIONARYPATH);
+	    documentFrequencyPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH);
+	    String bayestype = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTALGORITHM);
 	    // not waterproof on purpose, won't check if var correctly set
 	    bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
-	    String fsdefaultname = roart.util.Prop.getProp().getProperty("mahoutconffs");
+	    String fsdefaultname = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTCONFFS);
 	    if (fsdefaultname != null) {
 		configuration.set("fs.default.name", fsdefaultname);
 	    }
 	    NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
 	    
-	    if ("cbayes".equals(bayestype)) {
+	    if (ConfigConstants.CBAYES.equals(bayestype)) {
 		classifier2 = new ComplementaryNaiveBayesClassifier(model);
 	    }
-	    if ("bayes".equals(bayestype)) {
+	    if (ConfigConstants.BAYES.equals(bayestype)) {
 		classifier = new StandardNaiveBayesClassifier( model) ;
 	    }
 
@@ -98,7 +100,7 @@ public class MahoutClassify {
 	    log.info("Number of labels: " + labelCount);
 	    log.info("Number of documents in training set: " + documentCount);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 
     }
@@ -141,7 +143,7 @@ public class MahoutClassify {
 	    log.info(" cat " + labels.get(bestCategoryId));
 	    return labels.get(bestCategoryId);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	return null;
     }
@@ -183,7 +185,7 @@ public static Map<Integer, Long> readDocumentFrequency(Configuration conf, Path 
 	ts.close();
 	return wordCount;
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	return 0;
     }

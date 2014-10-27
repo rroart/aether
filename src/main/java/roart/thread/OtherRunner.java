@@ -9,16 +9,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.content.OtherHandler;
 import roart.dir.Traverse;
 import roart.queue.Queues;
+import roart.util.Constants;
 
 public class OtherRunner implements Runnable {
 	
-	private static Log log = LogFactory.getLog("OtherRunner");
+	private static Logger log = LoggerFactory.getLogger("OtherRunner");
 	
     public void run() {
     	while (true) {
@@ -27,7 +28,7 @@ public class OtherRunner implements Runnable {
     				TimeUnit.SECONDS.sleep(1);
     			} catch (InterruptedException e) {
     				// TODO Auto-generated catch block
-    				log.error("Exception", e);
+    				log.error(Constants.EXCEPTION, e);
     			}
     			continue;
     		}
@@ -35,7 +36,7 @@ public class OtherRunner implements Runnable {
 		try {
 		    OtherHandler.doOther();    	
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
      	}
     }

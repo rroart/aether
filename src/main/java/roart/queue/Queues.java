@@ -8,12 +8,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Queues {
 	
-	private static Log log = LogFactory.getLog("Queues");
+	private static Logger log = LoggerFactory.getLogger("Queues");
 	
     static int limit = 100;
 

@@ -3,20 +3,16 @@ package roart.service;
 import roart.model.ResultItem;
 
 import javax.servlet.http.*;
-import java.util.Vector;
-import java.util.Enumeration;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
 
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import java.io.*;
@@ -24,6 +20,7 @@ import java.io.*;
 import roart.dir.Traverse;
 
 import roart.queue.ClientQueueElement;
+import roart.queue.ClientQueueElement.Function;
 
 import roart.model.FileLocation;
 import roart.model.FileObject;
@@ -37,23 +34,25 @@ import roart.content.OtherHandler;
 import roart.content.ClientHandler;
 import roart.thread.ClientRunner;
 import roart.thread.DbRunner;
+import roart.util.ConfigConstants;
+import roart.util.Constants;
 
 import roart.dao.FileSystemDao;
 import roart.dao.SearchDao;
 import roart.dao.IndexFilesDao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ControlService {
-    private Log log = LogFactory.getLog(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static int dirsizelimit = 100;
 
     // called from ui
     // returns list: new file
     public void traverse(String add) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "filesystem", add, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEM, add, null, null, null, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -70,7 +69,7 @@ public class ControlService {
     // called from ui
     // returns list: new file
     public void traverse() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "filesystem", null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEM, null, null, null, null, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -88,12 +87,12 @@ public class ControlService {
     public static void parseconfig() {
 	System.out.println("config2 parsed");
 	//log.info("config2 parsed");
-	nodename  = roart.util.Prop.getProp().getProperty("nodename");
+	nodename  = roart.util.Prop.getProp().getProperty(ConfigConstants.NODENAME);
 	if (nodename == null || nodename.length() == 0) {
 		nodename = "localhost";
 	}
-	String dirliststr = roart.util.Prop.getProp().getProperty("dirlist");
-	String dirlistnotstr = roart.util.Prop.getProp().getProperty("dirlistnot");
+	String dirliststr = roart.util.Prop.getProp().getProperty(ConfigConstants.DIRLIST);
+	String dirlistnotstr = roart.util.Prop.getProp().getProperty(ConfigConstants.DIRLISTNOT);
 	dirlist = dirliststr.split(",");
 	dirlistnot = dirlistnotstr.split(",");
     }
@@ -108,19 +107,19 @@ public class ControlService {
 		filesetnew.addAll(filesetnew2);
 	    }
 	} catch (Exception e) {
-		log.info(e);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 	return retList;
     }
 
     // called from ui
     public void overlapping() {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "overlapping", null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.OVERLAPPING, null, null, null, null, false, false);
 	Queues.clientQueue.add(e);
     }
 
-    public List<List> overlappingDo() {
+    @SuppressWarnings("rawtypes")
+	public List<List> overlappingDo() {
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 	List<ResultItem> retList2 = new ArrayList<ResultItem>();
 	ResultItem ri = new ResultItem();
@@ -149,8 +148,7 @@ public class ControlService {
 	    Set<String> filesetnew2 = Traverse.doList2(dirset, fileset);
 	    filesetnew.addAll(filesetnew2);
 	} catch (Exception e) {
-		log.info(e);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 
 	log.info("dirs " + dirset.size());
@@ -254,7 +252,7 @@ public class ControlService {
     // returns list: not indexed
     // returns list: deleted
     public void index(String suffix) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "reindexsuffix", null, suffix, null, null, true, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXSUFFIX, null, suffix, null, null, true, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -264,7 +262,7 @@ public class ControlService {
     // returns list: file does not exist
     // returns list: not indexed
     public void index(String add, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "index", add, null, null, null, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.INDEX, add, null, null, null, reindex, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -273,17 +271,18 @@ public class ControlService {
     // returns list: tika timeout
     // returns list: not indexed
     public void reindexdatelower(String date, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "reindexdate", null, null, date, null, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXDATE, null, null, date, null, reindex, false);
 	Queues.clientQueue.add(e);
     }
 
     public void reindexdatehigher(String date, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "reindexdate", null, null, null, date, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXDATE, null, null, null, date, reindex, false);
 	Queues.clientQueue.add(e);
     }
 
-    public List<List> clientDo(ClientQueueElement el) throws Exception {
-	String function = el.function;
+    @SuppressWarnings("rawtypes")
+	public List<List> clientDo(ClientQueueElement el) throws Exception {
+	Function function = el.function;
 	String filename = el.file;
 	boolean reindex = el.reindex;
 	boolean newmd5 = el.md5change;
@@ -320,7 +319,7 @@ public class ControlService {
 	// filesystemlucenenew
 
 	DbRunner.doupdate = false;
-	if (function.equals("filesystem") || function.equals("filesystemlucenenew") || (function.equals("index") && filename != null /*&& !reindex*/)) {
+	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || (function == Function.INDEX && filename != null /*&& !reindex*/)) {
 	    if (filename != null) {
 		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5, false);
 	    } else {
@@ -329,7 +328,7 @@ public class ControlService {
 	    for (String file : notfoundset) {
 	    	retNotExistList.add(new ResultItem(file));
 	    }
-	    if (function.equals("filesystem")) {
+	    if (function == Function.FILESYSTEM) {
 		IndexFilesDao.commit();
 		retlistlist.add(retNewFilesList);
 		DbRunner.doupdate = true;
@@ -338,9 +337,9 @@ public class ControlService {
 	}
 
 	Collection<IndexFiles> indexes = null;
-	if (function.equals("filesystemlucenenew")) {
+	if (function == Function.FILESYSTEMLUCENENEW) {
 	    indexes = indexnewset;
-	} else if (function.equals("index") && filename != null && !reindex) {
+	} else if (function == Function.INDEX && filename != null && !reindex) {
 	    Set<IndexFiles> indexset = new HashSet<IndexFiles>();
 	    for (String name : filesetnew) {
 		String md5 = IndexFilesDao.getMd5ByFilename(name);
@@ -353,10 +352,10 @@ public class ControlService {
 	}
 	DbRunner.doupdate = true;
 
-	String maxfailedStr = roart.util.Prop.getProp().getProperty("failedlimit");
+	String maxfailedStr = roart.util.Prop.getProp().getProperty(ConfigConstants.FAILEDLIMIT);
 	int maxfailed = new Integer(maxfailedStr).intValue();
 
-	String maxStr = roart.util.Prop.getProp().getProperty("reindexlimit");
+	String maxStr = roart.util.Prop.getProp().getProperty(ConfigConstants.REINDEXLIMIT);
 	int max = new Integer(maxStr).intValue();
 
 	Set<IndexFiles> toindexset = new HashSet<IndexFiles>();
@@ -378,13 +377,13 @@ public class ControlService {
 		continue;
 	    }
 	    
-	    if (function.equals("reindexdate")) {
+	    if (function == Function.REINDEXDATE) {
 		i += Traverse.reindexdateFilter(el, index, toindexset, fileset, md5set);
 	    }
-	    if (function.equals("reindexsuffix")) {
+	    if (function == Function.REINDEXSUFFIX) {
 		i += Traverse.reindexsuffixFilter(el, index, el.suffix, toindexset, fileset, md5set);
 	    }
-	    if (function.equals("index") || function.equals("filesystemlucenenew")) {
+	    if (function == Function.INDEX || function == Function.FILESYSTEMLUCENENEW) {
 		i += Traverse.indexnoFilter(el, index, reindex, toindexset, fileset, md5set);
 	    }
 	    
@@ -437,8 +436,7 @@ public class ControlService {
 	try {
 	    return roart.jpa.SearchLucene.removeDuplicate();
 	} catch (Exception e) {
-		log.info(e);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 	return retlist;
     }
@@ -449,8 +447,7 @@ public class ControlService {
 	try {
 	    //return roart.jpa.SearchLucene.cleanup2();
 	} catch (Exception e) {
-		log.info(e);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 	return retlist;
     }
@@ -466,19 +463,19 @@ public class ControlService {
 		filesetnew.addAll(filesetnew2);
 	    }
 	} catch (Exception e) {
-		log.info(e);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 	return new ArrayList<String>(filesetnew);
     }
 
     // called from ui
     public void memoryusage() {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "memoryusage", null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.MEMORYUSAGE, null, null, null, null, false, false);
 	Queues.clientQueue.add(e);
     }
 
-    public List<List> memoryusageDo() {
+    @SuppressWarnings("rawtypes")
+	public List<List> memoryusageDo() {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	try {
 	    Runtime runtime = Runtime.getRuntime();
@@ -491,8 +488,7 @@ public class ControlService {
 	    retlist.add(new ResultItem("max memory: " + format.format(maxMemory / 1024)));
 	    retlist.add(new ResultItem("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024)));
 	} catch (Exception e) {
-		log.info(e);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 	List<List> retlistlist = new ArrayList<List>();
 	retlistlist.add(retlist);
@@ -503,11 +499,12 @@ public class ControlService {
     // returns list: not indexed
     // returns list: another with columns
     public void notindexed() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "notindexed", null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.NOTINDEXED, null, null, null, null, false, false);
 	Queues.clientQueue.add(e);
     }
 
-    public List<List> notindexedDo() throws Exception {
+    @SuppressWarnings("rawtypes")
+	public List<List> notindexedDo() throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
@@ -576,8 +573,7 @@ public class ControlService {
 		retlist2.add(ri2);
 	    }
 	} catch (Exception e) {
-	    log.info(e);
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	log.info("sizes " + retlist.size() + " " + retlist2.size() + " " + System.currentTimeMillis());
 	retlistlist.add(retlist);
@@ -592,22 +588,23 @@ public class ControlService {
     // returns list: file does not exist
     // returns list: not indexed
     public void filesystemlucenenew() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "filesystemlucenenew", null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEMLUCENENEW, null, null, null, null, false, false);
 	Queues.clientQueue.add(e);
     }
 
     public void filesystemlucenenew(String add, boolean md5checknew) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "filesystemlucenenew", add, null, null, null, false, md5checknew);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEMLUCENENEW, add, null, null, null, false, md5checknew);
 	Queues.clientQueue.add(e);
     }
 
     public void dbindex(String md5) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "dbindex", md5, null, null, null, false, false); // dumb overload habit
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DBINDEX, md5, null, null, null, false, false); // dumb overload habit
 	Queues.clientQueue.add(e);
     }
 
-    public List<List> dbindexDo(ClientQueueElement el) throws Exception {
-	String function = el.function;
+    @SuppressWarnings("rawtypes")
+	public List<List> dbindexDo(ClientQueueElement el) throws Exception {
+	Function function = el.function;
 	String md5 = el.file;
 	log.info("function " + function + " " + md5);
 
@@ -648,12 +645,13 @@ public class ControlService {
     }
 
     public void dbsearch(String md5) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "dbsearch", md5, null, null, null, false, false); // dumb overload habit
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DBSEARCH, md5, null, null, null, false, false); // dumb overload habit
 	Queues.clientQueue.add(e);
     }
 
-    public List<List> dbsearchDo(ClientQueueElement el) throws Exception {
-	String function = el.function;
+    @SuppressWarnings("rawtypes")
+	public List<List> dbsearchDo(ClientQueueElement el) throws Exception {
+	Function function = el.function;
 	String searchexpr = el.file;
 	int i = searchexpr.indexOf(":");
 	log.info("function " + function + " " + searchexpr);
@@ -763,7 +761,7 @@ public class ControlService {
 	}
 
 	public void startTikaWorker() {
-		String timeoutstr = roart.util.Prop.getProp().getProperty("tikatimeout");
+		String timeoutstr = roart.util.Prop.getProp().getProperty(ConfigConstants.TIKATIMEOUT);
 	    int timeout = new Integer(timeoutstr).intValue();
 	    TikaRunner.timeout = timeout;
 
@@ -783,7 +781,7 @@ public class ControlService {
 	}
 
 	public void startOtherWorker() {
-		String timeoutstr = roart.util.Prop.getProp().getProperty("othertimeout");
+		String timeoutstr = roart.util.Prop.getProp().getProperty(ConfigConstants.OTHERTIMEOUT);
 	    int timeout = new Integer(timeoutstr).intValue();
 	    OtherHandler.timeout = timeout;
 
@@ -810,7 +808,8 @@ public class ControlService {
     	log.info("starting db worker");
 	}
 
-    private List<List> mergeListSet(Set<List> listSet, int size) {
+    @SuppressWarnings("rawtypes")
+	private List<List> mergeListSet(Set<List> listSet, int size) {
 	List<List> retlistlist = new ArrayList<List>();
 	for (int i = 0 ; i < size ; i++ ) {
 	    List<ResultItem> retlist = new ArrayList<ResultItem>();
@@ -826,11 +825,12 @@ public class ControlService {
 
 	public void consistentclean(boolean clean) {
 		// TODO Auto-generated method stub
-		ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), "consistentclean", null, null, null, null, clean, false); // more dumb overload
+		ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.CONSISTENTCLEAN, null, null, null, null, clean, false); // more dumb overload
 		Queues.clientQueue.add(e);
 	    }
 
-	    public List<List> consistentcleanDo(ClientQueueElement el) {
+	    @SuppressWarnings("rawtypes")
+		public List<List> consistentcleanDo(ClientQueueElement el) {
 	    	boolean clean = el.reindex;
 		List<ResultItem> delList = new ArrayList<ResultItem>();
 		List<ResultItem> nonexistList = new ArrayList<ResultItem>();
@@ -897,7 +897,7 @@ public class ControlService {
 		}
 		
 		} catch (Exception e) {
-			log.info("Exception", e);
+			log.info(Constants.EXCEPTION, e);
 		}
 
 		List<List> retlistlist = new ArrayList<List>();

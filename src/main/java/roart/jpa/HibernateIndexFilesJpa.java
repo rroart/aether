@@ -12,12 +12,12 @@ import roart.model.IndexFiles;
 import roart.model.HibernateIndexFiles;
 import roart.service.ControlService;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HibernateIndexFilesJpa extends IndexFilesJpa {
 
-    private static Log log = LogFactory.getLog("HibernateIndexFilesJpa");
+    private static Logger log = LoggerFactory.getLogger("HibernateIndexFilesJpa");
 
     public IndexFiles getByMd5(String md5) throws Exception {
 	HibernateIndexFiles index = HibernateIndexFiles.getByMd5(md5);
@@ -77,7 +77,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    hif.setNoindexreason(i.getNoindexreason());
 	    hif.setFilenames(i.getFilenames());
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
     }
 

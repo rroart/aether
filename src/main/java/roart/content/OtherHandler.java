@@ -12,14 +12,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.dir.Traverse;
 import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
+import roart.util.Constants;
 import roart.util.ExecCommand;
 import roart.dao.FileSystemDao;
 
@@ -27,7 +28,7 @@ import org.apache.tika.metadata.Metadata;
 
 public class OtherHandler {
 	
-	private static Log log = LogFactory.getLog("OtherHandler");
+	private static Logger log = LoggerFactory.getLogger("OtherHandler");
 
     static public int timeout = 3600;
 	
@@ -62,7 +63,7 @@ public class OtherHandler {
 	temp = File.createTempFile("other", ".txt");
     tmp = temp.getAbsolutePath();
     } catch (Exception e) {
-     log.error("Exception", e);
+     log.error(Constants.EXCEPTION, e);
     }
 	// epub 2nd try
 	if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".chm")) {
@@ -172,7 +173,7 @@ public class OtherHandler {
     	    		try {
     	    			executeQueue();
     	    		} catch (Exception e) {
-    	    			log.error("Exception", e);
+    	    			log.error(Constants.EXCEPTION, e);
     	    		}
     	    	}
     	    }
@@ -192,7 +193,7 @@ public class OtherHandler {
     	    		try {
     					Thread.sleep(1000);
     				} catch (InterruptedException e) {
-    					log.error("Exception", e);
+    					log.error(Constants.EXCEPTION, e);
     					// TODO Auto-generated catch block
     				}
     	    		long now = System.currentTimeMillis();
@@ -210,7 +211,7 @@ public class OtherHandler {
     			try {
     				Thread.sleep(1000);
     			} catch (InterruptedException e) {
-    				log.error("Exception", e);
+    				log.error(Constants.EXCEPTION, e);
     				// TODO Auto-generated catch block
     			}
     			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable + " " + otherWorker.isAlive() + " " + otherWorker.isInterrupted() + " " + otherWorker.interrupted());

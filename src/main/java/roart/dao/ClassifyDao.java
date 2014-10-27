@@ -14,11 +14,11 @@ import roart.jpa.MahoutClassifyJpa;
 
 import roart.model.ResultItem;
  
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClassifyDao {
-    private static Log log = LogFactory.getLog("ClassifyDao");
+    private static Logger log = LoggerFactory.getLogger("ClassifyDao");
 
     private static ClassifyJpa classifyJpa = null;
 

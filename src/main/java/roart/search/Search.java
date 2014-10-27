@@ -21,11 +21,11 @@ import java.util.HashSet;
  
 import org.apache.tika.metadata.Metadata;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Search {
-    private static Log log = LogFactory.getLog("Search");
+    private static Logger log = LoggerFactory.getLogger("Search");
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     public static void indexme() {
@@ -55,17 +55,17 @@ public class Search {
     try {
     retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist, dbindex);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    retsize = -1;
 	} catch (OutOfMemoryError e) {
-	    log.fatal("Error", e);
+	    log.fatal(roart.util.Constants.ERROR, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
 	    retsize = -1;
     }
 
     if (retsize < 0) {
-	//dbindex.setNoindexreason("Exception"); // later, propagate the exception
+	//dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
 	ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
 	ri.get().set(2, dbfilename);
 	retlistnot.add(ri);
@@ -88,7 +88,7 @@ public class Search {
 		inputStream.close();
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
-		log.error("Exception", e);
+		log.error(roart.util.Constants.EXCEPTION, e);
 	}
     }
     Queues.decIndexs();

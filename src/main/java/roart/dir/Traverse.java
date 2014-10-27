@@ -15,8 +15,8 @@ import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.model.ResultItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import roart.util.ConfigConstants;
+import roart.util.Constants;
 import roart.util.ExecCommand;
 
 import org.apache.tika.metadata.Metadata;
@@ -33,7 +35,7 @@ public class Traverse {
 
     private static int MAXFILE = 500;
 
-    private static Log log = LogFactory.getLog("Traverse");
+    private static Logger log = LoggerFactory.getLogger("Traverse");
 
     private static boolean indirlistnot(String filename, String[] dirlistnot) {
 	if (dirlistnot == null) {
@@ -118,11 +120,11 @@ public class Traverse {
 			    }
 			}
 			} catch (FileNotFoundException e) {
-				log.error("Exception", e);
+				log.error(Constants.EXCEPTION, e);
 				notfoundset.add(filename);
 		    } catch (Exception e) {
 			log.info("Error: " + e.getMessage());
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 		}
@@ -252,7 +254,7 @@ public class Traverse {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<ResultItem> retlistnot = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
-	String maxStr = roart.util.Prop.getProp().getProperty("failedlimit");
+	String maxStr = roart.util.Prop.getProp().getProperty(ConfigConstants.FAILEDLIMIT);
         int max = new Integer(maxStr).intValue();
 	Set<String> md5set = new HashSet<String>();
 	String dirname = add;

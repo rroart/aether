@@ -16,11 +16,11 @@ import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 import roart.model.IndexFiles;
  
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SearchDao {
-    private static Log log = LogFactory.getLog("SearchDao");
+    private static Logger log = LoggerFactory.getLogger("SearchDao");
 
     private static SearchJpa searchJpa = null;
 

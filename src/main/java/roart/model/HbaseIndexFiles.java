@@ -31,13 +31,15 @@ import org.apache.hadoop.hbase.client.Scan;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
+import roart.util.ConfigConstants;
+import roart.util.Constants;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HbaseIndexFiles {
 
-    private static Log log = LogFactory.getLog("HbaseIndexFiles");
+    private static Logger log = LoggerFactory.getLogger("HbaseIndexFiles");
 
     // column families
     private static byte[] indexcf = Bytes.toBytes("if");
@@ -68,9 +70,9 @@ public class HbaseIndexFiles {
     public HbaseIndexFiles() {
 	try {
 	Configuration conf = HBaseConfiguration.create();
-	String quorum = roart.util.Prop.getProp().getProperty("hbasequorum");
-	String port = roart.util.Prop.getProp().getProperty("hbaseport");
-	String master = roart.util.Prop.getProp().getProperty("hbasemaster");
+	String quorum = roart.util.Prop.getProp().getProperty(ConfigConstants.HBASEQUORUM);
+	String port = roart.util.Prop.getProp().getProperty(ConfigConstants.HBASEPORT);
+	String master = roart.util.Prop.getProp().getProperty(ConfigConstants.HBASEMASTER);
 	conf.set("hbase.zookeeper.quorum", quorum);
 	conf.set("hbase.zookeeper.property.clientPort", port);
 	conf.set("hbase.master", master);
@@ -118,7 +120,7 @@ public class HbaseIndexFiles {
 	admin.enableTable("files");
 	//HTable table = new HTable(conf, "index");
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
     }
 
@@ -195,9 +197,9 @@ public class HbaseIndexFiles {
 	    }
 	    
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
     }
 
@@ -214,7 +216,7 @@ public class HbaseIndexFiles {
 		filesTable.put(put);
 	    }
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
     }
 
@@ -285,7 +287,7 @@ public class HbaseIndexFiles {
 	    IndexFiles ifile = get(index);
 	    return ifile;
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	return null;
     }
@@ -323,7 +325,7 @@ public class HbaseIndexFiles {
 	    }
 	    return bytesToString(result.getValue(filescf, md5q));
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	return null;
     }
@@ -360,7 +362,7 @@ public class HbaseIndexFiles {
 	    Put put = new Put(Bytes.toBytes(md5));
 	    indexTable.put(put);
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	IndexFiles i = new IndexFiles(md5);
 	//i.setMd5(md5);
@@ -407,7 +409,7 @@ public class HbaseIndexFiles {
 	    filesTable.flushCommits();
 	    indexTable.flushCommits();
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
     }
 
@@ -419,7 +421,7 @@ public class HbaseIndexFiles {
 	    filesTable = hconn.getTable("files");
 	    indexTable = hconn.getTable("index");
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
     }
 

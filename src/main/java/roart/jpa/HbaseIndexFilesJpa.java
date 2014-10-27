@@ -26,12 +26,12 @@ import roart.model.FileLocation;
 import roart.model.IndexFiles;
 import roart.model.HbaseIndexFiles;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HbaseIndexFilesJpa extends IndexFilesJpa {
 
-    private Log log = LogFactory.getLog(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public IndexFiles getByMd5(String md5) throws Exception {
 	return HbaseIndexFiles.get(md5);

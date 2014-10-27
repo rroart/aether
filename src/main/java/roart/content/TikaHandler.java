@@ -8,6 +8,7 @@ import roart.model.ResultItem;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
+import roart.util.Constants;
 import roart.dao.FileSystemDao;
 
 import java.io.*;
@@ -53,11 +54,11 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TikaHandler {
-    private Log log = LogFactory.getLog("TikaHandler");
+    private Logger log = LoggerFactory.getLogger("TikaHandler");
 
     private class NoDocumentMetHandler extends DefaultHandler{
 
@@ -197,10 +198,10 @@ public class TikaHandler {
 	    type.process(input, output, metadata);
 	    //type.process(input, System.out);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	} catch (Error e) {
-	    log.fatal("Error", e);
+	    log.fatal(Constants.ERROR, e);
 	    index.setFailedreason(index.getFailedreason() + "tika error " + e.getClass().getName() + " ");
 	} finally {
 	    input.close();
@@ -320,7 +321,7 @@ public class TikaHandler {
 	    }
 	} catch (Exception e) {
 	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	} finally {
 	    //stream.close();            // close the stream
 	}
@@ -332,7 +333,7 @@ public class TikaHandler {
 		log.error("queue not having " + dbfilename);
 	}
 	} catch (Exception e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	}
 	finally {
 		log.info("ending " + el.dbfilename);
@@ -368,7 +369,7 @@ public class TikaHandler {
 	    }
 	    return  result.toString();
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	    return null;
 	}
 	}

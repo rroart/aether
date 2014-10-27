@@ -36,8 +36,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import roart.util.Constants;
 
 @NamedQueries({
         @NamedQuery(name = "idxByFile",
@@ -49,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
     @org.hibernate.annotations.Table(appliesTo = "Index")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public class HibernateIndexFiles implements Serializable {
-	private static Log log = LogFactory.getLog("HibernateIndexFiles");
+	private static Logger log = LoggerFactory.getLogger("HibernateIndexFiles");
 	private String md5;
 	private Boolean indexed;
 	private String timeindex;
@@ -287,7 +289,7 @@ import org.apache.commons.logging.LogFactory;
 		}
 		return getByMd5(md5);
 	    } catch (Exception e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	    return null;
 	}
@@ -307,7 +309,7 @@ import org.apache.commons.logging.LogFactory;
 		}
 		return md5;
 	    } catch (Exception e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	    return null;
 	}
@@ -325,7 +327,7 @@ import org.apache.commons.logging.LogFactory;
 		}
 		return filenames;
 	    } catch (Exception e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	    return null;
 	}
@@ -334,7 +336,7 @@ import org.apache.commons.logging.LogFactory;
             try {
                 roart.model.HibernateUtil.currentSession().flush();
             } catch (Exception e) {
-                log.error("Exception", e);
+                log.error(Constants.EXCEPTION, e);
             }
 	}
 
@@ -342,7 +344,7 @@ import org.apache.commons.logging.LogFactory;
             try {
                 roart.model.HibernateUtil.commit();
             } catch (Exception e) {
-                log.error("Exception", e);
+                log.error(Constants.EXCEPTION, e);
             }
 	}
 

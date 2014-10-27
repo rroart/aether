@@ -2,6 +2,7 @@ package roart.servlet.listeners;
 
 import roart.jpa.HDFS;
 import roart.lang.LanguageDetect;
+import roart.util.ConfigConstants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,27 +20,27 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     public void contextInitialized(ServletContextEvent context)  {
 	roart.service.ControlService.parseconfig();
 	
-	String myfs = roart.util.Prop.getProp().getProperty("fs");
+	String myfs = roart.util.Prop.getProp().getProperty(ConfigConstants.FS);
 	if (myfs == null) {
-	    myfs = "local";
+	    myfs = ConfigConstants.LOCAL;
 	}
 	new HDFS();
 	new roart.jpa.LocalFileSystemJpa();
-	String myindex = roart.util.Prop.getProp().getProperty("index");
-	if (myindex.equals("solr")) {
+	String myindex = roart.util.Prop.getProp().getProperty(ConfigConstants.INDEX);
+	if (myindex.equals(ConfigConstants.SOLR)) {
 	    new roart.jpa.SearchSolr();
 	}
-	String mydb = roart.util.Prop.getProp().getProperty("db");
-	if (mydb.equals("hbase")) {
+	String mydb = roart.util.Prop.getProp().getProperty(ConfigConstants.DB);
+	if (mydb.equals(ConfigConstants.HBASE)) {
 	    new roart.model.HbaseIndexFiles();
 	} else {
-		roart.service.ControlService.nodename = "localhost"; // force this
+		roart.service.ControlService.nodename = ConfigConstants.LOCALHOST; // force this
 	}
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
-	if (myclassify != null && myclassify.equals("mahout")) {
+	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
+	if (myclassify != null && myclassify.equals(ConfigConstants.MAHOUT)) {
 	    new roart.jpa.MahoutClassify();
 	}
-	if (myclassify != null && myclassify.equals("opennlp")) {
+	if (myclassify != null && myclassify.equals(ConfigConstants.OPENNLP)) {
 	    new roart.jpa.OpennlpClassify();
 	}
 	roart.dao.FileSystemDao.instance(myfs);

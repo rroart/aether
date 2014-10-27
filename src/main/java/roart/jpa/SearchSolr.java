@@ -12,8 +12,8 @@ import java.util.HashSet;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
  
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -25,6 +25,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import roart.search.Constants;
+import roart.util.ConfigConstants;
 import roart.lang.LanguageDetect;
 
 import roart.model.SearchDisplay;
@@ -34,7 +35,7 @@ import roart.dao.IndexFilesDao;
 
 
 public class SearchSolr {
-    private static Log log = LogFactory.getLog("SearchSolr");
+    private static Logger log = LoggerFactory.getLogger("SearchSolr");
 
     static HttpSolrServer server = null;
 
@@ -42,7 +43,7 @@ public class SearchSolr {
 	if (server != null) {
 	    return;
 	}
-	String url = roart.util.Prop.getProp().getProperty("solrurl");
+	String url = roart.util.Prop.getProp().getProperty(ConfigConstants.SOLRURL);
 	server = new HttpSolrServer( url );
 	log.info("server " + server);
 	System.out.println("server " + server);
@@ -100,15 +101,15 @@ public class SearchSolr {
 	    req.add( docs );
 	    UpdateResponse rsp = req.process( server );
 	} catch (IOException e) {
-	    log.error("Exception", e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	} catch (SolrServerException e) {
-	    log.error("Exception", e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	}
@@ -151,9 +152,9 @@ public class SearchSolr {
 		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, display);
 	    }
 	} catch (SolrServerException e) {
-	    log.error("Exception", e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	} catch (Exception e) {
-	    log.error("Exception", e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
 	return strarr;
     }

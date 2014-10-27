@@ -20,10 +20,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.queue.Queues;
+import roart.util.Constants;
 import roart.content.ClientHandler;
 
 import com.vaadin.ui.UI;
@@ -31,7 +32,7 @@ import com.vaadin.ui.UIDetachedException;
 
 public class ClientRunner implements Runnable {
 	
-    private static Log log = LogFactory.getLog("ClientRunner");
+    private static Logger log = LoggerFactory.getLogger("ClientRunner");
 
     public static ConcurrentMap<UI, String> uiset = new ConcurrentHashMap<UI, String>();
 	
@@ -57,7 +58,7 @@ public class ClientRunner implements Runnable {
 			log.error("UIDetachedException", e);
 			uiset.remove(ui, "value");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 		lastupdate = now;
@@ -68,7 +69,7 @@ public class ClientRunner implements Runnable {
 		    TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
 		    // TODO Auto-generated catch block
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
 	    } else {
 		Callable<Object> callable = new Callable<Object>() {
@@ -76,9 +77,10 @@ public class ClientRunner implements Runnable {
 			Map map = null;
 			try {
 			    map = ClientHandler.doClient();
-			} catch (Throwable t) {
-			    log.error("Exception", t);
-			    //log.info("throwable");
+			} catch (Exception e) {
+			    log.error(Constants.EXCEPTION, e);
+			} catch (Error e) {
+			    log.fatal(Constants.ERROR, e);
 			}
 			finally {
 			    //log.info("myend");
@@ -93,7 +95,7 @@ public class ClientRunner implements Runnable {
 		    TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {
 		    // TODO Auto-generated catch block
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
 	    }
 
@@ -109,7 +111,7 @@ public class ClientRunner implements Runnable {
 			    endFuture(ui, map.get(ui));
 			}
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    }
@@ -139,7 +141,7 @@ public class ClientRunner implements Runnable {
 		log.error("UIDetachedException", e);
 		uiset.remove(ui, "value");
 	    } catch (Exception e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	}
     }

@@ -15,6 +15,7 @@ import org.apache.hadoop.fs.Path;
 
 import roart.dao.FileSystemDao;
 import roart.model.FileObject;
+import roart.util.Constants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class HDFS {
 	
 	public HDFS() {
 		configuration = new Configuration();
-		String fsdefaultname = roart.util.Prop.getProp().getProperty("hdfsconffs");
+		String fsdefaultname = roart.util.Prop.getProp().getProperty(Configuration.HDFSCONFFS);
 		if (fsdefaultname != null) {
 		    configuration.set("fs.default.name", fsdefaultname);
 		    log.info("Setting hadoop fs.default.name " + fsdefaultname);
@@ -47,7 +48,7 @@ public class HDFS {
 		}
 		return foList;
 		} catch (IOException e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			return null;
 		}
 	}
@@ -58,7 +59,7 @@ public class HDFS {
 			FileSystem fs = FileSystem.get(configuration);
 			return fs.exists(path);
 		} catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			return false;
 		}
 	}
@@ -80,7 +81,7 @@ public class HDFS {
 			FileStatus fstat = fs.getFileStatus(path);
 			
 		} catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			return null;
 		}
 		*/
@@ -93,7 +94,7 @@ public class HDFS {
 			FileSystem fs = FileSystem.get(configuration);
 			return fs.isDirectory(path);
 		} catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			return false;
 		}
 	}
@@ -105,7 +106,7 @@ public class HDFS {
 			return fs.open((Path) f.object);
 	} catch (IOException e) {
 			// TODO Auto-generated catch block
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			return null;
 		}
 	}

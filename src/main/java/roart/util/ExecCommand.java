@@ -1,7 +1,7 @@
 package roart.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
 
 public class ExecCommand {
 
-    private static Log log = LogFactory.getLog("ExecCommand");
+    private static Logger log = LoggerFactory.getLogger("ExecCommand");
 
     private Semaphore outputSem;
     private String output;
@@ -42,7 +42,7 @@ public class ExecCommand {
 		outputSem = new Semaphore(1);
 		outputSem.acquire();
 	    } catch (InterruptedException e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	}
     
@@ -58,7 +58,7 @@ public class ExecCommand {
 		output = readBuffer.toString();
 		outputSem.release();
 	    } catch (IOException e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	}
     }
@@ -69,7 +69,7 @@ public class ExecCommand {
 		errorSem = new Semaphore(1);
 		errorSem.acquire();
 	    } catch (InterruptedException e) {
-		log.warn("Exception", e);
+		log.warn(Constants.EXCEPTION, e);
 	    }
 	}
 
@@ -84,7 +84,7 @@ public class ExecCommand {
 		error = readBuffer.toString();
 		errorSem.release();
 	    } catch (IOException e) {
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 	    }
 	    if (error.length() > 0)
 		log.warn(error);
@@ -95,7 +95,7 @@ public class ExecCommand {
 	try {
 	    outputSem.acquire();
 	} catch (InterruptedException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	String value = output;
 	outputSem.release();
@@ -106,7 +106,7 @@ public class ExecCommand {
 	try {
 	    errorSem.acquire();
 	} catch (InterruptedException e) {
-	    log.error("Exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	}
 	String value = error;
 	errorSem.release();
@@ -142,8 +142,8 @@ public class ExecCommand {
 		proc.waitFor();
 	    }
         } catch (Exception e) {
-	    log.info("Exception" + e);
-	    log.error("Exception", e);
+	    log.info(Constants.EXCEPTION + e);
+	    log.error(Constants.EXCEPTION, e);
         }
 	return res;
     }

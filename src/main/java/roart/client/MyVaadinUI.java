@@ -4,6 +4,8 @@ import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.model.FileObject;
 import roart.thread.ClientRunner;
+import roart.util.ConfigConstants;
+import roart.util.Constants;
 
 import roart.dao.FileSystemDao;
 
@@ -65,8 +67,8 @@ import com.vaadin.shared.ui.label.ContentMode;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Push
@@ -76,7 +78,7 @@ import org.apache.commons.logging.LogFactory;
 public class MyVaadinUI extends UI
 {
 
-    private Log log = LogFactory.getLog(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     //private static final Logger log = LoggerFactory.getLogger(MyVaadinUI.class);
 
     @WebServlet(value = "/*", asyncSupported = true)
@@ -85,40 +87,40 @@ public class MyVaadinUI extends UI
     }
 
     private void tryLogin(String user, String password) { 
-	if ("user".equals(user) && "user".equals(password)) {
-	    getSession().setAttribute("user", "user");
+	if (Constants.USER.equals(user) && Constants.USER.equals(password)) {
+	    getSession().setAttribute(Constants.USER, Constants.USER);
 	}
-	if ("admin".equals(user) && "admin".equals(password)) {
-	    getSession().setAttribute("user", "admin");
+	if (Constants.ADMIN.equals(user) && Constants.ADMIN.equals(password)) {
+	    getSession().setAttribute(Constants.USER, Constants.ADMIN);
 	}
 	initVars();
 	setVisibilities();
     } 
 
     private void initVars() {
-	String mydownload = roart.util.Prop.getProp().getProperty("downloader");
+	String mydownload = roart.util.Prop.getProp().getProperty(ConfigConstants.DOWNLOADER);
 	boolean dodownload = mydownload != null && mydownload.length() > 0;
 
 
-	String myauthenticate = roart.util.Prop.getProp().getProperty("authenticate");
+	String myauthenticate = roart.util.Prop.getProp().getProperty(ConfigConstants.AUTHENTICATE);
 	boolean doauthenticate = myauthenticate != null && myauthenticate.length() > 0;
-	getSession().setAttribute("authenticate", doauthenticate);
+	getSession().setAttribute(ConfigConstants.AUTHENTICATE, doauthenticate);
 
 	boolean accessAdmin = false;
 	boolean accessUser = false;
-	String addr = (String) getSession().getAttribute("addr");
+	String addr = (String) getSession().getAttribute(Constants.ADDR);
 	accessAdmin = addr.equals("127.0.0.1");
 	//accessUser = addr.equals("127.0.0.1");
 	if (accessUser) {
-	    getSession().setAttribute("user", "user");
+	    getSession().setAttribute(Constants.USER, Constants.USER);
 	}
 	if (accessAdmin) {
-	    getSession().setAttribute("user", "admin");
+	    getSession().setAttribute(Constants.USER, Constants.ADMIN);
 	}
 
-	boolean userNone = "none".equals(getSession().getAttribute("user"));
-	boolean userUser = "user".equals(getSession().getAttribute("user"));
-	boolean userAdmin = "admin".equals(getSession().getAttribute("user"));
+	boolean userNone = Constants.NONE.equals(getSession().getAttribute(Constants.USER));
+	boolean userUser = Constants.USER.equals(getSession().getAttribute(Constants.USER));
+	boolean userAdmin = Constants.ADMIN.equals(getSession().getAttribute(Constants.USER));
 
 	accessUser |= !userNone;
 
@@ -133,7 +135,7 @@ public class MyVaadinUI extends UI
 	if ((boolean) getSession().getAttribute("authenticate")) {
 	    Button login = (Button) getSession().getAttribute("login");
 	    Button logout = (Button) getSession().getAttribute("logout");
-	    if (!getSession().getAttribute("user").equals("none")) {
+	    if (!getSession().getAttribute(Constants.USER).equals(Constants.NONE)) {
 		login.setVisible(false);
 		logout.setVisible(true);
 	    } else {
@@ -142,7 +144,7 @@ public class MyVaadinUI extends UI
 	    }
 	}
 	VerticalLayout cpTab = (VerticalLayout) getSession().getAttribute("controlpanel");
-	if ("admin".equals(getSession().getAttribute("user"))) {
+	if (Constants.ADMIN.equals(getSession().getAttribute(Constants.USER))) {
 	    cpTab.setVisible(true);
 	    statLabel.setVisible(true);
 	    ClientRunner.uiset.putIfAbsent(this, "value");
@@ -152,7 +154,7 @@ public class MyVaadinUI extends UI
 	    ClientRunner.uiset.remove(this, "value");
 	}
 	VerticalLayout sTab = (VerticalLayout) getSession().getAttribute("search");
-	if (!"none".equals(getSession().getAttribute("user"))) {
+	if (!Constants.NONE.equals(getSession().getAttribute(Constants.USER))) {
 	    sTab.setVisible(true);
 	} else {
 	    sTab.setVisible(false);
@@ -171,7 +173,7 @@ public class MyVaadinUI extends UI
         setContent(layout);
 
 	getSession().setAttribute("addr", request.getRemoteAddr());
-	getSession().setAttribute("user", "none");
+	getSession().setAttribute(Constants.USER, Constants.NONE);
 	initVars();
         
 	HorizontalLayout topLine = new HorizontalLayout();
@@ -220,10 +222,10 @@ public class MyVaadinUI extends UI
 	bottomLine.setWidth("90%");
 	Label nodeLabel = new Label("Node " + ControlService.nodename);
 	bottomLine.addComponent(nodeLabel);
-	Label dbLabel = new Label("Db type " + roart.util.Prop.getProp().getProperty("db"));
+	Label dbLabel = new Label("Db type " + roart.util.Prop.getProp().getProperty(ConfigConstants.DB));
 	//dbLabel.setWidth("30%");
 	bottomLine.addComponent(dbLabel);
-	Label idxLabel = new Label("Index type " + roart.util.Prop.getProp().getProperty("index"));
+	Label idxLabel = new Label("Index type " + roart.util.Prop.getProp().getProperty(ConfigConstants.INDEX));
 	//idxLabel.setWidth("30%");
 	bottomLine.addComponent(idxLabel);
 	Label licenseLabel = new Label("Affero GPL");
@@ -316,7 +318,7 @@ public class MyVaadinUI extends UI
         Button button = new Button("Logout");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-		getSession().setAttribute("user", "none");
+		getSession().setAttribute(Constants.USER, Constants.NONE);
 		initVars();
 		setVisibilities();
             }
@@ -366,7 +368,7 @@ public class MyVaadinUI extends UI
 		    maininst.filesystemlucenenew();
 		    Notification.show("Request sent");
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
             }
         });
@@ -382,7 +384,7 @@ public class MyVaadinUI extends UI
 		    maininst.traverse();
 		    Notification.show("Request sent");
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
             }
         });
@@ -398,7 +400,7 @@ public class MyVaadinUI extends UI
 		    maininst.index(null, false);
 		    Notification.show("Request sent");
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
             }
         });
@@ -450,7 +452,7 @@ public class MyVaadinUI extends UI
 		    maininst.notindexed();
 		    Notification.show("Request sent");
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
             }
         });
@@ -483,7 +485,7 @@ public class MyVaadinUI extends UI
 			maininst.filesystemlucenenew(value, false);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -506,7 +508,7 @@ public class MyVaadinUI extends UI
 			maininst.traverse(value);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -529,7 +531,7 @@ public class MyVaadinUI extends UI
 			maininst.index(value, false);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -600,7 +602,7 @@ public class MyVaadinUI extends UI
 			maininst.index(value, true);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -632,7 +634,7 @@ public class MyVaadinUI extends UI
 			maininst.reindexdatelower("" + time, true);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -664,7 +666,7 @@ public class MyVaadinUI extends UI
 			maininst.reindexdatehigher("" + time, true);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -687,7 +689,7 @@ public class MyVaadinUI extends UI
 			maininst.index(value);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -710,7 +712,7 @@ public class MyVaadinUI extends UI
 			maininst.filesystemlucenenew(value, true);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -733,7 +735,7 @@ public class MyVaadinUI extends UI
 			maininst.dbindex(value);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -756,7 +758,7 @@ public class MyVaadinUI extends UI
 			maininst.dbsearch(value);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
@@ -832,7 +834,7 @@ public Object generateCell(Table source, Object itemId,
                 try {
 		    return FileSystemDao.getInputStream(fo);
                 } catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
                     return null;
                 }
             }
@@ -878,7 +880,8 @@ public Object generateCell(Table source, Object itemId,
 	return res;
     }
 
-    public void displayResultLists(List<List> lists) {
+    @SuppressWarnings("rawtypes")
+	public void displayResultLists(List<List> lists) {
 	VerticalLayout tab = new VerticalLayout();
         tab.setCaption("Search results");
 
@@ -899,7 +902,8 @@ public Object generateCell(Table source, Object itemId,
 	//getSession().getLockInstance().unlock();
     }
 
-    public void displayResultListsTab(List<List> lists) {
+    @SuppressWarnings("rawtypes")
+	public void displayResultListsTab(List<List> lists) {
 	VerticalLayout tab = new VerticalLayout();
         tab.setCaption("Results");
 

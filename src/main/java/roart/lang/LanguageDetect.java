@@ -7,14 +7,14 @@ import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.Language;
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
 public class LanguageDetect {
 
-    private static Log log = LogFactory.getLog("LanguageDetect");
+    private static Logger log = LoggerFactory.getLogger("LanguageDetect");
 
     private static boolean inited = false;
 
@@ -35,9 +35,9 @@ public class LanguageDetect {
 	    log.info("language2 " + LanguageDetect.detectLangs(text));
 	    return retstr;
 	} catch (Exception e) {
-	    log.error("exception", e);
+	    log.error(Constants.EXCEPTION, e);
 	} catch (Error e) {
-	    log.fatal("error", e);
+	    log.fatal(Constants.ERROR, e);
 	}
 	return null;
     }

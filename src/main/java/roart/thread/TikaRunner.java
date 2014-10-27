@@ -16,8 +16,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.content.TikaHandler;
 import roart.queue.Queues;
@@ -25,7 +25,7 @@ import roart.queue.TikaQueueElement;
 
 public class TikaRunner implements Runnable {
 	
-	private static Log log = LogFactory.getLog("QueueRunner");
+	private static Logger log = LoggerFactory.getLogger("QueueRunner");
 	
     static public int timeout = 3600;
 
@@ -115,7 +115,7 @@ public class TikaRunner implements Runnable {
     				TimeUnit.SECONDS.sleep(1);
     			} catch (InterruptedException e) {
     				// TODO Auto-generated catch block
-    				log.error("Exception", e);
+    				log.error(Constants.EXCEPTION, e);
     			}
     			continue;
     		}
@@ -127,9 +127,9 @@ public class TikaRunner implements Runnable {
     					try {
     						doTikaTimeout();
 					} catch (Exception e) {
-					    log.error("exception", e);
+					    log.error(Constants.EXCEPTION, e);
 					} catch (Error e) {
-					    log.fatal("error", e);
+					    log.fatal(Constants.ERROR, e);
     					}
     					finally {
     						//log.info("myend");
@@ -154,7 +154,7 @@ public class TikaRunner implements Runnable {
 				//TimeUnit.SECONDS.sleep(60);
 			} catch (/*Interrupted*/Exception e) {
 				// TODO Auto-generated catch block
-				log.error("Exception", e);
+				log.error(Constants.EXCEPTION, e);
 			}
     	}
     }
@@ -170,7 +170,7 @@ public class TikaRunner implements Runnable {
     		try {
     			new TikaHandler().doTika(el);
     		} catch (Exception e) {
-    			log.error("Exception", e);
+    			log.error(Constants.EXCEPTION, e);
     		}
     	}
     }
@@ -190,7 +190,7 @@ public class TikaRunner implements Runnable {
     		try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				log.error("Exception", e);
+				log.error(Constants.EXCEPTION, e);
 				// TODO Auto-generated catch block
 			}
     		long now = System.currentTimeMillis();
@@ -208,7 +208,7 @@ public class TikaRunner implements Runnable {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			// TODO Auto-generated catch block
 		}
 		log.info("Tikaworker timeout " + tikaWorker + " " + tikaRunnable + " " + tikaWorker.isAlive() + " " + tikaWorker.isInterrupted() + " " + tikaWorker.interrupted());

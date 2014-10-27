@@ -9,14 +9,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.service.ControlService;
+import roart.util.Constants;
 
 public class ControlRunner implements Runnable {
 	
-	private static Log log = LogFactory.getLog("ControlRunner");
+	private static Logger log = LoggerFactory.getLogger("ControlRunner");
 	
     public void run() {
     	while (true) {
@@ -24,7 +25,7 @@ public class ControlRunner implements Runnable {
     				TimeUnit.SECONDS.sleep(60);
     			} catch (InterruptedException e) {
     				// TODO Auto-generated catch block
-    				log.error("Exception", e);
+    				log.error(Constants.EXCEPTION, e);
     			}
     			ControlService cs = new ControlService();
     			if (!ControlService.tikaWorker.isAlive()) {

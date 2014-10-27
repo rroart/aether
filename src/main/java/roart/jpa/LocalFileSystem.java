@@ -46,7 +46,7 @@ public class LocalFileSystem {
 		try {
 		    return new FileInputStream( (File) f.object /*new File(getAbsolutePath(f))*/);
 		} catch (FileNotFoundException e) {
-			log.error("Exception", e);
+			log.error(Constants.EXCEPTION, e);
 			return null;
 		}
 	}

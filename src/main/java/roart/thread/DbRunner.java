@@ -18,17 +18,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.queue.Queues;
+import roart.util.Constants;
 import roart.dao.IndexFilesDao;
 
 import com.vaadin.ui.UI;
 
 public class DbRunner implements Runnable {
 	
-    private static Log log = LogFactory.getLog("DbRunner");
+    private static Logger log = LoggerFactory.getLogger("DbRunner");
 
     public static Set<UI> uiset = new HashSet<UI>();
 	
@@ -49,7 +50,7 @@ public class DbRunner implements Runnable {
 			IndexFilesDao.commit();
 		    }
 		} catch (Exception e) {
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		}
 		lastupdate = now;
 	    }
@@ -58,7 +59,7 @@ public class DbRunner implements Runnable {
 		    TimeUnit.SECONDS.sleep(update);
 		} catch (InterruptedException e) {
 		    // TODO Auto-generated catch block
-		    log.error("Exception", e);
+		    log.error(Constants.EXCEPTION, e);
 		    ClientRunner.notify("Db exception");
 		}
 	    }

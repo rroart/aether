@@ -13,12 +13,12 @@ import roart.jpa.HibernateIndexFilesJpa;
 import roart.jpa.HbaseIndexFilesJpa;
 import roart.jpa.IndexFilesJpa;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IndexFilesDao {
 
-    private static Log log = LogFactory.getLog("IndexFilesDao");
+    private static Logger log = LoggerFactory.getLogger("IndexFilesDao");
 
     private static Map<String, IndexFiles> all = new TreeMap<String, IndexFiles>();
 

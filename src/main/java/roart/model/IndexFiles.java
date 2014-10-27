@@ -12,16 +12,18 @@ import java.util.Date;
 import roart.dao.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.service.ControlService;
+import roart.util.ConfigConstants;
+import roart.util.Constants;
 import roart.util.Prop;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IndexFiles {
 
 	public static final int FILENAMECOLUMN = 3;
 	
-	private static Log log = LogFactory.getLog("IndexFiles");
+	private static Logger log = LoggerFactory.getLogger("IndexFiles");
 	private String md5;
 	private Boolean indexed;
     private String timeclass;
@@ -95,7 +97,7 @@ public class IndexFiles {
 		return new Date(date.longValue());
 	    } catch (Exception e) {
 		log.error("Exception from " + timestamp);
-		log.error("Exception", e);
+		log.error(Constants.EXCEPTION, e);
 		return new Date(0);
 	    }
 	}
@@ -320,7 +322,7 @@ public class IndexFiles {
     }
 
 	public static ResultItem getHeader() {
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
+	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 	
 	ResultItem ri = new ResultItem();
@@ -415,7 +417,7 @@ public class IndexFiles {
 	}
 
 	public static ResultItem getResultItem(IndexFiles index, String lang) {
-	String myclassify = roart.util.Prop.getProp().getProperty("classify");
+	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
 	boolean doclassify = myclassify != null && myclassify.length() > 0;
 	
 	ResultItem ri = new ResultItem();
