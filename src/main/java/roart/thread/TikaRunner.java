@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import roart.content.TikaHandler;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
+import roart.util.Constants;
 
 public class TikaRunner implements Runnable {
 	
@@ -129,7 +130,7 @@ public class TikaRunner implements Runnable {
 					} catch (Exception e) {
 					    log.error(Constants.EXCEPTION, e);
 					} catch (Error e) {
-					    log.fatal(Constants.ERROR, e);
+					    log.error(Constants.ERROR, e);
     					}
     					finally {
     						//log.info("myend");

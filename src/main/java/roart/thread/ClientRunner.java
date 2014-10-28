@@ -80,7 +80,7 @@ public class ClientRunner implements Runnable {
 			} catch (Exception e) {
 			    log.error(Constants.EXCEPTION, e);
 			} catch (Error e) {
-			    log.fatal(Constants.ERROR, e);
+			    log.error(Constants.ERROR, e);
 			}
 			finally {
 			    //log.info("myend");

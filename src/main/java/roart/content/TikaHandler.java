@@ -201,7 +201,7 @@ public class TikaHandler {
 	    log.error(Constants.EXCEPTION, e);
 	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	} catch (Error e) {
-	    log.fatal(Constants.ERROR, e);
+	    log.error(Constants.ERROR, e);
 	    index.setFailedreason(index.getFailedreason() + "tika error " + e.getClass().getName() + " ");
 	} finally {
 	    input.close();

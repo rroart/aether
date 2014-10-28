@@ -59,7 +59,7 @@ public class Search {
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    retsize = -1;
 	} catch (OutOfMemoryError e) {
-	    log.fatal(roart.util.Constants.ERROR, e);
+	    log.error(roart.util.Constants.ERROR, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
 	    retsize = -1;
     }

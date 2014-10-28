@@ -10,6 +10,8 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.util.Constants;
+
 import java.io.*;
 
 public class LanguageDetect {
@@ -37,7 +39,7 @@ public class LanguageDetect {
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	} catch (Error e) {
-	    log.fatal(Constants.ERROR, e);
+	    log.error(Constants.ERROR, e);
 	}
 	return null;
     }
