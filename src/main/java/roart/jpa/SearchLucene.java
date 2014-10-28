@@ -112,7 +112,7 @@ public class SearchLucene {
     log.info("index generated");
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
-	    log.error(Constants.EXCEPTION, e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    return -1;
 	}
@@ -182,7 +182,7 @@ public class SearchLucene {
     }
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
-	    log.error(Constants.EXCEPTION, e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
 
     return strarr;
@@ -212,7 +212,7 @@ public class SearchLucene {
 	    thisDoc = ind.document(m);
 	}
 	catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	    continue;
 	}
 	String a2[] = thisDoc.getValues(Constants.ID);
@@ -275,7 +275,7 @@ public class SearchLucene {
     }
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
-	    log.error(Constants.EXCEPTION, e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
 
     return strarr;
@@ -395,7 +395,7 @@ public class SearchLucene {
 	    iw.close();
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
-	    log.error(Constants.EXCEPTION, e);
+	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
     }
 
@@ -421,7 +421,7 @@ public class SearchLucene {
 		thisDoc = ind.document(m);
 	    } 
 	    catch (Exception e) {
-		log.error(Constants.EXCEPTION, e);
+		log.error(roart.util.Constants.EXCEPTION, e);
 		continue;
 	    }
 	    String a2[] = thisDoc.getValues(field);
@@ -526,7 +526,7 @@ public class SearchLucene {
 		iw.updateDocument(term, thisDoc);
 	    } catch (Exception e) {
 		retlist.add("" + e);
-		log.error(Constants.EXCEPTION, e);
+		log.error(roart.util.Constants.EXCEPTION, e);
 	    }
 	}
 	/**
