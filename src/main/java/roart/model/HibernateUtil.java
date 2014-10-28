@@ -5,6 +5,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -55,8 +56,13 @@ public class HibernateUtil {
 
     public static Session getHibernateSession() throws /*MappingException,*/ HibernateException, Exception {
 	if (factory == null) {
+		/*
 	    AnnotationConfiguration configuration = new AnnotationConfiguration();
-	    factory = configuration.configure().buildSessionFactory();
+	    factory = configuration.configure().buildSessionFactory();*/
+		Configuration configuration = new Configuration().configure();
+		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().
+				applySettings(configuration.getProperties());
+		factory = configuration.buildSessionFactory(builder.build());
 	    //Object o = new net.sf.ehcache.hibernate.EhCacheRegionFactory();
 	}
 
