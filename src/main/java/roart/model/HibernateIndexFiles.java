@@ -43,7 +43,7 @@ import roart.util.Constants;
 
 @NamedQueries({
         @NamedQuery(name = "idxByFile",
-		    query = "select idx from HibernateIndexFiles idx where :file in idx.filenames")
+		    query = "select idx from HibernateIndexFiles idx left join idx.filenames filename where filename = :file")
 	    })
 
 @Entity
@@ -296,36 +296,24 @@ import roart.util.Constants;
 
 	public static String getMd5ByFilename(String filename) {
 	    try {
-		/*
-		return (HibernateIndexFiles) HibernateUtil.getHibernateSession().getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
-		*/
-		SQLQuery sqlQuery = HibernateUtil.currentSession().createSQLQuery("select md5 from files where filename = :filename");
-		sqlQuery.setParameter("filename", filename);
-		List<?> qResults = sqlQuery.list();
-		log.info("results " + qResults.size() + " " + filename);
-		String md5 = null;
-		for (Object row : qResults) {
-		    md5 = (String) row;
-		}
-		return md5;
+			HibernateIndexFiles hif = (HibernateIndexFiles) HibernateUtil.getHibernateSession().getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
+			if (hif == null) {
+				return null;
+			}
+			return hif.getMd5();
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	    }
 	    return null;
 	}
 
-	public static Set<String> getFilenamesByMd5(String md5) {
+	public static Set<FileLocation> getFilelocationsByMd5(String md5) {
 	    try {
-		SQLQuery sqlQuery = HibernateUtil.currentSession().createSQLQuery("select filename from files where md5 = :md5");
-		sqlQuery.setParameter("md5", md5);
-		List<?> qResults = sqlQuery.list();
-		log.info("results " + qResults.size() + " " + md5);
-		Set<String> filenames = new HashSet<String>();
-		for (Object row : qResults) {
-		    String filename = (String) row;
-		    filenames.add(filename);
-		}
-		return filenames;
+	    	HibernateIndexFiles ifile = getByMd5(md5);
+	    	if (ifile != null) {
+	    		Set<String> fls = ifile.getFilenames();
+	    		return FileLocation.getFilelocations(fls);
+	    	}
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	    }
