@@ -33,6 +33,8 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	String mydb = roart.util.Prop.getProp().getProperty(ConfigConstants.DB);
 	if (mydb.equals(ConfigConstants.HBASE)) {
 	    new roart.model.HbaseIndexFiles();
+	} else if (mydb.equals(ConfigConstants.DATANUCLEUS)) {
+		new roart.model.DataNucleusIndexFiles();
 	} else {
 		roart.service.ControlService.nodename = ConfigConstants.LOCALHOST; // force this
 	}

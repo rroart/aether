@@ -8,7 +8,9 @@ import java.util.Set;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.service.ControlService;
+import roart.util.ConfigConstants;
 
+import roart.jpa.DataNucleusIndexFilesJpa;
 import roart.jpa.HibernateIndexFilesJpa;
 import roart.jpa.HbaseIndexFilesJpa;
 import roart.jpa.IndexFilesJpa;
@@ -26,11 +28,14 @@ public class IndexFilesDao {
 
     public static void instance(String type) {
 	if (indexFilesJpa == null) {
-	    if (type.equals("hibernate")) {
+	    if (type.equals(ConfigConstants.HIBERNATE)) {
 		indexFilesJpa = new HibernateIndexFilesJpa();
 	    }
-	    if (type.equals("hbase")) {
+	    if (type.equals(ConfigConstants.HBASE)) {
 		indexFilesJpa = new HbaseIndexFilesJpa();
+	    }
+	    if (type.equals(ConfigConstants.DATANUCLEUS)) {
+		indexFilesJpa = new DataNucleusIndexFilesJpa();
 	    }
 	}
     }

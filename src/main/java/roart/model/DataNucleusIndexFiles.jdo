@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jdo PUBLIC
+    "-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 2.0//EN"
+    "http://java.sun.com/dtd/jdo_2_0.dtd">
+<jdo>
+    <package name="roart.model">
+        <class
+              name="DataNucleusIndexFiles">
+            <field
+                  name="md5"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="indexed"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="timeindex"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="timestamp"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="timeclass"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="convertsw"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="converttime"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="classification"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="failed"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="failedreason"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="timeoutreason"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="noindexreason"
+                  persistence-modifier="persistent"/>
+            <field
+                  name="filelocations"
+                  persistence-modifier="persistent"/>
+        </class>
+    </package>
+</jdo>
