@@ -26,12 +26,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
     }
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
-	Set<String> filenames = HibernateIndexFiles.getFilenamesByMd5(md5);
-	Set<FileLocation> flset = new HashSet<FileLocation>();
-	for (String filename : filenames) {
-	    flset.add(new FileLocation(ControlService.nodename, filename));
-	}
-	return flset;
+    	return HibernateIndexFiles.getFilelocationsByMd5(md5);
     }
 
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
