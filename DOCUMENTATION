@@ -33,7 +33,7 @@ Number of seconds for Other timeout
 othertimeout=600
 
 2.1.2 Database
-Can be hbase or Hibernate/H2.
+Can be hbase, DataNucleus or Hibernate/H2.
 
 2.1.2.1 Hibernate/H2
 Hibernate/H2 elevant settings:
@@ -46,6 +46,11 @@ db=hbase
 hbasequorum=localhost
 hbaseport=2181
 hbasemaster=localhost:2181
+
+2.1.2.3 DataNucleus
+DataNucleus elevant settings:
+db=datanucleus
+h2dir=...
 
 2.1.3 Indexing/search:
 Can be Lucene directly or Solr.
