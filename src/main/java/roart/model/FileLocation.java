@@ -1,5 +1,8 @@
 package roart.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import roart.dao.FileSystemDao;
 import roart.service.ControlService;
 
@@ -106,5 +109,21 @@ public class FileLocation {
 	    }
 	    return str.equals(obj.toString());
 	}
+
+		public static Set<String> getFilelocationsToString(Set<FileLocation> files) {
+			Set<String> set = new HashSet<String>();
+			for (FileLocation fl : files) {
+				set.add(fl.toString());
+			}
+			return set;
+		}
+    
+		public static Set<FileLocation> getFilelocations(Set<String> files) {
+			Set<FileLocation> set = new HashSet<FileLocation>();
+			for (String fl : files) {
+				set.add(new FileLocation(fl));
+			}
+			return set;
+		}
     
 }
