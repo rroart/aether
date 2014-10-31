@@ -51,6 +51,7 @@ hbasemaster=localhost:2181
 DataNucleus elevant settings:
 db=datanucleus
 h2dir=...
+mvn datanucleus:schema-create
 
 2.1.3 Indexing/search:
 Can be Lucene directly or Solr.
