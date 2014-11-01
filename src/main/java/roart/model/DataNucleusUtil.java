@@ -3,21 +3,8 @@ package roart.model;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.transaction.Transaction;
+import javax.jdo.Query;
+import javax.jdo.Transaction;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -39,12 +26,9 @@ public class DataNucleusUtil {
     private static Logger log = LoggerFactory.getLogger("DataNucleusUtil");
 
     private static DataNucleusUtil session = null;
-    private static EntityTransaction transaction = null;
-    private static EntityManager em = null;
+    private static PersistenceManagerFactory pmf = null;
     private static PersistenceManager pm = null;
-    public static EntityManager getEm() {
-    	return em;
-    }
+    private static Transaction transaction = null;
     public static PersistenceManager getPm() {
     	return pm;
     }
@@ -59,31 +43,32 @@ public class DataNucleusUtil {
 
     public static DataNucleusUtil getDataNucleusSession() throws Exception {
     	if (session == null) {
-    		EntityManagerFactory emf = Persistence.createEntityManagerFactory("IndexFiles");
-    		em = emf.createEntityManager();
-    		PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory("IndexFiles");
-    		pm = pmf.getPersistenceManager();
+    		pmf = JDOHelper.getPersistenceManagerFactory("IndexFiles");
     		session = new DataNucleusUtil();
     	}
 
-	if (transaction == null) {
-	    transaction = em.getTransaction();
-	    transaction.begin();
-	}
+    	if (pm == null) {
+    		pm = pmf.getPersistenceManager();	
+    	}
+    	
+    	if (transaction == null) {
+    		transaction = pm.currentTransaction();
+    		transaction.begin();
+    	}
 
-	if (session != null) {
-	    
-	}
-	return session;
+    	return session;
     }
 
     public static void commit() throws Exception {
-	log.info("Doing hibernate commit");
+	log.info("Doing DataNucleus commit");
 	transaction.commit();
-	em.close();
-	em = null;
+	 if (transaction.isActive())
+     {
+         transaction.rollback();
+     }
+	pm.close();
+	pm = null;
 	transaction = null;
-	session = null;
     }
 
     public static <T> List<T> convert(List l, Class<T> type) {
@@ -91,16 +76,16 @@ public class DataNucleusUtil {
     }
 
 	public void flush() {
-		em.flush();
+		pm.flush();
 	}
 
 	public Query createQuery(String string) {
-		Query q = em.createQuery(string);
+		Query q = pm.newQuery(string);
 		return q;
 	}
 
 	public void save(DataNucleusIndexFiles fi) {
-		em.persist(fi);
+		pm.makePersistent(fi);
 	}
 
 }

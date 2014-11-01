@@ -1,21 +1,10 @@
 package roart.model;
 
 import javax.jdo.Query;
+import javax.jdo.annotations.Column;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.jdo.annotations.PrimaryKey;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -31,56 +20,18 @@ import org.slf4j.LoggerFactory;
 
 import roart.util.Constants;
 
-@PersistenceCapable
-@Entity
-    @Table(name = "Index")
+@PersistenceCapable(table="IndexFiles")
     public class DataNucleusIndexFiles /*implements Serializable*/ {
 	/**
 	 * @author roart
 	 *
 	 */
-	/*
-	public static class Id implements Serializable {
-
-		public Id() {
-		}
-
-		public Id(java.lang.String str) {
-			java.util.StringTokenizer token = new java.util.StringTokenizer(
-					str, "::");
-		}
-
-		public java.lang.String toString() {
-			java.lang.String str = "";
-			return str;
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (o == null) {
-				return false;
-			}
-			if (o.getClass() != getClass()) {
-				return false;
-			}
-			Id objToCompare = (Id) o;
-			return true;
-		}
-
-		public int hashCode() {
-			return;
-		}
-
-	}
-*/
 	
 	private static Logger log = LoggerFactory.getLogger("DataNucleusIndexFiles");
 
 	@Column(name = "md5")
-	@Id
 	@Persistent	
+	@PrimaryKey
 	private String md5;
         public String getMd5() {
 	    return md5;
@@ -211,7 +162,7 @@ import roart.util.Constants;
 	    //Query query = DataNucleusUtil.currentSession().getPm().newQuery("select from " + DataNucleusIndexFiles.class.getName() + " where md5 == :md5");
 	    	// query.setFilter?
 	    Query query = DataNucleusUtil.currentSession().getPm().newQuery(DataNucleusIndexFiles.class);
-	    query.setFilter("md5 < mymd5");
+	    query.setFilter("md5 == mymd5");
 	    	query.declareParameters(String.class.getName() + " mymd5");
 	    	dnifs = (List<DataNucleusIndexFiles>) query.execute(md5);
 	    	if (dnifs == null || dnifs.size() == 0) {
@@ -264,10 +215,7 @@ import roart.util.Constants;
 	public void setFailedreason(String failedreason) {
 	    this.failedreason = failedreason;
 	}
-
-	@ElementCollection	
-	@CollectionTable(name = "files", joinColumns = @JoinColumn(name = "md5"))
-
+	
 	@Column(name = "filename")
 	@Persistent	
 	private Set<String> filelocations;
@@ -280,9 +228,9 @@ import roart.util.Constants;
 	    this.filelocations = FileLocation.getFilelocationsToString(filelocations);
 	}
 
-	public static DataNucleusIndexFiles getByFilename(String filename) {
+	public static DataNucleusIndexFiles getByFilename(FileLocation fl) {
 	    try {
-		String md5 = getMd5ByFilename(filename);
+		String md5 = getMd5ByFilename(fl);
 		if (md5 == null) {
 		    return null;
 		}
@@ -293,15 +241,15 @@ import roart.util.Constants;
 	    return null;
 	}
 
-	public static String getMd5ByFilename(String filename) {
+	public static String getMd5ByFilename(FileLocation fl) {
 	    try {
 	    	List<DataNucleusIndexFiles> dnifs = null;
 	    	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select from " + DataNucleusIndexFiles.class.getName() + " where filelocations.contains(fl)");
 	    	// query.setFilter?
-	    	query.declareParameters(String.class.getName() + " fl");
+	    	query.declareParameters(FileLocation.class.getName() + " fl");
 	    	//Object o = query.execute(filename);
 		//log.info("result " + o);
-	    	dnifs = (List<DataNucleusIndexFiles>) query.execute(filename);
+	    	dnifs = (List<DataNucleusIndexFiles>) query.execute(fl);
 	    	if (dnifs == null || dnifs.size() == 0) {
 	    		return null;
 	    	}
