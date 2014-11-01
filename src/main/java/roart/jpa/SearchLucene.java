@@ -176,7 +176,7 @@ public class SearchLucene {
 	String md5 = d.get(Constants.ID);
 	String lang = d.get(Constants.LANG);
 	IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
-	String filename = indexmd5.getFilelocation().toString();
+	String filename = indexmd5.getFilelocation();
 	log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
 	strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, display);
     }
