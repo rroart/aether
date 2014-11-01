@@ -7,7 +7,7 @@
   <artifactId>aether</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
   <!--artifactId>akashic-disk-search-engine</artifactId-->
-  <version>0.2-SNAPSHOT</version>
+  <version>0.3-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Aether Disk Search Engine</name>
   <!--name>Vaadin Web Application</name-->
@@ -179,7 +179,7 @@
                 <artifactId>datanucleus-maven-plugin</artifactId>
                 <version>4.0.0-release</version>
                 <configuration>
-                    <api>JPA</api>
+                    <api>JDO</api>
                     <persistenceUnitName>IndexFiles</persistenceUnitName>
                     <log4jConfiguration>${basedir}/src/main/resources/log4j.properties</log4jConfiguration>
                     <verbose>true</verbose>
@@ -356,7 +356,7 @@
     <dependency>
       <groupId>javax.jdo</groupId>
       <artifactId>jdo-api</artifactId>
-      <version>3.0</version>
+      <version>${jdo.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
@@ -563,8 +563,9 @@
     <opennlp.version>1.5.3</opennlp.version>
     <hadoop.version>2.5.1</hadoop.version>
     <datanucleus.version>4.0.3</datanucleus.version>
+    <jdo.version>3.0.1</jdo.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-    <hibernate.version>4.3.6.Final</hibernate.version>
+    <hibernate.version>4.3.7.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
     <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
     <h2.version>1.3.176</h2.version>
