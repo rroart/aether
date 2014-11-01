@@ -373,7 +373,7 @@ public class ControlService {
 	    
 	    String md5 = index.getMd5();
 
-	    if (maxfailed > index.getFailed().intValue()) {
+	    if (!reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
 		continue;
 	    }
 	    
