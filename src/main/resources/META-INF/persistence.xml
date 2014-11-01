@@ -10,6 +10,9 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.url" value="hbase:"/>
+	    <property name="datanucleus.schema.autoCreateAll" value="true"/>
+            <property name="datanucleus.schema.validateTables" value="false"/>
+            <property name="datanucleus.schema.validateConstraints" value="false"/>
             <!--property name="javax.persistence.jdbc.url" value="jdbc:h2:datanucleus"/>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.user" value="sa"/>
