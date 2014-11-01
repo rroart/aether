@@ -30,8 +30,7 @@ public class DataNucleusIndexFilesJpa extends IndexFilesJpa {
 	}
 
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
-	String filename = fl.getFilename();
-	DataNucleusIndexFiles files = DataNucleusIndexFiles.getByFilename(filename);
+	DataNucleusIndexFiles files = DataNucleusIndexFiles.getByFilename(fl);
 	if (files == null) {
 	    return null;
 	}
@@ -39,8 +38,7 @@ public class DataNucleusIndexFilesJpa extends IndexFilesJpa {
     }
 
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
-	String filename = fl.getFilename();
-	return DataNucleusIndexFiles.getMd5ByFilename(filename);
+	return DataNucleusIndexFiles.getMd5ByFilename(fl);
     }
 
     public List<IndexFiles> getAll() throws Exception {
