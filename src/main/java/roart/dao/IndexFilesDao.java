@@ -40,7 +40,7 @@ public class IndexFilesDao {
 	}
     }
 
-    public static IndexFiles getByMd5(String md5) throws Exception {
+    public static IndexFiles getByMd5(String md5, boolean create) throws Exception {
 	if (md5 == null) {
 	    return null;
 	}
@@ -48,11 +48,21 @@ public class IndexFilesDao {
 	    return all.get(md5);
 	}
 	IndexFiles i = indexFilesJpa.getByMd5(md5);
-	if (i == null) {
+	if (i == null && create) {
 	    i = new IndexFiles(md5);
 	}
+	if (i != null) {
 	all.put(md5, i);
+	}
 	return i;
+    }
+
+    public static IndexFiles getByMd5(String md5) throws Exception {
+    	return getByMd5(md5, true);
+    }
+
+    public static IndexFiles getExistingByMd5(String md5) throws Exception {
+    	return getByMd5(md5, false);
     }
 
     public static Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
