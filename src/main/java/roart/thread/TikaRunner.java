@@ -26,7 +26,7 @@ import roart.util.Constants;
 
 public class TikaRunner implements Runnable {
 	
-	private static Logger log = LoggerFactory.getLogger(QueueRunner.class);
+	private static Logger log = LoggerFactory.getLogger(TikaRunner.class);
 	
     static public int timeout = 3600;
 
