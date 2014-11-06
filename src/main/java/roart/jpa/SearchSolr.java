@@ -118,14 +118,34 @@ public class SearchSolr {
 
     public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 	ResultItem[] strarr = new ResultItem[0];
+	int stype = new Integer(searchtype).intValue();
 	try {
 	    //SolrServer server = null; //getSolrServer();
 	    //Construct a SolrQuery 
-
+	    String defType = null;
+	    switch (stype) {
+	    case 0:
+		break;
+	    case 1:
+		defType = "lucene";
+		break;
+	    case 2:
+		defType = "complexphrase";
+		break;
+	    case 3:
+		defType = "surround";
+		break;
+	    case 4:
+		defType = "simple";
+		break;
+	    }
 	    SolrQuery query = new SolrQuery();
 	    query.setQuery( str /*"*:*"*/ );
 	    query.setIncludeScore(true);
 	    query.setRows(new Integer(100));
+	    if (defType != null) {
+		query.set("defType", defType); 
+	    }
 	    //query.addSortField( "price", SolrQuery.ORDER.asc );
 
 	    //    Query the server 

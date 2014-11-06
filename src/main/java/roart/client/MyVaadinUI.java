@@ -240,12 +240,23 @@ public class MyVaadinUI extends UI
 	VerticalLayout tab = new VerticalLayout();
 	//tab.addComponent(tf);
 	tab.setCaption("Search");
-	tab.addComponent(getSearch("Search plain", 0));
+	String myindex = roart.util.Prop.getProp().getProperty(ConfigConstants.INDEX);
+	if (myindex.equals(ConfigConstants.LUCENE)) {
+	tab.addComponent(getSearch("Search standard", 0));
 	tab.addComponent(getSearch("Search analyzing", 1));
-	tab.addComponent(getSearch("Search complex", 2));
+	tab.addComponent(getSearch("Search complexphrase", 2));
 	tab.addComponent(getSearch("Search extendable", 3));
 	tab.addComponent(getSearch("Search multi", 4));
-	tab.addComponent(getSearch("Search simple", 5));
+	tab.addComponent(getSearch("Search surround", 5));
+	tab.addComponent(getSearch("Search classic", 6));
+	tab.addComponent(getSearch("Search simple", 7));
+	} else {
+	tab.addComponent(getSearch("Search default", 0));
+	tab.addComponent(getSearch("Search lucene", 1));
+	tab.addComponent(getSearch("Search complexphrase", 2));
+	tab.addComponent(getSearch("Search surround", 3));
+	tab.addComponent(getSearch("Search simple", 4));
+	}
 	return tab;
     }
 

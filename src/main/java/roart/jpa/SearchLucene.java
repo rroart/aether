@@ -37,6 +37,9 @@ import org.apache.lucene.queryparser.analyzing.AnalyzingQueryParser;
 import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
 import org.apache.lucene.queryparser.ext.ExtendableQueryParser;
 import org.apache.lucene.queryparser.simple.SimpleQueryParser;
+import org.apache.lucene.queryparser.surround.query.BasicQueryFactory;
+import org.apache.lucene.queryparser.flexible.core.QueryParserHelper;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.BooleanQuery;
@@ -131,7 +134,8 @@ public class SearchLucene {
     Query tmpQuery = null;
     switch (stype) {
     case 0:
-	cp = new QueryParser(Constants.CONTENT, analyzer);
+	StandardQueryParser queryParserHelper = new StandardQueryParser();
+	tmpQuery = queryParserHelper.parse(str, Constants.CONTENT); 
 	break;
     case 1:
 	cp = new AnalyzingQueryParser(Constants.CONTENT, analyzer);
@@ -146,6 +150,12 @@ public class SearchLucene {
 	cp = new MultiFieldQueryParser(new String[]{Constants.ID, Constants.CONTENT, Constants.CAT, Constants.LANG, Constants.METADATA}, analyzer);
 	break;
     case 5:
+	tmpQuery = org.apache.lucene.queryparser.surround.parser.QueryParser.parse(str).makeLuceneQueryField(Constants.CONTENT, new BasicQueryFactory());
+	break;
+    case 6:
+	cp = new QueryParser(Constants.CONTENT, analyzer);
+	break;
+    case 7:
 	tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.CONTENT, str);
 	break;
     }
