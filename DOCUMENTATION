@@ -18,7 +18,7 @@ Known uses are file, hdfs and none (defaulting to file).
 
 Name of the node.
 Nodename=...
-(But if db is hibernate, it is localhost anyway).
+(But if db is hibernate or lucene, it is localhost anyway).
 
 How many to max reindex each turn, or 0 for no limit.
 reindexlimit=10000
@@ -71,6 +71,9 @@ Solr server need new fields for schema.xml:
 <field name="metadata" type="text_general" indexed="true" stored="false"/>
 and change for the following field:
 <field name="content" type="text_general" indexed="false" stored="false" multiValued="true"/>
+
+Increase the following:
+<maxBooleanClauses>16384</maxBooleanClauses>
 
 2.1.3.3 Langdetect
 Download from https://code.google.com/p/language-detection/wiki/Downloads,
@@ -126,6 +129,8 @@ OpenNLP distribution.
 Use Lucene syntax
 Searchable fields:
 Id, lang, metadata, content (Lucene), text (Solr).
+
+Query parser different according to Lucene or Solr, see specific docs.
 
 3.2 Control panel
 
