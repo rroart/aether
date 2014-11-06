@@ -30,6 +30,9 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	if (myindex.equals(ConfigConstants.SOLR)) {
 	    new roart.jpa.SearchSolr();
 	}
+	if (myindex.equals(ConfigConstants.LUCENE)) {
+	    org.apache.lucene.search.BooleanQuery.setMaxClauseCount(16384);
+	}
 	String mydb = roart.util.Prop.getProp().getProperty(ConfigConstants.DB);
 	if (mydb.equals(ConfigConstants.HBASE)) {
 	    new roart.model.HbaseIndexFiles();
