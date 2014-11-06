@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
 
 public class ExecCommand {
 
-    private static Logger log = LoggerFactory.getLogger("ExecCommand");
+    private static Logger log = LoggerFactory.getLogger(ExecCommand.class);
 
     private Semaphore outputSem;
     private String output;

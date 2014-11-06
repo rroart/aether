@@ -1,7 +1,7 @@
-package roart.jpa;
+package roart.search;
 
-import roart.dao.IndexFilesDao;
-import roart.model.HibernateUtil;
+import roart.database.HibernateUtil;
+import roart.database.IndexFilesDao;
 import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
@@ -63,13 +63,12 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 import org.apache.tika.metadata.Metadata;
 
-import roart.search.Constants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SearchLucene {
-    private static Logger log = LoggerFactory.getLogger("SearchLucene");
+    private static Logger log = LoggerFactory.getLogger(SearchLucene.class);
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     //public static void indexme() {

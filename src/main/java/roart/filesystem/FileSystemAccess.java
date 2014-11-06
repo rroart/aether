@@ -1,11 +1,11 @@
-package roart.jpa;
+package roart.filesystem;
 
 import java.io.InputStream;
 import java.util.List;
 
 import roart.model.FileObject;
 
-public abstract class FileSystemJpa {
+public abstract class FileSystemAccess {
 
     public abstract List<FileObject> listFiles(FileObject f);
 

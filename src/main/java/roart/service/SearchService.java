@@ -3,6 +3,7 @@ package roart.service;
 import roart.queue.ClientQueueElement;
 import roart.queue.ClientQueueElement.Function;
 import roart.queue.Queues;
+import roart.search.SearchDao;
 import roart.util.ConfigConstants;
 
 import javax.servlet.http.*;
@@ -14,9 +15,8 @@ import java.util.List;
 
 import java.io.*;
 
-import roart.dao.SearchDao;
 //import roart.dao.FilesDao;
-import roart.dao.IndexFilesDao;
+import roart.database.IndexFilesDao;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 

@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.classification;
 
 import roart.model.ResultItem;
 
@@ -9,7 +9,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpennlpClassifyJpa extends ClassifyJpa {
+public class OpennlpClassifyAccess extends ClassifyAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

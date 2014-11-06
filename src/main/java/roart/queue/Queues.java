@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class Queues {
 	
-	private static Logger log = LoggerFactory.getLogger("Queues");
+	private static Logger log = LoggerFactory.getLogger(Queues.class);
 	
     static int limit = 100;
 

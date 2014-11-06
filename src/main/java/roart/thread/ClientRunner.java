@@ -32,7 +32,7 @@ import com.vaadin.ui.UIDetachedException;
 
 public class ClientRunner implements Runnable {
 	
-    private static Logger log = LoggerFactory.getLogger("ClientRunner");
+    private static Logger log = LoggerFactory.getLogger(ClientRunner.class);
 
     public static ConcurrentMap<UI, String> uiset = new ConcurrentHashMap<UI, String>();
 	

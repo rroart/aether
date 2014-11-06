@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.filesystem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 
-import roart.dao.FileSystemDao;
 import roart.model.FileObject;
 import roart.util.ConfigConstants;
 import roart.util.Constants;

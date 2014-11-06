@@ -16,7 +16,7 @@ import roart.util.Constants;
 
 public class ClientHandler {
 	
-	private static Logger log = LoggerFactory.getLogger("ClientHandler");
+	private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
     static public int timeout = 3600;
 	

@@ -19,7 +19,7 @@ import roart.util.Constants;
 
 public class IndexRunner implements Runnable {
 	
-	private static Logger log = LoggerFactory.getLogger("IndexRunner");
+	private static Logger log = LoggerFactory.getLogger(IndexRunner.class);
 	
     public void run() {
     	while (true) {

@@ -3,7 +3,7 @@ package roart.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import roart.dao.FileSystemDao;
+import roart.filesystem.FileSystemDao;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;

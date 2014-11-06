@@ -1,37 +1,34 @@
-package roart.jpa;
+package roart.database;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-import roart.dao.IndexFilesDao;
 
 import roart.model.FileLocation;
 import roart.model.IndexFiles;
-import roart.model.HibernateIndexFiles;
 import roart.service.ControlService;
 import roart.util.Constants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HibernateIndexFilesJpa extends IndexFilesJpa {
+public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 
-    private static Logger log = LoggerFactory.getLogger("HibernateIndexFilesJpa");
+    private static Logger log = LoggerFactory.getLogger(DataNucleusIndexFilesAccess.class);
 
     public IndexFiles getByMd5(String md5) throws Exception {
-	HibernateIndexFiles index = HibernateIndexFiles.getByMd5(md5);
+	DataNucleusIndexFiles index = DataNucleusIndexFiles.getByMd5(md5);
 	return convert(index);
     }
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
-    	return HibernateIndexFiles.getFilelocationsByMd5(md5);
-    }
+    	return DataNucleusIndexFiles.getFilelocationsByMd5(md5);
+	}
 
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
-	String filename = fl.getFilename();
-	HibernateIndexFiles files = HibernateIndexFiles.getByFilename(filename);
+	DataNucleusIndexFiles files = DataNucleusIndexFiles.getByFilename(fl);
 	if (files == null) {
 	    return null;
 	}
@@ -39,14 +36,13 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
     }
 
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
-	String filename = fl.getFilename();
-	return HibernateIndexFiles.getMd5ByFilename(filename);
+	return DataNucleusIndexFiles.getMd5ByFilename(fl);
     }
 
     public List<IndexFiles> getAll() throws Exception {
 	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
-	List<HibernateIndexFiles> indexes = HibernateIndexFiles.getAll();
-	for (HibernateIndexFiles index : indexes) {
+	List<DataNucleusIndexFiles> indexes = DataNucleusIndexFiles.getAll();
+	for (DataNucleusIndexFiles index : indexes) {
 	    IndexFiles ifile = convert(index);
 	    retlist.add(ifile);
 	}
@@ -55,7 +51,7 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 
     public void save(IndexFiles i) {
 	try {
-	    HibernateIndexFiles hif = HibernateIndexFiles.ensureExistence(i.getMd5());
+	    DataNucleusIndexFiles hif = DataNucleusIndexFiles.ensureExistence(i.getMd5());
 	    hif.setIndexed(i.getIndexed());
 	    hif.setTimeindex(i.getTimeindex());
 	    hif.setTimestamp(i.getTimestamp());
@@ -71,13 +67,13 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	    hif.setFailedreason(fr); // temp fix substr
 	    hif.setTimeoutreason(i.getTimeoutreason());
 	    hif.setNoindexreason(i.getNoindexreason());
-	    hif.setFilenames(i.getFilenames());
+	    hif.setFilelocations(i.getFilelocations());
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
     }
 
-    private IndexFiles convert(HibernateIndexFiles hif) {
+    private IndexFiles convert(DataNucleusIndexFiles hif) {
 	if (hif == null) {
 	    return null;
 	}
@@ -95,20 +91,20 @@ public class HibernateIndexFilesJpa extends IndexFilesJpa {
 	ifile.setFailedreason(hif.getFailedreason());
 	ifile.setTimeoutreason(hif.getTimeoutreason());
 	ifile.setNoindexreason(hif.getNoindexreason());
-	Set<String> files = hif.getFilenames();
+	Set<String> files = hif.getFilelocations();
 	for (String file : files) {
-	    ifile.addFile(new FileLocation(ControlService.nodename, file));
+	    ifile.addFile(new FileLocation(file));
 	}
 	ifile.setUnchanged();
 	return ifile;
     }
 
     public void flush() {
-	HibernateIndexFiles.flush();
+	DataNucleusIndexFiles.flush();
     }
 
     public void close() {
-	HibernateIndexFiles.commit();
+	DataNucleusIndexFiles.commit();
     }
 
 }

@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.classification;
 
 import roart.model.ResultItem;
 import roart.util.ConfigConstants;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public class MahoutClassify {
 
-    private static Logger log = LoggerFactory.getLogger("MahoutClassify");
+    private static Logger log = LoggerFactory.getLogger(MahoutClassify.class);
 
     private static String modelPath = null;
     private static String labelIndexPath = null;

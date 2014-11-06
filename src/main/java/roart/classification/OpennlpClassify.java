@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.classification;
 
 import roart.model.ResultItem;
 import roart.util.ConfigConstants;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpennlpClassify {
 
-    private static Logger log = LoggerFactory.getLogger("OpennlpClassify");
+    private static Logger log = LoggerFactory.getLogger(OpennlpClassify.class);
 
     private static DoccatModel model = null;
     private static DocumentCategorizerME myCategorizer = null;

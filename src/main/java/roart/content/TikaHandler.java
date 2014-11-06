@@ -1,6 +1,6 @@
 package roart.content;
 
-import roart.dao.ClassifyDao;
+import roart.classification.ClassifyDao;
 import roart.lang.LanguageDetect;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
@@ -9,7 +9,7 @@ import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.util.Constants;
-import roart.dao.FileSystemDao;
+import roart.filesystem.FileSystemDao;
 
 import java.io.*;
 
@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TikaHandler {
-    private Logger log = LoggerFactory.getLogger("TikaHandler");
+    private Logger log = LoggerFactory.getLogger(TikaHandler.class);
 
     private class NoDocumentMetHandler extends DefaultHandler{
 

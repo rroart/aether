@@ -8,8 +8,8 @@ import roart.queue.TikaQueueElement;
 import roart.queue.ClientQueueElement;
 import roart.service.ControlService;
 import roart.thread.TikaRunner;
-import roart.dao.FileSystemDao;
-import roart.dao.IndexFilesDao;
+import roart.database.IndexFilesDao;
+import roart.filesystem.FileSystemDao;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
@@ -35,7 +35,7 @@ public class Traverse {
 
     private static int MAXFILE = 500;
 
-    private static Logger log = LoggerFactory.getLogger("Traverse");
+    private static Logger log = LoggerFactory.getLogger(Traverse.class);
 
     private static boolean indirlistnot(String filename, String[] dirlistnot) {
 	if (dirlistnot == null) {

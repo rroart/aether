@@ -1,4 +1,4 @@
-package roart.dao;
+package roart.database;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -10,32 +10,28 @@ import roart.model.FileLocation;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
 
-import roart.jpa.DataNucleusIndexFilesJpa;
-import roart.jpa.HibernateIndexFilesJpa;
-import roart.jpa.HbaseIndexFilesJpa;
-import roart.jpa.IndexFilesJpa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class IndexFilesDao {
 
-    private static Logger log = LoggerFactory.getLogger("IndexFilesDao");
+    private static Logger log = LoggerFactory.getLogger(IndexFilesDao.class);
 
     private static Map<String, IndexFiles> all = new TreeMap<String, IndexFiles>();
 
-    private static IndexFilesJpa indexFilesJpa = null;
+    private static IndexFilesAccess indexFiles = null;
 
     public static void instance(String type) {
-	if (indexFilesJpa == null) {
+	if (indexFiles == null) {
 	    if (type.equals(ConfigConstants.HIBERNATE)) {
-		indexFilesJpa = new HibernateIndexFilesJpa();
+		indexFiles = new HibernateIndexFilesAccess();
 	    }
 	    if (type.equals(ConfigConstants.HBASE)) {
-		indexFilesJpa = new HbaseIndexFilesJpa();
+		indexFiles = new HbaseIndexFilesAccess();
 	    }
 	    if (type.equals(ConfigConstants.DATANUCLEUS)) {
-		indexFilesJpa = new DataNucleusIndexFilesJpa();
+		indexFiles = new DataNucleusIndexFilesAccess();
 	    }
 	}
     }
@@ -47,7 +43,7 @@ public class IndexFilesDao {
 	if (all.containsKey(md5)) {
 	    return all.get(md5);
 	}
-	IndexFiles i = indexFilesJpa.getByMd5(md5);
+	IndexFiles i = indexFiles.getByMd5(md5);
 	if (i == null && create) {
 	    i = new IndexFiles(md5);
 	}
@@ -69,28 +65,28 @@ public class IndexFilesDao {
 	if (md5 == null) {
 	    return null;
 	}
-	return indexFilesJpa.getFilelocationsByMd5(md5);
+	return indexFiles.getFilelocationsByMd5(md5);
     }
 
     public static IndexFiles getByFilenameNot(String filename) throws Exception {
 	String nodename = ControlService.nodename;
 	FileLocation fl = new FileLocation(nodename, filename);
-	return indexFilesJpa.getByFilelocation(fl);
+	return indexFiles.getByFilelocation(fl);
     }
 
     public static IndexFiles getByFilelocationNot(FileLocation fl) throws Exception {
-	return indexFilesJpa.getByFilelocation(fl);
+	return indexFiles.getByFilelocation(fl);
     }
 
     public static String getMd5ByFilename(String filename) throws Exception {
 	String nodename = ControlService.nodename;
 	FileLocation fl = new FileLocation(nodename, filename);
-	return indexFilesJpa.getMd5ByFilelocation(fl);
+	return indexFiles.getMd5ByFilelocation(fl);
     }
 
     public static List<IndexFiles> getAll() throws Exception {
 	all.clear();
-	List<IndexFiles> iAll = indexFilesJpa.getAll();
+	List<IndexFiles> iAll = indexFiles.getAll();
 	for (IndexFiles i : iAll) {
 	    all.put(i.getMd5(), i);
 	}
@@ -120,7 +116,7 @@ public class IndexFilesDao {
     public static void save(IndexFiles i) {
 	if (i.hasChanged()) {
 	    log.info("saving " + i.getMd5());
-	    indexFilesJpa.save(i);
+	    indexFiles.save(i);
 	    i.setUnchanged();
 	} else {
 	    //log.info("not saving " + i.getMd5());
@@ -146,11 +142,11 @@ public class IndexFilesDao {
 	    IndexFilesDao.save(i);
 	}
 	//all.clear();
-	indexFilesJpa.close();
+	indexFiles.close();
     }
 
     public static void flush() {
-	indexFilesJpa.flush();
+	indexFiles.flush();
     }
 
 }

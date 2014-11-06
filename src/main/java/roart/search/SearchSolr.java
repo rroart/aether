@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.search;
 
 import java.io.*;
 import java.util.Collection;
@@ -24,18 +24,17 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.client.solrj.SolrServerException;
 
-import roart.search.Constants;
 import roart.util.ConfigConstants;
 import roart.lang.LanguageDetect;
 
 import roart.model.SearchDisplay;
 import roart.model.ResultItem;
 import roart.model.IndexFiles;
-import roart.dao.IndexFilesDao;
+import roart.database.IndexFilesDao;
 
 
 public class SearchSolr {
-    private static Logger log = LoggerFactory.getLogger("SearchSolr");
+    private static Logger log = LoggerFactory.getLogger(SearchSolr.class);
 
     static HttpSolrServer server = null;
 

@@ -22,13 +22,13 @@ import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.util.Constants;
 import roart.util.ExecCommand;
-import roart.dao.FileSystemDao;
+import roart.filesystem.FileSystemDao;
 
 import org.apache.tika.metadata.Metadata;
 
 public class OtherHandler {
 	
-	private static Logger log = LoggerFactory.getLogger("OtherHandler");
+	private static Logger log = LoggerFactory.getLogger(OtherHandler.class);
 
     static public int timeout = 3600;
 	

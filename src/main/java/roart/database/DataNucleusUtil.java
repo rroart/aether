@@ -1,4 +1,4 @@
-package roart.model;
+package roart.database;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 //import net.sf.ehcache.hibernate.EhCacheRegionFactory;
 
 public class DataNucleusUtil {
-    private static Logger log = LoggerFactory.getLogger("DataNucleusUtil");
+    private static Logger log = LoggerFactory.getLogger(DataNucleusUtil.class);
 
     private static DataNucleusUtil session = null;
     private static PersistenceManagerFactory pmf = null;

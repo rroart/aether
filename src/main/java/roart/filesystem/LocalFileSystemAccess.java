@@ -1,11 +1,11 @@
-package roart.jpa;
+package roart.filesystem;
 
 import java.io.InputStream;
 import java.util.List;
 
 import roart.model.FileObject;
 
-public class LocalFileSystemJpa extends FileSystemJpa {
+public class LocalFileSystemAccess extends FileSystemAccess {
 
 	@Override
 	public List<FileObject> listFiles(FileObject f) {

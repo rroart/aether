@@ -26,6 +26,7 @@ import roart.model.FileLocation;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.queue.Queues;
+import roart.search.SearchDao;
 import roart.thread.ControlRunner;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
@@ -37,9 +38,8 @@ import roart.thread.DbRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
 
-import roart.dao.FileSystemDao;
-import roart.dao.SearchDao;
-import roart.dao.IndexFilesDao;
+import roart.database.IndexFilesDao;
+import roart.filesystem.FileSystemDao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -434,7 +434,7 @@ public class ControlService {
     public List<String> cleanup() {
 	List<String> retlist = new ArrayList<String>();
 	try {
-	    return roart.jpa.SearchLucene.removeDuplicate();
+	    return roart.search.SearchLucene.removeDuplicate();
 	} catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	}

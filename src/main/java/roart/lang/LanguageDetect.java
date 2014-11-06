@@ -16,7 +16,7 @@ import java.io.*;
 
 public class LanguageDetect {
 
-    private static Logger log = LoggerFactory.getLogger("LanguageDetect");
+    private static Logger log = LoggerFactory.getLogger(LanguageDetect.class);
 
     private static boolean inited = false;
 

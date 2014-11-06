@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.database;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,12 +24,11 @@ import org.apache.hadoop.hbase.client.Scan;
 
 import roart.model.FileLocation;
 import roart.model.IndexFiles;
-import roart.model.HbaseIndexFiles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HbaseIndexFilesJpa extends IndexFilesJpa {
+public class HbaseIndexFilesAccess extends IndexFilesAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

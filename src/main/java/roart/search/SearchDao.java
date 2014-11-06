@@ -1,4 +1,4 @@
-package roart.dao;
+package roart.search;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -8,41 +8,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
-import roart.jpa.SearchJpa;
-import roart.jpa.LuceneSearchJpa;
-import roart.jpa.SolrSearchJpa;
 
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 import roart.model.IndexFiles;
+import roart.util.ConfigConstants;
  
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SearchDao {
-    private static Logger log = LoggerFactory.getLogger("SearchDao");
+    private static Logger log = LoggerFactory.getLogger(SearchDao.class);
 
-    private static SearchJpa searchJpa = null;
+    private static SearchAccess search = null;
 
     public static void instance(String type) {
 	System.out.println("instance " + type);
 	log.info("instance " + type);
-	if (searchJpa == null) {
-	    if (type.equals("lucene")) {
-		searchJpa = new LuceneSearchJpa();
+	if (search == null) {
+	    if (type.equals(ConfigConstants.LUCENE)) {
+		search = new LuceneSearchAccess();
 	    }
-	    if (type.equals("solr")) {
-		searchJpa = new SolrSearchJpa();
+	    if (type.equals(ConfigConstants.SOLR)) {
+		search = new SolrSearchAccess();
 	    }
 	}
     }
 
     public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
-	return searchJpa.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
+	return search.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
     public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-	return searchJpa.searchme(str, searchtype, display);
+	return search.searchme(str, searchtype, display);
     }
 
     public static ResultItem[] searchsimilar(String md5i) {

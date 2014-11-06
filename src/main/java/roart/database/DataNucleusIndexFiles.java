@@ -1,4 +1,4 @@
-package roart.model;
+package roart.database;
 
 import javax.jdo.Query;
 import javax.jdo.annotations.Column;
@@ -18,6 +18,7 @@ import org.datanucleus.store.query.QueryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.model.FileLocation;
 import roart.util.Constants;
 
 @PersistenceCapable(table="IndexFiles")
@@ -27,7 +28,7 @@ import roart.util.Constants;
 	 *
 	 */
 	
-	private static Logger log = LoggerFactory.getLogger("DataNucleusIndexFiles");
+	private static Logger log = LoggerFactory.getLogger(DataNucleusIndexFiles.class);
 
 	@Column(name = "md5")
 	@Persistent	
@@ -272,7 +273,7 @@ import roart.util.Constants;
 
 	public static void flush() {
             try {
-                roart.model.DataNucleusUtil.currentSession().flush();
+                roart.database.DataNucleusUtil.currentSession().flush();
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -280,7 +281,7 @@ import roart.util.Constants;
 
 	public static void commit() {
             try {
-                roart.model.DataNucleusUtil.commit();
+                roart.database.DataNucleusUtil.commit();
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }

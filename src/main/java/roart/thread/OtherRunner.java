@@ -19,7 +19,7 @@ import roart.util.Constants;
 
 public class OtherRunner implements Runnable {
 	
-	private static Logger log = LoggerFactory.getLogger("OtherRunner");
+	private static Logger log = LoggerFactory.getLogger(OtherRunner.class);
 	
     public void run() {
     	while (true) {

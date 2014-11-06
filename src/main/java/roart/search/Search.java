@@ -1,14 +1,13 @@
 package roart.search;
 
 import roart.model.IndexFiles;
-import roart.model.HibernateUtil;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 
-import roart.dao.SearchDao;
+import roart.database.HibernateUtil;
 
 
 import java.io.*;
@@ -25,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Search {
-    private static Logger log = LoggerFactory.getLogger("Search");
+    private static Logger log = LoggerFactory.getLogger(Search.class);
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     public static void indexme() {

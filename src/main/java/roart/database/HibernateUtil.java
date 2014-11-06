@@ -1,4 +1,4 @@
-package roart.model;
+package roart.database;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 //import net.sf.ehcache.hibernate.EhCacheRegionFactory;
 
 public class HibernateUtil {
-    private static Logger log = LoggerFactory.getLogger("HibernateUtil");
+    private static Logger log = LoggerFactory.getLogger(HibernateUtil.class);
 
     private static SessionFactory factory = null;
     private static Session session = null;

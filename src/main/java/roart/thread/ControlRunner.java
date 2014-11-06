@@ -17,7 +17,7 @@ import roart.util.Constants;
 
 public class ControlRunner implements Runnable {
 	
-	private static Logger log = LoggerFactory.getLogger("ControlRunner");
+	private static Logger log = LoggerFactory.getLogger(ControlRunner.class);
 	
     public void run() {
     	while (true) {

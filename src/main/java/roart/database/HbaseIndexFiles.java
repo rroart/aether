@@ -1,4 +1,4 @@
-package roart.model;
+package roart.database;
 
 import java.util.HashSet;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class HbaseIndexFiles {
 
-    private static Logger log = LoggerFactory.getLogger("HbaseIndexFiles");
+    private static Logger log = LoggerFactory.getLogger(HbaseIndexFiles.class);
 
     // column families
     private static byte[] indexcf = Bytes.toBytes("if");

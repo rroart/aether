@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
 
 import roart.queue.Queues;
 import roart.util.Constants;
-import roart.dao.IndexFilesDao;
+import roart.database.IndexFilesDao;
 
 import com.vaadin.ui.UI;
 
 public class DbRunner implements Runnable {
 	
-    private static Logger log = LoggerFactory.getLogger("DbRunner");
+    private static Logger log = LoggerFactory.getLogger(DbRunner.class);
 
     public static Set<UI> uiset = new HashSet<UI>();
 	

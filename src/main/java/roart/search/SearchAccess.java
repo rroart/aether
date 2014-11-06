@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.search;
 
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
@@ -11,7 +11,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SearchJpa {
+public abstract class SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

@@ -1,4 +1,4 @@
-package roart.jpa;
+package roart.database;
 
 import java.util.List;
 import java.util.Set;
@@ -9,7 +9,7 @@ import roart.model.FileLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class IndexFilesJpa {
+public abstract class IndexFilesAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

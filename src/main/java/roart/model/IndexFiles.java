@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Date;
 
-import roart.dao.IndexFilesDao;
+import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
@@ -23,7 +23,7 @@ public class IndexFiles {
 
 	public static final int FILENAMECOLUMN = 3;
 	
-	private static Logger log = LoggerFactory.getLogger("IndexFiles");
+	private static Logger log = LoggerFactory.getLogger(IndexFiles.class);
 	private String md5;
 	private Boolean indexed;
     private String timeclass;

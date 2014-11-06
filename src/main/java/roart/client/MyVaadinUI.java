@@ -7,7 +7,7 @@ import roart.thread.ClientRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
 
-import roart.dao.FileSystemDao;
+import roart.filesystem.FileSystemDao;
 
 import roart.service.SearchService;
 import roart.service.ControlService;

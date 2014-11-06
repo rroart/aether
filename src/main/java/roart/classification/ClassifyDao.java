@@ -1,4 +1,4 @@
-package roart.dao;
+package roart.classification;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
-import roart.jpa.ClassifyJpa;
-import roart.jpa.OpennlpClassifyJpa;
-import roart.jpa.MahoutClassifyJpa;
 
 import roart.model.ResultItem;
  
@@ -18,9 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClassifyDao {
-    private static Logger log = LoggerFactory.getLogger("ClassifyDao");
+    private static Logger log = LoggerFactory.getLogger(ClassifyDao.class);
 
-    private static ClassifyJpa classifyJpa = null;
+    private static ClassifyAccess classify = null;
 
     public static void instance(String type) {
 	System.out.println("instance " + type);
@@ -28,21 +25,21 @@ public class ClassifyDao {
 	if (type == null) {
 	  return;
 	}
-	if (classifyJpa == null) {
+	if (classify == null) {
 	    if (type.equals("mahout")) {
-		classifyJpa = new MahoutClassifyJpa();
+		classify = new MahoutClassifyAccess();
 	    }
 	    if (type.equals("opennlp")) {
-		classifyJpa = new OpennlpClassifyJpa();
+		classify = new OpennlpClassifyAccess();
 	    }
 	}
     }
 
     public static String classify(String type) {
-	if (classifyJpa == null) {
+	if (classify == null) {
 	    return null;
 	}
-	return classifyJpa.classify(type);
+	return classify.classify(type);
     }
 
 }

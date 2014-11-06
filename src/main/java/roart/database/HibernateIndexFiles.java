@@ -1,4 +1,4 @@
-package roart.model;
+package roart.database;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -39,6 +39,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.model.FileLocation;
 import roart.util.Constants;
 
 @NamedQueries({
@@ -51,7 +52,7 @@ import roart.util.Constants;
     @org.hibernate.annotations.Table(appliesTo = "Index")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public class HibernateIndexFiles implements Serializable {
-	private static Logger log = LoggerFactory.getLogger("HibernateIndexFiles");
+	private static Logger log = LoggerFactory.getLogger(HibernateIndexFiles.class);
 	private String md5;
 	private Boolean indexed;
 	private String timeindex;
@@ -322,7 +323,7 @@ import roart.util.Constants;
 
 	public static void flush() {
             try {
-                roart.model.HibernateUtil.currentSession().flush();
+                roart.database.HibernateUtil.currentSession().flush();
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -330,7 +331,7 @@ import roart.util.Constants;
 
 	public static void commit() {
             try {
-                roart.model.HibernateUtil.commit();
+                roart.database.HibernateUtil.commit();
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
