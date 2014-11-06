@@ -35,7 +35,8 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	    new roart.model.HbaseIndexFiles();
 	} else if (mydb.equals(ConfigConstants.DATANUCLEUS)) {
 		new roart.model.DataNucleusIndexFiles();
-	} else {
+	}
+	if (mydb.equals(ConfigConstants.HIBERNATE) || myindex.equals(ConfigConstants.LUCENE)) {
 		roart.service.ControlService.nodename = ConfigConstants.LOCALHOST; // force this
 	}
 	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
