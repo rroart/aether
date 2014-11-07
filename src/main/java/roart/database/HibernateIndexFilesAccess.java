@@ -95,7 +95,7 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	ifile.setNoindexreason(hif.getNoindexreason());
 	Set<String> files = hif.getFilenames();
 	for (String file : files) {
-	    ifile.addFile(new FileLocation(ControlService.nodename, file));
+	    ifile.addFile(new FileLocation(file));
 	}
 	ifile.setUnchanged();
 	return ifile;
