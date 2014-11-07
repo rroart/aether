@@ -6,7 +6,7 @@
 
     <!-- JPA tutorial "unit" -->
     <persistence-unit name="IndexFiles">
-        <class>roart.model.DataNucleusIndexFiles</class>
+        <class>roart.database.DataNucleusIndexFiles</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.url" value="hbase:"/>
