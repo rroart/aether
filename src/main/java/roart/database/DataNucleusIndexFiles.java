@@ -287,4 +287,11 @@ import roart.util.Constants;
             }
 	}
 
+	public static Set<String> getAllMd5() throws Exception {
+    	Set<String> md5s = null;
+    	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select md5 from " + DataNucleusIndexFiles.class.getName());
+    	md5s = (Set<String>) query.execute();
+    	return md5s;
+	}
+
     }

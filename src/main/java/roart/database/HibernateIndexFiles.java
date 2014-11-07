@@ -337,4 +337,8 @@ import roart.util.Constants;
             }
 	}
 
+	public static Set<String> getAllMd5() throws Exception {
+		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select md5 from HibernateIndexFiles").list(), String.class);
+	}
+
     }

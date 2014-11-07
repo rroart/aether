@@ -85,12 +85,21 @@ public class IndexFilesDao {
     }
 
     public static List<IndexFiles> getAll() throws Exception {
-	all.clear();
+	//all.clear();
+    	Set<String> allKeys = all.keySet();
 	List<IndexFiles> iAll = indexFiles.getAll();
 	for (IndexFiles i : iAll) {
+		if (allKeys.contains(i.getMd5())) {
+			continue;
+		}
 	    all.put(i.getMd5(), i);
 	}
 	return iAll;
+    }
+
+    public static Set<String> getAllMd5() throws Exception {
+	Set<String> md5All = indexFiles.getAllMd5();
+	return md5All;
     }
 
     /*

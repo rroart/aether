@@ -18,15 +18,18 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 
     private static Logger log = LoggerFactory.getLogger(HibernateIndexFilesAccess.class);
 
+	@Override
     public IndexFiles getByMd5(String md5) throws Exception {
 	HibernateIndexFiles index = HibernateIndexFiles.getByMd5(md5);
 	return convert(index);
     }
 
+	@Override
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
     	return HibernateIndexFiles.getFilelocationsByMd5(md5);
     }
 
+	@Override
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
 	String filename = fl.getFilename();
 	HibernateIndexFiles files = HibernateIndexFiles.getByFilename(filename);
@@ -36,11 +39,13 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	return convert(files);
     }
 
+	@Override
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
 	String filename = fl.getFilename();
 	return HibernateIndexFiles.getMd5ByFilename(filename);
     }
 
+	@Override
     public List<IndexFiles> getAll() throws Exception {
 	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
 	List<HibernateIndexFiles> indexes = HibernateIndexFiles.getAll();
@@ -51,6 +56,7 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	return retlist;
     }
 
+	@Override
     public void save(IndexFiles i) {
 	try {
 	    HibernateIndexFiles hif = HibernateIndexFiles.ensureExistence(i.getMd5());
@@ -101,12 +107,19 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	return ifile;
     }
 
+	@Override
     public void flush() {
 	HibernateIndexFiles.flush();
     }
 
+	@Override
     public void close() {
 	HibernateIndexFiles.commit();
     }
+
+	@Override
+	public Set<String> getAllMd5() throws Exception {
+		return HibernateIndexFiles.getAllMd5();
+	}
 
 }

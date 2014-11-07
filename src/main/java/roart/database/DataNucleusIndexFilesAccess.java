@@ -18,15 +18,18 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 
     private static Logger log = LoggerFactory.getLogger(DataNucleusIndexFilesAccess.class);
 
+	@Override
     public IndexFiles getByMd5(String md5) throws Exception {
 	DataNucleusIndexFiles index = DataNucleusIndexFiles.getByMd5(md5);
 	return convert(index);
     }
 
+	@Override
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
     	return DataNucleusIndexFiles.getFilelocationsByMd5(md5);
 	}
 
+	@Override
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
 	DataNucleusIndexFiles files = DataNucleusIndexFiles.getByFilename(fl);
 	if (files == null) {
@@ -35,10 +38,12 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	return convert(files);
     }
 
+	@Override
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
 	return DataNucleusIndexFiles.getMd5ByFilename(fl);
     }
 
+	@Override
     public List<IndexFiles> getAll() throws Exception {
 	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
 	List<DataNucleusIndexFiles> indexes = DataNucleusIndexFiles.getAll();
@@ -49,6 +54,7 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	return retlist;
     }
 
+	@Override
     public void save(IndexFiles i) {
 	try {
 	    DataNucleusIndexFiles hif = DataNucleusIndexFiles.ensureExistence(i.getMd5());
@@ -99,12 +105,19 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	return ifile;
     }
 
+	@Override
     public void flush() {
 	DataNucleusIndexFiles.flush();
     }
 
+	@Override
     public void close() {
 	DataNucleusIndexFiles.commit();
     }
+
+	@Override
+	public Set<String> getAllMd5() throws Exception {
+		return DataNucleusIndexFiles.getAllMd5();
+	}
 
 }

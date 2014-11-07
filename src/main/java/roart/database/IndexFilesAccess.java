@@ -29,6 +29,8 @@ public abstract class IndexFilesAccess {
 
     public abstract void close();
 
+	public abstract Set<String> getAllMd5() throws Exception;
+
     //public abstract IndexFiles ensureExistence(String md5) throws Exception;
 
 }

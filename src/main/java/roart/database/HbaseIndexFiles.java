@@ -416,14 +416,28 @@ public class HbaseIndexFiles {
     public static void close() {
 	try {
 	    log.info("closing db");
+	    if (filesTable != null) {
 	    filesTable.close();
-	    indexTable.close();
 	    filesTable = hconn.getTable("files");
+	    }
+	    if (indexTable != null) {
+	    indexTable.close();
 	    indexTable = hconn.getTable("index");
+	    }
 	} catch (IOException e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
     }
+
+	public static Set<String> getAllMd5() throws Exception {
+		Set<String> md5s = new HashSet<String>();
+		ResultScanner scanner = indexTable.getScanner(new Scan());
+		for (Result index = scanner.next(); index != null; index = scanner.next()) {
+			String md5 = bytesToString(index.getValue(indexcf, md5q));
+		    md5s.add(md5);
+		}
+		return md5s;
+	}
 
 }
 

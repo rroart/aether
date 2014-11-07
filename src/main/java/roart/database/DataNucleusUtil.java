@@ -61,14 +61,18 @@ public class DataNucleusUtil {
 
     public static void commit() throws Exception {
 	log.info("Doing DataNucleus commit");
+	if (transaction != null) {
 	transaction.commit();
 	 if (transaction.isActive())
      {
          transaction.rollback();
      }
+		transaction = null;
+	}
+	if (pm != null) {
 	pm.close();
 	pm = null;
-	transaction = null;
+	}
     }
 
     public static <T> List<T> convert(List l, Class<T> type) {
@@ -76,7 +80,9 @@ public class DataNucleusUtil {
     }
 
 	public void flush() {
+		if (pm != null) {
 		pm.flush();
+		}
 	}
 
 	public Query createQuery(String string) {

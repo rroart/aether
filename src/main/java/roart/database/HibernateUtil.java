@@ -85,12 +85,14 @@ public class HibernateUtil {
 
     public static void commit() throws /*MappingException,*/ HibernateException, Exception {
 	log.info("Doing hibernate commit");
+	if (transaction != null) {
 	transaction.commit();
+	transaction = null;
+	}
 	if (session.isOpen()) {
 	    session.close();
-	}
-	transaction = null;
 	session = null;
+	}
     }
 
     public static <T> List<T> convert(List l, Class<T> type) {

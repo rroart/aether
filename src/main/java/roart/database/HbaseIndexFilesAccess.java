@@ -32,14 +32,17 @@ public class HbaseIndexFilesAccess extends IndexFilesAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+	@Override
     public IndexFiles getByMd5(String md5) throws Exception {
 	return HbaseIndexFiles.get(md5);
     }
 
+	@Override
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
 	return HbaseIndexFiles.getFilelocationsByMd5(md5);
     }
 
+	@Override
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
 	return HbaseIndexFiles.getIndexByFilelocation(fl);
 	/*
@@ -53,25 +56,35 @@ public class HbaseIndexFilesAccess extends IndexFilesAccess {
 	*/
     }
 
+	@Override
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
 	return HbaseIndexFiles.getMd5ByFilelocation(fl);
     }
 
+	@Override
     public List<IndexFiles> getAll() throws Exception {
 	return HbaseIndexFiles.getAll();
     }
 
+	@Override
     public void save(IndexFiles i) {
 	HbaseIndexFiles.put(i);
     }
 
+	@Override
     public void flush() {
 	HbaseIndexFiles.flush();
     }
 
+	@Override
     public void close() {
 	HbaseIndexFiles.close();
     }
+
+	@Override
+	public Set<String> getAllMd5() throws Exception {
+		return HbaseIndexFiles.getAllMd5();
+	}
 
 }
 
