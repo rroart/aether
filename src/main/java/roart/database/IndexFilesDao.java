@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
@@ -18,7 +20,7 @@ public class IndexFilesDao {
 
     private static Logger log = LoggerFactory.getLogger(IndexFilesDao.class);
 
-    private static Map<String, IndexFiles> all = new TreeMap<String, IndexFiles>();
+    private static ConcurrentMap<String, IndexFiles> all = new ConcurrentHashMap<String, IndexFiles>();
 
     private static IndexFilesAccess indexFiles = null;
 
@@ -90,7 +92,7 @@ public class IndexFilesDao {
 	List<IndexFiles> iAll = indexFiles.getAll();
 	for (IndexFiles i : iAll) {
 		if (allKeys.contains(i.getMd5())) {
-			continue;
+			//continue;
 		}
 	    all.put(i.getMd5(), i);
 	}
