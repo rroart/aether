@@ -16,8 +16,9 @@ public class FileLocation {
 	private String filename;
 
     public FileLocation(String mynode, String filename) {
-	if (mynode == null) {
+	if (mynode == null || mynode.length() == 0) {
 	    mynode = ControlService.nodename;
+	    log.error("No nodename, correcting");
 	}
 	this.node = mynode;
 	this.filename = filename;
@@ -31,6 +32,9 @@ public class FileLocation {
     	    file = file.substring(FileSystemDao.FILESLASHLEN);
     	    int split = file.indexOf("/");
     	    this.node = file.substring(0, split);
+	    if (this.node == null || this.node.length() == 0) {
+		log.error("No nodename ");
+	    }
     	    this.filename = prefix + file.substring(split);
     	} else {
 	    this.node = ControlService.nodename;
@@ -57,6 +61,7 @@ public class FileLocation {
     @Override
     public String toString() {
 	if (node == null || node.length() == 0) {
+	    log.error("No nodename");
 	    return filename;
 	}
 	if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
@@ -68,7 +73,8 @@ public class FileLocation {
     }
 
     public String toPrintString() {
-	if (node == null) {
+	if (node == null || node.length() == 0) {
+	    log.error("No nodename");
 	    return filename;
 	}
 	return node + ":" + filename;
@@ -83,7 +89,8 @@ public class FileLocation {
 }
 
     public boolean isLocal() {
-    	if (node == null) {
+    	if (node == null || node.length() == 0) {
+	    log.error("No nodename");
     		return true;
     	}
     	return ControlService.nodename.equals(node);
