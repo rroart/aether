@@ -71,15 +71,16 @@ public class HibernateUtil {
 	    session = factory.getCurrentSession();
 	}
 
-	if (transaction == null) {
-	    transaction = session.beginTransaction();
-	}
-
 	if (session != null) {
 	    if (!session.isOpen()) {
 		session = factory.openSession();
 	    }
 	}
+
+	if (transaction == null) {
+	    transaction = session.beginTransaction();
+	}
+
 	return session;
     }
 
@@ -89,7 +90,7 @@ public class HibernateUtil {
 	transaction.commit();
 	transaction = null;
 	}
-	if (session.isOpen()) {
+	if (session != null && session.isOpen()) {
 	    session.close();
 	session = null;
 	}
