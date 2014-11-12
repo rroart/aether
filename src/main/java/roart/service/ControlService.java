@@ -329,7 +329,7 @@ public class ControlService {
 	    	retNotExistList.add(new ResultItem(file));
 	    }
 	    if (function == Function.FILESYSTEM) {
-		IndexFilesDao.commit();
+		//IndexFilesDao.commit();
 		retlistlist.add(retNewFilesList);
 		DbRunner.doupdate = true;
 		return  retlistlist;
@@ -339,7 +339,7 @@ public class ControlService {
 	Collection<IndexFiles> indexes = null;
 	if (function == Function.FILESYSTEMLUCENENEW) {
 	    indexes = indexnewset;
-	} else if (function == Function.INDEX && filename != null && !reindex) {
+	} else if (function == Function.INDEX && filename != null /*&& !reindex*/) {
 	    Set<IndexFiles> indexset = new HashSet<IndexFiles>();
 	    for (String name : filesetnew) {
 		String md5 = IndexFilesDao.getMd5ByFilename(name);
@@ -419,7 +419,7 @@ public class ControlService {
 	}
 
 	Queues.resetTikaTimeoutQueue();
-	IndexFilesDao.commit();
+	//IndexFilesDao.commit();
 
 	retlistlist.add(retList);
 	retlistlist.add(retNotList);
@@ -893,7 +893,7 @@ public class ControlService {
 					}
 				}
 			}
-			IndexFilesDao.commit();
+			//IndexFilesDao.commit();
 		}
 		
 		} catch (Exception e) {
