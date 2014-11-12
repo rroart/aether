@@ -28,7 +28,7 @@ public class TikaRunner implements Runnable {
 	
 	private static Logger log = LoggerFactory.getLogger(TikaRunner.class);
 	
-    public static final int timeout = 3600;
+    public static volatile int timeout = 3600;
 
     final int NTHREDS = 2;
 

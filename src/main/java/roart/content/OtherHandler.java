@@ -30,7 +30,7 @@ public class OtherHandler {
 	
 	private static Logger log = LoggerFactory.getLogger(OtherHandler.class);
 
-    public static final int timeout = 3600;
+    public static volatile int timeout = 3600;
 	
     public static void doOther()  {
     	TikaQueueElement el = Queues.otherQueue.poll();
