@@ -31,12 +31,12 @@ public class DbRunner implements Runnable {
 	
     private static Logger log = LoggerFactory.getLogger(DbRunner.class);
 
-    public static Set<UI> uiset = new HashSet<UI>();
+    public static final Set<UI> uiset = new HashSet<UI>();
 	
-    int update = 300;
+    final int update = 300;
     static long lastupdate = 0;
 
-    public static boolean doupdate = true;
+    public static volatile boolean doupdate = true;
 
     public void run() {
     	Set<Future<Object>> set = new HashSet<Future<Object>>();

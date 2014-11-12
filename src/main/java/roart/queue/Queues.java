@@ -15,16 +15,16 @@ public class Queues {
 	
 	private static Logger log = LoggerFactory.getLogger(Queues.class);
 	
-    static int limit = 100;
+    static final int limit = 100;
 
     //public static Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
 
-    public static Queue<TikaQueueElement> tikaQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
-    public static Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
-    public static Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
-    public static Queue<ClientQueueElement> clientQueue = new ConcurrentLinkedQueue<ClientQueueElement>();
+    public static volatile Queue<TikaQueueElement> tikaQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
+    public static volatile Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
+    public static volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
+    public static volatile Queue<ClientQueueElement> clientQueue = new ConcurrentLinkedQueue<ClientQueueElement>();
 
-    public static Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
+    public static volatile Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     
     private static AtomicInteger tikas = new AtomicInteger(0);
     private static AtomicInteger others = new AtomicInteger(0);

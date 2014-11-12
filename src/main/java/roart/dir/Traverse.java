@@ -33,7 +33,7 @@ import org.apache.tika.metadata.Metadata;
 
 public class Traverse {
 
-    private static int MAXFILE = 500;
+    private static final int MAXFILE = 500;
 
     private static Logger log = LoggerFactory.getLogger(Traverse.class);
 

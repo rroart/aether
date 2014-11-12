@@ -20,7 +20,7 @@ public class IndexFilesDao {
 
     private static Logger log = LoggerFactory.getLogger(IndexFilesDao.class);
 
-    private static ConcurrentMap<String, IndexFiles> all = new ConcurrentHashMap<String, IndexFiles>();
+    private static volatile ConcurrentMap<String, IndexFiles> all = new ConcurrentHashMap<String, IndexFiles>();
 
     private static IndexFilesAccess indexFiles = null;
 

@@ -13,7 +13,7 @@ public class TikaQueueElement {
     public String dbfilename;
     public String filename;
     public String md5;
-    public IndexFiles index;
+    public volatile IndexFiles index;
     public List<ResultItem> retlist;
     public List<ResultItem> retlistnot;
     public Metadata metadata;

@@ -30,7 +30,7 @@ public class OtherHandler {
 	
 	private static Logger log = LoggerFactory.getLogger(OtherHandler.class);
 
-    static public int timeout = 3600;
+    public static final int timeout = 3600;
 	
     public static void doOther()  {
     	TikaQueueElement el = Queues.otherQueue.poll();
@@ -147,7 +147,7 @@ public class OtherHandler {
 	
     }
     
-    private static java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
+    private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
 
     private static String execute(String filename, String[] arg) {
 	String res = null;

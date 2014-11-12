@@ -18,7 +18,7 @@ public class ClientHandler {
 	
 	private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
-    static public int timeout = 3600;
+    public static final int timeout = 3600;
 	
     public static Map<UI, List> doClient()  {
     	ClientQueueElement el = Queues.clientQueue.poll();

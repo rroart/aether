@@ -37,7 +37,7 @@ public class ClientRunner implements Runnable {
 
     public static ConcurrentMap<UI, String> uiset = new ConcurrentHashMap<UI, String>();
 	
-    int update = 60;
+    final int update = 60;
     static long lastupdate = 0;
 
     public void run() {

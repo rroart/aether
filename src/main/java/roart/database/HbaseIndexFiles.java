@@ -42,26 +42,26 @@ public class HbaseIndexFiles {
     private static Logger log = LoggerFactory.getLogger(HbaseIndexFiles.class);
 
     // column families
-    private static byte[] indexcf = Bytes.toBytes("if");
-    private static byte[] flcf = Bytes.toBytes("fl");
-    private static byte[] filescf = Bytes.toBytes("fi");
+    private static final byte[] indexcf = Bytes.toBytes("if");
+    private static final byte[] flcf = Bytes.toBytes("fl");
+    private static final byte[] filescf = Bytes.toBytes("fi");
 
     // column qualifiers
-    private static byte[] md5q = Bytes.toBytes("md5");
-    private static byte[] indexedq = Bytes.toBytes("indexed");
-    private static byte[] timestampq = Bytes.toBytes("timestamp");
-    private static byte[] timeindexq = Bytes.toBytes("timeindex");
-    private static byte[] timeclassq = Bytes.toBytes("timeclass");
-    private static byte[] classificationq = Bytes.toBytes("classification");
-    private static byte[] convertswq = Bytes.toBytes("convertsw");
-    private static byte[] converttimeq = Bytes.toBytes("converttime");
-    private static byte[] failedq = Bytes.toBytes("failed");
-    private static byte[] failedreasonq = Bytes.toBytes("failedreason");
-    private static byte[] timeoutreasonq = Bytes.toBytes("timeoutreason");
-    private static byte[] noindexreasonq = Bytes.toBytes("noindexreason");
-    private static byte[] nodeq = Bytes.toBytes("node");
-    private static byte[] filenameq = Bytes.toBytes("filename");
-    private static byte[] filelocationq = Bytes.toBytes("filelocation");
+    private static final byte[] md5q = Bytes.toBytes("md5");
+    private static final byte[] indexedq = Bytes.toBytes("indexed");
+    private static final byte[] timestampq = Bytes.toBytes("timestamp");
+    private static final byte[] timeindexq = Bytes.toBytes("timeindex");
+    private static final byte[] timeclassq = Bytes.toBytes("timeclass");
+    private static final byte[] classificationq = Bytes.toBytes("classification");
+    private static final byte[] convertswq = Bytes.toBytes("convertsw");
+    private static final byte[] converttimeq = Bytes.toBytes("converttime");
+    private static final byte[] failedq = Bytes.toBytes("failed");
+    private static final byte[] failedreasonq = Bytes.toBytes("failedreason");
+    private static final byte[] timeoutreasonq = Bytes.toBytes("timeoutreason");
+    private static final byte[] noindexreasonq = Bytes.toBytes("noindexreason");
+    private static final byte[] nodeq = Bytes.toBytes("node");
+    private static final byte[] filenameq = Bytes.toBytes("filename");
+    private static final byte[] filelocationq = Bytes.toBytes("filelocation");
 
     private static HTableInterface filesTable = null;
     private static HTableInterface indexTable = null;

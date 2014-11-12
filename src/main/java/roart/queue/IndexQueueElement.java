@@ -14,7 +14,7 @@ public class IndexQueueElement {
     // public String classification;
     public String content; // made from inputStream
 	public InputStream inputStream;
-	public IndexFiles index;
+	public volatile IndexFiles index;
     public List<ResultItem> retlist;
     public List<ResultItem> retlistnot;
 	public int size;

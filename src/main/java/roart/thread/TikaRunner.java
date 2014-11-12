@@ -28,9 +28,9 @@ public class TikaRunner implements Runnable {
 	
 	private static Logger log = LoggerFactory.getLogger(TikaRunner.class);
 	
-    static public int timeout = 3600;
+    public static final int timeout = 3600;
 
-    int NTHREDS = 2;
+    final int NTHREDS = 2;
 
     public void run() {
     	Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
