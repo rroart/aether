@@ -160,4 +160,16 @@ public class IndexFilesDao {
 	indexFiles.flush();
     }
 
+   public static String webstat() {
+       int dirty1 = 0;
+       for (String k : all.keySet()) {
+	    //log.info("save try " + Thread.currentThread().getId() + " " + k);
+	    IndexFiles i = all.get(k);
+	    if (i.hasChanged()) {
+		dirty1++;
+	    }
+	}
+       return "d " + dirty1;
+    }
+
 }
