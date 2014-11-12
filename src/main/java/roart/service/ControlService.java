@@ -875,6 +875,7 @@ public class ControlService {
 		}
 		
 		if (clean) {
+			DbRunner.doupdate = false;
 			for (String filename : delfileset) {
 				String md5 = IndexFilesDao.getMd5ByFilename(filename);
 				if (md5 != null) {
@@ -893,6 +894,7 @@ public class ControlService {
 					}
 				}
 			}
+			DbRunner.doupdate = true;
 			//IndexFilesDao.commit();
 		}
 		
