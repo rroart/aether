@@ -123,6 +123,10 @@ opennlpmodelpath=.../opennlp/en-doccat.bin
 Training is standard, done with ./bin/opennlp DoccatTrainer in the
 OpenNLP distribution.
 
+2.2.3 Zookeeper
+Configured by
+zookeeper=
+
 3. GUI
 
 3.1 Search

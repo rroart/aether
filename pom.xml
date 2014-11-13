@@ -7,7 +7,7 @@
   <artifactId>aether</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
   <!--artifactId>akashic-disk-search-engine</artifactId-->
-  <version>0.3-SNAPSHOT</version>
+  <version>0.4-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Aether Disk Search Engine</name>
   <!--name>Vaadin Web Application</name-->
@@ -551,6 +551,11 @@
   <artifactId>datanucleus-api-jdo</artifactId>
   <version>${datanucleus.version}</version>
 </dependency>
+<dependency>
+  <groupId>org.apache.zookeeper</groupId>
+  <artifactId>zookeeper</artifactId>
+  <version>${zookeeper.version}</version>
+</dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
@@ -564,6 +569,7 @@
     <hadoop.version>2.5.1</hadoop.version>
     <datanucleus.version>4.0.3</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
+    <zookeeper.version>3.4.6</zookeeper.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>4.3.7.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>

@@ -35,6 +35,7 @@ import roart.content.OtherHandler;
 import roart.content.ClientHandler;
 import roart.thread.ClientRunner;
 import roart.thread.DbRunner;
+import roart.thread.ZKRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
 
@@ -318,7 +319,7 @@ public class ControlService {
 	// reindexdate
 	// filesystemlucenenew
 
-	DbRunner.doupdate = false;
+	//DbRunner.doupdate = false;
 	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || (function == Function.INDEX && filename != null /*&& !reindex*/)) {
 	    if (filename != null) {
 		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5, false);
@@ -331,7 +332,8 @@ public class ControlService {
 	    if (function == Function.FILESYSTEM) {
 		//IndexFilesDao.commit();
 		retlistlist.add(retNewFilesList);
-		DbRunner.doupdate = true;
+		//DbRunner.doupdate = true;
+		ZKRunner.dorefresh = true;
 		return  retlistlist;
 	    }
 	}
@@ -350,7 +352,7 @@ public class ControlService {
 	} else {
 	    indexes = IndexFilesDao.getAll();
 	}
-	DbRunner.doupdate = true;
+	//DbRunner.doupdate = true;
 
 	String maxfailedStr = roart.util.Prop.getProp().getProperty(ConfigConstants.FAILEDLIMIT);
 	int maxfailed = new Integer(maxfailedStr).intValue();
@@ -420,6 +422,7 @@ public class ControlService {
 
 	Queues.resetTikaTimeoutQueue();
 	//IndexFilesDao.commit();
+	ZKRunner.dorefresh = true;
 
 	retlistlist.add(retList);
 	retlistlist.add(retNotList);
@@ -730,6 +733,10 @@ public class ControlService {
     public static Thread dbWorker = null;
     private static ControlRunner controlRunnable = null;
     private static Thread controlWorker = null;
+    private static ZKRunner zkRunnable = null;
+    public static Thread zkWorker = null;
+
+    public static volatile String zookeeper = null;
 
     public void startThreads() {
     	if (tikaRunnable == null) {
@@ -749,6 +756,9 @@ public class ControlService {
     	}
     	if (controlRunnable == null) {
     	startControlWorker();
+    	}
+    	if (zookeeper != null && zkRunnable == null) {
+    	startZKWorker();
     	}
     }
 
@@ -806,6 +816,14 @@ public class ControlService {
     	dbWorker.setName("DbWorker");
     	dbWorker.start();
     	log.info("starting db worker");
+	}
+
+	public void startZKWorker() {
+		zkRunnable = new ZKRunner();
+    	zkWorker = new Thread(zkRunnable);
+    	zkWorker.setName("ZKWorker");
+    	zkWorker.start();
+    	log.info("starting zk worker");
 	}
 
     @SuppressWarnings("rawtypes")
@@ -875,7 +893,7 @@ public class ControlService {
 		}
 		
 		if (clean) {
-			DbRunner.doupdate = false;
+		    //DbRunner.doupdate = false;
 			for (String filename : delfileset) {
 				String md5 = IndexFilesDao.getMd5ByFilename(filename);
 				if (md5 != null) {
@@ -894,8 +912,9 @@ public class ControlService {
 					}
 				}
 			}
-			DbRunner.doupdate = true;
+			//DbRunner.doupdate = true;
 			//IndexFilesDao.commit();
+			ZKRunner.dorefresh = true;
 		}
 		
 		} catch (Exception e) {

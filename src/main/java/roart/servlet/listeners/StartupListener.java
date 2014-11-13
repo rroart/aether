@@ -60,6 +60,11 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	    log.error("Exception", e);
 	}
 
+	String myzoo = roart.util.Prop.getProp().getProperty(ConfigConstants.ZOOKEEPER);
+	if (myzoo != null && !roart.service.ControlService.nodename.equals(ConfigConstants.LOCALHOST)) {
+	    roart.service.ControlService.zookeeper = myzoo;
+	}
+
 	roart.service.ControlService maininst = new roart.service.ControlService();
 	maininst.startThreads();
 
