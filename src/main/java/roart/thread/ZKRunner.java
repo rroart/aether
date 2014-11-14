@@ -20,53 +20,30 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.CountDownLatch;
-
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.AsyncCallback.StatCallback;
-import org.apache.zookeeper.KeeperException.Code;
-import org.apache.zookeeper.data.Stat;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.ZooDefs.Ids;
-import org.apache.zookeeper.data.Stat;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.ACL;
-import org.apache.zookeeper.data.Stat;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.ACL;
-import org.apache.zookeeper.data.Stat;
-
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.data.ACL;
+import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.queue.Queues;
 import roart.util.Constants;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
-
-import com.vaadin.ui.UI;
 
 public class ZKRunner implements Runnable {
 	
     private static Logger log = LoggerFactory.getLogger(ZKRunner.class);
 
-    public static final Set<UI> uiset = new HashSet<UI>();
-	
     final int update = 300;
     static long lastupdate = 0;
 
@@ -124,7 +101,6 @@ public class ZKRunner implements Runnable {
 		try {
 		    TimeUnit.SECONDS.sleep(update);
 		} catch (InterruptedException e) {
-		    // TODO Auto-generated catch block
 		    log.error(Constants.EXCEPTION, e);
 		    ClientRunner.notify("ZK exception");
 		}
@@ -214,7 +190,7 @@ event.getState() + " type " + event.getType());
 	try {
 	    for (String child : children) {
 		if (child.equals("refresh")) {
-		    roart.database.IndexFilesDao.getAll();
+		    IndexFilesDao.getAll();
 		    log.info("refresh " + ControlService.nodename);
 		} else {
 		    log.info("unknown command " + child);
