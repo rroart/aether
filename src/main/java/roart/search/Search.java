@@ -66,7 +66,7 @@ public class Search {
     if (retsize < 0) {
 	//dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
 	ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
-	ri.get().set(2, dbfilename);
+	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlistnot.add(ri);
     } else {
 
@@ -81,7 +81,7 @@ public class Search {
 	log.info("timerStop filename " + time);
 
 	ResultItem ri = IndexFiles.getResultItem(el.index, lang);
-	ri.get().set(2, dbfilename);
+	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlist.add(ri);
     try {
 		inputStream.close();
