@@ -57,7 +57,7 @@ public class ZKRunner implements Runnable {
     private static long retryDelay = 500L;
     private static int retryCount = 10;
 
-    private static final String dir = "/" + Constants.AETHER + "/" + Constants.LOCK;
+    private static final String lockdir = "/" + Constants.AETHER + "/" + Constants.LOCK;
     private static String id = null;
     private static ZNodeName idName;
     private static String ownerId;
@@ -224,7 +224,7 @@ event.getState() + " type " + event.getType());
         if (isClosed()) {
             return false;
         }
-        ensurePathExists(dir);
+        ensurePathExists(lockdir);
 
         return (Boolean) retryOperation(zop);
     }
@@ -342,19 +342,19 @@ event.getState() + " type " + event.getType());
 		if (id == null) {
 		    long sessionId = zookeeper.getSessionId();
 		    String prefix = "x-" + sessionId + "-";
-		    findPrefixInChildren(prefix, zookeeper, dir);
+		    findPrefixInChildren(prefix, zookeeper, lockdir);
 		    idName = new ZNodeName(id);
 		}
 		if (id != null) {
-		    List<String> names = zookeeper.getChildren(dir, false);
+		    List<String> names = zookeeper.getChildren(lockdir, false);
 		    if (names.isEmpty()) {
-			log.info("No children in: " + dir + " when we've just " +
+			log.info("No children in: " + lockdir + " when we've just " +
 				 "created one! Lets recreate it...");
 			id = null;
 		    } else {
                         SortedSet<ZNodeName> sortedNames = new TreeSet<ZNodeName>();
                         for (String name : names) {
-                            sortedNames.add(new ZNodeName(dir + "/" + name));
+                            sortedNames.add(new ZNodeName(lockdir + "/" + name));
                         }
                         ownerId = sortedNames.first().getName();
                         SortedSet<ZNodeName> lessThanMe = sortedNames.headSet(idName);
