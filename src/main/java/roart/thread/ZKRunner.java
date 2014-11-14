@@ -227,6 +227,9 @@ event.getState() + " type " + event.getType());
     }
 
     public static void dorefresh() {
+	if (zk == null) {
+	    return;
+	}
 	log.info("sendMsgRefresh");
 	try {
 	    List<String> nodes = zk.getChildren("/aether/nodes", false);
