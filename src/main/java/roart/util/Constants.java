@@ -10,4 +10,8 @@ public static final String NONE = "none";
 public static final String ADMIN = "admin";
 public static final String ADDR = "addr";
 
+public static final String AETHER = "aether";
+public static final String LOCK = "lock";
+public static final String NODES = "nodes";
+public static final String REFRESH = "refresh";
 }

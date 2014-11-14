@@ -57,7 +57,7 @@ public class ZKRunner implements Runnable {
     private static long retryDelay = 500L;
     private static int retryCount = 10;
 
-    private static final String dir = "/aether/lock";
+    private static final String dir = "/" + Constants.AETHER + "/" + Constants.LOCK;
     private static String id = null;
     private static ZNodeName idName;
     private static String ownerId;
@@ -75,7 +75,7 @@ public class ZKRunner implements Runnable {
 
 	watcher = new MyWatcher();
 	initZK(watcher);
-	String dir = "/aether/nodes/" + ControlService.nodename;
+	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename;
 
     	while (true) {
 	    long now = System.currentTimeMillis();
@@ -127,21 +127,21 @@ public class ZKRunner implements Runnable {
 		zk = new ZooKeeper(ControlService.zookeeper, Integer.MAX_VALUE, watcher);
 		zookeeper = zk;
 		Stat s;
-		s = zk.exists("/aether", false);
+		s = zk.exists("/" + Constants.AETHER, false);
 		if (s == null) {
-		    zk.create("/aether", new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		    zk.create("/" + Constants.AETHER, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		}
-		s = zk.exists("/aether/lock", false);
+		s = zk.exists("/" + Constants.AETHER + "/" + Constants.LOCK, false);
 		if (s == null) {
-		    zk.create("/aether/lock", new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		    zk.create("/" + Constants.AETHER + "/" + Constants.LOCK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		}
-		s = zk.exists("/aether/nodes", false);
+		s = zk.exists("/" + Constants.AETHER + "/" + Constants.NODES, false);
 		if (s == null) {
-		    zk.create("/aether/nodes", new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		    zk.create("/" + Constants.AETHER + "/" + Constants.NODES, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		}
-		s = zk.exists("/aether/nodes/" + ControlService.nodename, false);
+		s = zk.exists("/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename, false);
 		if (s == null) {
-		    zk.create("/aether/nodes/" + ControlService.nodename, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		    zk.create("/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		}
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
@@ -169,7 +169,7 @@ event.getState() + " type " + event.getType());
 	    if (event.getPath() == null) {
 		return;
 	    }
-	    if (event.getPath().contains("/aether/lock")) {
+	    if (event.getPath().contains("/" + Constants.AETHER + "/" + Constants.LOCK)) {
 		try {
 		    lock();
 		} catch (Exception e) {
@@ -189,9 +189,9 @@ event.getState() + " type " + event.getType());
     public void readMsg(String dir, List<String> children) {
 	try {
 	    for (String child : children) {
-		if (child.equals("refresh")) {
+		if (child.equals(Constants.REFRESH)) {
 		    IndexFilesDao.getAll();
-		    log.info("refresh " + ControlService.nodename);
+		    log.info(Constants.REFRESH + " " + ControlService.nodename);
 		} else {
 		    log.info("unknown command " + child);
 		}
@@ -208,10 +208,10 @@ event.getState() + " type " + event.getType());
 	}
 	log.info("sendMsgRefresh");
 	try {
-	    List<String> nodes = zk.getChildren("/aether/nodes", false);
+	    List<String> nodes = zk.getChildren("/" + Constants.AETHER + "/" + Constants.NODES, false);
 	    for (String node : nodes) {
 		if (!ControlService.nodename.equals(node)) {
-		    zk.create("/aether/nodes/" + node + "/refresh", new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		    zk.create("/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.REFRESH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		    log.info("send refresh to " + node);
 		}
 	    }
