@@ -170,4 +170,4 @@ Status label has rows for t(ika) queue, o(ther) queue, i(ndex) queue, queued / r
 Also, a d for counting dirty database objects.
 
 4. Caution
-Multitasking issues, even for a single node.
+Multitasking issues, some locking may be insufficient.

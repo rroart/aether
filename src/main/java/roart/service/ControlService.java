@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 public class ControlService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private static volatile Integer writelock = new Integer(-1);
+
     private static int dirsizelimit = 100;
 
     // called from ui
@@ -283,6 +285,10 @@ public class ControlService {
 
     @SuppressWarnings("rawtypes")
 	public List<List> clientDo(ClientQueueElement el) throws Exception {
+		    synchronized (writelock) {
+			if (zookeeper != null) {
+			    ZKRunner.lockme();
+			}
 	Function function = el.function;
 	String filename = el.file;
 	boolean reindex = el.reindex;
@@ -331,9 +337,15 @@ public class ControlService {
 	    }
 	    if (function == Function.FILESYSTEM) {
 		//IndexFilesDao.commit();
+		while (IndexFilesDao.dirty() > 0) {
+		    TimeUnit.SECONDS.sleep(60);
+		}
 		retlistlist.add(retNewFilesList);
 		//DbRunner.doupdate = true;
-		ZKRunner.dorefresh = true;
+		ZKRunner.dorefresh();
+			if (zookeeper != null) {
+			    ZKRunner.unlockme();
+			}
 		return  retlistlist;
 	    }
 	}
@@ -422,7 +434,10 @@ public class ControlService {
 
 	Queues.resetTikaTimeoutQueue();
 	//IndexFilesDao.commit();
-	ZKRunner.dorefresh = true;
+	while (IndexFilesDao.dirty() > 0) {
+	    TimeUnit.SECONDS.sleep(60);
+	}
+	ZKRunner.dorefresh();
 
 	retlistlist.add(retList);
 	retlistlist.add(retNotList);
@@ -430,7 +445,11 @@ public class ControlService {
 	retlistlist.add(retDeletedList);
 	retlistlist.add(retTikaTimeoutList);
 	retlistlist.add(retNotExistList);
+			if (zookeeper != null) {
+			    ZKRunner.unlockme();
+			}
 	return retlistlist;
+		    }
     }
 
     // outdated, did run once, had a bug which made duplicates
@@ -893,6 +912,10 @@ public class ControlService {
 		}
 		
 		if (clean) {
+		    synchronized (writelock) {
+			if (zookeeper != null) {
+			    ZKRunner.lockme();
+			}
 		    //DbRunner.doupdate = false;
 			for (String filename : delfileset) {
 				String md5 = IndexFilesDao.getMd5ByFilename(filename);
@@ -914,7 +937,15 @@ public class ControlService {
 			}
 			//DbRunner.doupdate = true;
 			//IndexFilesDao.commit();
-			ZKRunner.dorefresh = true;
+			while (IndexFilesDao.dirty() > 0) {
+			    TimeUnit.SECONDS.sleep(60);
+			}
+			
+			ZKRunner.dorefresh();
+			if (zookeeper != null) {
+			    ZKRunner.unlockme();
+			}
+		    }
 		}
 		
 		} catch (Exception e) {
