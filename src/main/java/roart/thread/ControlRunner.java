@@ -43,6 +43,9 @@ public class ControlRunner implements Runnable {
     			if (!ControlService.clientWorker.isAlive()) {
     				cs.startClientWorker();
     			}
+    			if (ControlService.zookeeper != null && !ControlService.zkWorker.isAlive()) {
+    				cs.startZKWorker();
+    			}
      	}
     }
 
