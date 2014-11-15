@@ -35,6 +35,18 @@ public class Queues {
     	return tikas.get();
     }
     
+    public static int getIndexs() {
+    	return indexs.get();
+    }
+    
+    public static int getOthers() {
+    	return others.get();
+    }
+    
+    public static int getClients() {
+    	return clients.get();
+    }
+    
     public static void incTikas() {
     	tikas.incrementAndGet();
     }
@@ -67,6 +79,22 @@ public class Queues {
     	clients.incrementAndGet();
     }
 
+    public static void resetTikas() {
+    	tikas = new AtomicInteger(0);
+    }
+    
+    public static void resetOthers() {
+    	others = new AtomicInteger(0);
+    }
+    
+    public static void resetIndexs() {
+    	indexs = new AtomicInteger(0);
+    }
+    
+    public static void resetClients() {
+    	clients = new AtomicInteger(0);
+    }
+    
     public static boolean tikaQueueHeavyLoaded() {
 	return tikaQueue.size() >= limit;
     }

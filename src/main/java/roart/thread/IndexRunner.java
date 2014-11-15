@@ -22,6 +22,11 @@ public class IndexRunner implements Runnable {
 	private static Logger log = LoggerFactory.getLogger(IndexRunner.class);
 	
     public void run() {
+    	if (Queues.getIndexs() > 0) {
+    		log.info("resetting indexs");
+    		Queues.resetIndexs();
+    	}
+    	
     	while (true) {
     		if (Queues.indexQueue.isEmpty()) {
     			try {

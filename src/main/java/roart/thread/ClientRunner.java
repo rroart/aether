@@ -44,6 +44,11 @@ public class ClientRunner implements Runnable {
 	Set<Future<Object>> set = new HashSet<Future<Object>>();
 	int nThreads = 4;
     	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
+    	if (Queues.getClients() > 0) {
+    		log.info("resetting clients");
+    		Queues.resetClients();
+    	}
+    	
     	while (true) {
 	    final long now = System.currentTimeMillis();
 	    if ((now - lastupdate) >= update * 1000) {

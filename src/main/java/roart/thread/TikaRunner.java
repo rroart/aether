@@ -42,6 +42,11 @@ public class TikaRunner implements Runnable {
     	log.info("nthreads " + nThreads);
     	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
+    	if (Queues.getTikas() > 0) {
+    		log.info("resetting tikas");
+    		Queues.resetTikas();
+    	}
+    	
     	while (true) {
     		long now = System.currentTimeMillis();
     		List<Future> removes = new ArrayList<Future>();

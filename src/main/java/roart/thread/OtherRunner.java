@@ -22,6 +22,11 @@ public class OtherRunner implements Runnable {
 	private static Logger log = LoggerFactory.getLogger(OtherRunner.class);
 	
     public void run() {
+    	if (Queues.getOthers() > 0) {
+    		log.info("resetting others");
+    		Queues.resetOthers();
+    	}
+    	
     	while (true) {
 	    if (Queues.otherQueue.isEmpty() || Queues.indexQueueHeavyLoaded()) {
     			try {	
