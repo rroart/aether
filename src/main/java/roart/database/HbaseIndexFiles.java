@@ -124,8 +124,7 @@ public class HbaseIndexFiles {
 	}
     }
 
-    public static void put(IndexFiles ifile) {
-	try {
+    public static void put(IndexFiles ifile) throws Exception {
 	    //HTable /*Interface*/ filesTable = new HTable(conf, "index");
 	    Put put = new Put(Bytes.toBytes(ifile.getMd5()));
 	    put.add(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
@@ -196,18 +195,12 @@ public class HbaseIndexFiles {
 	    	filesTable.delete(d);
 	    }
 	    
-	} catch (IOException e) {
-	    log.error(Constants.EXCEPTION, e);
-	} catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
-	}
     }
 
     // is this handling other nodes
     // plus get set of existing, remove new from that, delete the rest.
 
-    public static void put(String md5, Set<FileLocation> files) {
-	try {
+    public static void put(String md5, Set<FileLocation> files) throws Exception {
 	    //HTable /*Interface*/ filesTable = new HTable(conf, "index");
 	    for (FileLocation file : files) {
 		String filename = getFile(file);
@@ -215,9 +208,6 @@ public class HbaseIndexFiles {
 		put.add(filescf, md5q, Bytes.toBytes(md5));
 		filesTable.put(put);
 	    }
-	} catch (IOException e) {
-	    log.error(Constants.EXCEPTION, e);
-	}
     }
 
     public static IndexFiles get(Result index) {
@@ -404,17 +394,12 @@ public class HbaseIndexFiles {
 	return new String(bytes);
     }
 
-    public static void flush() {
-	try {
+    public static void flush() throws Exception {
 	    filesTable.flushCommits();
 	    indexTable.flushCommits();
-	} catch (IOException e) {
-	    log.error(Constants.EXCEPTION, e);
-	}
     }
 
-    public static void close() {
-	try {
+    public static void close() throws Exception {
 	    log.info("closing db");
 	    if (filesTable != null) {
 	    filesTable.close();
@@ -424,9 +409,6 @@ public class HbaseIndexFiles {
 	    indexTable.close();
 	    indexTable = hconn.getTable("index");
 	    }
-	} catch (IOException e) {
-	    log.error(Constants.EXCEPTION, e);
-	}
     }
 
 	public static Set<String> getAllMd5() throws Exception {

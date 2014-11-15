@@ -23,11 +23,11 @@ public abstract class IndexFilesAccess {
 
     public abstract List<IndexFiles> getAll() throws Exception;
 
-    public abstract void save(IndexFiles i);
+    public abstract void save(IndexFiles i) throws Exception;
 
-    public abstract void flush();
+    public abstract void flush() throws Exception ;
 
-    public abstract void close();
+    public abstract void close() throws Exception;
 
 	public abstract Set<String> getAllMd5() throws Exception;
 

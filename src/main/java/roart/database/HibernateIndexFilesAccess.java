@@ -108,12 +108,12 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
     }
 
 	@Override
-    public void flush() {
+    public void flush() throws Exception {
 	HibernateIndexFiles.flush();
     }
 
 	@Override
-    public void close() {
+    public void close() throws Exception {
 	HibernateIndexFiles.commit();
     }
 

@@ -271,20 +271,12 @@ import roart.util.Constants;
 	    return null;
 	}
 
-	public static void flush() {
-            try {
-                roart.database.DataNucleusUtil.currentSession().flush();
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
-            }
+	public static void flush() throws Exception {
+                 roart.database.DataNucleusUtil.currentSession().flush();
 	}
 
-	public static void commit() {
-            try {
+	public static void commit() throws Exception {
                 roart.database.DataNucleusUtil.commit();
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
-            }
 	}
 
 	public static Set<String> getAllMd5() throws Exception {

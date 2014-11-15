@@ -67,17 +67,17 @@ public class HbaseIndexFilesAccess extends IndexFilesAccess {
     }
 
 	@Override
-    public void save(IndexFiles i) {
+    public void save(IndexFiles i) throws Exception {
 	HbaseIndexFiles.put(i);
     }
 
 	@Override
-    public void flush() {
+    public void flush() throws Exception {
 	HbaseIndexFiles.flush();
     }
 
 	@Override
-    public void close() {
+    public void close() throws Exception {
 	HbaseIndexFiles.close();
     }
 

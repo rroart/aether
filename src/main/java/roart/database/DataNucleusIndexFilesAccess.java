@@ -55,7 +55,7 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
     }
 
 	@Override
-    public void save(IndexFiles i) {
+    public void save(IndexFiles i) throws Exception {
 	try {
 	    DataNucleusIndexFiles hif = DataNucleusIndexFiles.ensureExistence(i.getMd5());
 	    hif.setIndexed(i.getIndexed());
@@ -106,12 +106,12 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
     }
 
 	@Override
-    public void flush() {
+    public void flush() throws Exception {
 	DataNucleusIndexFiles.flush();
     }
 
 	@Override
-    public void close() {
+    public void close() throws Exception {
 	DataNucleusIndexFiles.commit();
     }
 

@@ -11,6 +11,7 @@ import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
+import roart.util.Constants;
 
 
 import org.slf4j.Logger;
@@ -126,9 +127,14 @@ public class IndexFilesDao {
 
     public static void save(IndexFiles i) {
 	if (i.hasChanged()) {
-	    log.info("saving " + i.getMd5());
-	    indexFiles.save(i);
-	    i.setUnchanged();
+		try {
+			indexFiles.save(i);
+		    log.info("saving " + i.getMd5());
+	    	i.setUnchanged();
+		} catch (Exception e) {
+		    log.info("failed saving " + i.getMd5());	
+		    log.error(Constants.EXCEPTION, e);
+	    }
 	} else {
 	    //log.info("not saving " + i.getMd5());
 	}
@@ -153,11 +159,19 @@ public class IndexFilesDao {
 	    IndexFilesDao.save(i);
 	}
 	//all.clear();
+	try {
 	indexFiles.close();
+	} catch (Exception e) {
+	    log.error(Constants.EXCEPTION, e);
+    }
     }
 
     public static void flush() {
+    	try {
 	indexFiles.flush();
+		} catch (Exception e) {
+		    log.error(Constants.EXCEPTION, e);
+	    }
     }
 
    public static String webstat() {
