@@ -26,10 +26,10 @@ public class Queues {
 
     public static volatile Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     
-    private static AtomicInteger tikas = new AtomicInteger(0);
-    private static AtomicInteger others = new AtomicInteger(0);
-    private static AtomicInteger indexs = new AtomicInteger(0);
-    private static AtomicInteger clients = new AtomicInteger(0);
+    private static volatile AtomicInteger tikas = new AtomicInteger(0);
+    private static volatile AtomicInteger others = new AtomicInteger(0);
+    private static volatile AtomicInteger indexs = new AtomicInteger(0);
+    private static volatile AtomicInteger clients = new AtomicInteger(0);
     
     public static int getTikas() {
     	return tikas.get();
