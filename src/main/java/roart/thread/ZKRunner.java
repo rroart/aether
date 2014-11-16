@@ -1,26 +1,8 @@
 package roart.thread;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.SortedSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -29,52 +11,35 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs.Ids;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.data.ACL;
-import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.util.Constants;
+import roart.zkutil.ZKWriteLock;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
 public class ZKRunner implements Runnable {
 	
-    private static Logger log = LoggerFactory.getLogger(ZKRunner.class);
+    static Logger log = LoggerFactory.getLogger(ZKRunner.class);
 
     final int update = 300;
     static long lastupdate = 0;
 
-    public static volatile boolean doupdate = true;
-
     public static volatile MyWatcher watcher = null;
 
-    static ZooKeeper zookeeper = null;
-    private static AtomicBoolean closed = new AtomicBoolean(false);
-    private static List<ACL> acl = ZooDefs.Ids.OPEN_ACL_UNSAFE;
-    private static long retryDelay = 500L;
-    private static int retryCount = 10;
-
-    private static final String lockdir = "/" + Constants.AETHER + "/" + Constants.LOCK;
-    private static String id = null;
-    private static ZNodeName idName;
-    private static String ownerId;
-    private static String lastChildId;
-    private static byte[] data = {0x12, 0x34};
-    private static LockListener callback;
-    private static LockZooKeeperOperation zop = new LockZooKeeperOperation();
+    public static volatile ZKWriteLock writelock = null;
 
     public void run() {
-    	Set<Future<Object>> set = new HashSet<Future<Object>>();
-	int nThreads = 4;
-    	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
 	List<String> children = null;
 
+    final String lockdir = "/" + Constants.AETHER + "/" + Constants.LOCK;
+    
 	watcher = new MyWatcher();
 	initZK(watcher);
+	writelock = new ZKWriteLock(zk, lockdir);
 	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename;
 
     	while (true) {
@@ -125,7 +90,6 @@ public class ZKRunner implements Runnable {
 	    }
 	    try {
 		zk = new ZooKeeper(ControlService.zookeeper, Integer.MAX_VALUE, watcher);
-		zookeeper = zk;
 		Stat s;
 		s = zk.exists("/" + Constants.AETHER, false);
 		if (s == null) {
@@ -148,7 +112,7 @@ public class ZKRunner implements Runnable {
 	    }
     }
 
-    private static class MyWatcher implements Watcher {
+    public static class MyWatcher implements Watcher {
 
 	CountDownLatch latch;
 
@@ -164,14 +128,13 @@ public class ZKRunner implements Runnable {
 	}
 
 	public void process(WatchedEvent event) {
-	    log.info("Process " + event.getPath() + " state: " +
-event.getState() + " type " + event.getType());
+	    log.info("Process " + event.getPath() + " state: " + event.getState() + " type " + event.getType());
 	    if (event.getPath() == null) {
 		return;
 	    }
 	    if (event.getPath().contains("/" + Constants.AETHER + "/" + Constants.LOCK)) {
 		try {
-		    lock();
+		    writelock.lock();
 		} catch (Exception e) {
 		    log.info(Constants.EXCEPTION, e);
 		}
@@ -220,267 +183,9 @@ event.getState() + " type " + event.getType());
 	}
     }
 
-    public synchronized static boolean lock() throws KeeperException, InterruptedException {
-        if (isClosed()) {
-            return false;
-        }
-        ensurePathExists(lockdir);
-
-        return (Boolean) retryOperation(zop);
-    }
-
-    protected static boolean isClosed() {
-        return closed.get();
-    }
-
-    protected static void ensurePathExists(String path) {
-        ensureExists(path, null, acl, CreateMode.PERSISTENT);
-    }
-
-    protected static void ensureExists(final String path, final byte[] data,
-				final List<ACL> acl, final CreateMode flags) {
-        try {
-            retryOperation(new ZooKeeperOperation() {
-		    public boolean execute() throws KeeperException, InterruptedException {
-			Stat stat = zookeeper.exists(path, false);
-			if (stat != null) {
-			    return true;
-			}
-			zookeeper.create(path, data, acl, flags);
-			return true;
-		    }
-		});
-        } catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
-        }
-    }
-
-    protected static Object retryOperation(ZooKeeperOperation operation)
-        throws KeeperException, InterruptedException {
-        KeeperException exception = null;
-        for (int i = 0; i < retryCount; i++) {
-            try {
-                return operation.execute();
-            } catch (KeeperException.SessionExpiredException e) {
-                log.info("Session expired for: " + zookeeper + " so reconnecting due to: " + e, e);
-                throw e;
-            } catch (KeeperException.ConnectionLossException e) {
-                if (exception == null) {
-                    exception = e;
-                }
-                log.info("Attempt " + i + " failed with connection loss so " +
-			  "attempting to reconnect: " + e, e);
-                retryDelay(i);
-            }
-        }
-        throw exception;
-    }
-
-    private static interface ZooKeeperOperation { 
-	public boolean execute() throws KeeperException, InterruptedException;
-    }
-
-    private static interface LockListener {
-	public void lockAcquired();
-	public void lockReleased();
-    }
-
-    public static synchronized void unlock() throws RuntimeException {
-        if (!isClosed() && id != null) {
-            try {
-                ZooKeeperOperation zopdel = new ZooKeeperOperation() {
-			public boolean execute() throws KeeperException, InterruptedException {
-			    zookeeper.delete(id, -1);
-			    return Boolean.TRUE;
-			}
-		    };
-                zopdel.execute();
-            } catch (InterruptedException e) {
-                log.info("Caught: " + e, e);
-		Thread.currentThread().interrupt();
-            } catch (KeeperException.NoNodeException e) {
-                // nothing
-            } catch (KeeperException e) {
-                log.info("Caught: " + e, e);
-                throw (RuntimeException) new RuntimeException(e.getMessage()).initCause(e);
-            }
-            finally {
-                if (callback != null) {
-                    callback.lockReleased();
-                }
-                id = null;
-            }
-        }
-    }
-
-    private static class LockZooKeeperOperation implements ZooKeeperOperation {
-
-	private void findPrefixInChildren(String prefix, ZooKeeper zookeeper, String dir) throws KeeperException, InterruptedException {
-	    List<String> names = zookeeper.getChildren(dir, false);
-	    for (String name : names) {
-		if (name.startsWith(prefix)) {
-		    id = name;
-		    if (log.isInfoEnabled()) {
-			log.info("Found id created last time: " + id);
-		    }
-		    break;
-		}
-	    }
-	    if (id == null) {
-		id = zookeeper.create(dir + "/" + prefix, data,
-				      getAcl(), EPHEMERAL_SEQUENTIAL);
-
-		if (log.isInfoEnabled()) {
-		    log.info("Created id: " + id);
-		}
-	    }
-
-	}
-
-	public boolean execute() throws KeeperException, InterruptedException {
-	    do {
-		if (id == null) {
-		    long sessionId = zookeeper.getSessionId();
-		    String prefix = "x-" + sessionId + "-";
-		    findPrefixInChildren(prefix, zookeeper, lockdir);
-		    idName = new ZNodeName(id);
-		}
-		if (id != null) {
-		    List<String> names = zookeeper.getChildren(lockdir, false);
-		    if (names.isEmpty()) {
-			log.info("No children in: " + lockdir + " when we've just " +
-				 "created one! Lets recreate it...");
-			id = null;
-		    } else {
-                        SortedSet<ZNodeName> sortedNames = new TreeSet<ZNodeName>();
-                        for (String name : names) {
-                            sortedNames.add(new ZNodeName(lockdir + "/" + name));
-                        }
-                        ownerId = sortedNames.first().getName();
-                        SortedSet<ZNodeName> lessThanMe = sortedNames.headSet(idName);
-                        if (!lessThanMe.isEmpty()) {
-                            ZNodeName lastChildName = lessThanMe.last();
-                            lastChildId = lastChildName.getName();
-                            if (log.isInfoEnabled()) {
-                                log.info("watching less than me node: " + lastChildId);
-                            }
-                            Stat stat = zookeeper.exists(lastChildId, new MyWatcher());
-                            if (stat != null) {
-                                return Boolean.FALSE;
-                            } else {
-                                log.info("Could not find the" +
-					 " stats for less than me: " + lastChildName.getName());
-                            }
-                        } else {
-                            if (isOwner()) {
-                                if (callback != null) {
-                                    callback.lockAcquired();
-                                }
-                                return Boolean.TRUE;
-                            }
-                        }
-		    }
-		}
-	    }
-	    while (id == null);
-	    return Boolean.FALSE;
-	}
-    };
-
-    public static boolean isOwner() {
-        return id != null && ownerId != null && id.equals(ownerId);
-    }
-
-    protected static void retryDelay(int attemptCount) {
-        if (attemptCount > 0) {
-            try {
-                Thread.sleep(attemptCount * retryDelay);
-            } catch (InterruptedException e) {
-                log.info("Failed to sleep: " + e, e);
-            }
-        }
-    }
-
-    static class ZNodeName implements Comparable<ZNodeName> {
-	private final String name;
-	private String prefix;
-	private int sequence = -1;
-	private final Logger log = LoggerFactory.getLogger(ZNodeName.class);
-
-	public ZNodeName(String name) {
-	    if (name == null) {
-		throw new NullPointerException("id cannot be null");
-	    }
-	    this.name = name;
-	    this.prefix = name;
-	    int idx = name.lastIndexOf('-');
-	    if (idx >= 0) {
-		this.prefix = name.substring(0, idx);
-		try {
-		    this.sequence = Integer.parseInt(name.substring(idx + 1));
-		} catch (NumberFormatException e) {
-		    log.info("Number format exception for " + idx, e);
-		} catch (ArrayIndexOutOfBoundsException e) {
-		    log.info("Array out of bounds for " + idx, e);
-		}
-	    }
-	}
-
-	@Override
-	    public String toString() {
-	    return name.toString();
-	}
-
-	@Override
-	    public boolean equals(Object o) {
-	    if (this == o) return true;
-	    if (o == null || getClass() != o.getClass()) return false;
-
-	    ZNodeName sequence = (ZNodeName) o;
-
-	    if (!name.equals(sequence.name)) return false;
-
-	    return true;
-	}
-
-	@Override
-	    public int hashCode() {
-	    return name.hashCode() + 37;
-	}
-
-	public int compareTo(ZNodeName that) {
-	    int answer = this.prefix.compareTo(that.prefix);
-	    if (answer == 0) {
-		int s1 = this.sequence;
-		int s2 = that.sequence;
-		if (s1 == -1 && s2 == -1) {
-		    return this.name.compareTo(that.name);
-		}
-		answer = s1 == -1 ? 1 : s2 == -1 ? -1 : s1 - s2;
-	    }
-	    return answer;
-	}
-
-	public String getName() {
-	    return name;
-	}
-
-	public int getZNodeName() {
-	    return sequence;
-	}
-
-	public String getPrefix() {
-	    return prefix;
-	}
-    }
-
-    public static List<ACL> getAcl() {
-        return acl;
-    }
-
     public static void unlockme() {
 	log.info("unlockme");
-	unlock();
+	writelock.unlock();
     }
 
     public static void lockme() {
@@ -488,8 +193,11 @@ event.getState() + " type " + event.getType());
 	boolean locked;
 	try {
 	    do {
-		locked = lock();
+		locked = writelock.lock();
 		log.info("lockme " + locked);
+		if (!locked) {
+			TimeUnit.SECONDS.sleep(60);
+		}
 	    } while (!locked);
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
