@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.util.Constants;
 import roart.zkutil.ZKWriteLock;
+import roart.zkutil.ZKBlockWriteLock;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
@@ -27,32 +28,26 @@ public class ZKRunner implements Runnable {
     final int update = 300;
     static long lastupdate = 0;
 
-    public static volatile MyWatcher watcher = null;
-
-    public static volatile ZKWriteLock writelock = null;
-
     public void run() {
 
 	List<String> children = null;
 
-    final String lockdir = "/" + Constants.AETHER + "/" + Constants.LOCK;
-    
-	watcher = new MyWatcher();
-	initZK(watcher);
-	writelock = new ZKWriteLock(zk, lockdir);
+	initZK(new MessageWatcher());
 	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename;
 
     	while (true) {
 	    long now = System.currentTimeMillis();
-	    if ((now - lastupdate) >= update * 1000) {
+	    if (true || (now - lastupdate) >= update * 1000) {
+		log.info("get children");
+		MessageWatcher msgwatcher = new MessageWatcher();
 		try {
-		    children = getChildren(dir, watcher);
+		    children = getChildren(dir, msgwatcher);
 		} catch (Exception e) {
 		    log.error(Constants.EXCEPTION, e);
 		}
 		try {
 		    if (children.size() == 0) {
-			watcher.await();
+			msgwatcher.await();
 			continue;
 		    } else {
 			readMsg(dir, children);
@@ -62,7 +57,7 @@ public class ZKRunner implements Runnable {
 		}
 		lastupdate = now;
 	    }
-	    if (true) {
+	    if (false) {
 		try {
 		    TimeUnit.SECONDS.sleep(update);
 		} catch (InterruptedException e) {
@@ -112,16 +107,13 @@ public class ZKRunner implements Runnable {
 	    }
     }
 
-    public static class MyWatcher implements Watcher {
+    public class MessageWatcher implements Watcher {
 
 	CountDownLatch latch;
 
-	Integer mutex = null;
-
-	public MyWatcher() {
+	public MessageWatcher() {
 	    try {
 		latch = new CountDownLatch(1);
-		mutex = new Integer(-1);
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	    }
@@ -132,15 +124,7 @@ public class ZKRunner implements Runnable {
 	    if (event.getPath() == null) {
 		return;
 	    }
-	    if (event.getPath().contains("/" + Constants.AETHER + "/" + Constants.LOCK)) {
-		try {
-		    writelock.lock();
-		} catch (Exception e) {
-		    log.info(Constants.EXCEPTION, e);
-		}
-	    } else {
-		latch.countDown();
-	    }
+	    latch.countDown();
 	}
 
         public void await() throws InterruptedException {
@@ -155,6 +139,7 @@ public class ZKRunner implements Runnable {
 		if (child.equals(Constants.REFRESH)) {
 		    IndexFilesDao.getAll();
 		    log.info(Constants.REFRESH + " " + ControlService.nodename);
+		    ClientRunner.notify("Finished refresh");
 		} else {
 		    log.info("unknown command " + child);
 		}
@@ -183,12 +168,14 @@ public class ZKRunner implements Runnable {
 	}
     }
 
-    public static void unlockme() {
+    public static void unlockme(ZKWriteLock writelock) {
 	log.info("unlockme");
 	writelock.unlock();
     }
 
-    public static void lockme() {
+    public static ZKWriteLock lockme() {
+	final String lockdir = "/" + Constants.AETHER + "/" + Constants.LOCK;
+    	ZKWriteLock writelock = new ZKWriteLock(zk, lockdir);
 	log.info("lockme");
 	boolean locked;
 	try {
@@ -202,6 +189,25 @@ public class ZKRunner implements Runnable {
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
+	return writelock;
+    }
+
+    public static void unlockme(ZKBlockWriteLock writelock) {
+	log.info("unlockme");
+	writelock.unlock();
+    }
+
+    public static ZKBlockWriteLock blocklockme() {
+	final String lockdir = "/" + Constants.AETHER + "/" + Constants.LOCK;
+    	ZKBlockWriteLock writelock = new ZKBlockWriteLock(zk, lockdir);
+	log.info("lockme");
+	try {
+	    writelock.lock();
+	    log.info("locked");
+	} catch (Exception e) {
+	    log.error(Constants.EXCEPTION, e);
+	}
+	return writelock;
     }
 
 }
