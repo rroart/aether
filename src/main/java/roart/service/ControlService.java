@@ -38,6 +38,8 @@ import roart.thread.DbRunner;
 import roart.thread.ZKRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
+import roart.zkutil.ZKLockUtil;
+import roart.zkutil.ZKMessageUtil;
 import roart.zkutil.ZKWriteLock;
 import roart.zkutil.ZKBlockWriteLock;
 
@@ -290,7 +292,7 @@ public class ControlService {
 		    synchronized (writelock) {
 			ZKBlockWriteLock writelock = null;
 			if (zookeeper != null) {
-			    writelock = ZKRunner.blocklockme();
+			    writelock = ZKLockUtil.blocklockme();
 			}
 	Function function = el.function;
 	String filename = el.file;
@@ -346,8 +348,8 @@ public class ControlService {
 		retlistlist.add(retNewFilesList);
 		//DbRunner.doupdate = true;
 		if (zookeeper != null) {
-		    ZKRunner.dorefresh();
-		    ZKRunner.unlockme(writelock);
+		    ZKMessageUtil.dorefresh();
+		    ZKLockUtil.unlockme(writelock);
 		    ClientRunner.notify("Sending refresh request");
 		}
 		return  retlistlist;
@@ -453,8 +455,8 @@ public class ControlService {
 	retlistlist.add(retTikaTimeoutList);
 	retlistlist.add(retNotExistList);
 	if (zookeeper != null) {
-	    ZKRunner.dorefresh();
-	    ZKRunner.unlockme(writelock);
+	    ZKMessageUtil.dorefresh();
+	    ZKLockUtil.unlockme(writelock);
 	    ClientRunner.notify("Sending refresh request");
 	}
 	return retlistlist;
@@ -924,7 +926,7 @@ public class ControlService {
 		    synchronized (writelock) {
 			ZKBlockWriteLock writelock = null;
 			if (zookeeper != null) {
-			    writelock = ZKRunner.blocklockme();
+			    writelock = ZKLockUtil.blocklockme();
 			}
 		    //DbRunner.doupdate = false;
 			for (String filename : delfileset) {
@@ -951,9 +953,9 @@ public class ControlService {
 			    TimeUnit.SECONDS.sleep(60);
 			}
 			
-			ZKRunner.dorefresh();
 			if (zookeeper != null) {
-			    ZKRunner.unlockme(writelock);
+				ZKMessageUtil.dorefresh();
+			    ZKLockUtil.unlockme(writelock);
 			}
 		    }
 		}
