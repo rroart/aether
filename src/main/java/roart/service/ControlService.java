@@ -38,6 +38,8 @@ import roart.thread.DbRunner;
 import roart.thread.ZKRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
+import roart.zkutil.ZKWriteLock;
+import roart.zkutil.ZKBlockWriteLock;
 
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
@@ -286,8 +288,9 @@ public class ControlService {
     @SuppressWarnings("rawtypes")
 	public List<List> clientDo(ClientQueueElement el) throws Exception {
 		    synchronized (writelock) {
+			ZKBlockWriteLock writelock = null;
 			if (zookeeper != null) {
-			    ZKRunner.lockme();
+			    writelock = ZKRunner.blocklockme();
 			}
 	Function function = el.function;
 	String filename = el.file;
@@ -342,10 +345,11 @@ public class ControlService {
 		}
 		retlistlist.add(retNewFilesList);
 		//DbRunner.doupdate = true;
-		ZKRunner.dorefresh();
-			if (zookeeper != null) {
-			    ZKRunner.unlockme();
-			}
+		if (zookeeper != null) {
+		    ZKRunner.dorefresh();
+		    ZKRunner.unlockme(writelock);
+		    ClientRunner.notify("Sending refresh request");
+		}
 		return  retlistlist;
 	    }
 	}
@@ -358,7 +362,11 @@ public class ControlService {
 	    for (String name : filesetnew) {
 		String md5 = IndexFilesDao.getMd5ByFilename(name);
 		IndexFiles index = IndexFilesDao.getByMd5(md5);
+		if (index != null) {
 		indexset.add(index);
+		} else {
+		    log.info("No index for " + md5 + " and " + name);
+		}
 	    }
 	    indexes = indexset;
 	} else {
@@ -437,7 +445,6 @@ public class ControlService {
 	while (IndexFilesDao.dirty() > 0) {
 	    TimeUnit.SECONDS.sleep(60);
 	}
-	ZKRunner.dorefresh();
 
 	retlistlist.add(retList);
 	retlistlist.add(retNotList);
@@ -445,9 +452,11 @@ public class ControlService {
 	retlistlist.add(retDeletedList);
 	retlistlist.add(retTikaTimeoutList);
 	retlistlist.add(retNotExistList);
-			if (zookeeper != null) {
-			    ZKRunner.unlockme();
-			}
+	if (zookeeper != null) {
+	    ZKRunner.dorefresh();
+	    ZKRunner.unlockme(writelock);
+	    ClientRunner.notify("Sending refresh request");
+	}
 	return retlistlist;
 		    }
     }
@@ -913,8 +922,9 @@ public class ControlService {
 		
 		if (clean) {
 		    synchronized (writelock) {
+			ZKBlockWriteLock writelock = null;
 			if (zookeeper != null) {
-			    ZKRunner.lockme();
+			    writelock = ZKRunner.blocklockme();
 			}
 		    //DbRunner.doupdate = false;
 			for (String filename : delfileset) {
@@ -943,7 +953,7 @@ public class ControlService {
 			
 			ZKRunner.dorefresh();
 			if (zookeeper != null) {
-			    ZKRunner.unlockme();
+			    ZKRunner.unlockme(writelock);
 			}
 		    }
 		}
