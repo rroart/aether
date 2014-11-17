@@ -48,6 +48,7 @@ public class ZKRunner implements Runnable {
     public class DummyWatcher implements Watcher {
 
    	public void process(WatchedEvent event) {
+   		log.info("Process " + event.getPath() + " state " + event.getState() + " type " + event.getType());
    		log.info("dummy watcher");
    	}
     	}

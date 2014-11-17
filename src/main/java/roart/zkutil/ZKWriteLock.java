@@ -196,7 +196,7 @@ private String getChildrenWithPrefix(ZooKeeper zookeeper, String path, String pr
 	}
 
 	public void process(WatchedEvent event) {
-	    log.info("Process " + event.getPath() + " state: " + event.getState() + " type " + event.getType());
+	    log.info("Process " + event.getPath() + " state " + event.getState() + " type " + event.getType());
 	    if (event.getPath() == null) {
 		return;
 	    }
