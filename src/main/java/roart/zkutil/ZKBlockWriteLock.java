@@ -4,13 +4,14 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.Watcher;
 
 public class ZKBlockWriteLock {
   private ZKWriteLock writeLock;
   private CountDownLatch signal = new CountDownLatch(1);
 
-  public ZKBlockWriteLock(ZooKeeper zookeeper, String path) {
-    this.writeLock = new ZKWriteLock(zookeeper, path, new ZKBlockWriteLockListener());
+    public ZKBlockWriteLock(ZooKeeper zookeeper, String path) {
+	this.writeLock = new ZKWriteLock(zookeeper, path, new ZKBlockWriteLockListener());
   }
 
   public void lock() throws InterruptedException, KeeperException {
