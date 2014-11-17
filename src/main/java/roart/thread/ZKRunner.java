@@ -25,9 +25,6 @@ public class ZKRunner implements Runnable {
 	
     static Logger log = LoggerFactory.getLogger(ZKRunner.class);
 
-    final int update = 300;
-    static long lastupdate = 0;
-
     public void run() {
 
 	List<String> children = null;
@@ -36,8 +33,6 @@ public class ZKRunner implements Runnable {
 	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename;
 
     	while (true) {
-	    long now = System.currentTimeMillis();
-	    if (true || (now - lastupdate) >= update * 1000) {
 		log.info("get children");
 		MessageWatcher msgwatcher = new MessageWatcher();
 		try {
@@ -55,17 +50,6 @@ public class ZKRunner implements Runnable {
 		} catch (Exception e) {
 		    log.error(Constants.EXCEPTION, e);
 		}
-		lastupdate = now;
-	    }
-	    if (false) {
-		try {
-		    TimeUnit.SECONDS.sleep(update);
-		} catch (InterruptedException e) {
-		    log.error(Constants.EXCEPTION, e);
-		    ClientRunner.notify("ZK exception");
-		}
-	    }
-
      	}
     }
 
