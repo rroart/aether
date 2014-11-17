@@ -5,6 +5,7 @@ import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -12,9 +13,9 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.WatchedEvent;
 
-import roart.thread.ZKRunner;
-import roart.thread.ZKRunner.MyWatcher;
 import roart.util.Constants;
 
 import org.slf4j.Logger;
@@ -162,7 +163,7 @@ private String getChildrenWithPrefix(ZooKeeper zookeeper, String path, String pr
                             ZKNode childbeforeme = beforeme.last();
                             prevChildName = childbeforeme.getName();
                             log.info("child before me " + prevChildName);
-                            Stat stat = zookeeper.exists(prevChildName, new MyWatcher());
+                            Stat stat = zookeeper.exists(prevChildName, new LockWatcher());
                             if (stat != null) {
                                 return Boolean.FALSE;
                             }
@@ -181,5 +182,35 @@ private String getChildrenWithPrefix(ZooKeeper zookeeper, String path, String pr
            return Boolean.FALSE;
        }
     };
+
+    private class LockWatcher implements Watcher {
+
+	CountDownLatch latch;
+
+	public LockWatcher() {
+	    try {
+		latch = new CountDownLatch(1);
+	    } catch (Exception e) {
+		log.error(Constants.EXCEPTION, e);
+	    }
+	}
+
+	public void process(WatchedEvent event) {
+	    log.info("Process " + event.getPath() + " state: " + event.getState() + " type " + event.getType());
+	    if (event.getPath() == null) {
+		return;
+	    }
+	    try {
+		lock();
+	    } catch (Exception e) {
+		log.info(Constants.EXCEPTION, e);
+	    }
+	}
+
+        public void await() throws InterruptedException {
+            latch.await();
+        }
+
+    }
 
 }
