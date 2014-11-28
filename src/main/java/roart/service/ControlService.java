@@ -63,10 +63,10 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange) throws Exception {
+    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange, boolean returnonlyold) throws Exception {
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	Set<String> filesetnew2 = new HashSet<String>();
-	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, newmd5, false, nodbchange);    
+	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, newmd5, false, nodbchange, returnonlyold);    
 	for (String s : filesetnew2) {
 	    retList.add(new ResultItem(s));
 	}
@@ -80,9 +80,9 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange) throws Exception {
+    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange, boolean returnonlyold) throws Exception {
 	Set<String> filesetnew = new HashSet<String>();
-	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset, newmd5, nodbchange));
+	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset, newmd5, nodbchange, returnonlyold));
 	return filesetnew;
     }
 
@@ -104,13 +104,13 @@ public class ControlService {
 	dirlistnot = dirlistnotstr.split(",");
     }
 
-    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset, boolean newmd5, boolean nodbchange) {
+    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset, boolean newmd5, boolean nodbchange, boolean returnonlyold) {
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 
 	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
 	try {
 	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, newmd5, false, nodbchange);
+		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, newmd5, false, nodbchange, returnonlyold);
 		filesetnew.addAll(filesetnew2);
 	    }
 	} catch (Exception e) {
@@ -333,9 +333,17 @@ public class ControlService {
 	//DbRunner.doupdate = false;
 	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || (function == Function.INDEX && filename != null /*&& !reindex*/)) {
 	    if (filename != null) {
-		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5, false);
+		//boolean nodbchange = reindex;
+		//boolean returnonlyold = reindex;
+		boolean nodbchange = function == Function.INDEX;
+		boolean returnonlyold = function == Function.INDEX;
+		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5, nodbchange, returnonlyold);
 	    } else {
-		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset, newmd5, false);
+		//boolean nodbchange = reindex;
+		//boolean returnonlyold = reindex;
+		boolean nodbchange = function == Function.INDEX;
+		boolean returnonlyold = function == Function.INDEX;
+		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset, newmd5, nodbchange, returnonlyold);
 	    }
 	    for (String file : notfoundset) {
 	    	retNotExistList.add(new ResultItem(file));
@@ -396,6 +404,10 @@ public class ControlService {
 	    }
 	    
 	    String md5 = index.getMd5();
+
+	    // if ordinary indexing (no reindexing)
+	    // and a failed limit it set
+	    // and the file has come to that limit
 
 	    if (!reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
 		continue;
@@ -913,7 +925,7 @@ public class ControlService {
 		Set<String> newset = new HashSet<String>();
 		Set<String> notfoundset = new HashSet<String>();
 		
-		filesystem(null, filesetnew, newset, notfoundset, false, true);
+		filesystem(null, filesetnew, newset, notfoundset, false, true, false);
 		
 		for (String file : newset) {
 			newList.add(new ResultItem(file));

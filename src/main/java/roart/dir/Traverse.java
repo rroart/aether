@@ -49,7 +49,7 @@ public class Traverse {
 	return false;
     }
 
-    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, Set<String> notfoundset, boolean newmd5, boolean nomd5, boolean nodbchange) throws Exception {
+    public static Set<String> doList(String dirname, Set<IndexFiles> newindexset, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, Set<String> notfoundset, boolean newmd5, boolean nomd5, boolean nodbchange, boolean returnonlyold) throws Exception {
 	Set<String> retset = new HashSet<String>();
 	if (indirlistnot(dirname, dirlistnot)) {
 	    return retset;
@@ -71,13 +71,15 @@ public class Traverse {
 	    //log.info("file " + filename);
 	    if (FileSystemDao.isDirectory(fo)) {
 		//log.info("isdir " + filename);
-		retset.addAll(doList(filename, newindexset, newset, dirset, dirlistnot, notfoundset, newmd5, nomd5, nodbchange));
+		retset.addAll(doList(filename, newindexset, newset, dirset, dirlistnot, notfoundset, newmd5, nomd5, nodbchange, returnonlyold));
 	    } else {
 		//log.info("retset " + filename);
-		retset.add(filename);
 		//Reader reader = new ParsingReader(parser, stream, ...);
 		//Files files = Files.ensureExistence(filename);
 		String curMd5 = IndexFilesDao.getMd5ByFilename(filename);;
+		if (curMd5 != null || !returnonlyold) {
+		    retset.add(filename);
+		}
 		//files.setTouched(Boolean.TRUE);
 		/*
 		if (files != null) {
