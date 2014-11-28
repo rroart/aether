@@ -169,6 +169,8 @@ public class MyVaadinUI extends UI
         final VerticalLayout layout = new VerticalLayout();
 	VerticalLayout searchTab = null, controlPanelTab = null;
 
+	com.vaadin.server.Page.getCurrent().setTitle("Aether disk search engine by Roar Thronæs");
+
         layout.setMargin(true);
         setContent(layout);
 
