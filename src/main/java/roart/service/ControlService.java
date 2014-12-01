@@ -390,6 +390,9 @@ public class ControlService {
 	String maxStr = roart.util.Prop.getProp().getProperty(ConfigConstants.REINDEXLIMIT);
 	int max = new Integer(maxStr).intValue();
 
+	String maxindexStr = roart.util.Prop.getProp().getProperty(ConfigConstants.INDEXLIMIT);
+	int maxindex = new Integer(maxindexStr).intValue();
+
 	Set<IndexFiles> toindexset = new HashSet<IndexFiles>();
 
 	int i = 0;
@@ -424,6 +427,10 @@ public class ControlService {
 	    }
 	    
 	    if (reindex && max > 0 && i > max) {
+		break;
+	    }
+	    
+	    if (!reindex && maxindex > 0 && i > maxindex) {
 		break;
 	    }
 	    

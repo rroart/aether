@@ -35,6 +35,7 @@ public class ConfigConstants {
     public static final String DIRLIST = "dirlist";
     public static final String DIRLISTNOT = "dirlistnot";
     public static final String REINDEXLIMIT = "reindexlimit";
+    public static final String INDEXLIMIT = "indexlimit";
     public static final String TIKATIMEOUT = "tikatimeout";
     public static final String OTHERTIMEOUT = "othertimeout";
     public static final String DATANUCLEUS = "datanucleus";
