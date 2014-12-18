@@ -1,6 +1,5 @@
 nodename=testnode2
 zookeeper=localhost:2181
-fs=hadoop
 hdfsconffs=hdfs://localhost/
 classify=mahout
 mahoutalgorithm=cbayes
