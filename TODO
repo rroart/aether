@@ -1,7 +1,5 @@
-classifier(s)
-get md if too small?
 get similar
-new solr vaadin
+update dependent software
 synonyms
 indexing exception instead of -1
 list vs [], need only one
@@ -9,5 +7,8 @@ handle delete move
 detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
 display diff docs and number indexed
 db persistence, more db handling
-multitask
+more granular multitasking and locking capabilities
 #package lang profiles
+highlight (and store)
+multilanguage support
+get metadata if too small?
