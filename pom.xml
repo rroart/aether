@@ -563,10 +563,10 @@
     <lucene.version>4.10.1</lucene.version>
     <solr.version>4.10.0</solr.version>
     <hbase.version>0.98.6.1-hadoop2</hbase.version>
-    <tika.version>1.6</tika.version>
+    <tika.version>1.7</tika.version>
     <mahout.version>0.9</mahout.version>
     <opennlp.version>1.5.3</opennlp.version>
-    <hadoop.version>2.5.1</hadoop.version>
+    <hadoop.version>2.6.0</hadoop.version>
     <datanucleus.version>4.0.3</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
