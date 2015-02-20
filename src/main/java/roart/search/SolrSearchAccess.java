@@ -25,8 +25,8 @@ public class SolrSearchAccess extends SearchAccess {
 	return SearchSolr.searchme(str, searchtype, display);
     }
 
-    public ResultItem[] searchsimilar(String md5i) {
-	return null;
+    public ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
+	return SearchSolr.searchmlt(md5i, searchtype, display);
     }
 }
 

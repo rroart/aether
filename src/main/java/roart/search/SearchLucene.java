@@ -5,6 +5,7 @@ import roart.database.IndexFilesDao;
 import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
+import roart.service.SearchService;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
@@ -19,13 +20,16 @@ import java.util.TreeMap;
 import java.util.List;
 import java.util.HashSet;
  
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -58,6 +62,12 @@ import org.apache.lucene.util.Version;
 import org.apache.lucene.index.Term;
 //import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
+import org.apache.lucene.search.highlight.TokenSources;
+import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
+import org.apache.lucene.search.vectorhighlight.FieldQuery;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
@@ -97,7 +107,18 @@ public class SearchLucene {
 	if (lang != null) {
 	doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 	}
+	Field.Store store = Field.Store.NO;
+	if (SearchService.isHighlightMLT()) {
+		FieldType fieldtype = new FieldType(TextField.TYPE_STORED);
+		fieldtype.setStoreTermVectors(true);
+		fieldtype.setStoreTermVectorOffsets(true);
+		fieldtype.setStoreTermVectorPositions(true);
+		fieldtype.freeze();
+		Field mytextfield = new Field(Constants.CONTENT, content, fieldtype);
+		doc.add(mytextfield);
+	} else {
 	doc.add(new TextField(Constants.CONTENT, content, Field.Store.NO));
+	}
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());
 	    doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
@@ -174,21 +195,7 @@ public class SearchLucene {
     searcher.search(q, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
-    strarr = new ResultItem[hits.length + 1];
-    strarr[0] = IndexFiles.getHeaderSearch(display);
-    // output results
-    log.info("Found " + hits.length + " hits.");
-    for (int i = 0; i < hits.length; ++i) {
-	int docId = hits[i].doc;
-	float score = hits[i].score;
-	Document d = searcher.doc(docId);
-	String md5 = d.get(Constants.ID);
-	String lang = d.get(Constants.LANG);
-	IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
-	String filename = indexmd5.getFilelocation();
-	log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
-	strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, display);
-    }
+    strarr = handleDocs(display, q, ind, searcher, hits, true);
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
 	    log.error(roart.util.Constants.EXCEPTION, e);
@@ -197,8 +204,42 @@ public class SearchLucene {
     return strarr;
 }
 
+	private static ResultItem[] handleDocs(SearchDisplay display, Query q,
+					       IndexReader ind, IndexSearcher searcher, ScoreDoc[] hits, boolean dohighlight)
+			throws IOException, Exception {
+		ResultItem[] strarr;
+		strarr = new ResultItem[hits.length + 1];
+		strarr[0] = IndexFiles.getHeaderSearch(display);
+		
+		FastVectorHighlighter highlighter = null;
+		if (SearchService.isHighlightMLT()) {
+			highlighter = new FastVectorHighlighter();
+		}    
+		// output results
+		log.info("Found " + hits.length + " hits.");
+		for (int i = 0; i < hits.length; ++i) {
+		int docId = hits[i].doc;
+		float score = hits[i].score;
+		Document d = searcher.doc(docId);
+		String md5 = d.get(Constants.ID);
+		String lang = d.get(Constants.LANG);
+		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
+		String filename = indexmd5.getFilelocation();
+		log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
+		
+		String[] highlights = null;
+		if (dohighlight && SearchService.isHighlightMLT()) {
+			FieldQuery fieldQuery  = highlighter.getFieldQuery( q, ind );
+			String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, Constants.CONTENT, 100, 1);
+			highlights = bestFragments;
+		}
+		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display);
+		}
+		return strarr;
+	}
+
     // not yet usable, lacking termvector
-    public static ResultItem[] searchsimilar(String md5i) {
+    public static ResultItem[] searchmlt(String md5i, String searchtype, SearchDisplay display) {
 	String type = "all";
 		ResultItem[] strarr = new ResultItem[0];
 	    try {
@@ -241,47 +282,22 @@ public class SearchLucene {
 
     MoreLikeThis mlt = new MoreLikeThis(ind);
     mlt.setAnalyzer(analyzer);
-    String[] fields = { Constants.NAME /*, Constants.TITLE */ };
+    String[] fields = { Constants.CONTENT };
     mlt.setFieldNames(fields);
-    mlt.setMinTermFreq(1);
-    mlt.setMinDocFreq(1);
-    mlt.setMinWordLen(1);
-    //mlt.setMaxWordLen(10);
-    mlt.setMaxQueryTerms(1000);
     // md5 orig source of doc you want to find similarities to
     Query query = mlt.like(doc);
     System.out.println("query doc " + doc + ":" + query.toString() + ":" + mlt.describeParams());
-    System.out.println("hits " + searcher.search(query,100).totalHits);
+    System.out.println("hits " + searcher.search(query, 100).totalHits);
+    searcher.search(query, collector);
     query = docsLike(doc, ind);
     System.out.println("query doc " + doc + ":" + query.toString());
     query = docsLike(doc, found, ind);
     System.out.println("query doc " + doc + ":" + query.toString());
 
-    searcher.search(query, collector);
+    //searcher.search(query, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
-    strarr = new ResultItem[hits.length];
-    // output results
-    log.info("Found " + hits.length + " hits.");
-    for (int i = 0; i < hits.length; ++i) {
-	int docId = hits[i].doc;
-	float score = hits[i].score;
-	Document d = searcher.doc(docId);
-	String md5 = d.get(Constants.TITLE);
-	String lang = d.get(Constants.LANG);
-	IndexFiles files = IndexFilesDao.getByMd5(md5);
-	String filename = files.getFilelocation().toString();
-	String title = md5 + " " + filename;
-	if (lang != null) {
-	    title = title + " (" + lang + ") ";
-	}
-	log.info((i + 1) + ". " + title + ": "
-			   + score);
-	/*
-	strarr[i] = "" + (i + 1) + ". " + title + ": "
-			   + score;
-	*/
-    }
+    strarr = handleDocs(display, query, ind, searcher, hits, false);
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
 	    log.error(roart.util.Constants.EXCEPTION, e);
@@ -549,4 +565,4 @@ public class SearchLucene {
 	return roart.util.Prop.getProp().getProperty(Constants.LUCENEPATH);
     }
 
-}
+ }

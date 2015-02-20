@@ -19,5 +19,6 @@ public abstract class SearchAccess {
 
     public abstract ResultItem[] searchme(String str, String searchtype, SearchDisplay display);
 
+    public abstract ResultItem[] searchsimilar(String id, String searchtype, SearchDisplay display);
 }
 

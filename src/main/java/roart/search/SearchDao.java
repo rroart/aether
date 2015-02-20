@@ -43,8 +43,8 @@ public class SearchDao {
 	return search.searchme(str, searchtype, display);
     }
 
-    public static ResultItem[] searchsimilar(String md5i) {
-	return null;
+    public static ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
+	return search.searchsimilar(md5i, searchtype, display);
     }
 
     /*

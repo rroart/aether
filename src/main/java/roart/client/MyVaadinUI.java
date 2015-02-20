@@ -3,6 +3,7 @@ package roart.client;
 import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.model.FileObject;
+import roart.model.SearchDisplay;
 import roart.thread.ClientRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
@@ -484,6 +485,19 @@ public class MyVaadinUI extends UI
 	return button;
     }
 
+    private Button getSimilar(String text, final String md5) {
+        Button button = new Button(text);
+	button.setHtmlContentAllowed(true);
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+		SearchService maininst = new SearchService();
+		maininst.searchsimilar(md5);
+		Notification.show("Request sent");
+            }
+        });
+	return button;
+    }
+
     private TextField getFsIndexNewPath() {
 	TextField tf = new TextField("Index filesystem new items");
 
@@ -804,6 +818,7 @@ public class MyVaadinUI extends UI
 	    return;
 	}
 
+	SearchDisplay display = SearchService.getSearchDisplay(getCurrent());
 	boolean dodownload = (boolean) getSession().getAttribute("download");
 
 	Table table = new Table("Table");
@@ -816,6 +831,10 @@ public class MyVaadinUI extends UI
 	    }
 	}
 	for (int i = 0; i < columns; i++) {
+	    if (display.highlightmlt && i == IndexFiles.HIGHLIGHTMLTCOLUMN) {
+		table.addContainerProperty(strarr.get(0).get().get(i), Button.class, null);
+		continue;
+	    }
 	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
 	}
 	if (dodownload) {
@@ -864,6 +883,13 @@ public Object generateCell(Table source, Object itemId,
 	}
 	for (int i = 1; i < strarr.size(); i++) {
 	    ResultItem str = strarr.get(i);
+	    if (display.highlightmlt && strarr.size() > IndexFiles.HIGHLIGHTMLTCOLUMN) {
+		String text = (String) str.get().get(IndexFiles.HIGHLIGHTMLTCOLUMN);
+		if (text != null) {
+		String md5 = (String) str.get().get(1);
+		str.get().set(IndexFiles.HIGHLIGHTMLTCOLUMN, getSimilar(text, md5));
+		}
+	    }
 	    table.addItem(str.getarr(), i);
 	}
 	//table.setPageLength(table.size());

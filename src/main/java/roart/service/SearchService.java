@@ -23,6 +23,8 @@ import roart.model.SearchDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.UI;
+
 public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -36,10 +38,7 @@ public class SearchService {
 	String type = e.suffix;
 	List strlist = new ArrayList<String>();
 
-	SearchDisplay display = new SearchDisplay();
-	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
-	display.classify = myclassify != null && myclassify.length() > 0;
-	display.admindisplay = "admin".equals((String) e.ui.getSession().getAttribute("user"));
+	SearchDisplay display = getSearchDisplay(e.ui);
 
 	ResultItem[] strarr = roart.search.Search.searchme(str, type, display);
 
@@ -50,16 +49,40 @@ public class SearchService {
 	strlistlist.add(strlist);
 	return strlistlist;
     }
-    
-    public List<ResultItem> searchsimilar(String md5) {
+
+    public List<List> searchsimilarDo(ClientQueueElement e) {
+	String str = e.file;
+	String type = e.suffix;
 	List strlist = new ArrayList<String>();
-	ResultItem[] strarr = roart.search.Search.searchsimilar(md5);
-	if (strarr == null) {
-	    return strlist;
-	}
+
+	SearchDisplay display = getSearchDisplay(e.ui);
+
+	ResultItem[] strarr = roart.search.Search.searchsimilar(str, type, display);
+
 	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
 	}
-	return strlist;
+	List<List> strlistlist = new ArrayList<List>();
+	strlistlist.add(strlist);
+	return strlistlist;
+    }
+
+	public static SearchDisplay getSearchDisplay(UI ui) {
+		SearchDisplay display = new SearchDisplay();
+		String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
+		display.classify = myclassify != null && myclassify.length() > 0;
+		display.admindisplay = "admin".equals((String) ui.getSession().getAttribute("user"));
+		display.highlightmlt = isHighlightMLT();
+		return display;
+	}
+
+	public static boolean isHighlightMLT() {
+		String mystorehighlight = roart.util.Prop.getProp().getProperty(ConfigConstants.HIGHLIGHTMLT);
+		return mystorehighlight != null && mystorehighlight.equals("true");
+	}
+    
+    public void searchsimilar(String md5) {
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCHSIMILAR, md5, null, null, null, false, false); // stupid overloading
+	Queues.clientQueue.add(e);
     }
 }

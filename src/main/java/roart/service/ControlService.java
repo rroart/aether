@@ -25,6 +25,7 @@ import roart.queue.ClientQueueElement.Function;
 import roart.model.FileLocation;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
+import roart.model.SearchDisplay;
 import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.thread.ControlRunner;
@@ -300,14 +301,16 @@ public class ControlService {
 	boolean newmd5 = el.md5change;
 	log.info("function " + function + " " + filename + " " + reindex);
 
+	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	
 	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retList = new ArrayList<ResultItem>();
-	retList.add(IndexFiles.getHeader());
+	retList.add(IndexFiles.getHeader(display));
 	List<ResultItem> retTikaTimeoutList = new ArrayList<ResultItem>();
 	retTikaTimeoutList.add(new ResultItem("Tika timeout"));
 	List<ResultItem> retNotList = new ArrayList<ResultItem>();
-	retNotList.add(IndexFiles.getHeader());
+	retNotList.add(IndexFiles.getHeader(display));
 	List<ResultItem> retNewFilesList = new ArrayList<ResultItem>();
 	retNewFilesList.add(new ResultItem("New file"));
 	List<ResultItem> retDeletedList = new ArrayList<ResultItem>();
@@ -450,7 +453,7 @@ public class ControlService {
 	}
 
 	for (String md5 : filesMapMd5.keySet()) {
-	    Traverse.indexsingle(retList, retNotList, md5, indexMap, filesMapMd5, reindex, 0);
+	    Traverse.indexsingle(retList, retNotList, md5, indexMap, filesMapMd5, reindex, 0, el.ui);
 	}
 
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
@@ -556,7 +559,7 @@ public class ControlService {
     }
 
     @SuppressWarnings("rawtypes")
-	public List<List> notindexedDo() throws Exception {
+	public List<List> notindexedDo(ClientQueueElement el) throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
@@ -567,15 +570,15 @@ public class ControlService {
 	retlist2.add(ri3);
 	List<ResultItem> retlistyes = null;
 	try {
-	    retlist.addAll(Traverse.notindexed());
-	    retlistyes = Traverse.indexed();
+	    retlist.addAll(Traverse.notindexed(el));
+	    retlistyes = Traverse.indexed(el);
 	    Map<String, Integer> plusretlist = new HashMap<String, Integer>();
 	    Map<String, Integer> plusretlistyes = new HashMap<String, Integer>();
 	    for(ResultItem ri : retlist) {
 		if (ri == retlist.get(0)) {
 		    continue;
 		}
-		String filename = ri.get().get(10);
+		String filename = (String) ri.get().get(10);
 		if (filename == null) {
 		    continue;
 		}
@@ -592,7 +595,7 @@ public class ControlService {
 		plusretlist.put(suffix, i);
 	    }
 	    for(ResultItem ri : retlistyes) {
-		String filename = ri.get().get(0); // or for a whole list?
+		String filename = (String) ri.get().get(0); // or for a whole list?
 		if (filename == null) {
 		    continue;
 		}
@@ -660,9 +663,11 @@ public class ControlService {
 	String md5 = el.file;
 	log.info("function " + function + " " + md5);
 
+	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
-	indexList.add(IndexFiles.getHeader());
+	indexList.add(IndexFiles.getHeader(display));
 	List<ResultItem> indexfilesList = new ArrayList<ResultItem>();
 	indexfilesList.add(new ResultItem("Files"));
 	List<ResultItem> filesList = new ArrayList<ResultItem>();
@@ -670,7 +675,7 @@ public class ControlService {
 
 	IndexFiles index = IndexFilesDao.getByMd5(md5);
 	if (index != null) {
-	    indexList.add(IndexFiles.getResultItem(index, "n/a"));
+	    indexList.add(IndexFiles.getResultItem(index, "n/a", display));
 	    Set<FileLocation> files = index.getFilelocations();
 	    if (files != null) {
 		for (FileLocation filename : files) {
@@ -712,10 +717,11 @@ public class ControlService {
 	if (i < 0) {
 	    return retlistlist;
 	}
+	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
 	String field = searchexpr.substring(0, i);
 	String text = searchexpr.substring(i + 1);
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
-	indexList.add(IndexFiles.getHeader());
+	indexList.add(IndexFiles.getHeader(display));
 
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	for (IndexFiles index : indexes) {
@@ -762,7 +768,7 @@ public class ControlService {
 		}
 	    }
 	    if (match) {
-		indexList.add(IndexFiles.getResultItem(index, "n/a"));
+		indexList.add(IndexFiles.getResultItem(index, "n/a", display));
 	    }
 	}
 

@@ -40,4 +40,5 @@ public class ConfigConstants {
     public static final String OTHERTIMEOUT = "othertimeout";
     public static final String DATANUCLEUS = "datanucleus";
     public static final String ZOOKEEPER = "zookeeper";
+	public static final String HIGHLIGHTMLT = "highlightmlt";
 }

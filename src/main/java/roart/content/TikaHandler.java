@@ -5,9 +5,11 @@ import roart.lang.LanguageDetect;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
+import roart.service.SearchService;
 import roart.util.Constants;
 import roart.filesystem.FileSystemDao;
 
@@ -276,7 +278,7 @@ public class TikaHandler {
 		}
 	
 		//size = SearchLucene.indexme("all", md5, inputStream);
-		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata);
+		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata, el.ui);
 		elem.lang = lang;
 		elem.content = content;
 		if (el.convertsw != null) {
@@ -303,7 +305,8 @@ public class TikaHandler {
 	    	    Queues.otherQueue.add(el);
 	    	} else {
 		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
-		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
+			SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a", display);
 		    ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 		    retlistnot.add(ri);
 		    Boolean isIndexed = index.getIndexed();

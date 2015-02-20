@@ -34,7 +34,7 @@ public class ClientHandler {
 	    list = client(el);
 	}
 	if (function == Function.NOTINDEXED) {
-	    list = notindexed();
+	    list = notindexed(el);
 	}
 	if (function == Function.OVERLAPPING) {
 	    list = overlapping();
@@ -44,6 +44,9 @@ public class ClientHandler {
 	}
 	if (function == Function.SEARCH) {
 	    list = search(el);
+	}
+	if (function == Function.SEARCHSIMILAR) {
+	    list = searchsimilar(el);
 	}
 	if (function == Function.DBINDEX) {
 	    list = dbindex(el);
@@ -69,6 +72,15 @@ public class ClientHandler {
 	}
     }
 
+    private static List searchsimilar(ClientQueueElement el) {
+	roart.service.SearchService maininst = new roart.service.SearchService();
+	try {
+	    return maininst.searchsimilarDo(el);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
     private static List client(ClientQueueElement el) {
 	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
@@ -79,10 +91,10 @@ public class ClientHandler {
 	}
     }
 
-    private static List notindexed() {
+    private static List notindexed(ClientQueueElement el) {
 	roart.service.ControlService maininst = new roart.service.ControlService();
 	try {
-	    return maininst.notindexedDo();
+	    return maininst.notindexedDo(el);
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	    return null;

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 public class IndexFiles {
 
 	public static final int FILENAMECOLUMN = 3;
+	public static final int HIGHLIGHTMLTCOLUMN = 4;
 	
 	private static Logger log = LoggerFactory.getLogger(IndexFiles.class);
 	private String md5;
@@ -321,10 +322,9 @@ public class IndexFiles {
 	return indb;
     }
 
-	public static ResultItem getHeader() {
-	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
-	
+	public static ResultItem getHeader(SearchDisplay display) {
+	boolean doclassify = display.classify;
+		
 	ResultItem ri = new ResultItem();
 	ri.add("Indexed");
 	ri.add("Md5/Id");
@@ -352,12 +352,16 @@ public class IndexFiles {
 	public static ResultItem getHeaderSearch(SearchDisplay display) {
 	boolean doclassify = display.classify;
 	boolean admin = display.admindisplay;
+	boolean doshighlightmlt = display.highlightmlt;
 	
 	ResultItem ri = new ResultItem();
 	ri.add("Score");
 	ri.add("Md5/Id");
 	ri.add("Node");
 	ri.add("Filename");
+	if (doshighlightmlt) {
+		ri.add("Highlight and similar");
+	}
 	ri.add("Lang");
 	if (doclassify) {
 	ri.add("Classification");
@@ -379,9 +383,10 @@ public class IndexFiles {
 	return ri;
 	}
 
-	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, SearchDisplay display) {
+	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, String[] highlights, SearchDisplay display) {
 	boolean doclassify = display.classify;
 	boolean admin = display.admindisplay;
+	boolean dohighlightmlt = display.highlightmlt;
 	
 	ResultItem ri = new ResultItem();
 	ri.add("" + score);
@@ -395,6 +400,13 @@ public class IndexFiles {
 	}
 	ri.add(nodename);
 	ri.add(filename);
+	if (dohighlightmlt) {
+	    if (highlights != null) {
+		ri.add(highlights[0]);
+	    } else {
+		ri.add(null);
+	    }
+	}
 	ri.add(lang);
 	if (doclassify) {
 	    ri.add(index.getClassification());
@@ -416,9 +428,10 @@ public class IndexFiles {
 	return ri;
 	}
 
-	public static ResultItem getResultItem(IndexFiles index, String lang) {
-	String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
-	boolean doclassify = myclassify != null && myclassify.length() > 0;
+	public static ResultItem getResultItem(IndexFiles index, String lang, SearchDisplay display) {
+	boolean doclassify = display.classify;
+	boolean admin = display.admindisplay;
+	boolean dohighlightmlt = display.highlightmlt;
 	
 	ResultItem ri = new ResultItem();
 	ri.add("" + index.getIndexed());

@@ -10,7 +10,7 @@ public class ResultItem {
 
     private static final Logger log = LoggerFactory.getLogger(ResultItem.class);
 
-    private List<String> items = new ArrayList<String>();
+    private List<Object> items = new ArrayList<Object>();
     public ResultItem() {
     }
     public ResultItem(String s) {
@@ -19,11 +19,11 @@ public class ResultItem {
     public void add(String s) {
 	items.add(s);
     }
-    public List<String> get() {
+    public List<Object> get() {
 	return items;
     }
-    public String[] getarr() {
-	String[] strarr = new String[items.size()];
+    public Object[] getarr() {
+	Object[] strarr = new Object[items.size()];
 	for(int i = 0; i < items.size(); i++) {
 	    strarr[i] = items.get(i);
 	}

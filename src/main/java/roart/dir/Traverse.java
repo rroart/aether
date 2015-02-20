@@ -7,6 +7,7 @@ import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.queue.ClientQueueElement;
 import roart.service.ControlService;
+import roart.service.SearchService;
 import roart.thread.TikaRunner;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
@@ -14,6 +15,7 @@ import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.model.ResultItem;
+import roart.model.SearchDisplay;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,8 @@ import roart.util.Constants;
 import roart.util.ExecCommand;
 
 import org.apache.tika.metadata.Metadata;
+
+import com.vaadin.ui.UI;
 
 public class Traverse {
 
@@ -310,7 +314,7 @@ public class Traverse {
 		    indexMap.put(index.getMd5(), index.getIndexed());
 		}
 
-		indexsingle(retlist, retlistnot, md5, indexMap, filesMapMd5, reindex, max);
+		indexsingle(retlist, retlistnot, md5, indexMap, filesMapMd5, reindex, max, null);
 	    }
 	    log.info("file " + filename);
 	}
@@ -358,7 +362,7 @@ public class Traverse {
 	return 1;
     }
 
-    public static void indexsingle(List<ResultItem> retlist, List<ResultItem> retlistnot, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max) throws Exception {
+    public static void indexsingle(List<ResultItem> retlist, List<ResultItem> retlistnot, String md5, Map<String, Boolean> indexMap, Map<String, String> filesMapMd5, boolean reindex, int max, UI ui) throws Exception {
 	    if (md5 == null) {
 		log.error("md5 should not be null");
 		return;
@@ -379,15 +383,16 @@ public class Traverse {
 	    index.setTimeoutreason("");
 	    index.setFailedreason("");
 	    index.setNoindexreason("");
-	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, retlistnot, new Metadata());
+	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retlist, retlistnot, new Metadata(), ui);
 	    Queues.tikaQueue.add(e);
 	    //size = doTika(filename, filename, md5, index, retlist);
     }
 
-    public static List<ResultItem> notindexed() throws Exception {
+    public static List<ResultItem> notindexed(ClientQueueElement el) throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	ResultItem ri = new ResultItem();
-	retlist.add(IndexFiles.getHeader());
+	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	retlist.add(IndexFiles.getHeader(display));
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
 	for (IndexFiles index : indexes) {
@@ -395,22 +400,23 @@ public class Traverse {
 	    if (indexed != null && indexed.booleanValue() == true) {
 		continue;
 	    }
-	    ri = IndexFiles.getResultItem(index, "n/a");
+	    ri = IndexFiles.getResultItem(index, "n/a", display);
 	    retlist.add(ri);
 	}
 	return retlist;
     }
 
-    public static List<ResultItem> indexed() throws Exception {
+    public static List<ResultItem> indexed(ClientQueueElement el) throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
+	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
 	log.info("sizes " + indexes.size());
 	for (IndexFiles index : indexes) {
 	    Boolean indexed = index.getIndexed();
 	    for (FileLocation filename : index.getFilelocations()) {
 	    	if (indexed != null) {
 	    		if (indexed.booleanValue()) {
-	    			retlist.add(IndexFiles.getResultItem(index, "n/a"));
+	    			retlist.add(IndexFiles.getResultItem(index, "n/a", display));
 	    		}
 			}
 	    }

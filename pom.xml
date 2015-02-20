@@ -7,7 +7,7 @@
   <artifactId>aether</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
   <!--artifactId>akashic-disk-search-engine</artifactId-->
-  <version>0.4-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Aether Disk Search Engine</name>
   <!--name>Vaadin Web Application</name-->
@@ -307,6 +307,11 @@
       <artifactId>lucene-demo</artifactId>
       <version>${lucene.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-highlighter</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
     <!--dependency>
       <groupId>lucene</groupId>
       <artifactId>lucene</artifactId>
@@ -421,6 +426,11 @@
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
+      <version>${solr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-core</artifactId>
       <version>${solr.version}</version>
     </dependency>
     <dependency>
@@ -541,11 +551,11 @@
   <artifactId>datanucleus-rdbms</artifactId>
   <version>${datanucleus.version}</version>
 </dependency>
-<dependency>
+<!--dependency>
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-api-jpa</artifactId>
   <version>${datanucleus.version}</version>
-</dependency>
+</dependency-->
 <dependency>
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-api-jdo</artifactId>

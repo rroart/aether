@@ -11,4 +11,5 @@ public interface Constants {
     String CAT = "cat";
     String CONTENT = "content";
     String TEXT = "text";
+	String STOREHIGHLIGHT = "no";
 }

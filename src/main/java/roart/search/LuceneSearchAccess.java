@@ -25,8 +25,8 @@ public class LuceneSearchAccess extends SearchAccess {
 	return SearchLucene.searchme(str, searchtype, display);
     }
 
-    public ResultItem[] searchsimilar(String md5i) {
-	return null;
+    public ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
+	return SearchLucene.searchmlt(md5i, searchtype, display);
     }
 }
 

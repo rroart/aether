@@ -3,6 +3,7 @@ package roart.search;
 import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
+import roart.service.SearchService;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
@@ -49,7 +50,9 @@ public class Search {
     	List<ResultItem> retlist = el.retlist;
     	List<ResultItem> retlistnot = el.retlistnot;
 
-    int retsize = 0;
+    	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+
+    	int retsize = 0;
 
     try {
     retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist, dbindex);
@@ -65,7 +68,7 @@ public class Search {
 
     if (retsize < 0) {
 	//dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
-	ResultItem ri = IndexFiles.getResultItem(el.index, "n/a");
+	ResultItem ri = IndexFiles.getResultItem(el.index, "n/a", display);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlistnot.add(ri);
     } else {
@@ -80,7 +83,7 @@ public class Search {
 	dbindex.setTimeindex(time);
 	log.info("timerStop filename " + time);
 
-	ResultItem ri = IndexFiles.getResultItem(el.index, lang);
+	ResultItem ri = IndexFiles.getResultItem(el.index, lang, display);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlist.add(ri);
     try {
@@ -102,9 +105,10 @@ public class Search {
 }
 
     // not yet usable, lacking termvector
-    public static ResultItem[] searchsimilar(String md5i) {
+    public static ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
 		ResultItem[] strarr = new ResultItem[0];
-    return strarr;
+		strarr = SearchDao.searchsimilar(md5i, searchtype, display);
+		return strarr;
 }
 
     // not yet usable, lacking termvector

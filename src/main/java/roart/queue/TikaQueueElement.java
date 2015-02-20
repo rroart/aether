@@ -7,6 +7,8 @@ import roart.model.ResultItem;
 
 import org.apache.tika.metadata.Metadata;
 
+import com.vaadin.ui.UI;
+
 public class TikaQueueElement {
 
     public int size;
@@ -18,8 +20,9 @@ public class TikaQueueElement {
     public List<ResultItem> retlistnot;
     public Metadata metadata;
     public String convertsw;
+    public UI ui;
 
-    public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, List<ResultItem> retlist, List<ResultItem> retlistnot, Metadata metadata) {
+    public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, List<ResultItem> retlist, List<ResultItem> retlistnot, Metadata metadata, UI ui) {
 	this.dbfilename = dbfilename;
 	this.filename = filename;
 	this.md5 = md5;
@@ -27,6 +30,7 @@ public class TikaQueueElement {
 	this.retlist = retlist;
 	this.retlistnot = retlistnot;
 	this.metadata = metadata;
+	this.ui = ui;
     }
 
 }

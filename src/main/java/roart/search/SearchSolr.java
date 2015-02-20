@@ -22,8 +22,11 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.highlight.DefaultSolrHighlighter;
 
+import roart.service.SearchService;
 import roart.util.ConfigConstants;
 import roart.lang.LanguageDetect;
 
@@ -147,15 +150,31 @@ public class SearchSolr {
 	    }
 	    //query.addSortField( "price", SolrQuery.ORDER.asc );
 
+	    if (SearchService.isHighlightMLT()) {
+            query.add("hl", "true");
+            query.add("hl.fl", Constants.CONTENT);
+            query.add("hl.useFastVectorHighlighter", "true");
+	    }
 	    //    Query the server 
 
 	    QueryResponse rsp = server.query( query );
 	
 	    SolrDocumentList docs = rsp.getResults();
 
-	    // To read Documents as beans, the bean must be annotated as given in the example. 
+	    strarr = handleDocs(display, rsp, docs, true);
+	} catch (SolrServerException e) {
+	    log.error(roart.util.Constants.EXCEPTION, e);
+	} catch (Exception e) {
+	    log.error(roart.util.Constants.EXCEPTION, e);
+	}
+	return strarr;
+    }
+
+	private static ResultItem[] handleDocs(SearchDisplay display,
+			QueryResponse rsp, SolrDocumentList docs, boolean dohighlight) throws Exception {
+		ResultItem[] strarr;
+		// To read Documents as beans, the bean must be annotated as given in the example. 
 	    
-	    //List<Item> beans = rsp.getBeans(Item.class);
 	    strarr = new ResultItem[docs.size() + 1];
 	    strarr[0] = IndexFiles.getHeaderSearch(display);
 	    int i = -1;
@@ -168,8 +187,40 @@ public class SearchSolr {
 		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
 		String filename = indexmd5.getFilelocation();
 		log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
-		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, display);
+		String[] highlights = null;
+		if (dohighlight && SearchService.isHighlightMLT()) {
+			Map<String,Map<String,List<String>>> map = rsp.getHighlighting();
+			Map<String,List<String>> map2 = map.get(md5);
+			List<String> list = map2.get(Constants.CONTENT);
+			highlights = new String[1];
+			highlights[0] = list.get(0);
+		}
+		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display);
 	    }
+		return strarr;
+	}
+
+    public static ResultItem[] searchmlt(String id, String searchtype, SearchDisplay display) {
+	ResultItem[] strarr = new ResultItem[0];
+	try {
+	    //Construct a SolrQuery 
+	    SolrQuery query = new SolrQuery();
+	    query.setQuery( Constants.ID + ":" + id);
+	    query.setIncludeScore(true);
+	    query.add("mlt", "true");
+	    query.add("mlt.fl", Constants.CONTENT);
+	    query.add("mlt.count", "100");
+
+	    //    Query the server 
+
+	    log.info("query " + query);
+	    QueryResponse rsp = server.query( query );
+	    NamedList<Object> mlt = (NamedList<Object>) rsp.getResponse().get("moreLikeThis");
+	    SolrDocumentList docs = (SolrDocumentList) mlt.getVal(0);
+
+	    // To read Documents as beans, the bean must be annotated as given in the example. 
+	    
+	    strarr = handleDocs(display, rsp, docs, false);
 	} catch (SolrServerException e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	} catch (Exception e) {
@@ -178,27 +229,4 @@ public class SearchSolr {
 	return strarr;
     }
 
-    public static ResultItem[] searchsimilar(String md5i) {
-	return null;
-    }
-
-    /*
-    public static Query docsLike(int id, IndexReader ind) throws IOException {
-    }
-
-    public static Query docsLike(int id, Document doc, IndexReader ind) throws IOException {
-    }
-
-    public static void deleteme(String str) {
-    }
-
-    public static List<String> removeDuplicate() throws Exception {
-    }
-
-    public static List<String> cleanup2() throws Exception {
-    }
-
-    public static List<String> removeDuplicate2() throws Exception {
-    }
-    */
-}
+ }
