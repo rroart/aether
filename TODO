@@ -1,4 +1,3 @@
-get similar
 update dependent software
 synonyms
 indexing exception instead of -1
@@ -9,6 +8,5 @@ display diff docs and number indexed
 db persistence, more db handling
 more granular multitasking and locking capabilities
 #package lang profiles
-highlight (and store)
 multilanguage support
 get metadata if too small?

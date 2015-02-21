@@ -89,10 +89,13 @@ solrurl=http://localhost:8983/solr/mystuff
 Solr server needs new fields for schema.xml:
 <field name="lang" type="text_general" indexed="true" stored="true"/>
 <field name="metadata" type="text_general" indexed="true" stored="false"/>
+<copyField source="metadata" dest="text"/>
 and change for the following field:
 <field name="content" type="text_general" indexed="false" stored="false" multiValued="true"/>
 
-Increase the following:
+Use example/schema.xml.default
+
+Increase the following in solrconfig.xml:
 <maxBooleanClauses>16384</maxBooleanClauses>
 
 2.1.3.3 Langdetect
@@ -147,6 +150,18 @@ OpenNLP distribution.
 Configured by
 zookeeper=...
 Should be used in a multinode environment (not yet mandatory).
+
+2.2.4 Highlight and MoreLikeThis
+Configured by
+highlightmlt=true
+
+If using Solr, also set
+termVectors, termPositions, and termOffsets, and storage
+<field name="content" type="text_general" indexed="true" stored="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
+
+Beware that this also stores the content, and increases disk space usage.
+
+Use example/schema.xml.highlightmlt
 
 3. GUI
 
