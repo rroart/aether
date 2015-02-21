@@ -831,7 +831,7 @@ public class MyVaadinUI extends UI
 	    }
 	}
 	for (int i = 0; i < columns; i++) {
-	    if (display.highlightmlt && i == IndexFiles.HIGHLIGHTMLTCOLUMN) {
+	    if (display.highlightmlt && i == IndexFiles.HIGHLIGHTMLTCOLUMN && strarr.get(0).get().get(IndexFiles.HIGHLIGHTMLTCOLUMN).equals("Highlight and similar")) {
 		table.addContainerProperty(strarr.get(0).get().get(i), Button.class, null);
 		continue;
 	    }
@@ -883,7 +883,7 @@ public Object generateCell(Table source, Object itemId,
 	}
 	for (int i = 1; i < strarr.size(); i++) {
 	    ResultItem str = strarr.get(i);
-	    if (display.highlightmlt && strarr.size() > IndexFiles.HIGHLIGHTMLTCOLUMN) {
+	    if (display.highlightmlt && columns > IndexFiles.HIGHLIGHTMLTCOLUMN && strarr.get(0).get().get(IndexFiles.HIGHLIGHTMLTCOLUMN).equals("Highlight and similar")) {
 		String text = (String) str.get().get(IndexFiles.HIGHLIGHTMLTCOLUMN);
 		if (text != null) {
 		String md5 = (String) str.get().get(1);
