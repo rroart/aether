@@ -71,7 +71,10 @@ public class SearchService {
 		SearchDisplay display = new SearchDisplay();
 		String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
 		display.classify = myclassify != null && myclassify.length() > 0;
+		// if lost session, it doesn't really matter much whether displaying for admin?
+		if (ui != null && ui.getSession() != null) {
 		display.admindisplay = "admin".equals((String) ui.getSession().getAttribute("user"));
+		}
 		display.highlightmlt = isHighlightMLT();
 		return display;
 	}
