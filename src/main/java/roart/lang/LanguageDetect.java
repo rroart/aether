@@ -10,6 +10,7 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.util.ConfigConstants;
 import roart.util.Constants;
 
 import java.io.*;
@@ -20,8 +21,28 @@ public class LanguageDetect {
 
     private static boolean inited = false;
 
+    private static String languages = "en";
+    
+    public static String[] getLanguages() {
+    	return languages.split(",");
+    }
+    
+    public static boolean isSupportedLanguage(String language) {
+    	String[] langs = languages.split(",");
+    	for (String l : langs) {
+    		if (l.equals(language)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public static void init(String profileDirectory) throws LangDetectException {
 	DetectorFactory.loadProfile(profileDirectory);
+    String mylang = roart.util.Prop.getProp().getProperty(ConfigConstants.LANGUAGES);
+    if (mylang != null) {
+    	languages = mylang;
+    }
 	inited = true;
     }
     

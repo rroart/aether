@@ -13,7 +13,7 @@ public abstract class ClassifyAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public abstract String classify(String type);
+    public abstract String classify(String type, String language);
 
 }
 

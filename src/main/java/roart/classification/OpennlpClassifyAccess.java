@@ -13,8 +13,8 @@ public class OpennlpClassifyAccess extends ClassifyAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public String classify(String type) {
-	return OpennlpClassify.classify(type);
+    public String classify(String type, String language) {
+	return OpennlpClassify.classify(type, language);
     }
 
 

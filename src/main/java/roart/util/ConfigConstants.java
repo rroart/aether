@@ -41,4 +41,6 @@ public class ConfigConstants {
     public static final String DATANUCLEUS = "datanucleus";
     public static final String ZOOKEEPER = "zookeeper";
 	public static final String HIGHLIGHTMLT = "highlightmlt";
+	public static final String LANGUAGES = "languages";
+	public static final String MAHOUTBASEPATH = "mahoutbasepath";
 }

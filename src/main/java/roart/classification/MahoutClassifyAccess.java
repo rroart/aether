@@ -13,8 +13,8 @@ public class MahoutClassifyAccess extends ClassifyAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public String classify(String type) {
-	return MahoutClassify.classify(type);
+    public String classify(String type, String language) {
+	return MahoutClassify.classify(type, language);
     }
 
 

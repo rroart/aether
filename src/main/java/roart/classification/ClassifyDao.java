@@ -35,11 +35,11 @@ public class ClassifyDao {
 	}
     }
 
-    public static String classify(String type) {
+    public static String classify(String type, String language) {
 	if (classify == null) {
 	    return null;
 	}
-	return classify.classify(type);
+	return classify.classify(type, language);
     }
 
 }
