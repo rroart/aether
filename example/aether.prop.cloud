@@ -24,3 +24,5 @@ othertimeout=600
 downloader=true
 authenticate=true
 opennlpmodelpath=/home/user/data/opennlp/en-doccat.bin
+highlightmlt=true
+languages=en,fr

@@ -19,3 +19,5 @@ tikatimeout=600
 othertimeout=600
 downloader=true
 authenticate=true
+highlightmlt=true
+languages=en,fr

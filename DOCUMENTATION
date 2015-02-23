@@ -101,6 +101,8 @@ Increase the following in solrconfig.xml:
 2.1.3.3 Langdetect
 Download from https://code.google.com/p/language-detection/wiki/Downloads,
 and put profiles* in the same dir as pom.xml.
+Languages to be used for classification, configure (default en) with:
+languages=en,fr
 
 2.2 Non-mandatory
 
@@ -128,12 +130,18 @@ There are two types, Mahout and OpenNLP.
 2.2.2.1 Mahout
 Mahout relevant settings:
 classify=mahout
-mahoutalgorithm=bayes
+mahoutbasepath=.../mahoutc/LANG
+mahoutalgorithm=bayes (or cbayes)
 mahaoutmodelpath=.../mahout/model
 mahoutlabelindexfilepath=.../mahout/labelindex
 mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 mahaoutconffs=hadoop uri (sets fs.default.name in this specific case)
+
+The LANG will be replaced by the detected languages configured, so the files
+and directories will be required to exist.
+The mahoutbasepath, if existing, will just be prepended to the other paths,
+which then will just indicate relative paths.
 
 Training could be based on the Bayes part of 
 examples/bin/classify-20newsgroups.sh in the Mahout distribution.
@@ -141,7 +149,9 @@ examples/bin/classify-20newsgroups.sh in the Mahout distribution.
 2.2.2.2 OpenNLP
 OpenNLP relevant settings:
 classify=opennlp
-opennlpmodelpath=.../opennlp/en-doccat.bin
+opennlpmodelpath=.../opennlp/LANG-doccat.bin
+The LANG will be replaced by the detected languages configured, so the file
+will be required to exist.
 
 Training is standard, done with ./bin/opennlp DoccatTrainer in the
 OpenNLP distribution.
@@ -212,3 +222,16 @@ Multitasking issues, some locking may be insufficient, it is at best at a very c
 For standalone the ordinary java locking is using.
 For multinode zookeeper is needed, or some concurrent modification will happen.
 With zookeeper, only node may index at a given time due to database access.
+
+5. Changes
+
+Since 0.4, with 0.5:
+Highlight and MoreLikeThis
+
+opennlpmodelpath=/home/user/data/opennlp/LANG-doccat.bin (before only en)
+new property mahoutbasepath=/home/user/data/mahoutc/LANG
+if present the rest just added, otherwise, use with old full path.
+mahoutlabelindexfilepath=/labelindex (before /home/user/data/mahoutc/labelindex)
+
+Classifier multilanguage support
+new property comma-separated languages
