@@ -203,6 +203,8 @@ Index of suffix: Try to index all known items with suffix.
 Reindex, textfield, use only the given path.
 Reindex on before or after given date.
 
+Reindex specific languages, found and configured.
+
 Consistency checks, with cleaning.
 It lists files not currenly present in the filesystem (will be cleaned).
 It also lists non-existing files (encoding problems) and new files.
@@ -210,7 +212,7 @@ It also lists non-existing files (encoding problems) and new files.
 Stats, listing non-indexed, memory usage or overlapping directories.
 
 Database, get items related to md5 id.
-Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason.
+Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
 
 3.3 General
 
