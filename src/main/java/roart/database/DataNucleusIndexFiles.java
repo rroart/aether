@@ -148,6 +148,18 @@ import roart.util.Constants;
 	    failed++;
 	}
 
+    	@Column(name = "language")
+    	@Persistent	
+    	private String language;
+    	
+            public String getLanguage() {
+    	    return language;
+    	}
+
+    	public void setLanguage(String language) {
+    	    this.language = language;
+    	}
+
 	public static DataNucleusIndexFiles ensureExistence(String md5) throws Exception {
 	    DataNucleusIndexFiles fi = getByMd5(md5);
 	    if (fi == null) {
@@ -284,6 +296,13 @@ import roart.util.Constants;
     	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select md5 from " + DataNucleusIndexFiles.class.getName());
     	md5s = (Set<String>) query.execute();
     	return md5s;
+	}
+
+	public static Set<String> getLanguages() throws Exception {
+    	Set<String> languages = null;
+    	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select distinct language from " + DataNucleusIndexFiles.class.getName());
+    	languages = (Set<String>) query.execute();
+    	return languages;
 	}
 
     }

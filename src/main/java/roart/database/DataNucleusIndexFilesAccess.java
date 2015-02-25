@@ -74,6 +74,7 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	    hif.setTimeoutreason(i.getTimeoutreason());
 	    hif.setNoindexreason(i.getNoindexreason());
 	    hif.setFilelocations(i.getFilelocations());
+	    hif.setLanguage(i.getLanguage());
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
@@ -97,6 +98,7 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	ifile.setFailedreason(hif.getFailedreason());
 	ifile.setTimeoutreason(hif.getTimeoutreason());
 	ifile.setNoindexreason(hif.getNoindexreason());
+	ifile.setLanguage(hif.getLanguage());
 	Set<String> files = hif.getFilelocations();
 	for (String file : files) {
 	    ifile.addFile(new FileLocation(file));
@@ -118,6 +120,11 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	@Override
 	public Set<String> getAllMd5() throws Exception {
 		return DataNucleusIndexFiles.getAllMd5();
+	}
+
+	@Override
+	public Set<String> getLanguages() throws Exception {
+		return DataNucleusIndexFiles.getLanguages();
 	}
 
 }

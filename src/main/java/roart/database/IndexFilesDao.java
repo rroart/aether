@@ -105,6 +105,11 @@ public class IndexFilesDao {
 	return md5All;
     }
 
+    public static Set<String> getLanguages() throws Exception {
+    	Set<String> languages = indexFiles.getLanguages();
+    	return languages;
+        }
+
     /*
     public static IndexFiles ensureExistence(String md5) throws Exception {
 	IndexFiles fi = getByMd5(md5);

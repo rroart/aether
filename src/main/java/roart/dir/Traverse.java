@@ -466,5 +466,26 @@ public class Traverse {
 	    }
     	return null;
     }
+
+	public static int reindexlanguageFilter(ClientQueueElement el, IndexFiles index, String language, Set<IndexFiles> toindexset,
+			Set<String> fileset, Set<String> md5set) {
+			String mylanguage = index.getLanguage();
+			if (mylanguage != null && mylanguage.equals(language)) {
+				String md5 = index.getMd5();
+				String filename = getExistingLocalFile(index);
+
+				if (filename == null) {
+				    log.error("md5 filename null " + md5);
+				    return 0;
+				}
+
+				toindexset.add(index);
+				md5set.add(md5);
+				fileset.add(filename);
+			    return 1;
+			}
+			return 0;
+		 	
+	}
     
 }

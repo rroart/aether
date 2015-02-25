@@ -276,6 +276,9 @@ public class TikaHandler {
 		    el.index.setTimeclass(time);
 		    el.index.setClassification(classification);
 		}
+		if (lang != null) {
+		    el.index.setLanguage(lang);
+		}
 	
 		//size = SearchLucene.indexme("all", md5, inputStream);
 		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata, el.ui);

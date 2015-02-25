@@ -75,6 +75,7 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	    hif.setFailedreason(fr); // temp fix substr
 	    hif.setTimeoutreason(i.getTimeoutreason());
 	    hif.setNoindexreason(i.getNoindexreason());
+	    hif.setLanguage(i.getLanguage());
 	    hif.setFilenames(i.getFilenames());
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
@@ -99,6 +100,7 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	ifile.setFailedreason(hif.getFailedreason());
 	ifile.setTimeoutreason(hif.getTimeoutreason());
 	ifile.setNoindexreason(hif.getNoindexreason());
+	ifile.setLanguage(hif.getLanguage());
 	Set<String> files = hif.getFilenames();
 	for (String file : files) {
 	    ifile.addFile(new FileLocation(file));
@@ -120,6 +122,11 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 	@Override
 	public Set<String> getAllMd5() throws Exception {
 		return HibernateIndexFiles.getAllMd5();
+	}
+
+	@Override
+	public Set<String> getLanguages() throws Exception {
+		return HibernateIndexFiles.getLanguages();
 	}
 
 }

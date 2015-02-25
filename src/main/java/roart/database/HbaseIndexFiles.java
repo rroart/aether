@@ -59,6 +59,7 @@ public class HbaseIndexFiles {
     private static final byte[] failedreasonq = Bytes.toBytes("failedreason");
     private static final byte[] timeoutreasonq = Bytes.toBytes("timeoutreason");
     private static final byte[] noindexreasonq = Bytes.toBytes("noindexreason");
+    private static final byte[] languageq = Bytes.toBytes("language");
     private static final byte[] nodeq = Bytes.toBytes("node");
     private static final byte[] filenameq = Bytes.toBytes("filename");
     private static final byte[] filelocationq = Bytes.toBytes("filelocation");
@@ -161,6 +162,9 @@ public class HbaseIndexFiles {
 	    if (ifile.getNoindexreason() != null) {
 		put.add(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
 	    }
+	    if (ifile.getLanguage() != null) {
+		put.add(indexcf, languageq, Bytes.toBytes(ifile.getLanguage()));
+	    }
 	    //log.info("hbase " + ifile.getMd5());
 	    int i = -1;
 	    for (FileLocation file : ifile.getFilelocations()) {
@@ -225,6 +229,7 @@ public class HbaseIndexFiles {
 	ifile.setFailedreason(bytesToString(index.getValue(indexcf, failedreasonq)));
 	ifile.setTimeoutreason(bytesToString(index.getValue(indexcf, timeoutreasonq)));
 	ifile.setNoindexreason(bytesToString(index.getValue(indexcf, noindexreasonq)));
+	ifile.setLanguage(bytesToString(index.getValue(indexcf, languageq)));
 	List<Cell> list = index.listCells();
 	if (list != null) {
 	for (Cell kv : list) {
@@ -419,6 +424,16 @@ public class HbaseIndexFiles {
 		    md5s.add(md5);
 		}
 		return md5s;
+	}
+
+	public static Set<String> getLanguages() throws Exception {
+		Set<String> languages = new HashSet<String>();
+		ResultScanner scanner = indexTable.getScanner(new Scan());
+		for (Result index = scanner.next(); index != null; index = scanner.next()) {
+			String language = bytesToString(index.getValue(indexcf, languageq));
+		    languages.add(language);
+		}
+		return languages;
 	}
 
 }

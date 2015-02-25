@@ -30,7 +30,7 @@ public class ClientHandler {
     	Queues.incClients();
 	Function function = el.function;
 	List list = null;
-	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || function == Function.INDEX || function == Function.REINDEXDATE) {
+	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || function == Function.INDEX || function == Function.REINDEXDATE || function ==  Function.REINDEXLANGUAGE) {
 	    list = client(el);
 	}
 	if (function == Function.NOTINDEXED) {

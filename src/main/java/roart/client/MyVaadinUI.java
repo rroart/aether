@@ -1,5 +1,6 @@
 package roart.client;
 
+import roart.lang.LanguageDetect;
 import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.model.FileObject;
@@ -8,6 +9,8 @@ import roart.thread.ClientRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
 
+import roart.database.IndexFilesAccess;
+import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 
 import roart.service.SearchService;
@@ -15,9 +18,11 @@ import roart.service.ControlService;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.Date;
+import java.util.TreeSet;
 
 import java.io.File;
 import java.io.InputStream;
@@ -295,6 +300,11 @@ public class MyVaadinUI extends UI
 	horReindex.addComponent(getReindex());
 	horReindex.addComponent(getReindexDateLower());
 	horReindex.addComponent(getReindexDateHigher());
+	HorizontalLayout horReindex2 = new HorizontalLayout();
+	horReindex2.setHeight("20%");
+	horReindex2.setWidth("90%");
+	horReindex2.addComponent(getReindexLanguage());
+	horReindex2.addComponent(getReindexConfiguredLanguage());
 	HorizontalLayout horClean = new HorizontalLayout();
 	horClean.setHeight("20%");
 	horClean.setWidth("60%");
@@ -322,6 +332,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horNew);
 	tab.addComponent(horInd);
 	tab.addComponent(horReindex);
+	tab.addComponent(horReindex2);
 	tab.addComponent(horClean);
 	tab.addComponent(horStat);
 	tab.addComponent(horDb);
@@ -725,6 +736,74 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
+    private ListSelect getReindexLanguage() {
+    	ListSelect ls = new ListSelect("Reindex for language");
+    	Set<String> languages = null;
+		try {
+			Set<String> langs = IndexFilesDao.getLanguages();
+			langs.remove(null);
+			languages = new TreeSet<String>(langs);
+		} catch (Exception e) {
+			log.error(Constants.EXCEPTION, e);
+			return ls;
+		}
+		log.info("languages " + languages);
+		if (languages == null ) {
+			return ls;
+		}
+    	ls.addItems(languages);
+        ls.setNullSelectionAllowed(false);
+        // Show 5 items and a scrollbar if there are more                       
+        ls.setRows(5);
+        ls.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String                 
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value                              
+    		    ControlService maininst = new ControlService();
+    		    try {
+    			maininst.reindexlanguage(value);
+    			Notification.show("Request sent");
+    		    } catch (Exception e) {
+    			log.error(Constants.EXCEPTION, e);
+    		    }
+    		}
+    	    });
+    	// Fire value changes immediately when the field loses focus
+    	ls.setImmediate(true);
+    	return ls;
+    }
+    
+    private ListSelect getReindexConfiguredLanguage() {
+    	ListSelect ls = new ListSelect("Reindex for configured language");
+    	String[] languages = null;
+		try {
+			languages = LanguageDetect.getLanguages();
+		} catch (Exception e1) {
+		}
+    	ls.addItems(languages);
+        ls.setNullSelectionAllowed(false);
+        // Show 5 items and a scrollbar if there are more                       
+        ls.setRows(5);
+        ls.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String                 
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value                              
+    		    ControlService maininst = new ControlService();
+    		    try {
+    			maininst.reindexlanguage(value);
+    			Notification.show("Request sent");
+    		    } catch (Exception e) {
+    			log.error(Constants.EXCEPTION, e);
+    		    }
+    		}
+    	    });
+    	// Fire value changes immediately when the field loses focus
+    	ls.setImmediate(true);
+    	return ls;
+    }
+    
     private TextField getFsIndexNewMd5() {
 	TextField tf = new TextField("Filesystem index on changed md5");
 

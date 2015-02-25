@@ -288,6 +288,16 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
+    // called from ui
+    // returns list: indexed file list
+    // returns list: tika timeout
+    // returns list: file does not exist
+    // returns list: not indexed
+    public void reindexlanguage(String lang) throws Exception {
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXLANGUAGE, null, lang, null, null, true, false);
+	Queues.clientQueue.add(e);
+    }
+
     @SuppressWarnings("rawtypes")
 	public List<List> clientDo(ClientQueueElement el) throws Exception {
 		    synchronized (writelock) {
@@ -427,6 +437,9 @@ public class ControlService {
 	    }
 	    if (function == Function.INDEX || function == Function.FILESYSTEMLUCENENEW) {
 		i += Traverse.indexnoFilter(el, index, reindex, toindexset, fileset, md5set);
+	    }
+	    if (function == Function.REINDEXLANGUAGE) {
+		i += Traverse.reindexlanguageFilter(el, index, el.suffix, toindexset, fileset, md5set);
 	    }
 	    
 	    if (reindex && max > 0 && i > max) {
@@ -765,6 +778,12 @@ public class ControlService {
 		String timeoutreason = index.getTimeoutreason();
 		if (timeoutreason != null) {
 		    match = timeoutreason.contains(text);
+		}
+	    }
+	    if (field.equals("language")) {
+		String language = index.getLanguage();
+		if (language != null) {
+		    match = language.equals(text);
 		}
 	    }
 	    if (match) {

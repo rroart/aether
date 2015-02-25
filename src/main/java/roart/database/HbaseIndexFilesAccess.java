@@ -86,5 +86,10 @@ public class HbaseIndexFilesAccess extends IndexFilesAccess {
 		return HbaseIndexFiles.getAllMd5();
 	}
 
+	@Override
+	public Set<String> getLanguages() throws Exception {
+		return HbaseIndexFiles.getLanguages();
+	}
+
 }
 

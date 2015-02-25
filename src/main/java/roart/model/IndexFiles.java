@@ -39,7 +39,8 @@ public class IndexFiles {
     private String timeoutreason;
 	private Set<FileLocation> filelocations;
     private int maxfilelocations; // keep max count, for hbase deletions
-
+    private String language;
+    
     private boolean changed = false;
     private boolean indb = false;
 
@@ -299,7 +300,16 @@ public class IndexFiles {
 	    this.failedreason = failedreason;
 	}
 
-    /*
+	public void setLanguage(String language) {
+	    changed |= true;
+	    this.language = language;
+	}
+
+        public String getLanguage() {
+	    return language;
+	}
+
+   /*
     public void save() {
 	all.remove(this);
 	IndexFilesDao.save(this);

@@ -66,7 +66,8 @@ import roart.util.Constants;
 	private String timeoutreason;
 	private String noindexreason;
 	private Set<String> filenames;
-
+	private String language;
+	
 	@Column(name = "md5")
 	@Id
         public String getMd5() {
@@ -215,6 +216,20 @@ import roart.util.Constants;
 	    failed++;
 	}
 
+    	/**
+    	 * @hibernate.property
+    	 *  column="language"
+    	 */
+    	@Column(name = "language")
+    	
+            public String getLanguage() {
+    	    return language;
+    	}
+
+    	public void setLanguage(String language) {
+    	    this.language = language;
+    	}
+
 	public static HibernateIndexFiles ensureExistence(String md5) throws Exception {
 	    HibernateIndexFiles fi = getByMd5(md5);
 	    if (fi == null) {
@@ -331,6 +346,10 @@ import roart.util.Constants;
 
 	public static Set<String> getAllMd5() throws Exception {
 		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select md5 from HibernateIndexFiles").list(), String.class);
+	}
+
+	public static Set<String> getLanguages() throws Exception {
+		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select distinct language from HibernateIndexFiles").list(), String.class));
 	}
 
     }
