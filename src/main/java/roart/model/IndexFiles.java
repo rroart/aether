@@ -443,6 +443,10 @@ public class IndexFiles {
 	boolean admin = display.admindisplay;
 	boolean dohighlightmlt = display.highlightmlt;
 	
+	if (lang == null || lang.length() == 0) {
+		lang = "n/a";
+	}
+	
 	ResultItem ri = new ResultItem();
 	ri.add("" + index.getIndexed());
 	ri.add(index.getMd5());

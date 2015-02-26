@@ -68,7 +68,7 @@ public class Search {
 
     if (retsize < 0) {
 	//dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
-	ResultItem ri = IndexFiles.getResultItem(el.index, "n/a", display);
+	ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlistnot.add(ri);
     } else {

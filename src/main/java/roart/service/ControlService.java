@@ -688,7 +688,7 @@ public class ControlService {
 
 	IndexFiles index = IndexFilesDao.getByMd5(md5);
 	if (index != null) {
-	    indexList.add(IndexFiles.getResultItem(index, "n/a", display));
+	    indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), display));
 	    Set<FileLocation> files = index.getFilelocations();
 	    if (files != null) {
 		for (FileLocation filename : files) {
@@ -787,7 +787,7 @@ public class ControlService {
 		}
 	    }
 	    if (match) {
-		indexList.add(IndexFiles.getResultItem(index, "n/a", display));
+		indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), display));
 	    }
 	}
 

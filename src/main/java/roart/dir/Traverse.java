@@ -400,7 +400,7 @@ public class Traverse {
 	    if (indexed != null && indexed.booleanValue() == true) {
 		continue;
 	    }
-	    ri = IndexFiles.getResultItem(index, "n/a", display);
+	    ri = IndexFiles.getResultItem(index, index.getLanguage(), display);
 	    retlist.add(ri);
 	}
 	return retlist;
@@ -416,7 +416,7 @@ public class Traverse {
 	    for (FileLocation filename : index.getFilelocations()) {
 	    	if (indexed != null) {
 	    		if (indexed.booleanValue()) {
-	    			retlist.add(IndexFiles.getResultItem(index, "n/a", display));
+	    			retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), display));
 	    		}
 			}
 	    }

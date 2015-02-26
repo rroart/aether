@@ -309,7 +309,7 @@ public class TikaHandler {
 	    	} else {
 		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
 			SearchDisplay display = SearchService.getSearchDisplay(el.ui);
-		    ResultItem ri = IndexFiles.getResultItem(el.index, "n/a", display);
+		    ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display);
 		    ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 		    retlistnot.add(ri);
 		    Boolean isIndexed = index.getIndexed();
