@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
  
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ import roart.database.IndexFilesDao;
 public class SearchSolr {
     private static Logger log = LoggerFactory.getLogger(SearchSolr.class);
 
-    static HttpSolrServer server = null;
+    static HttpSolrClient server = null;
 
     public SearchSolr() {
 	if (server != null) {
@@ -193,7 +194,11 @@ public class SearchSolr {
 			Map<String,List<String>> map2 = map.get(md5);
 			List<String> list = map2.get(Constants.CONTENT);
 			highlights = new String[1];
+			if (list != null && list.size() > 0) {
 			highlights[0] = list.get(0);
+			} else {
+				highlights[0] = null;
+			}
 		}
 		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display);
 	    }
