@@ -270,6 +270,9 @@ public class SearchLucene {
 	    continue;
 	}
 	String a2[] = thisDoc.getValues(Constants.ID);
+        if (a2 == null || a2.length == 0) {
+            continue;
+        }
 	a2[0].trim();
 
 	if (a2[0].equals(md5i)) {
