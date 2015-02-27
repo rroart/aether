@@ -570,7 +570,7 @@
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
     <jdk.version>1.7</jdk.version>
-    <lucene.version>4.10.1</lucene.version>
+    <lucene.version>5.0.0</lucene.version>
     <solr.version>5.0.0</solr.version>
     <hbase.version>0.98.6.1-hadoop2</hbase.version>
     <tika.version>1.7</tika.version>

@@ -12,6 +12,7 @@ import roart.model.SearchDisplay;
 
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -29,7 +30,6 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -88,9 +88,9 @@ public class SearchLucene {
     // we could also create an index in our ram ...
     // Directory index = new RAMDirectory();
 	try {
-	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
+	    Directory index = FSDirectory.open(getLucenePath(type));
     StandardAnalyzer analyzer = new StandardAnalyzer();
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
+    IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
     IndexWriter w = new IndexWriter(index, iwc);
  
 	    retsize = content.length();
@@ -142,12 +142,16 @@ public class SearchLucene {
     return retsize;
 	}
 
-    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
+    private static Path getLucenePath(String type) {
+    	return new File(getLucenePath()+type).toPath();
+	}
+
+	public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
 	String type = "all";
 	int stype = new Integer(searchtype).intValue();
 		ResultItem[] strarr = new ResultItem[0];
 	    try {
-		Directory index = FSDirectory.open(new File(getLucenePath()+type));
+		Directory index = FSDirectory.open(getLucenePath(type));
     StandardAnalyzer analyzer = new StandardAnalyzer();
     // parse query over multiple fields
     QueryParser cp = null;
@@ -191,7 +195,7 @@ public class SearchLucene {
     IndexReader ind = DirectoryReader.open(index);
     IndexSearcher searcher = new IndexSearcher(ind);
     //TopDocCollector collector = new TopDocCollector(hitsPerPage);
-    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
     searcher.search(q, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;
  
@@ -243,7 +247,7 @@ public class SearchLucene {
 	String type = "all";
 		ResultItem[] strarr = new ResultItem[0];
 	    try {
-		Directory index = FSDirectory.open(new File(getLucenePath()+type));
+		Directory index = FSDirectory.open(getLucenePath(type));
     StandardAnalyzer analyzer = new StandardAnalyzer();
 
     // searching ...
@@ -251,7 +255,7 @@ public class SearchLucene {
     IndexReader ind = DirectoryReader.open(index);
     IndexSearcher searcher = new IndexSearcher(ind);
     //TopDocCollector collector = new TopDocCollector(hitsPerPage);
-    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
 
     int totalDocs = ind.numDocs();
     Document found = null;
@@ -410,9 +414,9 @@ public class SearchLucene {
     public static void deleteme(String str) {
 	try {
 	    String type = "all";
-	    Directory index = FSDirectory.open(new File(getLucenePath()+type));
+	    Directory index = FSDirectory.open(getLucenePath(type));
 	    StandardAnalyzer analyzer = new StandardAnalyzer();
-	    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
+	    IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
 	    iw.deleteDocuments(new Term(Constants.TITLE, str));
@@ -433,8 +437,8 @@ public class SearchLucene {
 	StandardAnalyzer analyzer = new StandardAnalyzer();
 	int docs = 0;
         int dups = 0;
-	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-    IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
+	Directory index = FSDirectory.open(getLucenePath(type));
+    IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
     IndexWriter iw = new IndexWriter(index, iwc);
     IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);
@@ -531,8 +535,8 @@ public class SearchLucene {
 	StandardAnalyzer analyzer = new StandardAnalyzer();
 	int docs = 0;
         int dups = 0;
-	Directory index = FSDirectory.open(new File(getLucenePath()+type));
-	IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_1, analyzer);
+	Directory index = FSDirectory.open(getLucenePath(type));
+	IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 	IndexWriter iw = new IndexWriter(index, iwc);
 	IndexReader ind = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(ind);
