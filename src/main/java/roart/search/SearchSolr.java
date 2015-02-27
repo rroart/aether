@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
  
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ import roart.database.IndexFilesDao;
 public class SearchSolr {
     private static Logger log = LoggerFactory.getLogger(SearchSolr.class);
 
-    static HttpSolrServer server = null;
+    static HttpSolrClient server = null;
 
     public SearchSolr() {
 	if (server != null) {
