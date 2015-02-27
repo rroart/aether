@@ -90,6 +90,8 @@ public class HbaseIndexFiles {
 	    //admin.disableTable(table.getName());
 	    //admin.deleteTable(table.getName());
 	} else {
+		indexTableDesc.addFamily(new HColumnDescriptor("if"));
+		indexTableDesc.addFamily(new HColumnDescriptor("fl"));
 	    admin.createTable(indexTableDesc);
 	}
 	
@@ -112,6 +114,7 @@ public class HbaseIndexFiles {
 	    //admin.disableTable(table.getName());
 	    //admin.deleteTable(table.getName());
 	} else {
+		filesTableDesc.addFamily(new HColumnDescriptor("fi"));
 	    admin.createTable(filesTableDesc);
 	}
 	filesTable = hconn.getTable(TableName.valueOf("files"));
