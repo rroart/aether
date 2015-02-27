@@ -16,6 +16,9 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.TableName;
 //import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HConnectionManager;
@@ -23,6 +26,7 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -64,9 +68,9 @@ public class HbaseIndexFiles {
     private static final byte[] filenameq = Bytes.toBytes("filename");
     private static final byte[] filelocationq = Bytes.toBytes("filelocation");
 
-    private static HTableInterface filesTable = null;
-    private static HTableInterface indexTable = null;
-    private static HConnection hconn = null;
+    private static Table filesTable = null;
+    private static Table indexTable = null;
+    private static Connection hconn = null;
     
     public HbaseIndexFiles() {
 	try {
@@ -78,47 +82,47 @@ public class HbaseIndexFiles {
 	conf.set("hbase.zookeeper.property.clientPort", port);
 	conf.set("hbase.master", master);
 	
-	hconn = HConnectionManager.createConnection(conf);
+	hconn = ConnectionFactory.createConnection(conf);
 	
-	HBaseAdmin admin = new HBaseAdmin(conf);
+	Admin admin = hconn.getAdmin();
 	HTableDescriptor indexTableDesc = new HTableDescriptor(TableName.valueOf("index"));
-	if (admin.tableExists(indexTableDesc.getName())) {
+	if (admin.tableExists(indexTableDesc.getTableName())) {
 	    //admin.disableTable(table.getName());
 	    //admin.deleteTable(table.getName());
 	} else {
 	    admin.createTable(indexTableDesc);
 	}
 	
-	indexTable = hconn.getTable("index");
-	if (admin.isTableEnabled("index")) {
-	    admin.disableTable("index");
+	indexTable = hconn.getTable(TableName.valueOf("index"));
+	if (admin.isTableEnabled(TableName.valueOf("index"))) {
+	    admin.disableTable(TableName.valueOf("index"));
 	}
 	if (!indexTable.getTableDescriptor().hasFamily(indexcf)) {
-	    admin.addColumn("index", new HColumnDescriptor("if"));
+	    admin.addColumn(TableName.valueOf("index"), new HColumnDescriptor("if"));
 	    //tableDesc.addFamily(new HColumnDescriptor("if"));
 	}
 	if (!indexTable.getTableDescriptor().hasFamily(flcf)) {
-	    admin.addColumn("index", new HColumnDescriptor("fl"));
+	    admin.addColumn(TableName.valueOf("index"), new HColumnDescriptor("fl"));
 	    //tableDesc.addFamily(new HColumnDescriptor("fl"));
 	}
-	admin.enableTable("index");
+	admin.enableTable(TableName.valueOf("index"));
 
 	HTableDescriptor filesTableDesc = new HTableDescriptor(TableName.valueOf("files"));
-	if (admin.tableExists(filesTableDesc.getName())) {
+	if (admin.tableExists(filesTableDesc.getTableName())) {
 	    //admin.disableTable(table.getName());
 	    //admin.deleteTable(table.getName());
 	} else {
 	    admin.createTable(filesTableDesc);
 	}
-	filesTable = hconn.getTable("files");
-	if (admin.isTableEnabled("files")) {
-	    admin.disableTable("files");
+	filesTable = hconn.getTable(TableName.valueOf("files"));
+	if (admin.isTableEnabled(TableName.valueOf("files"))) {
+	    admin.disableTable(TableName.valueOf("files"));
 	}
 	if (!filesTable.getTableDescriptor().hasFamily(filescf)) {
-	    admin.addColumn("files", new HColumnDescriptor("fi"));
+	    admin.addColumn(TableName.valueOf("files"), new HColumnDescriptor("fi"));
 	    //filesTableDesc.addFamily(new HColumnDescriptor("fi"));
 	}
-	admin.enableTable("files");
+	admin.enableTable(TableName.valueOf("files"));
 	//HTable table = new HTable(conf, "index");
 	} catch (IOException e) {
 	    log.error(Constants.EXCEPTION, e);
@@ -128,42 +132,42 @@ public class HbaseIndexFiles {
     public static void put(IndexFiles ifile) throws Exception {
 	    //HTable /*Interface*/ filesTable = new HTable(conf, "index");
 	    Put put = new Put(Bytes.toBytes(ifile.getMd5()));
-	    put.add(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
+	    put.addColumn(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
 	    if (ifile.getIndexed() != null) {
-		put.add(indexcf, indexedq, Bytes.toBytes("" + ifile.getIndexed()));
+		put.addColumn(indexcf, indexedq, Bytes.toBytes("" + ifile.getIndexed()));
 	    }
 	    if (ifile.getTimestamp() != null) {
-		put.add(indexcf, timestampq, Bytes.toBytes(ifile.getTimestamp()));
+		put.addColumn(indexcf, timestampq, Bytes.toBytes(ifile.getTimestamp()));
 	    }
 	    if (ifile.getTimeindex() != null) {
-		put.add(indexcf, timeindexq, Bytes.toBytes(ifile.getTimeindex()));
+		put.addColumn(indexcf, timeindexq, Bytes.toBytes(ifile.getTimeindex()));
 	    }
 	    if (ifile.getTimeclass() != null) {
-		put.add(indexcf, timeclassq, Bytes.toBytes(ifile.getTimeclass()));
+		put.addColumn(indexcf, timeclassq, Bytes.toBytes(ifile.getTimeclass()));
 	    }
 	    if (ifile.getClassification() != null) {
-		put.add(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
+		put.addColumn(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
 	    }
 	    if (ifile.getConvertsw() != null) {
-		put.add(indexcf, convertswq, Bytes.toBytes(ifile.getConvertsw()));
+		put.addColumn(indexcf, convertswq, Bytes.toBytes(ifile.getConvertsw()));
 	    }
 	    if (ifile.getConverttime() != null) {
-		put.add(indexcf, converttimeq, Bytes.toBytes(ifile.getConverttime()));
+		put.addColumn(indexcf, converttimeq, Bytes.toBytes(ifile.getConverttime()));
 	    }
 	    if (ifile.getFailed() != null) {
-		put.add(indexcf, failedq, Bytes.toBytes("" + ifile.getFailed()));
+		put.addColumn(indexcf, failedq, Bytes.toBytes("" + ifile.getFailed()));
 	    }
 	    if (ifile.getFailedreason() != null) {
-		put.add(indexcf, failedreasonq, Bytes.toBytes(ifile.getFailedreason()));
+		put.addColumn(indexcf, failedreasonq, Bytes.toBytes(ifile.getFailedreason()));
 	    }
 	    if (ifile.getTimeoutreason() != null) {
-		put.add(indexcf, timeoutreasonq, Bytes.toBytes(ifile.getTimeoutreason()));
+		put.addColumn(indexcf, timeoutreasonq, Bytes.toBytes(ifile.getTimeoutreason()));
 	    }
 	    if (ifile.getNoindexreason() != null) {
-		put.add(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
+		put.addColumn(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
 	    }
 	    if (ifile.getLanguage() != null) {
-		put.add(indexcf, languageq, Bytes.toBytes(ifile.getLanguage()));
+		put.addColumn(indexcf, languageq, Bytes.toBytes(ifile.getLanguage()));
 	    }
 	    //log.info("hbase " + ifile.getMd5());
 	    int i = -1;
@@ -171,13 +175,13 @@ public class HbaseIndexFiles {
 		i++;
 		String filename = getFile(file);
 		//log.info("hbase " + filename);
-		put.add(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
+		put.addColumn(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
 	    }
 	    i++;
 	    // now, delete the rest (or we would get some old historic content)
 	    for (; i < ifile.getMaxfilelocations(); i++) {
 	    	Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
-		d.deleteColumns(flcf, Bytes.toBytes("q" + i));
+		d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
 	    	//log.info("Hbase delete q" + i);
 	    	indexTable.delete(d);
 	    }
@@ -209,7 +213,7 @@ public class HbaseIndexFiles {
 	    for (FileLocation file : files) {
 		String filename = getFile(file);
 		Put put = new Put(Bytes.toBytes(filename));
-		put.add(filescf, md5q, Bytes.toBytes(md5));
+		put.addColumn(filescf, md5q, Bytes.toBytes(md5));
 		filesTable.put(put);
 	    }
     }
@@ -400,19 +404,19 @@ public class HbaseIndexFiles {
     }
 
     public static void flush() throws Exception {
-	    filesTable.flushCommits();
-	    indexTable.flushCommits();
+	    ((HTable) filesTable).flushCommits();
+	    ((HTable) indexTable).flushCommits();
     }
 
     public static void close() throws Exception {
 	    log.info("closing db");
 	    if (filesTable != null) {
 	    filesTable.close();
-	    filesTable = hconn.getTable("files");
+	    filesTable = hconn.getTable(TableName.valueOf("files"));
 	    }
 	    if (indexTable != null) {
 	    indexTable.close();
-	    indexTable = hconn.getTable("index");
+	    indexTable = hconn.getTable(TableName.valueOf("index"));
 	    }
     }
 
