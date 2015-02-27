@@ -572,7 +572,7 @@
     <jdk.version>1.7</jdk.version>
     <lucene.version>5.0.0</lucene.version>
     <solr.version>5.0.0</solr.version>
-    <hbase.version>0.98.6.1-hadoop2</hbase.version>
+    <hbase.version>1.0.0</hbase.version>
     <tika.version>1.7</tika.version>
     <mahout.version>0.9</mahout.version>
     <opennlp.version>1.5.3</opennlp.version>
