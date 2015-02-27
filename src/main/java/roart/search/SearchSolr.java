@@ -194,7 +194,7 @@ public class SearchSolr {
 			Map<String,List<String>> map2 = map.get(md5);
 			List<String> list = map2.get(Constants.CONTENT);
 			highlights = new String[1];
-			if (list.size() > 0) {
+			if (list != null && list.size() > 0) {
 			highlights[0] = list.get(0);
 			} else {
 				highlights[0] = null;
