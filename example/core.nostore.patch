@@ -1,0 +1,49 @@
+diff -ru ../../configsets/basic_configs/conf/schema.xml ./schema.xml
+--- ../../configsets/basic_configs/conf/schema.xml	2015-02-15 20:38:59.000000000 +0100
++++ ./schema.xml	2015-02-27 11:04:57.036504513 +0100
+@@ -105,6 +105,15 @@
+      installations. See the <uniqueKey> declaration below where <uniqueKey> is set to "id".
+    -->   
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
++   <field name="lang" type="text_general" indexed="true" stored="true"/>
++   <field name="metadata" type="text_general" indexed="true" stored="false"/>
++   <field name="cat" type="string" indexed="true" stored="false" multiValued="true"/>
++   <!--field name="content" type="text_general" indexed="true" stored="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/-->
++   <field name="content" type="text_general" indexed="true" stored="false" multiValued="true"/>
++   <!--field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/-->
++
++   <!--copyField source="metadata" dest="text"/>
++   <copyField source="content" dest="text"/-->
+ 
+    <!-- Dynamic field definitions allow using convention over configuration
+        for fields via the specification of patterns to match field names. 
+diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
+--- ../../configsets/basic_configs/conf/solrconfig.xml	2015-02-15 20:38:59.000000000 +0100
++++ ./solrconfig.xml	2015-02-27 09:55:24.896108652 +0100
+@@ -206,7 +206,7 @@
+          be based on the last SolrCore to be initialized.
+          
+       -->
+-    <maxBooleanClauses>1024</maxBooleanClauses>
++    <maxBooleanClauses>16384</maxBooleanClauses>
+ 
+ 
+     <!-- Solr Internal Query Caches
+@@ -434,7 +434,7 @@
+        <str name="echoParams">explicit</str>
+        <str name="wt">json</str>
+        <str name="indent">true</str>
+-       <str name="df">text</str>
++       <str name="df">content</str>
+      </lst>
+   </requestHandler>
+ 
+@@ -457,7 +457,7 @@
+ 
+   <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell">
+     <lst name="defaults">
+-      <str name="df">text</str>
++      <str name="df">content</str>
+     </lst>
+   </initParams>
+ 

@@ -86,17 +86,12 @@ Solr relevant settings:
 index=solr
 solrurl=http://localhost:8983/solr/mystuff
 
-Solr server needs new fields for schema.xml:
-<field name="lang" type="text_general" indexed="true" stored="true"/>
-<field name="metadata" type="text_general" indexed="true" stored="false"/>
-<copyField source="metadata" dest="text"/>
-and change for the following field:
-<field name="content" type="text_general" indexed="false" stored="false" multiValued="true"/>
-
-Use example/schema.xml.default
-
-Increase the following in solrconfig.xml:
-<maxBooleanClauses>16384</maxBooleanClauses>
+mkdir -p server/solr/MYCORE/conf
+rsync -v -a server/solr/configsets/basic_configs/conf/  server/solr/MYCORE/conf
+go to server/solr/MYCORE/conf
+in server/solr/MYCORE/conf apply patch with
+patch -p0 < core.nostore.patch
+(or core.store.patch, if using highlight and morelikethis)
 
 2.1.3.3 Langdetect
 Download from https://code.google.com/p/language-detection/wiki/Downloads,
@@ -165,20 +160,20 @@ Should be used in a multinode environment (not yet mandatory).
 Configured by
 highlightmlt=true
 
-If using Solr, also set
-termVectors, termPositions, and termOffsets, and storage
-<field name="content" type="text_general" indexed="true" stored="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
+If using Solr, also
+
+go to server/solr/MYCORE/conf
+in server/solr/MYCORE/conf apply patch with
+patch -p0 < core.store.patch
 
 Beware that this also stores the content, and increases disk space usage.
-
-Use example/schema.xml.highlightmlt
 
 3. GUI
 
 3.1 Search
 Use Lucene syntax
 Searchable fields:
-Id, lang, metadata, content (Lucene), text (Solr).
+Id, lang, metadata, content (Lucene), content (Solr).
 
 Query parser is behaving differently according to Lucene or Solr, see specific docs.
 
@@ -228,6 +223,7 @@ With zookeeper, only node may index at a given time due to database access.
 5. Changes
 
 Since 0.4, with 0.5:
+Solr and Lucene 5
 Highlight and MoreLikeThis
 
 opennlpmodelpath=/home/user/data/opennlp/LANG-doccat.bin (before only en)
