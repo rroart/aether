@@ -288,7 +288,7 @@ import roart.util.Constants;
 	@ElementCollection	
 	@CollectionTable(name = "files", joinColumns = @JoinColumn(name = "md5"))
 
-	@Column(name = "filename")
+	@Column(name = "filename", length = 511)
         public Set<String> getFilenames() {
 	    return filenames;
 	}
