@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 import org.datanucleus.store.query.QueryManager;
 import org.slf4j.Logger;
@@ -301,7 +302,7 @@ import roart.util.Constants;
 	public static Set<String> getLanguages() throws Exception {
     	Set<String> languages = null;
     	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select distinct language from " + DataNucleusIndexFiles.class.getName());
-    	languages = (Set<String>) query.execute();
+    	languages = new HashSet<String>((List<String>) query.execute());
     	return languages;
 	}
 
