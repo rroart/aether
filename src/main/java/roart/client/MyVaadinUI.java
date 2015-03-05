@@ -293,7 +293,11 @@ public class MyVaadinUI extends UI
 	horInd.addComponent(indexNew);
 	horInd.setComponentAlignment(indexNew, Alignment.BOTTOM_LEFT);
 	horInd.addComponent(getIndexNewPath());
-	horInd.addComponent(getIndexSuffix());
+	HorizontalLayout horIndSuf = new HorizontalLayout();
+	horIndSuf.setHeight("20%");
+	horIndSuf.setWidth("90%");
+	horIndSuf.addComponent(getIndexSuffix());
+	horIndSuf.addComponent(getReindexSuffix());
 	HorizontalLayout horReindex = new HorizontalLayout();
 	horReindex.setHeight("20%");
 	horReindex.setWidth("90%");
@@ -331,6 +335,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horNewInd);
 	tab.addComponent(horNew);
 	tab.addComponent(horInd);
+	tab.addComponent(horIndSuf);
 	tab.addComponent(horReindex);
 	tab.addComponent(horReindex2);
 	tab.addComponent(horClean);
@@ -724,7 +729,30 @@ public class MyVaadinUI extends UI
 		    // Do something with the value
 		    ControlService maininst = new ControlService();
 		    try {
-			maininst.index(value);
+			maininst.indexsuffix(value, false);
+			Notification.show("Request sent");
+		    } catch (Exception e) {
+			log.error(Constants.EXCEPTION, e);
+		    }
+		}
+	    });
+	// Fire value changes immediately when the field loses focus
+	tf.setImmediate(true);
+	return tf;
+    }
+
+    private TextField getReindexSuffix() {
+	TextField tf = new TextField("Reindex on suffix");
+
+	// Handle changes in the value
+	tf.addValueChangeListener(new Property.ValueChangeListener() {
+		public void valueChange(ValueChangeEvent event) {
+		    // Assuming that the value type is a String
+		    String value = (String) event.getProperty().getValue();
+		    // Do something with the value
+		    ControlService maininst = new ControlService();
+		    try {
+			maininst.indexsuffix(value, true);
 			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);
