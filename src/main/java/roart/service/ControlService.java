@@ -53,6 +53,10 @@ import org.slf4j.LoggerFactory;
 public class ControlService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT };
+    public static Map<Config, Integer> configMap = new HashMap<Config, Integer>();
+    public static Map<Config, String> configStrMap = new HashMap<Config, String>();
+    
     private static volatile Integer writelock = new Integer(-1);
 
     private static int dirsizelimit = 100;
@@ -64,16 +68,6 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(String add, Set<IndexFiles> newset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange, boolean returnonlyold) throws Exception {
-	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	Set<String> filesetnew2 = new HashSet<String>();
-	Set<String> filesetnew = Traverse.doList(add, newset, filesetnew2, dirset, null, notfoundset, newmd5, false, nodbchange, returnonlyold);    
-	for (String s : filesetnew2) {
-	    retList.add(new ResultItem(s));
-	}
-	return filesetnew;
-    }
-
     // called from ui
     // returns list: new file
     public void traverse() throws Exception {
@@ -81,14 +75,8 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public Set<String> traverse(Set<IndexFiles> newindexset, List<ResultItem> retList, Set<String> notfoundset, boolean newmd5, boolean nodbchange, boolean returnonlyold) throws Exception {
-	Set<String> filesetnew = new HashSet<String>();
-	retList.addAll(filesystem(newindexset, filesetnew, null, notfoundset, newmd5, nodbchange, returnonlyold));
-	return filesetnew;
-    }
-
-    static String[] dirlist = null;
-    static String[] dirlistnot = null;
+    public static String[] dirlist = null;
+    public static String[] dirlistnot = null;
 
     static public String nodename = "localhost";
     
@@ -103,21 +91,6 @@ public class ControlService {
 	String dirlistnotstr = roart.util.Prop.getProp().getProperty(ConfigConstants.DIRLISTNOT);
 	dirlist = dirliststr.split(",");
 	dirlistnot = dirlistnotstr.split(",");
-    }
-
-    private List<ResultItem> filesystem(Set<IndexFiles> indexnewset, Set<String> filesetnew, Set<String> newset, Set<String> notfoundset, boolean newmd5, boolean nodbchange, boolean returnonlyold) {
-	List<ResultItem> retList = new ArrayList<ResultItem>();
-
-	Map<String, HashSet<String>> dirset = new HashMap<String, HashSet<String>>();
-	try {
-	    for (int i = 0; i < dirlist.length; i ++) {
-		Set<String> filesetnew2 = Traverse.doList(dirlist[i], indexnewset, newset, dirset, dirlistnot, notfoundset, newmd5, false, nodbchange, returnonlyold);
-		filesetnew.addAll(filesetnew2);
-	    }
-	} catch (Exception e) {
-		log.error(Constants.EXCEPTION, e);
-	}
-	return retList;
     }
 
     // called from ui
@@ -259,8 +232,8 @@ public class ControlService {
     // returns list: tika timeout
     // returns list: not indexed
     // returns list: deleted
-    public void index(String suffix) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXSUFFIX, null, suffix, null, null, true, false);
+    public void indexsuffix(String suffix, boolean reindex) throws Exception {
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXSUFFIX, null, suffix, null, null, reindex, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -313,7 +286,6 @@ public class ControlService {
 
 	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
 	
-	Set<List> retlistset = new HashSet<List>();
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retList = new ArrayList<ResultItem>();
 	retList.add(IndexFiles.getHeader(display));
@@ -330,145 +302,17 @@ public class ControlService {
 
 	Set<String> notfoundset = new HashSet<String>();
 	Set<String> filesetnew = new HashSet<String>();
-	Set<IndexFiles> indexnewset = new HashSet<IndexFiles>();
 
-	Set<String> fileset = new HashSet<String>();
-	Set<String> md5set = new HashSet<String>();
-
-	List<List> retlisttmp = null;
-
+	Traverse traverse = new Traverse(el, retList, retNotList, filesetnew, null, dirlistnot, notfoundset, reindex, newmd5, false);
+	
 	// filesystem
 	// reindexsuffix
 	// index
 	// reindexdate
 	// filesystemlucenenew
 
-	//DbRunner.doupdate = false;
-	if (function == Function.FILESYSTEM || function == Function.FILESYSTEMLUCENENEW || (function == Function.INDEX && filename != null /*&& !reindex*/)) {
-	    if (filename != null) {
-		//boolean nodbchange = reindex;
-		//boolean returnonlyold = reindex;
-		boolean nodbchange = function == Function.INDEX;
-		boolean returnonlyold = function == Function.INDEX;
-		filesetnew = traverse(filename, indexnewset, retNewFilesList, notfoundset, newmd5, nodbchange, returnonlyold);
-	    } else {
-		//boolean nodbchange = reindex;
-		//boolean returnonlyold = reindex;
-		boolean nodbchange = function == Function.INDEX;
-		boolean returnonlyold = function == Function.INDEX;
-		filesetnew = traverse(indexnewset, retNewFilesList, notfoundset, newmd5, nodbchange, returnonlyold);
-	    }
-	    for (String file : notfoundset) {
-	    	retNotExistList.add(new ResultItem(file));
-	    }
-	    if (function == Function.FILESYSTEM) {
-		//IndexFilesDao.commit();
-		while (IndexFilesDao.dirty() > 0) {
-		    TimeUnit.SECONDS.sleep(60);
-		}
-		retlistlist.add(retNewFilesList);
-		//DbRunner.doupdate = true;
-		if (zookeeper != null) {
-		    ZKMessageUtil.dorefresh();
-		    ZKLockUtil.unlockme(writelock);
-		    ClientRunner.notify("Sending refresh request");
-		}
-		return  retlistlist;
-	    }
-	}
-
-	Collection<IndexFiles> indexes = null;
-	if (function == Function.FILESYSTEMLUCENENEW) {
-	    indexes = indexnewset;
-	} else if (function == Function.INDEX && filename != null /*&& !reindex*/) {
-	    Set<IndexFiles> indexset = new HashSet<IndexFiles>();
-	    for (String name : filesetnew) {
-		String md5 = IndexFilesDao.getMd5ByFilename(name);
-		IndexFiles index = IndexFilesDao.getByMd5(md5);
-		if (index != null) {
-		indexset.add(index);
-		} else {
-		    log.info("No index for " + md5 + " and " + name);
-		}
-	    }
-	    indexes = indexset;
-	} else {
-	    indexes = IndexFilesDao.getAll();
-	}
-	//DbRunner.doupdate = true;
-
-	String maxfailedStr = roart.util.Prop.getProp().getProperty(ConfigConstants.FAILEDLIMIT);
-	int maxfailed = new Integer(maxfailedStr).intValue();
-
-	String maxStr = roart.util.Prop.getProp().getProperty(ConfigConstants.REINDEXLIMIT);
-	int max = new Integer(maxStr).intValue();
-
-	String maxindexStr = roart.util.Prop.getProp().getProperty(ConfigConstants.INDEXLIMIT);
-	int maxindex = new Integer(maxindexStr).intValue();
-
-	Set<IndexFiles> toindexset = new HashSet<IndexFiles>();
-
-	int i = 0;
-	for (IndexFiles index : indexes) {
-
-	    // skip if indexed already, and no reindex wanted
-	    Boolean indexed = index.getIndexed();
-	    if (indexed != null) {
-		if (!reindex && indexed.booleanValue()) {
-		    continue;
-		}
-	    }
-	    
-	    String md5 = index.getMd5();
-
-	    // if ordinary indexing (no reindexing)
-	    // and a failed limit it set
-	    // and the file has come to that limit
-
-	    if (!reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
-		continue;
-	    }
-	    
-	    if (function == Function.REINDEXDATE) {
-		i += Traverse.reindexdateFilter(el, index, toindexset, fileset, md5set);
-	    }
-	    if (function == Function.REINDEXSUFFIX) {
-		i += Traverse.reindexsuffixFilter(el, index, el.suffix, toindexset, fileset, md5set);
-	    }
-	    if (function == Function.INDEX || function == Function.FILESYSTEMLUCENENEW) {
-		i += Traverse.indexnoFilter(el, index, reindex, toindexset, fileset, md5set);
-	    }
-	    if (function == Function.REINDEXLANGUAGE) {
-		i += Traverse.reindexlanguageFilter(el, index, el.suffix, toindexset, fileset, md5set);
-	    }
-	    
-	    if (reindex && max > 0 && i > max) {
-		break;
-	    }
-	    
-	    if (!reindex && maxindex > 0 && i > maxindex) {
-		break;
-	    }
-	    
-	}
-
-	Map<String, String> filesMapMd5 = new HashMap<String, String>();
-	Map<String, Boolean> indexMap = new HashMap<String, Boolean>();
-	for (IndexFiles index : toindexset) {
-	    String md5 = index.getMd5();
-	    String name = Traverse.getExistingLocalFile(index);
-	    if (name == null) {
-	    	log.error("filename should not be null " + md5);
-	    	continue;
-	    }
-	    filesMapMd5.put(md5, name);
-	    indexMap.put(md5, index.getIndexed());
-	}
-
-	for (String md5 : filesMapMd5.keySet()) {
-	    Traverse.indexsingle(retList, retNotList, md5, indexMap, filesMapMd5, reindex, 0, el.ui);
-	}
-
+	traverse.traverse(filename);
+	
 	while ((Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
@@ -481,6 +325,14 @@ public class ControlService {
 	//IndexFilesDao.commit();
 	while (IndexFilesDao.dirty() > 0) {
 	    TimeUnit.SECONDS.sleep(60);
+	}
+
+	for (String file : notfoundset) {
+	    retNotExistList.add(new ResultItem(file));
+	}
+
+	for (String s : filesetnew) {
+	    retNewFilesList.add(new ResultItem(s));
 	}
 
 	retlistlist.add(retList);
@@ -845,8 +697,7 @@ public class ControlService {
 	}
 
 	public void startTikaWorker() {
-		String timeoutstr = roart.util.Prop.getProp().getProperty(ConfigConstants.TIKATIMEOUT);
-	    int timeout = new Integer(timeoutstr).intValue();
+	    int timeout = ControlService.configMap.get(ControlService.Config.TIKATIMEOUT);
 	    TikaRunner.timeout = timeout;
 
     	tikaRunnable = new TikaRunner();
@@ -865,8 +716,7 @@ public class ControlService {
 	}
 
 	public void startOtherWorker() {
-		String timeoutstr = roart.util.Prop.getProp().getProperty(ConfigConstants.OTHERTIMEOUT);
-	    int timeout = new Integer(timeoutstr).intValue();
+	    int timeout = ControlService.configMap.get(ControlService.Config.OTHERTIMEOUT);
 	    OtherHandler.timeout = timeout;
 
     	otherRunnable = new OtherRunner();
@@ -935,6 +785,12 @@ public class ControlService {
 		newList.add(ri);
 
 		Set<String> delfileset = new HashSet<String>();
+
+		Set<String> filesetnew = new HashSet<String>(); // just a dir list
+		Set<String> newset = new HashSet<String>();
+		Set<String> notfoundset = new HashSet<String>();
+		
+		Traverse traverse = new Traverse(el, null, null, newset, null, dirlistnot, notfoundset, false, false, true);
 			    
 		List<IndexFiles> indexes;
 		try {
@@ -953,11 +809,7 @@ public class ControlService {
 			}
 		}
 		
-		Set<String> filesetnew = new HashSet<String>(); // just a dir list
-		Set<String> newset = new HashSet<String>();
-		Set<String> notfoundset = new HashSet<String>();
-		
-		filesystem(null, filesetnew, newset, notfoundset, false, true, false);
+		traverse.traverse(null);
 		
 		for (String file : newset) {
 			newList.add(new ResultItem(file));

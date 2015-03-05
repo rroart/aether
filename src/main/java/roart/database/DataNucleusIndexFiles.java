@@ -277,7 +277,9 @@ import roart.util.Constants;
 	public static Set<FileLocation> getFilelocationsByMd5(String md5) {
 	    try {
 	    	DataNucleusIndexFiles dnif = getByMd5(md5);
+	    	if (dnif != null) {
 	    	return FileLocation.getFilelocations(dnif.getFilelocations());
+	    	}
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	    }
