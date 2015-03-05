@@ -2,7 +2,10 @@ package roart.servlet.listeners;
 
 import roart.filesystem.HDFS;
 import roart.lang.LanguageDetect;
+import roart.service.ControlService;
 import roart.util.ConfigConstants;
+import roart.util.Prop;
+import sun.rmi.rmic.newrmic.Constants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +22,28 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 
     public void contextInitialized(ServletContextEvent context)  {
 	roart.service.ControlService.parseconfig();
+	
+	ControlService.configMap.put(ControlService.Config.FAILEDLIMIT, 0);
+	ControlService.configMap.put(ControlService.Config.TIKATIMEOUT, 600);
+	ControlService.configMap.put(ControlService.Config.OTHERTIMEOUT, 600);
+	ControlService.configMap.put(ControlService.Config.INDEXLIMIT, 0);
+	ControlService.configMap.put(ControlService.Config.REINDEXLIMIT, 0);
+	
+	ControlService.configStrMap.put(ControlService.Config.FAILEDLIMIT, ConfigConstants.FAILEDLIMIT);
+	ControlService.configStrMap.put(ControlService.Config.TIKATIMEOUT, ConfigConstants.TIKATIMEOUT);
+	ControlService.configStrMap.put(ControlService.Config.OTHERTIMEOUT, ConfigConstants.OTHERTIMEOUT);
+	ControlService.configStrMap.put(ControlService.Config.INDEXLIMIT, ConfigConstants.INDEXLIMIT);
+	ControlService.configStrMap.put(ControlService.Config.REINDEXLIMIT, ConfigConstants.REINDEXLIMIT);
+
+	for (ControlService.Config conf : ControlService.configMap.keySet()) {
+		String str = Prop.getProp().getProperty(ControlService.configStrMap.get(conf));
+		if (str != null) {
+			int value = getInteger(str);
+			if (value >= 0) {
+				ControlService.configMap.put(conf, value);
+			}
+		}
+	}
 	
 	String myfs = roart.util.Prop.getProp().getProperty(ConfigConstants.FS);
 	if (myfs == null) {
@@ -72,7 +97,16 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	log.info("config done");
     }
 
-    public void contextDestroyed(ServletContextEvent context) {
+    private Integer getInteger(String str) {
+    	try {
+    		return new Integer(str);
+    	} catch (NumberFormatException e) {
+    		log.error(Constants.EXCEPTION, e);
+    	}
+		return -1;
+	}
+
+	public void contextDestroyed(ServletContextEvent context) {
     }
 
 }

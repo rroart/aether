@@ -326,6 +326,15 @@ public class MyVaadinUI extends UI
 	horDb.addComponent(getDbItem());
 	horDb.addComponent(getDbSearch());
 
+	HorizontalLayout horConfig = new HorizontalLayout();
+	horConfig.setHeight("20%");
+	horConfig.setWidth("60%");
+	horConfig.addComponent(getConfigValue(ControlService.Config.FAILEDLIMIT));
+	horConfig.addComponent(getConfigValue(ControlService.Config.INDEXLIMIT));
+	horConfig.addComponent(getConfigValue(ControlService.Config.REINDEXLIMIT));
+	horConfig.addComponent(getConfigValue(ControlService.Config.TIKATIMEOUT));
+	horConfig.addComponent(getConfigValue(ControlService.Config.OTHERTIMEOUT));
+
 	/*
 	tab.addComponent(getCleanup());
 	tab.addComponent(getCleanup2());
@@ -341,6 +350,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horClean);
 	tab.addComponent(horStat);
 	tab.addComponent(horDb);
+	tab.addComponent(horConfig);
 	return tab;
     }
 
@@ -575,6 +585,36 @@ public class MyVaadinUI extends UI
 			Notification.show("Request sent");
 		    } catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);
+		    }
+		}
+	    });
+	// Fire value changes immediately when the field loses focus
+	tf.setImmediate(true);
+	return tf;
+    }
+
+    private TextField getConfigValue(final ControlService.Config config) {
+	TextField tf = new TextField("Set " + ControlService.configStrMap.get(config));
+	tf.setValue("" + ControlService.configMap.get(config));
+	
+	// Handle changes in the value
+	tf.addValueChangeListener(new Property.ValueChangeListener() {
+		public void valueChange(ValueChangeEvent event) {
+		    // Assuming that the value type is a String
+		    String value = (String) event.getProperty().getValue();
+		    // Do something with the value
+		    try {
+		    	Integer i = new Integer(value);
+		    	if (i.intValue() < 0) {
+		    		throw new NumberFormatException();
+		    	}
+		    	ControlService.configMap.put(config, i);
+		    	Notification.show("Value changed");
+		    } catch (NumberFormatException e) {
+		    	Notification.show("Illegal value, unchanged");
+		    	log.error(Constants.EXCEPTION, e);
+		    } catch (Exception e) {
+		    	log.error(Constants.EXCEPTION, e);
 		    }
 		}
 	    });
