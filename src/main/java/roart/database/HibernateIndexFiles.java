@@ -310,13 +310,25 @@ import roart.util.Constants;
 	    return null;
 	}
 
-	public static String getMd5ByFilename(String filename) {
+	// this is hql, but slow?
+	public static String getMd5ByFilenameNot(String filename) {
 	    try {
 			HibernateIndexFiles hif = (HibernateIndexFiles) HibernateUtil.getHibernateSession().getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
 			if (hif == null) {
 				return null;
 			}
 			return hif.getMd5();
+	    } catch (Exception e) {
+		log.error(Constants.EXCEPTION, e);
+	    }
+	    return null;
+	}
+
+	// using sql is ideally incorrect, but faster
+	public static String getMd5ByFilename(String filename) {
+	    try {
+		String md5 = (String) HibernateUtil.getHibernateSession().createSQLQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
+		return md5;
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	    }
