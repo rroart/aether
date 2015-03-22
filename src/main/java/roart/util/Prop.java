@@ -1,38 +1,46 @@
 package roart.util;
 
 import java.util.Properties;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Prop {
+public final class Prop {
 
-    private static Properties prop = null;
+    private static final Logger LOG = LoggerFactory.getLogger(Prop.class);
 
-    public static Properties getProp() {
-	if (prop == null) {
-	    prop = new Properties();
-	    InputStream input = null;
-	    
-	    try {
-		
-		input = new FileInputStream("aether.prop");
-		
-		// load a properties file
-		prop.load(input);
- 
-	    } catch (IOException ex) {
-		ex.printStackTrace();
-	    } finally {
-		if (input != null) {
-		    try {
-			input.close();
-		    } catch (IOException e) {
-			e.printStackTrace();
-		    }
-		}
-	    }
-	}
-	return prop;
+    private static Properties properties = null;
+
+    private Prop() {
     }
 
+    public static Properties getProp() {
+        if (properties == null) {
+            properties = new Properties();
+            InputStream input = null;
+
+            try {
+
+                input = new FileInputStream("aether.prop");
+
+                // load a properties file
+                properties.load(input);
+
+            } catch (IOException e) {
+                LOG.error(Constants.EXCEPTION, e);
+            } finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch (IOException e) {
+                        LOG.error(Constants.EXCEPTION, e);
+                    }
+                }
+            }
+        }
+        return properties;
+    }
 
 }
