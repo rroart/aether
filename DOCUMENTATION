@@ -197,7 +197,7 @@ Textfield: Use only the given path.
 Index non-indexed items:
 Button: Index all previously non-indexed (including failed).
 Textfield: Use only the given path.
-Index of suffix: Try to index all known items with suffix.
+Reindex/index of suffix: Try to reindex/index all known items with suffix.
 
 Reindex, textfield, use only the given path.
 Reindex on before or after given date.
@@ -244,4 +244,3 @@ Solr 5.0.0
 Hbase 1.0.0
 Mahout 0.9
 OpenNLP 1.5.3
-ZooKeeper 3.4.6

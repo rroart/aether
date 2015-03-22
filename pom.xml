@@ -577,7 +577,7 @@
     <mahout.version>0.9</mahout.version>
     <opennlp.version>1.5.3</opennlp.version>
     <hadoop.version>2.6.0</hadoop.version>
-    <datanucleus.version>4.1.0-m1</datanucleus.version>
+    <datanucleus.version>4.1.0-m2</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
@@ -592,7 +592,7 @@
     <jdbc.url><![CDATA[jdbc:h2:${h2dir}]]>
     </jdbc.url>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>7.4.0</vaadin.version>
+    <vaadin.version>7.4.2</vaadin.version>
     <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     <gwt.version>2.3.0</gwt.version>
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
