@@ -1,12 +1,12 @@
 diff -ru ../../configsets/basic_configs/conf/schema.xml ./schema.xml
 --- ../../configsets/basic_configs/conf/schema.xml	2015-02-15 20:38:59.000000000 +0100
 +++ ./schema.xml	2015-02-27 11:05:37.164665113 +0100
-@@ -105,6 +105,15 @@
-      installations. See the <uniqueKey> declaration below where <uniqueKey> is set to "id".
+@@ -110,6 +110,15 @@
+      tokens
     -->   
     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
 +   <field name="lang" type="text_general" indexed="true" stored="true"/>
-+   <field name="metadata" type="text_general" indexed="true" stored="false"/>
++   <field name="metadata" type="text_general" indexed="true" stored="false" multiValued="true"/>
 +   <field name="cat" type="string" indexed="true" stored="false" multiValued="true"/>
 +   <field name="content" type="text_general" indexed="true" stored="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
 +   <!--field name="content" type="text_general" indexed="true" stored="false" multiValued="true"/-->
