@@ -389,11 +389,12 @@ public class IndexFiles {
 	ri.add("Timeout reason");
 	ri.add("No indexing reason");
 	ri.add("Filenames");
+    ri.add("Metadata");
 	}
 	return ri;
 	}
 
-	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, String[] highlights, SearchDisplay display) {
+	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, String[] highlights, SearchDisplay display, List<String> metadata) {
 	boolean doclassify = display.classify;
 	boolean admin = display.admindisplay;
 	boolean dohighlightmlt = display.highlightmlt;
@@ -434,6 +435,13 @@ public class IndexFiles {
 	ri.add(index.getTimeoutreason());
 	ri.add(index.getNoindexreason());
 	ri.add("" + index.getFilelocations().size());
+	String metadatastring = "";
+	if (metadata != null) {
+	    for (String md : metadata) {
+	        metadatastring = metadatastring + md + "<br>";
+	    }  
+	}
+	ri.add(metadatastring);
 	}
 	return ri;
 	}

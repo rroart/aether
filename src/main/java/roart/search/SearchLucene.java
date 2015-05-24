@@ -14,6 +14,7 @@ import roart.model.SearchDisplay;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
@@ -117,7 +118,7 @@ public class SearchLucene {
 		Field mytextfield = new Field(Constants.CONTENT, content, fieldtype);
 		doc.add(mytextfield);
 	} else {
-	doc.add(new TextField(Constants.CONTENT, content, Field.Store.YES));
+	doc.add(new TextField(Constants.CONTENT, content, Field.Store.NO));
 	}
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());
@@ -125,8 +126,8 @@ public class SearchLucene {
 	    Metadata md = metadata;
 	    for (String name : md.names()) {
 	        String value = md.get(name);
-	        doc.add(new TextField(Constants.METADATA, name + ":" + value, Field.Store.NO));
-            doc.add(new TextField(Constants.METADATA, value, Field.Store.NO));
+	        doc.add(new TextField(Constants.METADATA, name + ":" + value, Field.Store.YES));
+            doc.add(new TextField(Constants.METADATA, value, Field.Store.YES));
 	        log.info("md val " + name + "=" + value);
 	    }
 	}
@@ -234,6 +235,11 @@ public class SearchLucene {
 		Document d = searcher.doc(docId);
 		String md5 = d.get(Constants.ID);
 		String lang = d.get(Constants.LANG);
+        String[] metadataArray = d.getValues(Constants.METADATA);
+        List<String> metadata = null;
+        if (metadataArray != null) {
+            metadata = Arrays.asList(metadataArray);
+        }
 		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
 		String filename = indexmd5.getFilelocation();
 		log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
@@ -244,7 +250,7 @@ public class SearchLucene {
 			String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, Constants.CONTENT, 100, 1);
 			highlights = bestFragments;
 		}
-		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display);
+		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display, metadata);
 		}
 		return strarr;
 	}

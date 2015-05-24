@@ -1000,6 +1000,7 @@ public class MyVaadinUI extends UI
 	Table table = new Table("Table");
 	table.setWidth("90%");
 	int columns = strarr.get(0).get().size();
+	int mdcolumn = 0;
 	for (int i=0; i<strarr.size(); i++) {
 	    if (strarr.get(i).get().size() != columns) {
 		System.out.println("column differs " + columns + " found " + strarr.get(i).get().size());
@@ -1011,6 +1012,11 @@ public class MyVaadinUI extends UI
 		table.addContainerProperty(strarr.get(0).get().get(i), Button.class, null);
 		continue;
 	    }
+        if (strarr.get(0).get().get(i).equals("Metadata")) {
+        table.addContainerProperty(strarr.get(0).get().get(i), Label.class, null);
+        mdcolumn = i;
+        continue;
+        }
 	    table.addContainerProperty(strarr.get(0).get().get(i), String.class, null);
 	}
 	if (dodownload) {
@@ -1065,6 +1071,11 @@ public Object generateCell(Table source, Object itemId,
 		String md5 = (String) str.get().get(1);
 		str.get().set(IndexFiles.HIGHLIGHTMLTCOLUMN, getSimilar(text, md5));
 		}
+	    }
+	    if (mdcolumn > 0) {
+	        Label label = new Label("MD");
+	        label.setDescription((String) str.get().get(mdcolumn));
+	        str.get().set(mdcolumn, label); 
 	    }
 	    table.addItem(str.getarr(), i);
 	}

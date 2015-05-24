@@ -191,6 +191,7 @@ public class SearchSolr {
 		float score = (float) d.get("score"); 
 		String md5 = (String) d.getFieldValue(Constants.ID);
 		String lang = (String) d.getFieldValue(Constants.LANG);
+		List<String> metadata = (List<String>) d.getFieldValue(Constants.METADATA);
 		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
 		String filename = indexmd5.getFilelocation();
 		log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
@@ -206,7 +207,7 @@ public class SearchSolr {
 				highlights[0] = null;
 			}
 		}
-		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display);
+		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display, metadata);
 	    }
 		return strarr;
 	}
