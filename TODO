@@ -12,3 +12,4 @@ get metadata if too small?
 datanucleus scaling problems
 morelikethis scaling problems for both lucene and solr
 hbase delete from db incomplete
+display metadata
