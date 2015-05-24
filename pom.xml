@@ -532,11 +532,6 @@
  <version>${opennlp.version}</version>
 </dependency>
 <dependency>
-  <groupId>com.google.collections</groupId>
-  <artifactId>google-collections</artifactId>
-  <version>1.0</version>
-</dependency>
-<dependency>
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-core</artifactId>
   <version>${datanucleus.version}</version>
@@ -565,6 +560,11 @@
   <groupId>org.apache.zookeeper</groupId>
   <artifactId>zookeeper</artifactId>
   <version>${zookeeper.version}</version>
+</dependency>
+<dependency>
+  <groupId>com.google.guava</groupId>
+  <artifactId>guava</artifactId>
+  <version>${guava.version}</version>
 </dependency>
   </dependencies>
   <properties>
@@ -599,6 +599,7 @@
     <slf4j.version>1.7.12</slf4j.version>
     <ehcache.version>2.6.11</ehcache.version>
     <servlet.version>3.1.0</servlet.version>
+    <guava.version>16.0.1</guava.version>
   </properties>
 	<repositories>
 		<repository>
