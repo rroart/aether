@@ -117,7 +117,7 @@ public class SearchLucene {
 		Field mytextfield = new Field(Constants.CONTENT, content, fieldtype);
 		doc.add(mytextfield);
 	} else {
-	doc.add(new TextField(Constants.CONTENT, content, Field.Store.NO));
+	doc.add(new TextField(Constants.CONTENT, content, Field.Store.YES));
 	}
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());

@@ -6,7 +6,7 @@ diff -ru ../../configsets/basic_configs/conf/schema.xml ./schema.xml
     -->   
     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
 +   <field name="lang" type="text_general" indexed="true" stored="true"/>
-+   <field name="metadata" type="text_general" indexed="true" stored="false" multiValued="true"/>
++   <field name="metadata" type="text_general" indexed="true" stored="true" multiValued="true"/>
 +   <field name="cat" type="string" indexed="true" stored="false" multiValued="true"/>
 +   <!--field name="content" type="text_general" indexed="true" stored="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/-->
 +   <field name="content" type="text_general" indexed="true" stored="false" multiValued="true"/>
