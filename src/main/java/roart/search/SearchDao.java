@@ -14,6 +14,7 @@ import roart.model.SearchDisplay;
 import roart.model.IndexFiles;
 import roart.util.ConfigConstants;
  
+import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
 	return search.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
@@ -56,6 +57,7 @@ public class SearchDao {
     */
 
     public static void deleteme(String str) {
+        search.delete(str);
     }
 
     public static List<String> removeDuplicate() throws Exception {

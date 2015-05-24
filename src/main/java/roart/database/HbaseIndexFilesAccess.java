@@ -91,5 +91,10 @@ public class HbaseIndexFilesAccess extends IndexFilesAccess {
 		return HbaseIndexFiles.getLanguages();
 	}
 
+    @Override
+    public void delete(IndexFiles index) throws Exception {
+        HbaseIndexFiles.delete(index);
+    }
+
 }
 

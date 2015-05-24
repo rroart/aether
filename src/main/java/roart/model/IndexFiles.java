@@ -411,7 +411,7 @@ public class IndexFiles {
 	ri.add(nodename);
 	ri.add(filename);
 	if (dohighlightmlt) {
-	    if (highlights != null) {
+	    if (highlights != null && highlights.length > 0) {
 		ri.add(highlights[0]);
 	    } else {
 		ri.add(null);

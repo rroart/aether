@@ -33,6 +33,8 @@ public abstract class IndexFilesAccess {
 
 	public abstract Set<String> getLanguages() throws Exception;
 
+    public abstract void delete(IndexFiles index) throws Exception;
+
     //public abstract IndexFiles ensureExistence(String md5) throws Exception;
 
 }

@@ -57,6 +57,9 @@ public class ClientHandler {
 	if (function == Function.CONSISTENTCLEAN) {
 	    list = consistentclean(el);
 	}
+	if (function == Function.DELETEPATH) {
+	    list = deletepath(el);
+	}
 	Queues.decClients();
 	Map map = new HashMap<UI, List>();
 	map.put(el.ui, list);
@@ -146,6 +149,15 @@ public class ClientHandler {
 	} catch (Exception e) {
 	    return null;
 	}
+    }
+
+    private static List deletepath(ClientQueueElement el) {
+    roart.service.ControlService maininst = new roart.service.ControlService();
+    try {
+        return maininst.deletepathdbDo(el);
+    } catch (Exception e) {
+        return null;
+    }
     }
 
 }

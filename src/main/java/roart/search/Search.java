@@ -55,7 +55,7 @@ public class Search {
     	int retsize = 0;
 
     try {
-    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata.toString(), lang, content, classification, retlist, dbindex);
+    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, dbindex);
 	} catch (Exception e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");

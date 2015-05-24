@@ -127,4 +127,9 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 		return DataNucleusIndexFiles.getLanguages();
 	}
 
+    @Override
+    public void delete(IndexFiles index)  throws Exception {
+        DataNucleusIndexFiles.delete(index);
+    }
+
 }

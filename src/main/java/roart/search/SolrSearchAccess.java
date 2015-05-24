@@ -8,6 +8,7 @@ import java.util.List;
 
 import java.io.InputStream;
 
+import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ public class SolrSearchAccess extends SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
+    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
 	return SearchSolr.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
     }
 
@@ -27,6 +28,10 @@ public class SolrSearchAccess extends SearchAccess {
 
     public ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
 	return SearchSolr.searchmlt(md5i, searchtype, display);
+    }
+
+     public void delete(String str) {
+         SearchSolr.deleteme(str);
     }
 }
 

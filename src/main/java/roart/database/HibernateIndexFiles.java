@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.model.FileLocation;
+import roart.model.IndexFiles;
 import roart.util.Constants;
 
 @NamedQueries({
@@ -363,5 +364,10 @@ import roart.util.Constants;
 	public static Set<String> getLanguages() throws Exception {
 		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select distinct language from HibernateIndexFiles").list(), String.class));
 	}
+
+    public static void delete(IndexFiles index) throws Exception {
+        HibernateIndexFiles hif = getByMd5(index.getMd5());
+        roart.database.HibernateUtil.currentSession().delete(hif);
+    }
 
     }

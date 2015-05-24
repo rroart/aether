@@ -11,14 +11,12 @@ import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
  
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -26,6 +24,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.highlight.DefaultSolrHighlighter;
+import org.apache.tika.metadata.Metadata;
 
 import roart.service.SearchService;
 import roart.util.ConfigConstants;
@@ -47,7 +46,7 @@ public class SearchSolr {
 	    return;
 	}
 	String url = roart.util.Prop.getProp().getProperty(ConfigConstants.SOLRURL);
-	server = new HttpSolrServer( url );
+	server = new HttpSolrClient( url );
 	log.info("server " + server);
 	System.out.println("server " + server);
 	server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
@@ -69,7 +68,7 @@ public class SearchSolr {
 	server.setAllowCompression(true);
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
 	int retsize = content.length();
 	// this to a method
 	log.info("indexing " + md5);
@@ -88,7 +87,14 @@ public class SearchSolr {
 	    doc.addField(Constants.CONTENT, content);
 	    if (metadata != null) {
 		log.info("with md " + metadata);
-		doc.addField(Constants.METADATA, metadata);
+		//doc.addField(Constants.METADATA, metadata);
+        Metadata md = metadata;
+        for (String name : md.names()) {
+            String value = md.get(name);
+            doc.addField(Constants.METADATA, name + ":" + value);
+            doc.addField(Constants.METADATA, value);
+            log.info("md val " + name + "=" + value);
+        }
 	    }
 
 	    // Fields "id","name" and "price" are already included in Solr installation, you must add your new custom fields in SchemaXml.
@@ -233,5 +239,22 @@ public class SearchSolr {
 	}
 	return strarr;
     }
+
+    public static void deleteme(String str) {
+        try {
+            server.deleteById(str);
+            server.commit();
+            UpdateRequest req = new UpdateRequest();
+            req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
+            req.deleteById(str);
+            UpdateResponse rsp = req.process( server );
+        } catch (IOException e) {
+            log.error(roart.util.Constants.EXCEPTION, e);
+        } catch (SolrServerException e) {
+            log.error(roart.util.Constants.EXCEPTION, e);
+        } catch (Exception e) {
+            log.error(roart.util.Constants.EXCEPTION, e);
+        }
+   }
 
  }

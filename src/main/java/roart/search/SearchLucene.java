@@ -82,7 +82,7 @@ public class SearchLucene {
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
     //public static void indexme() {
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, String metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles dbindex) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles dbindex) {
     int retsize = 0;
     // create some index
     // we could also create an index in our ram ...
@@ -121,7 +121,14 @@ public class SearchLucene {
 	}
 	if (metadata != null) {
 	    log.info("with md " + metadata.toString());
-	    doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
+	    //doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
+	    Metadata md = metadata;
+	    for (String name : md.names()) {
+	        String value = md.get(name);
+	        doc.add(new TextField(Constants.METADATA, name + ":" + value, Field.Store.NO));
+            doc.add(new TextField(Constants.METADATA, value, Field.Store.NO));
+	        log.info("md val " + name + "=" + value);
+	    }
 	}
 	//Term oldTerm = new Term(Constants.TITLE, md5); // remove after reindex
 	Term term = new Term(Constants.ID, md5);
@@ -422,7 +429,7 @@ public class SearchLucene {
 	    IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 	    IndexWriter iw = new IndexWriter(index, iwc);
 	    //IndexReader r = IndexReader.open(index, false);
-	    iw.deleteDocuments(new Term(Constants.TITLE, str));
+	    //iw.deleteDocuments(new Term(Constants.TITLE, str));
 	    iw.deleteDocuments(new Term(Constants.ID, str));
 	    iw.close();
   	} catch (Exception e) {

@@ -129,4 +129,9 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
 		return HibernateIndexFiles.getLanguages();
 	}
 
+    @Override
+    public void delete(IndexFiles index) throws Exception {
+       HibernateIndexFiles.delete(index);
+    }
+
 }

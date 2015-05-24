@@ -218,4 +218,15 @@ public class IndexFilesDao {
        return dirty1;
     }
 
+public static void delete(IndexFiles index) {
+    try {
+    synchronized(IndexFilesDao.class) {
+indexFiles.delete(index);
+    }
+    all.remove(index);
+    } catch (Exception e) {
+        log.error(Constants.EXCEPTION, e);
+    }
+}
+
 }

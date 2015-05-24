@@ -443,5 +443,24 @@ public class HbaseIndexFiles {
 		return languages;
 	}
 
+    public static void delete(IndexFiles index) throws Exception {
+        for (int i = -1; i < index.getMaxfilelocations(); i++) {
+            Delete d = new Delete(Bytes.toBytes(index.getMd5()));
+            d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
+            indexTable.delete(d);
+        }
+        
+        Set<FileLocation> curfls = getFilelocationsByMd5(index.getMd5());
+        curfls.removeAll(index.getFilelocations());
+
+        // delete the files no longer associated to the md5
+        for (FileLocation fl : curfls) {
+            String name = fl.toString();
+            log.info("Hbase delete " + name);
+            Delete d = new Delete(Bytes.toBytes(name));
+            filesTable.delete(d);
+        }
+    }
+
 }
 

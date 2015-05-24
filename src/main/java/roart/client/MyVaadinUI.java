@@ -314,6 +314,11 @@ public class MyVaadinUI extends UI
 	horClean.setWidth("60%");
 	horClean.addComponent(getConsistent());
 	horClean.addComponent(getConsistentCleanup());
+    HorizontalLayout horDelete = new HorizontalLayout();
+    horDelete.setHeight("20%");
+    horDelete.setWidth("60%");
+    horDelete.addComponent(getDelete());
+    //horDelete.addComponent(getConsistentCleanup());
 	HorizontalLayout horStat = new HorizontalLayout();
 	horStat.setHeight("20%");
 	horStat.setWidth("90%");
@@ -347,6 +352,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horIndSuf);
 	tab.addComponent(horReindex);
 	tab.addComponent(horReindex2);
+	tab.addComponent(horDelete);
 	tab.addComponent(horClean);
 	tab.addComponent(horStat);
 	tab.addComponent(horDb);
@@ -445,6 +451,29 @@ public class MyVaadinUI extends UI
             }
         });
 	return button;
+    }
+
+    private TextField getDelete() {
+        TextField tf = new TextField("Delete path from db");
+
+        // Handle changes in the value
+        tf.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value
+                ControlService maininst = new ControlService();
+                try {
+                maininst.deletepathdb(value);
+                Notification.show("Request sent");
+                } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+                }
+            }
+            });
+        // Fire value changes immediately when the field loses focus
+        tf.setImmediate(true);
+        return tf;
     }
 
     private Button getConsistent() {

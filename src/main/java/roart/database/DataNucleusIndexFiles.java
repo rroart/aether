@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.model.FileLocation;
+import roart.model.IndexFiles;
 import roart.util.Constants;
 
 @PersistenceCapable(table="IndexFiles")
@@ -307,5 +308,10 @@ import roart.util.Constants;
     	languages = new HashSet<String>((List<String>) query.execute());
     	return languages;
 	}
+
+    public static void delete(IndexFiles index) throws Exception {
+        DataNucleusIndexFiles dnif = getByMd5(index.getMd5());
+        DataNucleusUtil.currentSession().getPm().deletePersistent(dnif);
+    }
 
     }

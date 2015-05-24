@@ -866,5 +866,39 @@ public class ControlService {
 		retlistlist.add(newList);
 		return retlistlist;
 	    }
+
+        public void deletepathdb(String path) {
+            ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DELETEPATH, path, null, null, null, true, false);
+            Queues.clientQueue.add(e);
+        }
+
+        public List deletepathdbDo(ClientQueueElement el) throws Exception {
+            List<List> retlistlist = new ArrayList<List>();
+            List<ResultItem> delList = new ArrayList<ResultItem>();
+            delList.add(new ResultItem("Deleted"));
+            String path = el.file;
+            List<IndexFiles> indexes = IndexFilesDao.getAll();
+            for (IndexFiles index : indexes) {
+                Set<FileLocation> deletes = new HashSet<FileLocation>();
+                for (FileLocation fl : index.getFilelocations()) {
+                     if (fl.toString().contains(path)) {
+                        delList.add(new ResultItem(fl.toString()));
+                        deletes.add(fl);
+                        //delfileset.add(filename);
+                    }
+                }
+                if (!deletes.isEmpty()) {
+                    index.getFilelocations().removeAll(deletes);
+                    if (index.getFilelocations().isEmpty()) {
+                        IndexFilesDao.delete(index);
+                        SearchDao.deleteme(index.getMd5());
+                    } else {
+                        IndexFilesDao.save(index);
+                    }
+                }
+            }
+            retlistlist.add(delList);
+            return retlistlist;
+       }
     
 }
