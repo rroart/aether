@@ -127,7 +127,7 @@ public class SearchLucene {
 	    for (String name : md.names()) {
 	        String value = md.get(name);
 	        doc.add(new TextField(Constants.METADATA, name + ":" + value, Field.Store.YES));
-            doc.add(new TextField(Constants.METADATA, value, Field.Store.YES));
+            //doc.add(new TextField(Constants.METADATA, value, Field.Store.YES));
 	        log.info("md val " + name + "=" + value);
 	    }
 	}

@@ -92,7 +92,7 @@ public class SearchSolr {
         for (String name : md.names()) {
             String value = md.get(name);
             doc.addField(Constants.METADATA, name + ":" + value);
-            doc.addField(Constants.METADATA, value);
+            //doc.addField(Constants.METADATA, value);
             log.info("md val " + name + "=" + value);
         }
 	    }
