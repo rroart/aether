@@ -244,6 +244,9 @@ mahoutlabelindexfilepath=/labelindex (before /home/user/data/mahoutc/labelindex)
 Classifier multilanguage support
 new property comma-separated languages
 
+0.6:
+Metadata change handling, stored, multi-valued.
+
 6. Version numbers of external software
 
 Solr 5.1.0
