@@ -9,3 +9,6 @@ db persistence, more db handling
 more granular multitasking and locking capabilities
 #package lang profiles
 get metadata if too small?
+datanucleus scaling problems
+morelikethis scaling problems for both lucene and solr
+hbase delete from db incomplete
