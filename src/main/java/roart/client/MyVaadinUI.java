@@ -1073,9 +1073,15 @@ public Object generateCell(Table source, Object itemId,
 		}
 	    }
 	    if (mdcolumn > 0) {
-	        Label label = new Label("MD");
+            Label label = null;
+	        if (!((String) str.get().get(mdcolumn)).isEmpty()) {
+	            label = new Label("MD");
+	        } else {
+	            label = new Label("No MD");
+	        }
 	        label.setDescription((String) str.get().get(mdcolumn));
 	        str.get().set(mdcolumn, label); 
+	        
 	    }
 	    table.addItem(str.getarr(), i);
 	}
