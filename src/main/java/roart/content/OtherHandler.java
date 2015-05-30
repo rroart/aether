@@ -90,7 +90,7 @@ public class OtherHandler {
 	// djvu 2nd try in case djvu not ebook-convert supported
 	//	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
 	if (output == null && lowercase.contains(".dj")) {
-	    log.info("doing2 djvutxt");
+	    log.info("doing2 djvutxt " + filename);
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist, el);
@@ -103,7 +103,7 @@ public class OtherHandler {
 	}
 	// pdf 2nd try
 	if (output == null && lowercase.endsWith(".pdf")) {
-	    log.info("doing2 pdftotext");
+	    log.info("doing2 pdftotext " + filename);
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist, el);
