@@ -60,6 +60,7 @@ public class LanguageDetect {
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	} catch (Error e) {
+        log.error("Error " + Thread.currentThread().getId() + " " + text.length());
 	    log.error(Constants.ERROR, e);
 	}
 	return null;

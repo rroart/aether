@@ -135,6 +135,7 @@ public class TikaRunner implements Runnable {
 					} catch (Exception e) {
 					    log.error(Constants.EXCEPTION, e);
 					} catch (Error e) {
+				        log.error("Error " + Thread.currentThread().getId());
 					    log.error(Constants.ERROR, e);
     					}
     					finally {

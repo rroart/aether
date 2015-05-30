@@ -204,6 +204,7 @@ public class TikaHandler {
 	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	    output = null;
 	} catch (Error e) {
+	    log.error("Error " + Thread.currentThread().getId() + " " + filename);
 	    log.error(Constants.ERROR, e);
 	    index.setFailedreason(index.getFailedreason() + "tika error " + e.getClass().getName() + " ");
 	    output = null;
