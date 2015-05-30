@@ -202,9 +202,11 @@ public class TikaHandler {
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
+	    output = null;
 	} catch (Error e) {
 	    log.error(Constants.ERROR, e);
 	    index.setFailedreason(index.getFailedreason() + "tika error " + e.getClass().getName() + " ");
+	    output = null;
 	} finally {
 	    input.close();
 	    System.out.flush();
@@ -251,17 +253,23 @@ public class TikaHandler {
 	int size = 0;
 	try {
 	    OutputStream outputStream = process(filename, metadata, index);
-	    InputStream inputStream =new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
+	    InputStream inputStream = null;
+	    if (outputStream != null) {
+	    inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
 	    size = ((ByteArrayOutputStream)outputStream).size();
-	    log.info("size1 " + size);
+	    log.info("size1 " + filename + " " + size);
+	    } else {
+	        size = -1;
+	        log.info("size1 " + filename + " crash"); 
+	    }
 	
 	    long time = System.currentTimeMillis() - now;
 	    el.index.setConverttime(time);
-	    log.info("timerStop filename " + time);
+	    log.info("timerStop " + filename + " " + time);
 	    //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
-	    int limit = mylimit(dbfilename);
-	    if (size > limit) {
-		log.info("sizes " + size + " " + limit);
+	    //int limit = mylimit(dbfilename);
+	    if (size >= 0) {
+		//log.info("sizes " + size + " " + limit);
 		log.info("handling filename " + dbfilename + " " + size + " : " + time);
 	
 		String content = getString(inputStream);
@@ -271,7 +279,7 @@ public class TikaHandler {
 		    now = System.currentTimeMillis();
 		    String classification = ClassifyDao.classify(content, lang);
 		    time = System.currentTimeMillis() - now;
-		    log.info("classtime " + time);
+		    log.info("classtime " + dbfilename + " " + time);
 		    //System.out.println("classtime " + time);
 		    el.index.setTimeclass(time);
 		    el.index.setClassification(classification);
@@ -307,7 +315,7 @@ public class TikaHandler {
 	    	    el.size = size;
 	    	    Queues.otherQueue.add(el);
 	    	} else {
-		    log.info("Too small " + filename + " " + md5 + " " + size + " " + limit);
+		    log.info("Too small " + filename + " " + md5 + " " + size);
 			SearchDisplay display = SearchService.getSearchDisplay(el.ui);
 		    ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display);
 		    ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
@@ -318,8 +326,10 @@ public class TikaHandler {
 			//index.save();
 		    }
 	    	}
-	    }   
+	    }
+	    if (outputStream != null) {
 	    outputStream.close();
+	    }
 	    if (el.filename.startsWith("/tmp/other")/* || el.filename.startsWith(FileSystemDao.FILE + "/tmp/")*/) {
 		log.info("delete file " + el.filename);
 		File delFile = new File(el.filename);
