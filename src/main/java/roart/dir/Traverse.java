@@ -437,6 +437,9 @@ public class Traverse {
     
 	public boolean filterindex(IndexFiles index)
 			throws Exception {
+	    if (index == null) {
+	        return false;
+	    }
 		// skip if indexed already, and no reindex wanted
 		Boolean indexed = index.getIndexed();
 		if (indexed != null) {
