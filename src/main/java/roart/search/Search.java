@@ -61,6 +61,8 @@ public class Search {
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    retsize = -1;
 	} catch (OutOfMemoryError e) {
+	    System.gc();
+	    log.error("Error " + Thread.currentThread().getId() + " " + dbfilename);
 	    log.error(roart.util.Constants.ERROR, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
 	    retsize = -1;

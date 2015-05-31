@@ -87,6 +87,7 @@ public class ClientRunner implements Runnable {
 			} catch (Exception e) {
 			    log.error(Constants.EXCEPTION, e);
 			} catch (Error e) {
+			    System.gc();
 		        log.error("Error " + Thread.currentThread().getId());
 			    log.error(Constants.ERROR, e);
 			}
