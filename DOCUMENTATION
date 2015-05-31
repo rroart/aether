@@ -15,7 +15,7 @@ Given a bit of manual training with classifier software, it is possible to use t
 1. Installing
 
 Unpack language profiles (...).
-Install other software, like ebook-convert, pdftotext, djvutxt.
+Install other software, like calibre, pdftotext, djvutxt, wv.
 Run (after configuring) with mvn package, mvn jetty:run
 
 2. Configuration
