@@ -181,7 +181,7 @@
                 <configuration>
                     <api>JDO</api>
                     <persistenceUnitName>IndexFiles</persistenceUnitName>
-                    <log4jConfiguration>${basedir}/src/main/resources/log4j.properties</log4jConfiguration>
+                    <log4jConfiguration>${basedir}/datanucleus/log4j.properties</log4jConfiguration>
                     <verbose>true</verbose>
                 </configuration>
                 <executions>
@@ -262,7 +262,7 @@
     <dependency>
         <groupId>jdk.tools</groupId>
         <artifactId>jdk.tools</artifactId>
-	<version>1.7</version>
+	<version>1.8</version>
         <scope>system</scope>
         <systemPath>${java.home}/../lib/tools.jar</systemPath>
     </dependency>
@@ -569,7 +569,7 @@
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
-    <jdk.version>1.7</jdk.version>
+    <jdk.version>1.8</jdk.version>
     <lucene.version>5.1.0</lucene.version>
     <solr.version>5.1.0</solr.version>
     <hbase.version>1.0.1</hbase.version>
