@@ -62,144 +62,20 @@ import org.slf4j.LoggerFactory;
 public class TikaHandler {
     private Logger log = LoggerFactory.getLogger(TikaHandler.class);
 
-    private class NoDocumentMetHandler extends DefaultHandler{
-
-	private Metadata metadata;
-
-        private PrintWriter writer;
-
-        private boolean metOutput;
-
-        public NoDocumentMetHandler(PrintWriter writer){
-            this.writer = writer;
-            this.metOutput = false;
-        }
-
-        @Override
-	    public void endDocument() {
-            String[] names = metadata.names();
-            Arrays.sort(names);
-            outputMetadata(names);
-            writer.flush();
-            this.metOutput = true;
-        }
-
-        public void outputMetadata(String[] names) {
-	    for (String name : names) {
-		writer.println(name + ": " + metadata.get(name));
-	    }
-        }
-
-        public boolean metOutput(){
-            return this.metOutput;
-        }
-
-    }
-
-    private class OutputType {
-
-        public void process(InputStream input, OutputStream output, Metadata metadata)
-	    throws Exception {
-            Parser p = parser;
-            if (fork) {
-                p = new ForkParser(TikaHandler.class.getClassLoader(), p);
-            }
-            ContentHandler handler = getContentHandler(output);
-            p.parse(input, handler, metadata, context);
-            // fix for TIKA-596: if a parser doesn't generate                              // XHTML output, the lack of an output document prevents            
-            // metadata from being output: this fixes that                      
-            if (handler instanceof NoDocumentMetHandler){
-                NoDocumentMetHandler metHandler = (NoDocumentMetHandler)handler;
-                if(!metHandler.metOutput()){
-                    metHandler.endDocument();
-                }
-            }
-        }
-
-        protected ContentHandler getContentHandler(OutputStream output)
-	    throws Exception {
-            throw new UnsupportedOperationException();
-        }
-
-    }
-
-    private final OutputType TEXT = new OutputType() {
-        @Override
-	    protected ContentHandler getContentHandler(OutputStream output)
-	    throws Exception {
-            return new BodyContentHandler(getOutputWriter(output, encoding));
-        }
-	};
-
-    private final OutputType TEXT_MAIN = new OutputType() {
-        @Override
-	    protected ContentHandler getContentHandler(OutputStream output)
-	    throws Exception {
-            return new BoilerpipeContentHandler(getOutputWriter(output, encoding));
-        }
-	};
-
-    private ParseContext context;
-
-    private Detector detector;
-
-    private Parser parser;
-
-    private OutputType type = TEXT;
-
-    /**                                                                         
-     * Output character encoding, or <code>null</code> for platform default     
-     */
-    private String encoding = null;
-
-    private boolean fork = false;
-
-    /*
-    public TikaHandler() throws Exception {
-        context = new ParseContext();
-        detector = new DefaultDetector();
-        parser = new AutoDetectParser(detector);
-        context.set(Parser.class, parser);
-    }
-    */
-
     public ByteArrayOutputStream process(String filename, Metadata metadata, IndexFiles index) throws Exception {
-	//TikaHandler();
-        context = new ParseContext();
-        detector = new DefaultDetector();
-        parser = new AutoDetectParser(detector);
-        context.set(Parser.class, parser);
-
-	/*
-	if (filename.endsWith(".MP3") || filename.endsWith(".mp3") || filename.endsWith(".flac") || filename.endsWith("Improve Your Confidence An.pdf") || filename.endsWith("EdgarCayceReadings.chm")) {
-		log.error("manual mp3 skip " + filename);
-		return new ByteArrayOutputStream();
-	}
-	*/
-	type = TEXT;
-	FileObject file = FileSystemDao.get(filename);
+    FileObject file = FileSystemDao.get(filename);
 	InputStream is = FileSystemDao.getInputStream(file);
 	InputStream input = TikaInputStream.get(is);
-	/*
-	File file = new File(filename);
-	URL url = null;
-	if (file.isFile()) {
-	    url = file.toURI().toURL();
-	}
-	if (url == null) {
-	    index.setFailedreason(index.getFailedreason() + "tika url null ");
-	    log.error("tika url null for " + filename);
-	    return null;
-	}
-	InputStream input = TikaInputStream.get(url, metadata);
-	*/
-	//PipedInputStream  writeIn = new PipedInputStream();
-	//PipedOutputStream output = new PipedOutputStream(writeIn);
+
 	ByteArrayOutputStream output = new ByteArrayOutputStream();
 	try {
-	    type.process(input, output, metadata);
-	    //type.process(input, System.out);
-	} catch (Exception e) {
+        ParseContext context = new ParseContext();
+        Detector detector = new DefaultDetector();
+        Parser parser = new AutoDetectParser(detector);
+        context.set(Parser.class, parser);
+        ContentHandler handler = new BodyContentHandler(getOutputWriter(output, null));
+        parser.parse(input, handler, metadata, context);
+ 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	    output = null;
@@ -270,7 +146,11 @@ public class TikaHandler {
 	    log.info("timerStop " + filename + " " + time);
 	    //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
 	    //int limit = mylimit(dbfilename);
-	    if (size >= 0) {
+        boolean isDjvu = false;
+        if (metadata != null && metadata.toString().contains("image/vnd.djvu")) {
+            isDjvu = true;
+        }	    
+	    if (size >= 0 && !isDjvu) {
 		//log.info("sizes " + size + " " + limit);
 		log.info("handling filename " + dbfilename + " " + size + " : " + time);
 	
