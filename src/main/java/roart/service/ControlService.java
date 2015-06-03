@@ -443,7 +443,7 @@ public class ControlService {
 		if (ri == retlist.get(0)) {
 		    continue;
 		}
-		String filename = (String) ri.get().get(10);
+		String filename = (String) ri.get().get(IndexFiles.FILENAMECOLUMN);
 		if (filename == null) {
 		    continue;
 		}
@@ -460,7 +460,8 @@ public class ControlService {
 		plusretlist.put(suffix, i);
 	    }
 	    for(ResultItem ri : retlistyes) {
-		String filename = (String) ri.get().get(0); // or for a whole list?
+		//String filename = (String) ri.get().get(0); // or for a whole list?
+		String filename = (String) ri.get().get(IndexFiles.FILENAMECOLUMN);
 		if (filename == null) {
 		    continue;
 		}
