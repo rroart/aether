@@ -65,8 +65,11 @@ public class OtherHandler {
     } catch (Exception e) {
      log.error(Constants.EXCEPTION, e);
     }
+    String mimetype = el.mimetype;
 	// epub 2nd try
-	if (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".chm") || lowercase.endsWith(".docx")) {
+    // ebook-convert tries all, no fully good mime software
+    // (lowercase.endsWith(".mobi") || lowercase.endsWith(".pdb") || lowercase.endsWith(".epub") || lowercase.endsWith(".lit") || lowercase.endsWith(".djvu") || lowercase.endsWith(".djv") || lowercase.endsWith(".dj") || lowercase.endsWith(".chm") || lowercase.endsWith(".docx"))
+    if (true || mimetype.equals("application/x-mobipocket-ebook") || mimetype.equals("application/x-aportisdoc") || mimetype.equals("application/epub+zip") || mimetype.equals("image/vnd.djvu") || mimetype.equals("application/vnd.ms-htmlhelp") || mimetype.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
 	    File file = new File(filename);
 	    String dirname = file.getParent();
 	    File dir = new File(dirname);
@@ -91,12 +94,12 @@ public class OtherHandler {
 	}
 	// djvu 2nd try in case djvu not ebook-convert supported
 	//	if (output != null && output.contains("ValueError: No plugin to handle input format: dj")) {
-	if (output == null && lowercase.contains(".dj")) {
+	if ((output == null || output.isEmpty()) && ((mimetype != null && mimetype.equals("image/vnd.djvu")) || (mimetype == null && lowercase.contains(".dj")))) {
 	    log.info("doing2 djvutxt " + filename);
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist, el);
-	    if (output != null) {
+	    if (output != null && !output.isEmpty()) {
 		el.convertsw = "djvutxt";
 		long time = execstart - System.currentTimeMillis();
 		el.index.setConverttime(time);
@@ -106,12 +109,12 @@ public class OtherHandler {
 	    retry = true;
 	}
 	// pdf 2nd try
-	if (output == null && lowercase.endsWith(".pdf")) {
+    if ((output == null || output.isEmpty()) && coveredType(mimetype, "application/pdf", lowercase, ".pdf")) {
 	    log.info("doing2 pdftotext " + filename);
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
 	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist, el);
-	    if (output != null) {
+	    if (output != null && !output.isEmpty()) {
 		el.convertsw = "pdftotext";
 		long time = execstart - System.currentTimeMillis();
 		el.index.setConverttime(time);
@@ -121,12 +124,12 @@ public class OtherHandler {
 	    retry = true;
 	}
     // doc try
-    if (output == null && lowercase.endsWith(".doc")) {
+	if ((output == null || output.isEmpty()) && coveredType(mimetype, "application/msword", lowercase, ".doc")) {
         log.info("doing2 wvText " + filename);
         long execstart = System.currentTimeMillis();
         String[] arg = { filename, tmp };
         output = executeTimeout("/usr/bin/wvText", arg, retlist, el);
-        if (output != null) {
+        if (output != null && !output.isEmpty()) {
         el.convertsw = "wvtext";
         long time = execstart - System.currentTimeMillis();
         el.index.setConverttime(time);
@@ -138,7 +141,7 @@ public class OtherHandler {
 	File txt = temp;
 	long time = System.currentTimeMillis() - now;
 	log.info("timerStop " + dbfilename + " " + time);
-	if (output != null && retry && txt.exists()) {
+	if ((output != null && !output.isEmpty()) && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
 		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, retlistnot, metadata, el.ui);
@@ -271,6 +274,14 @@ public class OtherHandler {
         List list = executorService.shutdownNow();
         log.error("Shutdown now list size " + list.size());
         return (String) result;
+    }
+    
+    private static boolean coveredType(String mimetype, String mimecompare, String lowercase, String lowercasecompare) {
+        if (mimetype != null) {
+            return mimetype.equals(mimecompare); 
+        } else {
+            return lowercase.endsWith(lowercasecompare);        
+        }
     }
 
 }

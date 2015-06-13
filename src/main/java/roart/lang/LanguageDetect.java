@@ -47,6 +47,9 @@ public class LanguageDetect {
     }
     
     public static String detect(String text) {
+        if (text == null || text.isEmpty()) {
+            return null;
+        }
 	try {
 	    if (!inited) init("./profiles/");
 	    Date d = logstart();

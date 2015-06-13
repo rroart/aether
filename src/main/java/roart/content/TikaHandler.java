@@ -14,11 +14,11 @@ import roart.util.Constants;
 import roart.filesystem.FileSystemDao;
 
 import java.io.*;
-
 import java.util.Arrays;
 import java.util.List;
-
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -27,7 +27,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.ParsingReader;
 import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.sax.XHTMLContentHandler;
-
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
@@ -51,11 +50,9 @@ import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.parser.html.BoilerpipeContentHandler;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.XMPContentHandler;
-
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,138 +102,170 @@ public class TikaHandler {
         }
     }
 
-    //private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
+	//private static int doTika(String dbfilename, String filename, String md5, Index index, List<String> retlist) {
 	public void doTika(TikaQueueElement el) {
-		/*
+	    /*
 	TikaQueueElement el = Queues.tikaQueue.poll();
 	if (el == null) {
 		log.error("empty queue");
 	    return;
 	}
-	*/
-	// vulnerable spot
-	//Queues.incTikas();
-	//Queues.tikaRunQueue.add(el);
-	long now = System.currentTimeMillis();
-	try {
-	String dbfilename = el.dbfilename;
-	String filename = el.filename;
-	String md5 = el.md5;
-	IndexFiles index = el.index;
-	List<ResultItem> retlist = el.retlist;
-	List<ResultItem> retlistnot = el.retlistnot;
-	Metadata metadata = el.metadata;
-	log.info("incTikas " + dbfilename);
-	Queues.tikaTimeoutQueue.add(dbfilename);
-	int size = 0;
-	try {
-	    OutputStream outputStream = process(filename, metadata, index);
-	    InputStream inputStream = null;
-	    if (outputStream != null) {
-	    inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
-	    size = ((ByteArrayOutputStream)outputStream).size();
-	    log.info("size1 " + filename + " " + size);
-	    } else {
-	        size = -1;
-	        log.info("size1 " + filename + " crash"); 
+	     */
+	    // vulnerable spot
+	    //Queues.incTikas();
+	    //Queues.tikaRunQueue.add(el);
+	    long now = System.currentTimeMillis();
+	    String dbfilename = el.dbfilename;
+	    String filename = el.filename;
+	    String md5 = el.md5;
+	    IndexFiles index = el.index;
+	    List<ResultItem> retlist = el.retlist;
+	    List<ResultItem> retlistnot = el.retlistnot;
+	    Metadata metadata = el.metadata;
+	    log.info("incTikas " + dbfilename);
+	    Queues.tikaTimeoutQueue.add(dbfilename);
+	    int size = 0;
+	    try {
+	        OutputStream outputStream = process(filename, metadata, index);
+	        long time = System.currentTimeMillis() - now;
+	        el.index.setConverttime(time);
+	        InputStream inputStream = null;
+	        if (outputStream != null) {
+	            inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
+	            size = ((ByteArrayOutputStream)outputStream).size();
+	            log.info("size1 " + dbfilename + " / " + filename + " " + size + " : " + time);
+	        } else {
+	            size = -1;
+	            log.info("size1 " + dbfilename + " / " + filename + " crash" + " : " + time); 
+	        }
+
+	        //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
+	        //int limit = mylimit(dbfilename);
+	        if (size <= 0) {
+	            if (dbfilename.equals(filename)) {
+	                String fn = null;
+	                String tmpfn = null;
+	                if (filename.startsWith(FileSystemDao.HDFS)) {
+	                    tmpfn = copyFileToTmp(filename);
+	                    fn = tmpfn;
+	                } else {
+	                    FileObject file = FileSystemDao.get(filename);  
+	                    fn = FileSystemDao.getAbsolutePath(file);
+	                    if (fn.charAt(4) == ':') {
+	                        fn = fn.substring(5);
+	                    }
+	                }
+	                log.info("for mime type " + fn);
+	                Path path = new File(fn).toPath();
+	                String mimetype = Files.probeContentType(path);
+	                el.mimetype = mimetype;
+	                if (tmpfn != null && tmpfn.contains("/tmp/")) {
+	                    File delFile = new File(tmpfn);
+	                    delFile.delete();
+	                }
+	                if (size == 0) {
+	                    log.info("size null for mime type " + mimetype + " " + path.toString() + " " + dbfilename + " / " + filename);
+	                } else {
+	                    log.info("crash for mime type " + mimetype + " " + path.toString() + " " + dbfilename + " / " + filename);
+	                }
+	            }
+	        }
+	        // images may give 0 size and be index, except djvu, it needs special handling
+	        boolean isImage = false;
+	        if (el.mimetype != null) {
+	            if (el.mimetype.startsWith("image/") && !el.mimetype.equals("image/vnd.djvu")) {
+	                isImage = true;
+	            }
+	        }
+	        log.info("size2 " + md5 + " " + filename + " mimetype " + el. mimetype + " image " + isImage);
+	        if (size > 0 || isImage) {
+	            //log.info("sizes " + size + " " + limit);
+	            //log.info("handling filename " + dbfilename + " " + size + " : " + time);
+
+	            String content = getString(inputStream);
+
+	            String lang = LanguageDetect.detect(content);
+	            if (lang != null && LanguageDetect.isSupportedLanguage(lang)) {
+	                now = System.currentTimeMillis();
+	                String classification = ClassifyDao.classify(content, lang);
+	                time = System.currentTimeMillis() - now;
+	                log.info("classtime " + dbfilename + " " + time);
+	                //System.out.println("classtime " + time);
+	                el.index.setTimeclass(time);
+	                el.index.setClassification(classification);
+	            }
+	            if (lang != null) {
+	                el.index.setLanguage(lang);
+	            }
+
+	            //size = SearchLucene.indexme("all", md5, inputStream);
+	            IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata, el.ui);
+	            elem.lang = lang;
+	            elem.content = content;
+	            if (el.convertsw != null) {
+	                elem.convertsw = el.convertsw;
+	            } else {
+	                elem.convertsw = "tika";
+	            }
+	            Queues.indexQueue.add(elem);
+	        } else {
+	            if (dbfilename.equals(filename)) {
+	                if (filename.startsWith(FileSystemDao.HDFS)) {
+	                    String fn = copyFileToTmp(filename);
+	                    el.filename = fn;
+	                }
+	                el.size = size;
+	                Queues.otherQueue.add(el);
+	            } else {
+	                log.info("Too small " + dbfilename + " / " + filename + " " + md5 + " " + size);
+	                SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	                ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display);
+	                ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
+	                retlistnot.add(ri);
+	                Boolean isIndexed = index.getIndexed();
+	                if (isIndexed == null || isIndexed.booleanValue() == false) {
+	                    index.incrFailed();
+	                    //index.save();
+	                }
+	            }
+	        }
+	        if (outputStream != null) {
+	            outputStream.close();
+	        }
+	        if (el.filename.startsWith("/tmp/other")/* || el.filename.startsWith(FileSystemDao.FILE + "/tmp/")*/) {
+	            log.info("delete file " + el.filename);
+	            File delFile = new File(el.filename);
+	            delFile.delete();
+	        }
+	    } catch (Exception e) {
+	        el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
+	        log.error(Constants.EXCEPTION, e);
+	    } finally {
+	        //stream.close();            // close the stream
 	    }
-	
-	    long time = System.currentTimeMillis() - now;
-	    el.index.setConverttime(time);
-	    log.info("timerStop " + filename + " " + time);
-	    //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
-	    //int limit = mylimit(dbfilename);
-        boolean isDjvu = false;
-        if (metadata != null && metadata.toString().contains("image/vnd.djvu")) {
-            isDjvu = true;
-        }	    
-	    if (size >= 0 && !isDjvu) {
-		//log.info("sizes " + size + " " + limit);
-		log.info("handling filename " + dbfilename + " " + size + " : " + time);
-	
-		String content = getString(inputStream);
-	
-		String lang = LanguageDetect.detect(content);
-		if (lang != null && LanguageDetect.isSupportedLanguage(lang)) {
-		    now = System.currentTimeMillis();
-		    String classification = ClassifyDao.classify(content, lang);
-		    time = System.currentTimeMillis() - now;
-		    log.info("classtime " + dbfilename + " " + time);
-		    //System.out.println("classtime " + time);
-		    el.index.setTimeclass(time);
-		    el.index.setClassification(classification);
-		}
-		if (lang != null) {
-		    el.index.setLanguage(lang);
-		}
-	
-		//size = SearchLucene.indexme("all", md5, inputStream);
-		IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata, el.ui);
-		elem.lang = lang;
-		elem.content = content;
-		if (el.convertsw != null) {
-		    elem.convertsw = el.convertsw;
-		} else {
-		    elem.convertsw = "tika";
-		}
-		Queues.indexQueue.add(elem);
-	    } else {
-	    	if (dbfilename.equals(filename)) {
-		    if (filename.startsWith(FileSystemDao.HDFS)) {
-			int i = filename.lastIndexOf("/");
-			String fn = "/tmp/hdfs" + filename.substring(i + 1);
-			log.info("copy to local filenames " + filename + " " + fn);
-			FileObject file = FileSystemDao.get(filename);
-			InputStream in = FileSystemDao.getInputStream(file);
-			OutputStream out = new FileOutputStream(new File(fn));
-			IOUtils.copy(in, out);
-			in.close();
-			out.close();
-			el.filename = fn;
-		    }
-	    	    el.size = size;
-	    	    Queues.otherQueue.add(el);
-	    	} else {
-		    log.info("Too small " + filename + " " + md5 + " " + size);
-			SearchDisplay display = SearchService.getSearchDisplay(el.ui);
-		    ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display);
-		    ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
-		    retlistnot.add(ri);
-		    Boolean isIndexed = index.getIndexed();
-		    if (isIndexed == null || isIndexed.booleanValue() == false) {
-			index.incrFailed();
-			//index.save();
-		    }
-	    	}
+	    //Queues.decTikas();
+	    //Queues.tikaRunQueue.remove(el);
+
+	    boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
+	    if (!success) {
+	        log.error("queue not having " + dbfilename);
 	    }
-	    if (outputStream != null) {
-	    outputStream.close();
-	    }
-	    if (el.filename.startsWith("/tmp/other")/* || el.filename.startsWith(FileSystemDao.FILE + "/tmp/")*/) {
-		log.info("delete file " + el.filename);
-		File delFile = new File(el.filename);
-		delFile.delete();
-	    }
-	} catch (Exception e) {
-	    el.index.setFailedreason(el.index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
-	    log.error(Constants.EXCEPTION, e);
-	} finally {
-	    //stream.close();            // close the stream
+	    log.info("ending " + el.md5 + " " + el.dbfilename);
 	}
-	//Queues.decTikas();
-	//Queues.tikaRunQueue.remove(el);
-	
-	boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
-	if (!success) {
-		log.error("queue not having " + dbfilename);
-	}
-	} catch (Exception e) {
-		log.error(Constants.EXCEPTION, e);
-	}
-	finally {
-		log.info("ending " + el.dbfilename);
-	}
-	}
+
+    private String copyFileToTmp(String filename) throws FileNotFoundException,
+            IOException {
+        int i = filename.lastIndexOf("/");
+        String fn = "/tmp/hdfs" + filename.substring(i + 1);
+        log.info("copy to local filenames " + filename + " " + fn);
+        FileObject file = FileSystemDao.get(filename);
+        InputStream in = FileSystemDao.getInputStream(file);
+        OutputStream out = new FileOutputStream(new File(fn));
+        IOUtils.copy(in, out);
+        in.close();
+        out.close();
+        return fn;
+    }
 
 	public int mylimit(String filename) {
 	String lowercase = filename.toLowerCase();

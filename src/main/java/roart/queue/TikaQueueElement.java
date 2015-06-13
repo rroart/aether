@@ -21,6 +21,7 @@ public class TikaQueueElement {
     public Metadata metadata;
     public String convertsw;
     public UI ui;
+    public String mimetype;
 
     public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, List<ResultItem> retlist, List<ResultItem> retlistnot, Metadata metadata, UI ui) {
 	this.dbfilename = dbfilename;
