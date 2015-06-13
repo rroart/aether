@@ -287,7 +287,7 @@ public class Traverse {
     }
 
     public int reindexdateFilter(IndexFiles index) throws Exception {
-	String lowerdate = element.higherdate;
+	String lowerdate = element.lowerdate;
 	String higherdate = element.higherdate;
 	Long tslow = null;
 	if (lowerdate != null) {
@@ -458,21 +458,26 @@ public class Traverse {
 		return false;
 		}
 		
+		int indexinc = 0;
 		if (element.function == Function.REINDEXDATE) {
-		indexcount += reindexdateFilter(index);
-		return true;
+		    indexinc = reindexdateFilter(index);
+		    indexcount += indexinc;
+		    return indexinc > 0;
 		}
 		if (element.function == Function.REINDEXSUFFIX) {
-		indexcount += reindexsuffixFilter(index);
-		return true;
+		    indexinc = reindexsuffixFilter(index);
+		    indexcount += indexinc;
+		    return indexinc > 0;
 		}
 		if (element.function == Function.INDEX || element.function == Function.FILESYSTEMLUCENENEW) {
-		indexcount += indexnoFilter(index);
-		return true;
+		    indexinc = indexnoFilter(index);
+		    indexcount += indexinc;
+		    return indexinc > 0;
 		}
 		if (element.function == Function.REINDEXLANGUAGE) {
-		indexcount += reindexlanguageFilter(index);
-		return true;
+		    indexinc = reindexlanguageFilter(index);
+		    indexcount += indexinc;
+		    return indexinc > 0;
 		}
 		return false;
 	}
@@ -481,11 +486,11 @@ public class Traverse {
 		List<IndexFiles> indexes = IndexFilesDao.getAll();
 		for (IndexFiles index : indexes) {
 			if (reindex && max > 0 && indexcount > max) {
-				break;
+				continue;
 			}
 		
 			if (!reindex && maxindex > 0 && indexcount > maxindex) {
-				break;
+				continue;
 			}
 			String md5 = index.getMd5();
 			String name = getExistingLocalFile(index);
