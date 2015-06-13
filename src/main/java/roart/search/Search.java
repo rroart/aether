@@ -75,7 +75,7 @@ public class Search {
 	retlistnot.add(ri);
     } else {
 
-	log.info("size2 " + retsize);
+	log.info("size2 " + md5 + " " + retsize);
 	el.size = retsize;
 	dbindex.setIndexed(Boolean.TRUE);
 	dbindex.setTimestamp("" + System.currentTimeMillis());

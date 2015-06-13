@@ -138,7 +138,7 @@ public class SearchLucene {
 	//w.addDocument(doc);
  
     w.close();
-    log.info("index generated");
+    log.info("index generated " + md5);
   	} catch (Exception e) {
 	    log.info("Error3: " + e.getMessage());
 	    log.error(roart.util.Constants.EXCEPTION, e);
