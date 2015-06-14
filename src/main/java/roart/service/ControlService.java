@@ -834,7 +834,7 @@ public class ControlService {
 					boolean removed = ifile.removeFilelocation(fl);
 					//log.info("fls2 size " + removed + ifile.getFilelocations().size());
 				} else {
-					log.info("trying the hard way, no md5 for" + filename);
+					log.info("trying the hard way, no md5 for " + filename);
 					for (IndexFiles index : indexes) {
 					    FileLocation fl = new FileLocation(filename);
 					    if (index.getFilelocations().contains(fl)) {

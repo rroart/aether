@@ -136,7 +136,7 @@ public class TikaHandler {
 	            log.info("size1 " + dbfilename + " / " + filename + " " + size + " : " + time);
 	        } else {
 	            size = -1;
-	            log.info("size1 " + dbfilename + " / " + filename + " crash" + " : " + time); 
+	            log.info("size1 " + dbfilename + " / " + filename + " crash " + " : " + time); 
 	        }
 
 	        //retlist.add(new ResultItem(new String("tika handling filename " + dbfilename + " " + size + " : " + time)));
@@ -177,7 +177,7 @@ public class TikaHandler {
 	                isImage = true;
 	            }
 	        }
-	        log.info("size2 " + md5 + " " + filename + " mimetype " + el. mimetype + " image " + isImage);
+	        log.info("size2 " + md5 + " " + filename + " " + size + " mimetype " + el. mimetype + " image " + isImage);
 	        if (size > 0 || isImage) {
 	            //log.info("sizes " + size + " " + limit);
 	            //log.info("handling filename " + dbfilename + " " + size + " : " + time);
@@ -209,6 +209,7 @@ public class TikaHandler {
 	            }
 	            Queues.indexQueue.add(elem);
 	        } else {
+	            //log.info("filenames " + dbfilename + " " + filename);
 	            if (dbfilename.equals(filename)) {
 	                if (filename.startsWith(FileSystemDao.HDFS)) {
 	                    String fn = copyFileToTmp(filename);
