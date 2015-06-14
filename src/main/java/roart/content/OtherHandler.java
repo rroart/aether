@@ -64,6 +64,8 @@ public class OtherHandler {
     tmp = temp.getAbsolutePath();
     } catch (Exception e) {
      log.error(Constants.EXCEPTION, e);
+     Queues.decOthers();
+     return;
     }
     String mimetype = el.mimetype;
 	// epub 2nd try
