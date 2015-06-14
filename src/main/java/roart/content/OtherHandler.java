@@ -146,7 +146,7 @@ public class OtherHandler {
 		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
 		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, retlistnot, metadata, el.ui);
 		e.convertsw = el.convertsw;
-	    Queues.tikaQueue.add(e);
+	    Queues.tikaQueue.addFirst(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);
 	} else {
 		log.info("handled not " + dbfilename + " : " + time);
