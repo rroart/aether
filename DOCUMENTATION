@@ -16,7 +16,7 @@ Given a bit of manual training with classifier software, it is possible to use t
 
 Use Java 8.
 Unpack language profiles (see 2.1.3.3).
-Install other software, like calibre, pdftotext, djvutxt, wv.
+Install other software, like calibre, pdftotext, djvutxt, wv, tesseract.
 Run (after configuring) with mvn package, mvn jetty:run
 
 2. Configuration
