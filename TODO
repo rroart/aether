@@ -13,3 +13,4 @@ datanucleus scaling problems
 morelikethis scaling problems for both lucene and solr
 hbase delete from db incomplete
 better handling of thrown errors
+tesseract (through) tika is running english only
