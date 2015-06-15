@@ -33,38 +33,41 @@ public class DbRunner implements Runnable {
 
     public static final Set<UI> uiset = new HashSet<UI>();
 	
-    final int update = 300;
+    final int update = 60;
     static long lastupdate = 0;
 
-    public static volatile boolean doupdate = true;
+    //public static volatile boolean doupdate = true;
 
     public void run() {
-    	Set<Future<Object>> set = new HashSet<Future<Object>>();
-	int nThreads = 4;
-    	ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
-    	while (true) {
-	    long now = System.currentTimeMillis();
-	    if ((now - lastupdate) >= update * 1000) {
-		try {
-		    if (doupdate) {
-			IndexFilesDao.commit();
-		    }
-		} catch (Exception e) {
-		    log.error(Constants.EXCEPTION, e);
-		}
-		lastupdate = now;
-	    }
-	    if (true) {
-		try {
-		    TimeUnit.SECONDS.sleep(update);
-		} catch (InterruptedException e) {
-		    // TODO Auto-generated catch block
-		    log.error(Constants.EXCEPTION, e);
-		    ClientRunner.notify("Db exception");
-		}
-	    }
-
-     	}
+        Set<Future<Object>> set = new HashSet<Future<Object>>();
+        int nThreads = 4;
+        ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
+        while (true) {
+            long now = System.currentTimeMillis();
+            log.info("updatetime " + (int) ((now - lastupdate)/1000));
+            if (true || (now - lastupdate) >= update * 1000) {
+                try {
+                    if (true /*doupdate*/) {
+                        IndexFilesDao.commit();
+                    }
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+                lastupdate = System.currentTimeMillis();
+            }
+            try {
+                int sleepsec = 60 - (int) (((lastupdate - now)/1000));  
+                if (sleepsec < 1) {
+                    sleepsec = 1;
+                }
+                log.info("sleepsec " + sleepsec);
+                TimeUnit.SECONDS.sleep(sleepsec);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                log.error(Constants.EXCEPTION, e);
+                ClientRunner.notify("Db exception");
+            }
+        }
     }
 
 }
