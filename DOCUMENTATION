@@ -223,7 +223,7 @@ Database search, fields indexed, convertsw, classification, failedreason, noinde
 3.3 General
 
 Status label has rows for t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
-Also, a d for counting dirty database objects.
+Also, a d for counting dirty database objects and for prioritized (which have finished).
 
 4. Caution
 Multitasking issues, some locking may be insufficient, it is at best at a very coarse level.

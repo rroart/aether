@@ -228,6 +228,7 @@ public class TikaHandler {
 	                    index.incrFailed();
 	                    //index.save();
 	                }
+                    index.setPriority(1);
 	            }
 	        }
 	        if (outputStream != null) {

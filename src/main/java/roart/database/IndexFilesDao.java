@@ -152,8 +152,9 @@ public class IndexFilesDao {
 		    synchronized(IndexFilesDao.class) {
 			indexFiles.save(i);
 		    }
-		    log.info("saving " + i.getMd5());
+		    log.info("saving pri " + i.getPriority() + " " + i.getMd5());
 	    	i.setUnchanged();
+            i.setPriority(0);
 		} catch (Exception e) {
 		    log.info("failed saving " + i.getMd5());	
 		    log.error(Constants.EXCEPTION, e);
@@ -177,10 +178,29 @@ public class IndexFilesDao {
     }
 
     public static void close() {
-	for (String k : all.keySet()) {
-	    IndexFiles i = all.get(k);
-	    IndexFilesDao.save(i);
-	}
+        int[] pris = getPris();
+        int level = 0;
+        if (pris[1] > 0) {
+            level = 1;
+        }
+        log.info("pris levels " + pris[1] + " " + pris[0]);
+        if (level == 0) {
+            log.info("saving for level 0");
+        }
+        int count = 0;
+        for (String k : all.keySet()) {
+            IndexFiles i = all.get(k);
+            if (level != i.getPriority()) {
+                continue;
+            }
+            if (level == 0 && i.hasChanged()) {
+                count++;
+            }
+            if (count > 1000) {
+                break;
+            }
+            IndexFilesDao.save(i);
+        }
 	//all.clear();
 	try {
 	    synchronized(IndexFilesDao.class) {
@@ -189,6 +209,20 @@ public class IndexFilesDao {
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
     }
+    }
+
+    private static int[] getPris() {
+        int pris[] = { 0, 0 };
+        for (String k : all.keySet()) {
+            IndexFiles i = all.get(k);
+            int priority = i.getPriority();
+            if (priority <= 1) {
+                pris[priority]++;
+            } else {
+                log.error("priority " + priority);
+            }
+        }
+        return pris;
     }
 
     public static void flush() {
@@ -203,7 +237,8 @@ public class IndexFilesDao {
 
    public static String webstat() {
        int dirty1 = dirty();
-       return "d " + dirty1;
+       int [] pris = getPris();
+       return "d " + dirty1 + " / " + pris[1];
     }
 
    public static int dirty() {

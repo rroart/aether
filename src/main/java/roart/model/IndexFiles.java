@@ -44,6 +44,8 @@ public class IndexFiles {
     private boolean changed = false;
     private boolean indb = false;
 
+    private int priority;
+    
 	private IndexFiles() {
 	    filelocations = new HashSet<FileLocation>();
 	    maxfilelocations = 0;
@@ -330,6 +332,14 @@ public class IndexFiles {
 
     public boolean inDbNot() {
 	return indb;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
 	public static ResultItem getHeader(SearchDisplay display) {

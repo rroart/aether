@@ -155,6 +155,7 @@ public class OtherHandler {
 		Boolean isIndexed = index.getIndexed();
 		if (isIndexed == null || isIndexed.booleanValue() == false) {
 		    index.incrFailed();
+		    index.setPriority(1);
 		    //index.save();
 		}
 		log.info("delete file " + tmp);
