@@ -486,11 +486,11 @@ public class Traverse {
 		List<IndexFiles> indexes = IndexFilesDao.getAll();
 		for (IndexFiles index : indexes) {
 			if (reindex && max > 0 && indexcount > max) {
-				continue;
+				break;
 			}
 		
 			if (!reindex && maxindex > 0 && indexcount > maxindex) {
-				continue;
+				break;
 			}
 			String md5 = index.getMd5();
 			String name = getExistingLocalFile(index);
