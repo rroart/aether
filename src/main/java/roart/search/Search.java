@@ -83,7 +83,6 @@ public class Search {
 	//dbindex.save();
 	long time = System.currentTimeMillis() - now;
 	dbindex.setTimeindex(time);
-	dbindex.setPriority(1);
 	log.info("timerStop filename " + time);
 
 	ResultItem ri = IndexFiles.getResultItem(el.index, lang, display);
@@ -96,6 +95,7 @@ public class Search {
 		log.error(roart.util.Constants.EXCEPTION, e);
 	}
     }
+    dbindex.setPriority(1);
     Queues.decIndexs();
     
 	}
