@@ -158,6 +158,7 @@ public class TikaHandler {
 	                log.info("for mime type " + fn);
 	                Path path = new File(fn).toPath();
 	                String mimetype = Files.probeContentType(path);
+	                metadata.add(Constants.FILESCONTENTTYPE, mimetype);
 	                el.mimetype = mimetype;
 	                if (tmpfn != null && tmpfn.contains("/tmp/")) {
 	                    File delFile = new File(tmpfn);
