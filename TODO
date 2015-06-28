@@ -10,6 +10,7 @@ more granular multitasking and locking capabilities
 #package lang profiles
 get metadata if too small?
 datanucleus scaling problems
+hbase scaling problems
 morelikethis scaling problems for both lucene and solr
 hbase delete from db incomplete
 better handling of thrown errors

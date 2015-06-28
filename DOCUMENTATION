@@ -175,6 +175,12 @@ patch -p0 < core.store.patch
 
 Beware that this also stores the content, and increases disk space usage.
 
+2.2.5 Metadata
+
+Tika is providing the metadata, but it is not always sufficient.
+Therefore, have added a property Files-Content-Type for content type probed
+by the Files class, in cases not supported by Tika.
+
 3. GUI
 
 3.1 Search
@@ -185,6 +191,10 @@ Id, lang, metadata, content (Lucene), content (Solr).
 The metadata is stored by key/value pairs, and are searchable by metadata:key\:text (note the escaping of the :).
 
 Query parser is behaving differently according to Lucene or Solr, see specific docs.
+
+Search results.
+The admin user gets more fields.
+Note that when hovering over metadata, the metadata is shown.
 
 3.2 Control panel
 The control panel is admin functionality not seen by the user.
