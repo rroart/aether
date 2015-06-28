@@ -16,4 +16,6 @@ public static final String NODES = "nodes";
 public static final String REFRESH = "refresh";
 
 public static final String ZKDELIMITER = "-";
+
+public static final String FILESCONTENTTYPE = "Files-Content-Type";
 }
