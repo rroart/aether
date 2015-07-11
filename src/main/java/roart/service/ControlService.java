@@ -874,10 +874,20 @@ public class ControlService {
         }
 
         public List deletepathdbDo(ClientQueueElement el) throws Exception {
+            synchronized (writelock) {
+            ZKBlockWriteLock writelock = null;
+            if (zookeeper != null) {
+                writelock = ZKLockUtil.blocklockme();
+            }
             List<List> retlistlist = new ArrayList<List>();
             List<ResultItem> delList = new ArrayList<ResultItem>();
             delList.add(new ResultItem("Deleted"));
             String path = el.file;
+            if (path.isEmpty()) {
+                log.info("skipping empty path");
+                retlistlist.add(delList);
+                return retlistlist;
+            }
             List<IndexFiles> indexes = IndexFilesDao.getAll();
             for (IndexFiles index : indexes) {
                 Set<FileLocation> deletes = new HashSet<FileLocation>();
@@ -898,8 +908,14 @@ public class ControlService {
                     }
                 }
             }
+            if (zookeeper != null) {
+                ZKMessageUtil.dorefresh();
+                ZKLockUtil.unlockme(writelock);
+                ClientRunner.notify("Sending refresh request");
+            }
             retlistlist.add(delList);
             return retlistlist;
+            }
        }
     
 }
