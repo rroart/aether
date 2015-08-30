@@ -339,7 +339,7 @@ public class HbaseIndexFiles {
     public static Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
 	Set<FileLocation> flset = new HashSet<FileLocation>();
 	Scan scan=new Scan();
-	SingleColumnValueFilter filter=new SingleColumnValueFilter(Bytes.toBytes("fi"),Bytes.toBytes("md5"),CompareFilter.CompareOp.EQUAL,new SubstringComparator(md5));
+	SingleColumnValueFilter filter=new SingleColumnValueFilter(filescf ,md5q ,CompareFilter.CompareOp.EQUAL,new SubstringComparator(md5));
 	scan.setFilter(filter);
 	ResultScanner scanner = filesTable.getScanner(scan);
 	for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
