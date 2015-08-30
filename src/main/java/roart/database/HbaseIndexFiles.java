@@ -32,6 +32,9 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.SubstringComparator;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
@@ -192,6 +195,7 @@ public class HbaseIndexFiles {
 	    put(ifile.getMd5(), ifile.getFilelocations());	    
 	    indexTable.put(put);
 
+	// or if still to slow, simply get current (old) indexfiles
 	    Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
 	    curfls.removeAll(ifile.getFilelocations());
 
@@ -334,7 +338,10 @@ public class HbaseIndexFiles {
 
     public static Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
 	Set<FileLocation> flset = new HashSet<FileLocation>();
-	ResultScanner scanner = filesTable.getScanner(new Scan());
+	Scan scan=new Scan();
+	SingleColumnValueFilter filter=new SingleColumnValueFilter(Bytes.toBytes("fi"),Bytes.toBytes("md5"),CompareFilter.CompareOp.EQUAL,new SubstringComparator(md5));
+	scan.setFilter(filter);
+	ResultScanner scanner = filesTable.getScanner(scan);
 	for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
 	    FileLocation fl = getfl(rr, md5);
 	    if (fl != null) {
