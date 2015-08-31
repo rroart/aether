@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class ControlService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT };
+    public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF };
     public static Map<Config, Integer> configMap = new HashMap<Config, Integer>();
     public static Map<Config, String> configStrMap = new HashMap<Config, String>();
     

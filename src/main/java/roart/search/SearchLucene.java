@@ -5,11 +5,11 @@ import roart.database.IndexFilesDao;
 import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
+import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
-
 
 import java.io.*;
 import java.nio.file.Path;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.HashSet;
- 
+
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -73,8 +73,6 @@ import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 import org.apache.tika.metadata.Metadata;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,8 +259,12 @@ public class SearchLucene {
 		Directory index = FSDirectory.open(getLucenePath(type));
     StandardAnalyzer analyzer = new StandardAnalyzer();
 
+    int count = ControlService.configMap.get(ControlService.Config.MLTCOUNT);
+    int mintf = ControlService.configMap.get(ControlService.Config.MLTMINTF);
+    int mindf = ControlService.configMap.get(ControlService.Config.MLTMINDF);
+
     // searching ...
-    int hitsPerPage = 100;
+    int hitsPerPage = count;
     IndexReader ind = DirectoryReader.open(index);
     IndexSearcher searcher = new IndexSearcher(ind);
     //TopDocCollector collector = new TopDocCollector(hitsPerPage);
@@ -302,6 +304,8 @@ public class SearchLucene {
     mlt.setAnalyzer(analyzer);
     String[] fields = { Constants.CONTENT };
     mlt.setFieldNames(fields);
+    mlt.setMinDocFreq(mindf);
+    mlt.setMinTermFreq(mintf);
     // md5 orig source of doc you want to find similarities to
     Query query = mlt.like(doc);
     System.out.println("query doc " + doc + ":" + query.toString() + ":" + mlt.describeParams());

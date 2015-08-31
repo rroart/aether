@@ -28,6 +28,11 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	ControlService.configMap.put(ControlService.Config.OTHERTIMEOUT, 600);
 	ControlService.configMap.put(ControlService.Config.INDEXLIMIT, 0);
 	ControlService.configMap.put(ControlService.Config.REINDEXLIMIT, 0);
+
+	// solr defaults
+	ControlService.configMap.put(ControlService.Config.MLTCOUNT, 20);
+    ControlService.configMap.put(ControlService.Config.MLTMINDF, 5);
+    ControlService.configMap.put(ControlService.Config.MLTMINTF, 2);
 	
 	ControlService.configStrMap.put(ControlService.Config.FAILEDLIMIT, ConfigConstants.FAILEDLIMIT);
 	ControlService.configStrMap.put(ControlService.Config.TIKATIMEOUT, ConfigConstants.TIKATIMEOUT);
@@ -35,6 +40,10 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	ControlService.configStrMap.put(ControlService.Config.INDEXLIMIT, ConfigConstants.INDEXLIMIT);
 	ControlService.configStrMap.put(ControlService.Config.REINDEXLIMIT, ConfigConstants.REINDEXLIMIT);
 
+    ControlService.configStrMap.put(ControlService.Config.MLTCOUNT, ConfigConstants.MLTCOUNT);
+    ControlService.configStrMap.put(ControlService.Config.MLTMINDF, ConfigConstants.MLTMINDF);
+    ControlService.configStrMap.put(ControlService.Config.MLTMINTF, ConfigConstants.MLTMINTF);
+    
 	for (ControlService.Config conf : ControlService.configMap.keySet()) {
 		String str = Prop.getProp().getProperty(ControlService.configStrMap.get(conf));
 		if (str != null) {

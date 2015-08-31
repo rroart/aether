@@ -43,4 +43,7 @@ public class ConfigConstants {
 	public static final String HIGHLIGHTMLT = "highlightmlt";
 	public static final String LANGUAGES = "languages";
 	public static final String MAHOUTBASEPATH = "mahoutbasepath";
+	public static final String MLTCOUNT = "mltcount";
+    public static final String MLTMINDF = "mltmindf";
+    public static final String MLTMINTF = "mltmintf";	
 }

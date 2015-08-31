@@ -11,7 +11,6 @@ import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
- 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
@@ -26,10 +25,10 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.highlight.DefaultSolrHighlighter;
 import org.apache.tika.metadata.Metadata;
 
+import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.util.ConfigConstants;
 import roart.lang.LanguageDetect;
-
 import roart.model.SearchDisplay;
 import roart.model.ResultItem;
 import roart.model.IndexFiles;
@@ -213,13 +212,18 @@ public class SearchSolr {
     public static ResultItem[] searchmlt(String id, String searchtype, SearchDisplay display) {
 	ResultItem[] strarr = new ResultItem[0];
 	try {
+	    int count = ControlService.configMap.get(ControlService.Config.MLTCOUNT);
+	    int mintf = ControlService.configMap.get(ControlService.Config.MLTMINTF);
+	    int mindf = ControlService.configMap.get(ControlService.Config.MLTMINDF);
 	    //Construct a SolrQuery 
 	    SolrQuery query = new SolrQuery();
 	    query.setQuery( Constants.ID + ":" + id);
 	    query.setIncludeScore(true);
 	    query.add("mlt", "true");
 	    query.add("mlt.fl", Constants.CONTENT);
-	    query.add("mlt.count", "100");
+	    query.add("mlt.count", "" + count);
+        query.add("mlt.mindf", "" + mindf);
+        query.add("mlt.mintf", "" + mintf);
 
 	    //    Query the server 
 

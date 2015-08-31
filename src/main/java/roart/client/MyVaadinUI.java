@@ -340,6 +340,13 @@ public class MyVaadinUI extends UI
 	horConfig.addComponent(getConfigValue(ControlService.Config.TIKATIMEOUT));
 	horConfig.addComponent(getConfigValue(ControlService.Config.OTHERTIMEOUT));
 
+	HorizontalLayout mltConfig = new HorizontalLayout();
+    mltConfig.setHeight("20%");
+    mltConfig.setWidth("60%");
+    mltConfig.addComponent(getConfigValue(ControlService.Config.MLTCOUNT));
+    mltConfig.addComponent(getConfigValue(ControlService.Config.MLTMINTF));
+    mltConfig.addComponent(getConfigValue(ControlService.Config.MLTMINDF));
+	
 	/*
 	tab.addComponent(getCleanup());
 	tab.addComponent(getCleanup2());
@@ -357,6 +364,7 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horStat);
 	tab.addComponent(horDb);
 	tab.addComponent(horConfig);
+    tab.addComponent(mltConfig);
 	return tab;
     }
 
