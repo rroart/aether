@@ -94,4 +94,8 @@ public class DataNucleusUtil {
 		pm.makePersistent(fi);
 	}
 
+    public void save(DataNucleusFiles fi) {
+        pm.makePersistent(fi);
+    }
+
 }

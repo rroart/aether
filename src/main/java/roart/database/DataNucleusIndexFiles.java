@@ -231,7 +231,7 @@ import roart.util.Constants;
 	    this.failedreason = failedreason;
 	}
 	
-	@Column(name = "filename")
+	@Column(name = "filelocation")
 	@Persistent	
 	private Set<String> filelocations;
 
@@ -243,9 +243,9 @@ import roart.util.Constants;
 	    this.filelocations = FileLocation.getFilelocationsToString(filelocations);
 	}
 
-	public static DataNucleusIndexFiles getByFilename(FileLocation fl) {
+	public static DataNucleusIndexFiles getByFilelocation(FileLocation fl) {
 	    try {
-		String md5 = getMd5ByFilename(fl);
+		String md5 = getMd5ByFilelocation(fl);
 		if (md5 == null) {
 		    return null;
 		}
@@ -255,14 +255,17 @@ import roart.util.Constants;
 	    }
 	    return null;
 	}
-
-	public static String getMd5ByFilename(FileLocation fl) {
+    public static String getMd5ByFilelocation(FileLocation fl) {
+        return DataNucleusFiles.getMd5ByFilelocation(fl);
+    }
+    
+	public static String getMd5ByFilelocationNot(FileLocation fl) {
 	    try {
 	    	List<DataNucleusIndexFiles> dnifs = null;
 	    	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select from " + DataNucleusIndexFiles.class.getName() + " where filelocations.contains(fl)");
 	    	// query.setFilter?
 	    	query.declareParameters(FileLocation.class.getName() + " fl");
-	    	//Object o = query.execute(filename);
+	    	//Object o = query.execute(filelocation);
 		//log.info("result " + o);
 	    	dnifs = (List<DataNucleusIndexFiles>) query.execute(fl);
 	    	if (dnifs == null || dnifs.size() == 0) {

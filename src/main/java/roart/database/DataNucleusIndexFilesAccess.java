@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-
 import roart.model.FileLocation;
 import roart.model.IndexFiles;
 import roart.service.ControlService;
@@ -16,45 +15,46 @@ import org.slf4j.LoggerFactory;
 
 public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 
-    private static Logger log = LoggerFactory.getLogger(DataNucleusIndexFilesAccess.class);
+    private static Logger log = LoggerFactory
+            .getLogger(DataNucleusIndexFilesAccess.class);
 
-	@Override
+    @Override
     public IndexFiles getByMd5(String md5) throws Exception {
-	DataNucleusIndexFiles index = DataNucleusIndexFiles.getByMd5(md5);
-	return convert(index);
+        DataNucleusIndexFiles index = DataNucleusIndexFiles.getByMd5(md5);
+        return convert(index);
     }
 
-	@Override
+    @Override
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
-    	return DataNucleusIndexFiles.getFilelocationsByMd5(md5);
-	}
+        return DataNucleusIndexFiles.getFilelocationsByMd5(md5);
+    }
 
-	@Override
+    @Override
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
-	DataNucleusIndexFiles files = DataNucleusIndexFiles.getByFilename(fl);
-	if (files == null) {
-	    return null;
-	}
-	return convert(files);
+        DataNucleusIndexFiles files = DataNucleusIndexFiles.getByFilelocation(fl);
+        if (files == null) {
+            return null;
+        }
+        return convert(files);
     }
 
-	@Override
+    @Override
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
-	return DataNucleusIndexFiles.getMd5ByFilename(fl);
+        return DataNucleusIndexFiles.getMd5ByFilelocation(fl);
     }
 
-	@Override
+    @Override
     public List<IndexFiles> getAll() throws Exception {
-	List<IndexFiles> retlist = new ArrayList<IndexFiles>();
-	List<DataNucleusIndexFiles> indexes = DataNucleusIndexFiles.getAll();
-	for (DataNucleusIndexFiles index : indexes) {
-	    IndexFiles ifile = convert(index);
-	    retlist.add(ifile);
-	}
-	return retlist;
+        List<IndexFiles> retlist = new ArrayList<IndexFiles>();
+        List<DataNucleusIndexFiles> indexes = DataNucleusIndexFiles.getAll();
+        for (DataNucleusIndexFiles index : indexes) {
+            IndexFiles ifile = convert(index);
+            retlist.add(ifile);
+        }
+        return retlist;
     }
 
-	@Override
+    @Override
     public void save(IndexFiles i) throws Exception {
 	try {
 	    DataNucleusIndexFiles hif = DataNucleusIndexFiles.ensureExistence(i.getMd5());
@@ -75,61 +75,77 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	    hif.setNoindexreason(i.getNoindexreason());
 	    hif.setFilelocations(i.getFilelocations());
 	    hif.setLanguage(i.getLanguage());
+
+	    List<DataNucleusFiles> curFiles = DataNucleusFiles.getByMd5(i.getMd5());
+	    List<DataNucleusFiles> newFiles = new ArrayList<DataNucleusFiles>();
+	    
+	    Set<FileLocation> fls = i.getFilelocations();
+	    for (FileLocation fl : fls) {
+	        DataNucleusFiles hf = DataNucleusFiles.ensureExistence(fl);
+	        hf.setMd5(i.getMd5());
+	        newFiles.add(hf);
+	    }
+	    curFiles.removeAll(newFiles);
+	    for (DataNucleusFiles f : curFiles) {
+	        log.info("deleting " + f.getFilelocation());
+	        f.delete();
+	    }
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
     }
 
     private IndexFiles convert(DataNucleusIndexFiles hif) {
-	if (hif == null) {
-	    return null;
-	}
-	String md5 = hif.getMd5();
-	IndexFiles ifile = new IndexFiles(md5);
-	//ifile.setMd5(hif.getMd5());
-	ifile.setIndexed(hif.getIndexed());
-	ifile.setTimeindex(hif.getTimeindex());
-	ifile.setTimestamp(hif.getTimestamp());
-	ifile.setTimeclass(hif.getTimeclass());
-	ifile.setClassification(hif.getClassification());
-	ifile.setConvertsw(hif.getConvertsw());
-	ifile.setConverttime(hif.getConverttime());
-	ifile.setFailed(hif.getFailed());
-	ifile.setFailedreason(hif.getFailedreason());
-	ifile.setTimeoutreason(hif.getTimeoutreason());
-	ifile.setNoindexreason(hif.getNoindexreason());
-	ifile.setLanguage(hif.getLanguage());
-	Set<String> files = hif.getFilelocations();
-	for (String file : files) {
-	    ifile.addFile(new FileLocation(file));
-	}
-	ifile.setUnchanged();
-	return ifile;
+        if (hif == null) {
+            return null;
+        }
+        String md5 = hif.getMd5();
+        IndexFiles ifile = new IndexFiles(md5);
+        // ifile.setMd5(hif.getMd5());
+        ifile.setIndexed(hif.getIndexed());
+        ifile.setTimeindex(hif.getTimeindex());
+        ifile.setTimestamp(hif.getTimestamp());
+        ifile.setTimeclass(hif.getTimeclass());
+        ifile.setClassification(hif.getClassification());
+        ifile.setConvertsw(hif.getConvertsw());
+        ifile.setConverttime(hif.getConverttime());
+        ifile.setFailed(hif.getFailed());
+        ifile.setFailedreason(hif.getFailedreason());
+        ifile.setTimeoutreason(hif.getTimeoutreason());
+        ifile.setNoindexreason(hif.getNoindexreason());
+        ifile.setLanguage(hif.getLanguage());
+        Set<String> files = hif.getFilelocations();
+        for (String file : files) {
+            ifile.addFile(new FileLocation(file));
+        }
+        ifile.setUnchanged();
+        return ifile;
     }
-
-	@Override
-    public void flush() throws Exception {
-	DataNucleusIndexFiles.flush();
-    }
-
-	@Override
-    public void close() throws Exception {
-	DataNucleusIndexFiles.commit();
-    }
-
-	@Override
-	public Set<String> getAllMd5() throws Exception {
-		return DataNucleusIndexFiles.getAllMd5();
-	}
-
-	@Override
-	public Set<String> getLanguages() throws Exception {
-		return DataNucleusIndexFiles.getLanguages();
-	}
 
     @Override
-    public void delete(IndexFiles index)  throws Exception {
+    public void flush() throws Exception {
+        DataNucleusIndexFiles.flush();
+    }
+
+    @Override
+    public void close() throws Exception {
+        DataNucleusIndexFiles.commit();
+    }
+
+    @Override
+    public Set<String> getAllMd5() throws Exception {
+        return DataNucleusIndexFiles.getAllMd5();
+    }
+
+    @Override
+    public Set<String> getLanguages() throws Exception {
+        return DataNucleusIndexFiles.getLanguages();
+    }
+
+    @Override
+    public void delete(IndexFiles index) throws Exception {
         DataNucleusIndexFiles.delete(index);
+        DataNucleusFiles.delete(index);
     }
 
 }
