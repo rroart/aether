@@ -23,16 +23,16 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     public void contextInitialized(ServletContextEvent context)  {
 	roart.service.ControlService.parseconfig();
 	
-	ControlService.configMap.put(ControlService.Config.FAILEDLIMIT, 0);
-	ControlService.configMap.put(ControlService.Config.TIKATIMEOUT, 600);
-	ControlService.configMap.put(ControlService.Config.OTHERTIMEOUT, 600);
-	ControlService.configMap.put(ControlService.Config.INDEXLIMIT, 0);
-	ControlService.configMap.put(ControlService.Config.REINDEXLIMIT, 0);
+	ControlService.configMap.put(ControlService.Config.FAILEDLIMIT, ConfigConstants.DEFAULT_CONFIG_FAILEDLIMIT);
+	ControlService.configMap.put(ControlService.Config.TIKATIMEOUT, ConfigConstants.DEFAULT_CONFIG_TIKATIMEOUT);
+	ControlService.configMap.put(ControlService.Config.OTHERTIMEOUT, ConfigConstants.DEFAULT_CONFIG_OTHERTIMEOUT);
+	ControlService.configMap.put(ControlService.Config.INDEXLIMIT, ConfigConstants.DEFAULT_CONFIG_INDEXLIMIT);
+	ControlService.configMap.put(ControlService.Config.REINDEXLIMIT, ConfigConstants.DEFAULT_CONFIG_REINDEXLIMIT);
 
 	// solr defaults
-	ControlService.configMap.put(ControlService.Config.MLTCOUNT, 20);
-    ControlService.configMap.put(ControlService.Config.MLTMINDF, 5);
-    ControlService.configMap.put(ControlService.Config.MLTMINTF, 2);
+	ControlService.configMap.put(ControlService.Config.MLTCOUNT, ConfigConstants.DEFAULT_CONFIG_MLTCOUNT);
+    ControlService.configMap.put(ControlService.Config.MLTMINDF, ConfigConstants.DEFAULT_CONFIG_MLTMINDF);
+    ControlService.configMap.put(ControlService.Config.MLTMINTF, ConfigConstants.DEFAULT_CONFIG_MLTMINTF);
 	
 	ControlService.configStrMap.put(ControlService.Config.FAILEDLIMIT, ConfigConstants.FAILEDLIMIT);
 	ControlService.configStrMap.put(ControlService.Config.TIKATIMEOUT, ConfigConstants.TIKATIMEOUT);

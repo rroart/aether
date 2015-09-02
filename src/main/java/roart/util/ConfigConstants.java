@@ -1,5 +1,7 @@
 package roart.util;
 
+import roart.service.ControlService;
+
 public class ConfigConstants {
 
     public static final String FS = "fs";
@@ -46,4 +48,13 @@ public class ConfigConstants {
 	public static final String MLTCOUNT = "mltcount";
     public static final String MLTMINDF = "mltmindf";
     public static final String MLTMINTF = "mltmintf";	
+
+    public static final int DEFAULT_CONFIG_FAILEDLIMIT = 0;
+    public static final int DEFAULT_CONFIG_TIKATIMEOUT = 600;
+    public static final int DEFAULT_CONFIG_OTHERTIMEOUT = 600;
+    public static final int DEFAULT_CONFIG_INDEXLIMIT = 0;
+    public static final int DEFAULT_CONFIG_REINDEXLIMIT = 0;
+    public static final int DEFAULT_CONFIG_MLTCOUNT = 10;
+    public static final int DEFAULT_CONFIG_MLTMINDF = 5;
+    public static final int DEFAULT_CONFIG_MLTMINTF = 2;
 }
