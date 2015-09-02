@@ -112,12 +112,13 @@ public class Traverse {
     		}
     		//log.info("file " + filename);
     		if (FileSystemDao.isDirectory(fo)) {
-    			//log.info("isdir " + filename);
+    			log.debug("isdir " + filename);
     			retset.addAll(doList(filename));
     		} else {
     			retset.add(filename);
+			log.debug("timer");
     			String md5 = IndexFilesDao.getMd5ByFilename(filename);
-    			//log.info("info " + md5 + " " + filename);
+    			log.debug("info " + md5 + " " + filename);
     			if (nomd5) {
     				continue;
     			}
@@ -153,7 +154,9 @@ public class Traverse {
     					continue;
     				}
     			} else {
+			    log.debug("timer2");
     				files = IndexFilesDao.getByMd5(md5);
+				log.debug("info " + md5 + " " + files);
     			}
     			if (md5sdone != null && !md5sdone.add(md5)) {
     				continue; // already done
@@ -330,6 +333,7 @@ public class Traverse {
 		}
 	    }
 
+		log.info("index " + md5 + " " + filename);
 	    //InputStream stream = null;
 	    index.setTimeoutreason("");
 	    index.setFailedreason("");
