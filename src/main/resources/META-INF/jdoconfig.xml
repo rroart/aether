@@ -11,5 +11,13 @@
        <property name="datanucleus.schema.validateTables" value="false"/>
        <property name="datanucleus.schema.validateConstraints" value="false"/>
    </persistence-manager-factory>
+   <persistence-manager-factory name="Files">
+       <class>roart.database.DataNucleusFiles</class>
+       <property name="javax.jdo.PersistenceManagerFactoryClass" value="org.datanucleus.api.jdo.JDOPersistenceManagerFactory"/>
+       <property name="datanucleus.ConnectionURL" value="hbase:"/>
+       <property name="datanucleus.schema.autoCreateAll" value="true"/>
+       <property name="datanucleus.schema.validateTables" value="false"/>
+       <property name="datanucleus.schema.validateConstraints" value="false"/>
+   </persistence-manager-factory>
 </jdoconfig>
 

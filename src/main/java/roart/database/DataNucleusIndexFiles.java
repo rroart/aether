@@ -5,6 +5,7 @@ import javax.jdo.annotations.Column;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.JDOObjectNotFoundException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.store.query.QueryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,17 +176,16 @@ import roart.util.Constants;
 
 	public static DataNucleusIndexFiles getByMd5(String md5) throws Exception {
 	    List<DataNucleusIndexFiles> dnifs = null;
-	    //Query query = DataNucleusUtil.currentSession().getPm().newQuery("select from " + DataNucleusIndexFiles.class.getName() + " where md5 == :md5");
-	    	// query.setFilter?
-	    Query query = DataNucleusUtil.currentSession().getPm().newQuery(DataNucleusIndexFiles.class);
-	    query.setFilter("md5 == mymd5");
-	    	query.declareParameters(String.class.getName() + " mymd5");
-	    	dnifs = (List<DataNucleusIndexFiles>) query.execute(md5);
-	    	if (dnifs == null || dnifs.size() == 0) {
-	    		return null;
-	    	}
-	    	return dnifs.get(0);
-	    //return (DataNucleusIndexFiles) DataNucleusUtil.getDataNucleusSession().createQuery("select dnif from DataNucleusIndexFiles dnif where md5 = :md5").setParameter("md5", md5).getSingleResult();
+	    try {
+	return (DataNucleusIndexFiles) DataNucleusUtil.currentSession().getPm().getObjectById(DataNucleusIndexFiles.class, md5);
+	    } catch (JDOObjectNotFoundException e) {
+		return null;
+	    } catch (NucleusObjectNotFoundException e) {
+		return null;
+	    } catch (Exception e) {
+		log.error(Constants.EXCEPTION, e);
+	    }
+	    return null;
 	}
 
 	public static List<DataNucleusIndexFiles> getAll() throws Exception {
