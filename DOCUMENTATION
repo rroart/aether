@@ -200,6 +200,7 @@ Query parser is behaving differently according to Lucene or Solr, see specific d
 Search results.
 The admin user gets more fields.
 Note that when hovering over metadata, the metadata is shown.
+Under "highlight and similar", by clicking the highlighted part, you will trigger a search for similar documents (More Like This).
 
 3.2 Control panel
 The control panel is admin functionality not seen by the user.
