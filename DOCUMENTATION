@@ -75,8 +75,7 @@ db=datanucleus
 
 And before starting jetty, do this in a hbase shell:
 create 'IndexFiles', { NAME => 'IndexFiles' }
-create 'DataNucleusIndex', { NAME => 'DataNucleusIndex' }
-create 'DataNucleusFiles', { NAME => 'DataNucleusFiles' }
+create 'Files', { NAME => 'Files' }
 (A temporary fix until datanucleus creates it itself)
 
 2.1.3 Indexing/search:
@@ -125,6 +124,12 @@ The admin has access to the control panel, and will see more search results than
 The admin user will get results regarding indexing time usage and error messages from the indexing.
 If no authentication is used, everything is open.
 Accessing from localhost will determine admin right in both cases.
+
+mltcount=...
+mltmindf=...
+mltmintf...
+For setting More Like This search document count, minimum term frequency and minimum document frequency.
+These settings may influence the time More Like Queries take.
 
 2.2.2 Classifying
 There are two types, Mahout and OpenNLP.
@@ -229,6 +234,10 @@ Stats, listing non-indexed, memory usage or overlapping directories.
 
 Database, get items related to md5 id.
 Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
+
+Setting limits for how many times an indexing may fail before being ignored, limits for max indexing and reindexing, timeout for tika and other (alternative) conversion.
+
+Settings for More Like This, max number of hits, minimum term frequency and minimum doc frequency.
 
 3.3 General
 
