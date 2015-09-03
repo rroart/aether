@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 import roart.model.FileLocation;
 import roart.model.IndexFiles;
@@ -76,7 +78,13 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	    hif.setFilelocations(i.getFilelocations());
 	    hif.setLanguage(i.getLanguage());
 
+	    // check timing of this
 	    List<DataNucleusFiles> curFiles = DataNucleusFiles.getByMd5(i.getMd5());
+	    Map<String, DataNucleusFiles> curMap = new HashMap<String, DataNucleusFiles>();
+	    for (DataNucleusFiles f : curFiles) {
+		curMap.put(f.getFilelocation(), f);
+	    }
+
 	    List<DataNucleusFiles> newFiles = new ArrayList<DataNucleusFiles>();
 	    
 	    Set<FileLocation> fls = i.getFilelocations();
@@ -84,9 +92,10 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
 	        DataNucleusFiles hf = DataNucleusFiles.ensureExistence(fl);
 	        hf.setMd5(i.getMd5());
 	        newFiles.add(hf);
+		curMap.remove(fl.toString());
 	    }
-	    curFiles.removeAll(newFiles);
-	    for (DataNucleusFiles f : curFiles) {
+	    for (String key : curMap.keySet()) {
+		DataNucleusFiles f = curMap.get(key);
 	        log.info("deleting " + f.getFilelocation());
 	        f.delete();
 	    }

@@ -27,10 +27,16 @@ public class DataNucleusUtil {
 
     private static DataNucleusUtil session = null;
     private static PersistenceManagerFactory pmf = null;
+    private static PersistenceManagerFactory pmf2 = null;
     private static PersistenceManager pm = null;
+    private static PersistenceManager pm2 = null;
     private static Transaction transaction = null;
+    private static Transaction transaction2 = null;
     public static PersistenceManager getPm() {
     	return pm;
+    }
+    public static PersistenceManager getPm2() {
+    	return pm2;
     }
     
     public static DataNucleusUtil getCurrentSession() throws Exception {
@@ -44,16 +50,24 @@ public class DataNucleusUtil {
     public static DataNucleusUtil getDataNucleusSession() throws Exception {
     	if (session == null) {
     		pmf = JDOHelper.getPersistenceManagerFactory("IndexFiles");
+    		pmf2 = JDOHelper.getPersistenceManagerFactory("Files");
     		session = new DataNucleusUtil();
     	}
 
     	if (pm == null) {
     		pm = pmf.getPersistenceManager();	
     	}
+    	if (pm2 == null) {
+    		pm2 = pmf2.getPersistenceManager();	
+    	}
     	
     	if (transaction == null) {
     		transaction = pm.currentTransaction();
     		transaction.begin();
+    	}
+    	if (transaction2 == null) {
+    		transaction2 = pm2.currentTransaction();
+    		transaction2.begin();
     	}
 
     	return session;
@@ -73,6 +87,19 @@ public class DataNucleusUtil {
 	pm.close();
 	pm = null;
 	}
+
+	if (transaction2 != null) {
+	transaction2.commit();
+	 if (transaction2.isActive())
+     {
+         transaction2.rollback();
+     }
+		transaction2 = null;
+	}
+	if (pm2 != null) {
+	pm2.close();
+	pm2 = null;
+	}
     }
 
     public static <T> List<T> convert(List l, Class<T> type) {
@@ -82,6 +109,9 @@ public class DataNucleusUtil {
 	public void flush() {
 		if (pm != null) {
 		pm.flush();
+		}
+		if (pm2 != null) {
+		pm2.flush();
 		}
 	}
 
@@ -95,7 +125,7 @@ public class DataNucleusUtil {
 	}
 
     public void save(DataNucleusFiles fi) {
-        pm.makePersistent(fi);
+        pm2.makePersistent(fi);
     }
 
 }

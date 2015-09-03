@@ -212,6 +212,31 @@ public class SearchLucene {
     return strarr;
 }
 
+    // or could use docid as id instead of md5 here and there
+	public static int searchdocid(String md5) {
+	    try {
+		Directory index = FSDirectory.open(getLucenePath("all"));
+    StandardAnalyzer analyzer = new StandardAnalyzer();
+    Query tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.ID, md5);
+    Query q = tmpQuery;
+ 
+    // searching ...
+    IndexReader ind = DirectoryReader.open(index);
+    IndexSearcher searcher = new IndexSearcher(ind);
+    TopScoreDocCollector collector = TopScoreDocCollector.create(1);
+    searcher.search(q, collector);
+    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+
+    if (hits.length > 0) {
+	return hits[0].doc;
+    }
+  	} catch (Exception e) {
+	    log.info("Error4: " + e.getMessage());
+	    log.error(roart.util.Constants.EXCEPTION, e);
+	}
+    return -1;
+}
+
 	private static ResultItem[] handleDocs(SearchDisplay display, Query q,
 					       IndexReader ind, IndexSearcher searcher, ScoreDoc[] hits, boolean dohighlight)
 			throws IOException, Exception {
@@ -271,8 +296,16 @@ public class SearchLucene {
     TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
 
     int totalDocs = ind.numDocs();
-    Document found = null;
+    //Document found = null;
     int doc = 0;
+    doc = searchdocid(md5i);
+    if (doc < 0) {
+	log.error("not found " + md5i);
+	return null;
+    } else {
+	log.info("md5 " + md5i + " has docid " + doc);
+    }
+    /*
     for(int m=0;m<totalDocs;m++) {
 	Document thisDoc = null;
 	try {
@@ -299,6 +332,7 @@ public class SearchLucene {
 	System.out.println("not found");
 	return null;
     }
+*/
 
     MoreLikeThis mlt = new MoreLikeThis(ind);
     mlt.setAnalyzer(analyzer);
@@ -308,13 +342,13 @@ public class SearchLucene {
     mlt.setMinTermFreq(mintf);
     // md5 orig source of doc you want to find similarities to
     Query query = mlt.like(doc);
-    System.out.println("query doc " + doc + ":" + query.toString() + ":" + mlt.describeParams());
-    System.out.println("hits " + searcher.search(query, 100).totalHits);
+    log.info("query doc " + doc + ":" + query.toString() + ":" + mlt.describeParams());
+    //System.out.println("hits " + searcher.search(query, 100).totalHits);
     searcher.search(query, collector);
-    query = docsLike(doc, ind);
-    System.out.println("query doc " + doc + ":" + query.toString());
-    query = docsLike(doc, found, ind);
-    System.out.println("query doc " + doc + ":" + query.toString());
+    //query = docsLike(doc, ind);
+    //System.out.println("query doc " + doc + ":" + query.toString());
+    //query = docsLike(doc, found, ind);
+    //System.out.println("query doc " + doc + ":" + query.toString());
 
     //searcher.search(query, collector);
     ScoreDoc[] hits = collector.topDocs().scoreDocs;

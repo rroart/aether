@@ -180,7 +180,6 @@
                 <version>4.0.0-release</version>
                 <configuration>
                     <api>JDO</api>
-                    <persistenceUnitName>IndexFiles</persistenceUnitName>
                     <log4jConfiguration>${basedir}/datanucleus/log4j.properties</log4jConfiguration>
                     <verbose>true</verbose>
                 </configuration>

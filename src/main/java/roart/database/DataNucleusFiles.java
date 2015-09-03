@@ -5,6 +5,7 @@ import javax.jdo.annotations.Column;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.JDOObjectNotFoundException;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.store.query.QueryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,15 +69,16 @@ import roart.util.Constants;
     }
 
     public static DataNucleusFiles getByFilelocation(FileLocation filelocation) throws Exception {
-        List<DataNucleusFiles> dnifs = null;
-        Query query = DataNucleusUtil.currentSession().getPm().newQuery(DataNucleusFiles.class);
-        query.setFilter("filelocation == myfilelocation");
-            query.declareParameters(String.class.getName() + " myfilelocation");
-            dnifs = (List<DataNucleusFiles>) query.execute(filelocation.toString());
-            if (dnifs == null || dnifs.size() == 0) {
-                return null;
-            }
-            return dnifs.get(0);
+	try {
+	return (DataNucleusFiles) DataNucleusUtil.currentSession().getPm2().getObjectById(DataNucleusFiles.class, filelocation.toString());
+	    } catch (JDOObjectNotFoundException e) {
+		return null;
+	    } catch (NucleusObjectNotFoundException e) {
+		return null;
+	    } catch (Exception e) {
+		log.error(Constants.EXCEPTION, e);
+	    }
+	    return null;
     }
 
     public static String getMd5ByFilelocation(FileLocation fl) {
@@ -94,14 +97,12 @@ import roart.util.Constants;
     
     public static List<DataNucleusFiles> getByMd5(String md5) throws Exception {
         List<DataNucleusFiles> dnifs = null;
-        //Query query = DataNucleusUtil.currentSession().getPm().newQuery(DataNucleusFiles.class);
-        //Query query = DataNucleusUtil.currentSession().getPm().newQuery("select from " + DataNucleusFiles.class.getName() + " where md5");
-        Query query = DataNucleusUtil.currentSession().getPm().newQuery(DataNucleusFiles.class);
+        Query query = DataNucleusUtil.currentSession().getPm2().newQuery(DataNucleusFiles.class);
         query.setFilter("md5 == mymd5");
             query.declareParameters(String.class.getName() + " mymd5");
             dnifs = (List<DataNucleusFiles>) query.execute(md5);
             if (dnifs == null || dnifs.size() == 0) {
-                return null;
+                return new ArrayList<DataNucleusFiles>();
             }
             return dnifs;
      }
@@ -110,12 +111,12 @@ import roart.util.Constants;
         Set<FileLocation> fls = index.getFilelocations();
         for (FileLocation fl : fls) {
             DataNucleusFiles dnif = getByFilelocation(fl);
-            DataNucleusUtil.currentSession().getPm().deletePersistent(dnif);
+            DataNucleusUtil.currentSession().getPm2().deletePersistent(dnif);
         }
     }
     
     public void delete() throws Exception {
-        DataNucleusUtil.currentSession().getPm().deletePersistent(this);
+        DataNucleusUtil.currentSession().getPm2().deletePersistent(this);
     }
 
     }

@@ -228,7 +228,17 @@ public class SearchSolr {
 	    //    Query the server 
 
 	    log.info("query " + query);
-	    QueryResponse rsp = server.query( query );
+
+	    HttpSolrClient mltserver = new HttpSolrClient(server.getBaseURL());
+	    mltserver.setSoTimeout(600000); // bigger timeout, only diff
+	    mltserver.setDefaultMaxConnectionsPerHost(100);
+	    mltserver.setMaxTotalConnections(100);
+	    mltserver.setFollowRedirects(false);  // defaults to false
+	    // allowCompression defaults to false.
+	    // Server side must support gzip or deflate for this to have any effect.
+	    mltserver.setAllowCompression(true);
+
+	    QueryResponse rsp = mltserver.query( query );
 	    NamedList<Object> mlt = (NamedList<Object>) rsp.getResponse().get("moreLikeThis");
 	    SolrDocumentList docs = (SolrDocumentList) mlt.getVal(0);
 
