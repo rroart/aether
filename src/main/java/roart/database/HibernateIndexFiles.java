@@ -243,6 +243,8 @@ import roart.util.Constants;
 
 	public static HibernateIndexFiles getByMd5(String md5) throws Exception {
 	    return (HibernateIndexFiles) HibernateUtil.getHibernateSession().createQuery("from HibernateIndexFiles where md5 = :md5").setParameter("md5", md5).uniqueResult();
+	    // this is slower:
+	    // return (HibernateIndexFiles) HibernateUtil.getHibernateSession().get(HibernateIndexFiles.class, md5);
 	}
 
 	public static List<HibernateIndexFiles> getAll() throws Exception {
