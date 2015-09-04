@@ -270,6 +270,7 @@ Metadata change handling, stored, multi-valued.
 No more limit check for using alternative converters, only do that if tika crashes.
 Java 8.
 Usage of mime type probing.
+DataNucleus table changes.
 
 6. Version numbers of external software
 
