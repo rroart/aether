@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class ResultItem {
 
-    private static final Logger log = LoggerFactory.getLogger(ResultItem.class);
+    //private static final Logger log = LoggerFactory.getLogger(ResultItem.class);
 
     private List<Object> items = new ArrayList<Object>();
     public ResultItem() {
@@ -28,5 +28,11 @@ public class ResultItem {
 	    strarr[i] = items.get(i);
 	}
 	return strarr;
+    }
+    public List<Object> getItems() {
+        return items;
+    }
+    public void setItems(List<Object> items) {
+        this.items = items;
     }
 }
