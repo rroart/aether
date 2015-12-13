@@ -121,7 +121,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     }
 
     String distributedtraverse = roart.util.Prop.getProp().getProperty(ConfigConstants.DISTRIBUTEDPROCESS);
-    if (true || distributedtraverse != null && distributedtraverse.equals("true")) {
+    if (distributedtraverse != null && distributedtraverse.equals("true")) {
         roart.service.ControlService.distributedtraverse = true;
         GetHazelcastInstance.instance();
         ControlService.locker = roart.util.Constants.HAZELCAST;
