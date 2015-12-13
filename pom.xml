@@ -595,11 +595,11 @@
     <tika.version>1.11</tika.version>
     <mahout.version>0.9</mahout.version>
     <opennlp.version>1.5.3</opennlp.version>
-    <hadoop.version>2.6.0</hadoop.version>
+    <hadoop.version>2.7.1</hadoop.version>
     <datanucleus.version>4.1.0-release</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
-    <curator.version>2.6.0</curator.version>
+    <curator.version>2.9.1</curator.version>
     <hazelcast.version>3.5.4</hazelcast.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>5.0.5.Final</hibernate.version>
