@@ -34,10 +34,13 @@ public class HibernateUtil {
 		/*
 	    AnnotationConfiguration configuration = new AnnotationConfiguration();
 	    factory = configuration.configure().buildSessionFactory();*/
+		/*
 		Configuration configuration = new Configuration().configure();
 		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().
 				applySettings(configuration.getProperties());
 		factory = configuration.buildSessionFactory(builder.build());
+		*/
+		factory = new Configuration().configure().buildSessionFactory();
 	    //Object o = new net.sf.ehcache.hibernate.EhCacheRegionFactory();
 	}
 
