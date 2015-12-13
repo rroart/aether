@@ -29,19 +29,16 @@ import com.vaadin.ui.UI;
 
 public class DbRunner implements Runnable {
 	
-    private static Logger log = LoggerFactory.getLogger(DbRunner.class);
+    private static final Logger log = LoggerFactory.getLogger(DbRunner.class);
 
     public static final Set<UI> uiset = new HashSet<UI>();
 	
-    final int update = 60;
+    static final int update = 60;
     static long lastupdate = 0;
 
     //public static volatile boolean doupdate = true;
 
     public void run() {
-        Set<Future<Object>> set = new HashSet<Future<Object>>();
-        int nThreads = 4;
-        ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
         while (true) {
             long now = System.currentTimeMillis();
             log.info("updatetime " + (int) ((now - lastupdate)/1000));
@@ -56,7 +53,7 @@ public class DbRunner implements Runnable {
                 lastupdate = System.currentTimeMillis();
             }
             try {
-                int sleepsec = 60 - (int) (((lastupdate - now)/1000));  
+                int sleepsec = 60 - (int) ((lastupdate - now)/1000);  
                 if (sleepsec < 1) {
                     sleepsec = 1;
                 }
