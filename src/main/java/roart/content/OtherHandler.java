@@ -46,8 +46,8 @@ public class OtherHandler {
     	String filename = el.filename;
     	String md5 = el.md5;
     	IndexFiles index = el.index;
-    	List<ResultItem> retlist = el.retlist;
-    	List<ResultItem> retlistnot = el.retlistnot;
+    	String retlistid = el.retlistid;
+    	String retlistnotid = el.retlistnotid;
 	Metadata metadata = el.metadata;
 
 	if (filename.startsWith(FileSystemDao.FILE)) {
@@ -81,7 +81,7 @@ public class OtherHandler {
 	    }
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlist, el);
+	    output = executeTimeout("/usr/bin/ebook-convert", arg, retlistid, el);
 	    if (output != null) {
 		el.convertsw = "calibre";
 		long time = execstart - System.currentTimeMillis();
@@ -100,7 +100,7 @@ public class OtherHandler {
 	    log.info("doing2 djvutxt " + filename);
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/djvutxt", arg, retlist, el);
+	    output = executeTimeout("/usr/bin/djvutxt", arg, retlistid, el);
 	    if (output != null && !output.isEmpty()) {
 		el.convertsw = "djvutxt";
 		long time = execstart - System.currentTimeMillis();
@@ -115,7 +115,7 @@ public class OtherHandler {
 	    log.info("doing2 pdftotext " + filename);
 	    long execstart = System.currentTimeMillis();
 	    String[] arg = { filename, tmp };
-	    output = executeTimeout("/usr/bin/pdftotext", arg, retlist, el);
+	    output = executeTimeout("/usr/bin/pdftotext", arg, retlistid, el);
 	    if (output != null && !output.isEmpty()) {
 		el.convertsw = "pdftotext";
 		long time = execstart - System.currentTimeMillis();
@@ -130,7 +130,7 @@ public class OtherHandler {
         log.info("doing2 wvText " + filename);
         long execstart = System.currentTimeMillis();
         String[] arg = { filename, tmp };
-        output = executeTimeout("/usr/bin/wvText", arg, retlist, el);
+        output = executeTimeout("/usr/bin/wvText", arg, retlistid, el);
         if (output != null && !output.isEmpty()) {
         el.convertsw = "wvtext";
         long time = execstart - System.currentTimeMillis();
@@ -146,7 +146,7 @@ public class OtherHandler {
 	if ((output != null && !output.isEmpty()) && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
-		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlist, retlistnot, metadata, el.ui);
+		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlistid, retlistnotid, metadata, el.display);
 		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.addFirst(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);
@@ -194,7 +194,7 @@ public class OtherHandler {
     	return execute(filename, arg);
     }
     
-    public static String executeTimeout(String filename, String [] arg, List<ResultItem> retlist, TikaQueueElement el) {
+    public static String executeTimeout(String filename, String [] arg, String retlistid, TikaQueueElement el) {
     	   class OtherTimeout implements Runnable {
     	    	public void run() {
     	    		try {

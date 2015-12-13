@@ -61,8 +61,8 @@ public class ClientHandler {
 	    list = deletepath(el);
 	}
 	Queues.decClients();
-	Map map = new HashMap<UI, List>();
-	map.put(el.ui, list);
+	Map map = new HashMap<String, List>();
+	map.put(el.uiid, list);
 	return map;
     }
 

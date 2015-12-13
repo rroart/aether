@@ -14,8 +14,10 @@ import roart.dir.Traverse;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
+import roart.util.MyLock;
 import roart.util.Prop;
 
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +47,11 @@ public class IndexFiles {
     private boolean indb = false;
 
     private int priority;
+
+    private MyLock lock;
+    private Object lockqueue;
     
-	private IndexFiles() {
+    private IndexFiles() {
 	    filelocations = new HashSet<FileLocation>();
 	    maxfilelocations = 0;
 	}
@@ -340,6 +345,22 @@ public class IndexFiles {
 
     public int getPriority() {
         return priority;
+    }
+
+    public void setLock(MyLock lock) {
+        this.lock = lock;
+    }
+
+    public MyLock getLock() {
+        return lock;
+    }
+
+    public Object getLockqueue() {
+        return lockqueue;
+    }
+
+    public void setLockqueue(Object lockqueue) {
+        this.lockqueue = lockqueue;
     }
 
 	public static ResultItem getHeader(SearchDisplay display) {

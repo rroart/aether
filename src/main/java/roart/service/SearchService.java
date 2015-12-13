@@ -29,7 +29,7 @@ public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void searchme(String str, String type) {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCH, str, type, null, null, false, false); // stupid overloading
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCH, str, type, null, null, false, false, false); // stupid overloading
 	Queues.clientQueue.add(e);
     }
 
@@ -38,7 +38,7 @@ public class SearchService {
 	String type = e.suffix;
 	List strlist = new ArrayList<String>();
 
-	SearchDisplay display = getSearchDisplay(e.ui);
+	SearchDisplay display = e.display;
 
 	ResultItem[] strarr = roart.search.Search.searchme(str, type, display);
 
@@ -55,7 +55,7 @@ public class SearchService {
 	String type = e.suffix;
 	List strlist = new ArrayList<String>();
 
-	SearchDisplay display = getSearchDisplay(e.ui);
+	SearchDisplay display = e.display;
 
 	ResultItem[] strarr = roart.search.Search.searchsimilar(str, type, display);
 
@@ -85,7 +85,7 @@ public class SearchService {
 	}
     
     public void searchsimilar(String md5) {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCHSIMILAR, md5, null, null, null, false, false); // stupid overloading
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCHSIMILAR, md5, null, null, null, false, false, false); // stupid overloading
 	Queues.clientQueue.add(e);
     }
 }

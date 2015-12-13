@@ -8,14 +8,13 @@ import roart.model.SearchDisplay;
 import roart.thread.ClientRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
-
 import roart.database.IndexFilesAccess;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
-
 import roart.service.SearchService;
 import roart.service.ControlService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -23,9 +22,9 @@ import java.util.TreeMap;
 import java.util.Map;
 import java.util.Date;
 import java.util.TreeSet;
-
 import java.io.File;
 import java.io.InputStream;
+
 
 //import roart.beans.session.misc.Unit;
 import javax.servlet.annotation.WebServlet;
@@ -71,6 +70,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.shared.ui.label.ContentMode;
 
+
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -86,6 +86,8 @@ public class MyVaadinUI extends UI
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
     //private static final Logger log = LoggerFactory.getLogger(MyVaadinUI.class);
+
+    public static Map<String, UI> uis = new HashMap<String, UI>();
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = MyVaadinUI.class, widgetset = "roart.client.AppWidgetSet")

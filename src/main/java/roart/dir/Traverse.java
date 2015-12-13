@@ -1,14 +1,19 @@
 package roart.dir;
 
+import java.beans.XMLEncoder;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
+
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.queue.ClientQueueElement;
 import roart.queue.ClientQueueElement.Function;
+import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.service.SearchService;
+import roart.thread.ClientRunner;
 import roart.thread.TikaRunner;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
@@ -32,8 +37,19 @@ import java.util.HashMap;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
 import roart.util.ExecCommand;
+import roart.util.MyAtomicLong;
+import roart.util.MyAtomicLongs;
+import roart.util.MyLock;
+import roart.util.MyLockFactory;
+import roart.util.MyQueue;
+import roart.util.MyQueues;
+import roart.util.MySet;
+import roart.util.MySets;
 
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.tika.metadata.Metadata;
+
+import com.vaadin.ui.UI;
 
 
 public class Traverse {
@@ -84,103 +100,92 @@ public class Traverse {
     // then index if new
     
     public Set<String> doList(String dirname) throws Exception {
-    	Set<String> retset = new HashSet<String>();
-    	if (reindex && max > 0 && indexcount > max) {
-    		return retset;
-    	}
+        Set<String> retset = new HashSet<String>();
+        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
+        if (element.reindex && max > 0 && indexcount.get() > max) {
+            return retset;
+        }
 
-    	if (!reindex && maxindex > 0 && indexcount > maxindex) {
-    		return retset;
-    	}
+	int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
+        if (!element.reindex && maxindex > 0 && indexcount.get() > maxindex) {
+            return retset;
+        }
 
-    	if (indirlistnot(dirname, dirlistnot)) {
-    		return retset;
-    	}
-    	HashSet<String> md5set = new HashSet<String>();
-    	FileObject dir = FileSystemDao.get(dirname);
-    	List<FileObject> listDir = FileSystemDao.listFiles(dir);
-    	//log.info("dir " + dirname);
-    	//log.info("listDir " + listDir.length);
-    	if (listDir == null) {
-    		return retset;
-    	}
-    	for (FileObject fo : listDir) {
-    		String filename = FileSystemDao.getAbsolutePath(fo);
-    		if (filename.length() > MAXFILE) {
-    			log.info("Too large filesize " + filename);
-    			continue;
-    		}
-    		//log.info("file " + filename);
-    		if (FileSystemDao.isDirectory(fo)) {
-    			log.debug("isdir " + filename);
-    			retset.addAll(doList(filename));
-    		} else {
-    			retset.add(filename);
-			log.debug("timer");
-    			String md5 = IndexFilesDao.getMd5ByFilename(filename);
-    			log.debug("info " + md5 + " " + filename);
-    			if (nomd5) {
-    				continue;
-    			}
-    			IndexFiles files = null;
-    			if (calculatenewmd5 == true || md5 == null) {
-    				try {
-    					if (!FileSystemDao.exists(fo)) {
-    						throw new FileNotFoundException("File does not exist " + filename);
-    					}
-    					if (element.function != Function.INDEX) {
-    						InputStream fis = FileSystemDao.getInputStream(fo);
-    						md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
-    						fis.close();
-    						if (files == null) {
-    							files = IndexFilesDao.getByMd5(md5);
-    						}
-    						files.addFile(filename);
-    						log.info("adding md5 file " + filename);
-    					}
-    					// calculatenewmd5 and nodbchange are never both true
-    					if (md5 == null || (calculatenewmd5 == true && !md5.equals(md5))) {
-    						if (newset != null) {
-    							newset.add(filename);
-    						}
-    					}
-    				} catch (FileNotFoundException e) {
-    					log.error(Constants.EXCEPTION, e);
-    					notfoundset.add(filename);
-    					continue;
-    				} catch (Exception e) {
-    					log.info("Error: " + e.getMessage());
-    					log.error(Constants.EXCEPTION, e);
-    					continue;
-    				}
-    			} else {
-			    log.debug("timer2");
-    				files = IndexFilesDao.getByMd5(md5);
-				log.debug("info " + md5 + " " + files);
-    			}
-    			if (md5sdone != null && !md5sdone.add(md5)) {
-    				continue; // already done
-    			}
-    			if (element.function == Function.FILESYSTEM) {
-    				continue;
-    			}
-    			if (!filterindex(files)) {
-    				continue;
-    			}
-    			try {
-    				indexsingle(md5, filename, files);
-    			} catch (Exception e) {
-    				log.info("Error: " + e.getMessage());
-    				log.error(Constants.EXCEPTION, e);
-    			}
-    			md5set.add(md5);
-    		}
-    	}
-    	if (dirset != null) {
-    		dirset.put(dirname, md5set);
-    	}
-    //log.info("retsize " + retset.size());
-    return retset;
+        if (indirlistnot(dirname, dirlistnot)) {
+            return retset;
+        }
+        //HashSet<String> md5set = new HashSet<String>();
+        FileObject dir = FileSystemDao.get(dirname);
+        List<FileObject> listDir = FileSystemDao.listFiles(dir);
+        //log.info("dir " + dirname);
+        //log.info("listDir " + listDir.length);
+        if (listDir == null) {
+            return retset;
+        }
+        for (FileObject fo : listDir) {
+            String filename = FileSystemDao.getAbsolutePath(fo);
+            if (filename.length() > MAXFILE) {
+                log.info("Too large filesize " + filename);
+                continue;
+            }
+            //log.info("file " + filename);
+            if (FileSystemDao.isDirectory(fo)) {
+                log.debug("isdir " + filename);
+                retset.addAll(doList(filename));
+            } else {
+                retset.add(filename);
+                if (!nomd5) {
+                    String queueid = Constants.TRAVERSEQUEUE;
+                    /*
+                    MyQueue<FileObject> queue2 = MyQueues.get(queueid+"2");
+                    try {
+                        queue2.offer(fo);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        XMLEncoder encoder = new XMLEncoder( bos );
+                        encoder.writeObject( fo );
+                        encoder.close();
+                        log.info(encoder.toString());
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
+                    MyQueue<ClientQueueElement> queue3 = MyQueues.get(queueid+"3");
+                    try {
+                        queue3.offer(new ClientQueueElement(null, null, queueid, queueid, queueid, queueid, nomd5, nomd5, nomd5));
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        XMLEncoder encoder = new XMLEncoder( bos );
+                        encoder.writeObject( new ClientQueueElement(null, null, queueid, queueid, queueid, queueid, nomd5, nomd5, nomd5) );
+                        encoder.close();
+                        log.info(encoder.toString());
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
+                    try {
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        XMLEncoder encoder = new XMLEncoder( bos );
+                        TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid);
+                        encoder.writeObject( trav);
+                        encoder.close();
+                        log.info(encoder.toString());
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
+                    */
+                    MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
+                    TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid);
+                    queue.offer(trav);
+
+                    //TraverseFile.handleFo3(null, fo);
+                }
+            }
+        }
+        /*
+        if (dirset != null) {
+            dirset.put(dirname, md5set);
+        }
+        */
+        //log.info("retsize " + retset.size());
+        return retset;
     }
 
     // retset will be returned empty
@@ -261,7 +266,7 @@ public class Traverse {
 	return retset;
     }
 
-    public int indexnoFilter(IndexFiles index) throws Exception {
+    public static int indexnoFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
 	String md5 = index.getMd5();
 	String filename = getExistingLocalFile(index);
     if (filename == null) {
@@ -274,10 +279,10 @@ public class Traverse {
 	return 0;
     }
 
-    public int reindexsuffixFilter(IndexFiles index) throws Exception {
+    public static int reindexsuffixFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
 	String md5 = index.getMd5();
 	for (FileLocation fl : index.getFilelocations()) {
-	    if (element.suffix != null && !fl.isLocal() && !fl.getFilename().endsWith(element.suffix)) {
+	    if (element.getClientQueueElement().suffix != null && !fl.isLocal() && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
 		continue;
 	    }
 	    FileObject file = FileSystemDao.get(fl.toString());
@@ -289,9 +294,9 @@ public class Traverse {
 	return 0;
     }
 
-    public int reindexdateFilter(IndexFiles index) throws Exception {
-	String lowerdate = element.lowerdate;
-	String higherdate = element.higherdate;
+    public static int reindexdateFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
+	String lowerdate = element.getClientQueueElement().lowerdate;
+	String higherdate = element.getClientQueueElement().higherdate;
 	Long tslow = null;
 	if (lowerdate != null) {
 	    tslow = new Long(lowerdate);
@@ -323,30 +328,10 @@ public class Traverse {
 	return 1;
     }
 
- 	public void indexsingle(String md5,
-			String filename, IndexFiles index) {
-		if (!reindex && maxfailed > 0) {
-		int failed = index.getFailed();
-		if (failed >= maxfailed) {
-		    log.info("failed too much for " + md5);
-		    return;
-		}
-	    }
-
-		log.info("index " + md5 + " " + filename);
-	    //InputStream stream = null;
-	    index.setTimeoutreason("");
-	    index.setFailedreason("");
-	    index.setNoindexreason("");
-	    TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, retList, retNotList, new Metadata(), element.ui);
-	    Queues.tikaQueue.add(e);
-	    //size = doTika(filename, filename, md5, index, retlist);
-	}
-
     public static List<ResultItem> notindexed(ClientQueueElement el) throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	ResultItem ri = new ResultItem();
-	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	SearchDisplay display = el.display;
 	retlist.add(IndexFiles.getHeader(display));
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	log.info("sizes " + indexes.size());
@@ -364,7 +349,7 @@ public class Traverse {
     public static List<ResultItem> indexed(ClientQueueElement el) throws Exception {
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
-	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	SearchDisplay display = el.display;
 	log.info("sizes " + indexes.size());
 	for (IndexFiles index : indexes) {
 	    Boolean indexed = index.getIndexed();
@@ -422,9 +407,9 @@ public class Traverse {
     	return null;
     }
 
-	public int reindexlanguageFilter(IndexFiles index) {
+	public static int reindexlanguageFilter(IndexFiles index, TraverseQueueElement element) {
 			String mylanguage = index.getLanguage();
-			if (mylanguage != null && mylanguage.equals(element.suffix)) { // stupid overload
+			if (mylanguage != null && mylanguage.equals(element.getClientQueueElement().suffix)) { // stupid overload
 				String md5 = index.getMd5();
 				String filename = getExistingLocalFile(index);
 
@@ -439,7 +424,7 @@ public class Traverse {
 		 	
 	}
     
-	public boolean filterindex(IndexFiles index)
+	public static boolean filterindex(IndexFiles index, TraverseQueueElement trav)
 			throws Exception {
 	    if (index == null) {
 	        return false;
@@ -447,7 +432,7 @@ public class Traverse {
 		// skip if indexed already, and no reindex wanted
 		Boolean indexed = index.getIndexed();
 		if (indexed != null) {
-		if (!reindex && indexed.booleanValue()) {
+		if (!trav.getClientQueueElement().reindex && indexed.booleanValue()) {
 		    return false;
 		}
 		}
@@ -458,42 +443,50 @@ public class Traverse {
 		// and a failed limit it set
 		// and the file has come to that limit
 
-		if (!reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
+		int maxfailed = ControlService.configMap.get(ControlService.Config.FAILEDLIMIT);
+		if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
 		return false;
 		}
 		
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid()); 
+		
 		int indexinc = 0;
-		if (element.function == Function.REINDEXDATE) {
-		    indexinc = reindexdateFilter(index);
-		    indexcount += indexinc;
+		if (trav.getClientQueueElement().function == Function.REINDEXDATE) {
+		    indexinc = reindexdateFilter(index, trav);
+		    indexcount.addAndGet(indexinc);
 		    return indexinc > 0;
 		}
-		if (element.function == Function.REINDEXSUFFIX) {
-		    indexinc = reindexsuffixFilter(index);
-		    indexcount += indexinc;
+		if (trav.getClientQueueElement().function == Function.REINDEXSUFFIX) {
+		    indexinc = reindexsuffixFilter(index, trav);
+		    indexcount.addAndGet(indexinc);
 		    return indexinc > 0;
 		}
-		if (element.function == Function.INDEX || element.function == Function.FILESYSTEMLUCENENEW) {
-		    indexinc = indexnoFilter(index);
-		    indexcount += indexinc;
+		if (trav.getClientQueueElement().function == Function.INDEX || trav.getClientQueueElement().function == Function.FILESYSTEMLUCENENEW) {
+		    indexinc = indexnoFilter(index, trav);
+		    indexcount.addAndGet(indexinc);
 		    return indexinc > 0;
 		}
-		if (element.function == Function.REINDEXLANGUAGE) {
-		    indexinc = reindexlanguageFilter(index);
-		    indexcount += indexinc;
+		if (trav.getClientQueueElement().function == Function.REINDEXLANGUAGE) {
+		    indexinc = reindexlanguageFilter(index, trav);
+		    indexcount.addAndGet(indexinc);
 		    return indexinc > 0;
 		}
 		return false;
 	}
 	
 	public Set<String> traversedb() throws Exception {
-		List<IndexFiles> indexes = IndexFilesDao.getAll();
+        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
+		int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
+        String queueid = Constants.TRAVERSEQUEUE;
+        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
+        List<IndexFiles> indexes = IndexFilesDao.getAll();
 		for (IndexFiles index : indexes) {
-			if (reindex && max > 0 && indexcount > max) {
+			if (element.reindex && max > 0 && indexcount.get() > max) {
 				break;
 			}
 		
-			if (!reindex && maxindex > 0 && indexcount > maxindex) {
+			if (!element.reindex && maxindex > 0 && indexcount.get() > maxindex) {
 				break;
 			}
 			String md5 = index.getMd5();
@@ -502,11 +495,16 @@ public class Traverse {
 				log.error("filename should not be null " + md5);
 				continue;
 			}
-			if (!filterindex(index)) {
+			// TODO check if fo needed
+            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid);
+			if (!filterindex(index, trav)) {
 				continue;
 			}
-			indexsingle(md5, name, index);
+	        // config with finegrained distrib
+	        queue.offer(trav);
+	        //TraverseFile.indexsingle(trav, md5, name, index);
 		}
+		
 		return null;
 	}
 	
@@ -530,36 +528,47 @@ public class Traverse {
     	return null;
     }
 
-	int maxfailed = 0;
-	int max = 0;
-	int maxindex = 0;
-	int indexcount = 0;
-	boolean reindex = false;
-	List<ResultItem> retList = null;
-	List<ResultItem> retNotList = null;
-	Set<String> md5sdone = new HashSet<String>();
-	Set<String> newset = null; 
-	Map<String, HashSet<String>> dirset;
-	String[] dirlistnot;
-	Set<String> notfoundset;
-	boolean calculatenewmd5;
-	boolean nomd5;
-	ClientQueueElement element;
-	
-	public Traverse(ClientQueueElement element, List<ResultItem> retList, List<ResultItem> retNotList, Set<String> newset, Map<String, HashSet<String>> dirset, String[] dirlistnot, Set<String> notfoundset, boolean reindex, boolean newmd5, boolean nomd5) {
-		maxfailed = ControlService.configMap.get(ControlService.Config.FAILEDLIMIT);
-		max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
-		maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
+	//int max = 0;
+	//int indexcount = 0;
 
-		this.reindex = reindex;
-		this.retList = retList;
-		this.retNotList = retNotList;
-		this.newset = newset;
-		this.dirset = dirset;
-		this.notfoundset = notfoundset;
-		this.calculatenewmd5 = newmd5;
+	String myid;
+    	ClientQueueElement element;
+        String retlistid = null;
+	String retnotlistid = null;
+    //List<ResultItem> retList = null;
+    //List<ResultItem> retNotList = null;
+        String newsetid = null; 
+//	MySet<String> newset = null; 
+//	Map<String, HashSet<String>> dirset;
+	String notfoundsetid;
+	//boolean reindex = false;
+	//boolean calculatenewmd5;
+	boolean nomd5;
+
+	   String[] dirlistnot;
+	   SearchDisplay display;
+
+    //Set<String> md5sdone = new HashSet<String>();
+	
+	public Traverse(String myid, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, boolean nomd5) {
+
+	    this.myid = myid;
+	    this.element = element;
+		this.retlistid = retlistid;
+		this.retnotlistid = retnotlistid;
+		this.newsetid = newsetid;
+		this.notfoundsetid = notfoundsetid;
+		//this.reindex = reindex;
+		//this.calculatenewmd5 = newmd5;
 		this.nomd5 = nomd5;
-		this.element = element;
+		
+		this.dirlistnot = ControlService.dirlistnot;
+		//UI ui = element.ui;
+		//this.display = SearchService.getSearchDisplay(ui);
 	}
+
+    public static boolean isLocal(FileObject fo) {
+        return FileSystemDao.exists(fo);
+    }
 	
 }

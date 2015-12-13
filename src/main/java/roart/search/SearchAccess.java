@@ -16,7 +16,7 @@ public abstract class SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index);
+    public abstract int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index);
 
     public abstract ResultItem[] searchme(String str, String searchtype, SearchDisplay display);
 

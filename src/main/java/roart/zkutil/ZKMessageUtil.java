@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class ZKMessageUtil {
 
-    static Logger log = LoggerFactory.getLogger(ZKLockUtil.class);
+    static Logger log = LoggerFactory.getLogger(ZKMessageUtil.class);
 
     public static List<String> getChildren(String dir, Watcher watcher) throws KeeperException, InterruptedException {
 	    try {

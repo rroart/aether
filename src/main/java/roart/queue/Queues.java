@@ -13,6 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.util.Constants;
+import roart.util.MyQueue;
+import roart.util.MyQueues;
+
 public class Queues {
 	
 	private static Logger log = LoggerFactory.getLogger(Queues.class);
@@ -25,6 +29,7 @@ public class Queues {
     public static volatile Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
     public static volatile Queue<ClientQueueElement> clientQueue = new ConcurrentLinkedQueue<ClientQueueElement>();
+    public static volatile Queue<TraverseQueueElement> traverseQueue = new ConcurrentLinkedQueue<TraverseQueueElement>();
 
     public static volatile Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     
@@ -109,12 +114,20 @@ public class Queues {
 	return otherQueue.size() >= limit;
     }
     
+    public static boolean traverseQueueHeavyLoaded() {
+    return traverseQueue.size() >= limit;
+    }
+    
    public static String webstat() {
-       return "t " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
+       String queueid = Constants.TRAVERSEQUEUE;
+       MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
+       return "f " + traverseQueue.size() + " / " + traverseQueue.size() + "\nt " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
     }
 
    public static String stat() {
-       return "t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
+       String queueid = Constants.TRAVERSEQUEUE;
+       MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
+       return "f " + traverseQueue.size() + " / " + traverseQueue.size() + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
     }
 
    public static void queueStat() {
@@ -122,10 +135,14 @@ public class Queues {
     }
 
     public static int queueSize() {
-    	return tikaQueue.size() + otherQueue.size() + indexQueue.size();
+        String queueid = Constants.TRAVERSEQUEUE;
+        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
+    	return traverseQueue.size() + tikaQueue.size() + otherQueue.size() + indexQueue.size();
     }
     
     public static int runSize() {
+        String queueid = Constants.TRAVERSEQUEUE;
+        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
     	return tikas.get() + others.get() + indexs.get();
     }
     

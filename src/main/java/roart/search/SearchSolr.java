@@ -67,7 +67,7 @@ public class SearchSolr {
 	server.setAllowCompression(true);
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
+    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
 	int retsize = content.length();
 	// this to a method
 	log.info("indexing " + md5);

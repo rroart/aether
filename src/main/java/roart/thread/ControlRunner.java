@@ -46,6 +46,12 @@ public class ControlRunner implements Runnable {
     			if (ControlService.zookeeper != null && !ControlService.zkWorker.isAlive()) {
     				cs.startZKWorker();
     			}
+                if (!ControlService.traverseQueueWorker.isAlive()) {
+                    cs.startTraversequeueWorker();
+                }
+                //if (ControlService.zookeeper != null && ControlService.zookeepersmall && !ControlService.zkQueueWorker.isAlive()) {
+                //    cs.startZKQueueWorker();
+                //}
      	}
     }
 

@@ -3,13 +3,15 @@ package roart.search;
 import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
+import roart.service.ControlService;
 import roart.service.SearchService;
+import roart.util.MyList;
+import roart.util.MyLists;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
-
 import roart.database.HibernateUtil;
-
+import roart.database.IndexFilesDao;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -18,9 +20,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
- 
-import org.apache.tika.metadata.Metadata;
 
+import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +48,15 @@ public class Search {
 	String lang = el.lang;
 	String content = el.content;
 	String classification = el.index.getClassification();
-    	List<ResultItem> retlist = el.retlist;
-    	List<ResultItem> retlistnot = el.retlistnot;
+    	MyList<ResultItem> retlist = MyLists.get(el.retlistid);
+    	MyList<ResultItem> retlistnot = MyLists.get(el.retlistnotid);
 
-    	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+    	SearchDisplay display = el.display;
 
     	int retsize = 0;
 
     try {
-    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, dbindex);
+    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, dbindex);
 	} catch (Exception e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
@@ -88,14 +89,17 @@ public class Search {
 	ResultItem ri = IndexFiles.getResultItem(el.index, lang, display);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlist.add(ri);
+	
     try {
 		inputStream.close();
 	} catch (IOException e) {
-		// TODO Auto-generated catch block
 		log.error(roart.util.Constants.EXCEPTION, e);
 	}
     }
     dbindex.setPriority(1);
+    // file unlock dbindex
+    // config with finegrained distrib
+    IndexFilesDao.add(dbindex);
     Queues.decIndexs();
     
 	}

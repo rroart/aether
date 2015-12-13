@@ -11,6 +11,8 @@ import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.service.SearchService;
 import roart.util.Constants;
+import roart.util.MyList;
+import roart.util.MyLists;
 import roart.filesystem.FileSystemDao;
 
 import java.io.*;
@@ -119,8 +121,8 @@ public class TikaHandler {
 	    String filename = el.filename;
 	    String md5 = el.md5;
 	    IndexFiles index = el.index;
-	    List<ResultItem> retlist = el.retlist;
-	    List<ResultItem> retlistnot = el.retlistnot;
+	    //List<ResultItem> retlist = el.retlistid;
+	    //List<ResultItem> retlistnot = el.retlistnotid;
 	    Metadata metadata = el.metadata;
 	    log.info("incTikas " + dbfilename);
 	    Queues.tikaTimeoutQueue.add(dbfilename);
@@ -200,7 +202,7 @@ public class TikaHandler {
 	            }
 
 	            //size = SearchLucene.indexme("all", md5, inputStream);
-	            IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, retlist, retlistnot, dbfilename, metadata, el.ui);
+	            IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, el.retlistid, el.retlistnotid, dbfilename, metadata, el.display);
 	            elem.lang = lang;
 	            elem.content = content;
 	            if (el.convertsw != null) {
@@ -220,9 +222,10 @@ public class TikaHandler {
 	                Queues.otherQueue.add(el);
 	            } else {
 	                log.info("Too small " + dbfilename + " / " + filename + " " + md5 + " " + size);
-	                SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	                SearchDisplay display = el.display;
 	                ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display);
 	                ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
+	                MyList<ResultItem> retlistnot = (MyList<ResultItem>) MyLists.get(el.retlistnotid); 
 	                retlistnot.add(ri);
 	                Boolean isIndexed = index.getIndexed();
 	                if (isIndexed == null || isIndexed.booleanValue() == false) {

@@ -6,14 +6,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
+import roart.util.MyLock;
 
-
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,8 @@ public class IndexFilesDao {
     private static Logger log = LoggerFactory.getLogger(IndexFilesDao.class);
 
     private static volatile ConcurrentMap<String, IndexFiles> all = new ConcurrentHashMap<String, IndexFiles>();
+
+    private static volatile ConcurrentMap<String, IndexFiles> dbi = new ConcurrentHashMap<String, IndexFiles>();
 
     private static IndexFilesAccess indexFiles = null;
 
@@ -38,13 +42,17 @@ public class IndexFilesDao {
 	    }
 	}
     }
-
+    
+ // with zookeepersmall, lock must be held when entering here
+    
     public static IndexFiles getByMd5(String md5, boolean create) throws Exception {
 	if (md5 == null) {
 	    return null;
 	}
+	if (false && !ControlService.zookeepersmall) {
 	if (all.containsKey(md5)) {
 	    return all.get(md5);
+	}
 	}
 	synchronized(IndexFilesDao.class) {
 	IndexFiles i = indexFiles.getByMd5(md5);
@@ -173,6 +181,10 @@ public class IndexFilesDao {
 	return i;
     }
 
+    public static void add(IndexFiles i) {
+        dbi.putIfAbsent(i.getMd5(), i);
+    }
+    
     public static void commit() {
 	close();
     }
@@ -188,8 +200,8 @@ public class IndexFilesDao {
             log.info("saving for level 0");
         }
         int count = 0;
-        for (String k : all.keySet()) {
-            IndexFiles i = all.get(k);
+        for (String k : dbi.keySet()) {
+            IndexFiles i = dbi.get(k);
             if (level != i.getPriority()) {
                 continue;
             }
@@ -200,6 +212,10 @@ public class IndexFilesDao {
                 break;
             }
             IndexFilesDao.save(i);
+            MyLock lock = i.getLock();
+            LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
+            lockqueue.offer(lock);
+            dbi.remove(k);
         }
 	//all.clear();
 	try {
@@ -243,9 +259,9 @@ public class IndexFilesDao {
 
    public static int dirty() {
        int dirty1 = 0;
-       for (String k : all.keySet()) {
+       for (String k : dbi.keySet()) {
 	    //log.info("save try " + Thread.currentThread().getId() + " " + k);
-	    IndexFiles i = all.get(k);
+	    IndexFiles i = dbi.get(k);
 	    if (i.hasChanged()) {
 		dirty1++;
 	    }

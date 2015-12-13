@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.queue.Queues;
 import roart.util.Constants;
+import roart.client.MyVaadinUI;
 import roart.content.ClientHandler;
 import roart.database.IndexFilesDao;
 
@@ -112,12 +113,13 @@ public class ClientRunner implements Runnable {
 		if (future.isDone()) {
 		    removes.add(future);
 		    try {
-			Map<UI, List> map = (Map) future.get();
+			Map<String, List> map = (Map) future.get();
 			if (map == null) {
 			    continue;
 			}
-			for (UI ui : map.keySet()) {
-			    endFuture(ui, map.get(ui));
+			for (String uiid : map.keySet()) {
+			    UI ui = MyVaadinUI.uis.get(uiid);
+			    endFuture(ui, map.get(uiid));
 			}
 		    } catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);

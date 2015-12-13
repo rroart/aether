@@ -1,18 +1,31 @@
 package roart.servlet.listeners;
 
 import roart.filesystem.HDFS;
+import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
+import roart.model.ResultItem;
+import roart.queue.TikaQueueElement;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
+import roart.util.MyHazelcastQueue;
+import roart.util.MyJavaQueue;
+import roart.util.MyLockFactory;
 import roart.util.Prop;
 import sun.rmi.rmic.newrmic.Constants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.queue.DistributedQueue;
+import org.apache.curator.framework.recipes.queue.QueueBuilder;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +101,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	roart.database.IndexFilesDao.instance(mydb);
 	roart.classification.ClassifyDao.instance(myclassify);
 
-	try {
+    try {
 	    LanguageDetect.init("./profiles/");
 	} catch (Exception e) {
 	    log.error("Exception", e);
@@ -97,8 +110,34 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	String myzoo = roart.util.Prop.getProp().getProperty(ConfigConstants.ZOOKEEPER);
 	if (myzoo != null && !roart.service.ControlService.nodename.equals(ConfigConstants.LOCALHOST)) {
 	    roart.service.ControlService.zookeeper = myzoo;
+        ControlService.locker = roart.util.Constants.CURATOR;
 	}
 
+    String zookeepermode = roart.util.Prop.getProp().getProperty(ConfigConstants.DISTRIBUTEDLOCKMODE);
+    if (zookeepermode != null && zookeepermode.equals(ConfigConstants.SMALL)) {
+        roart.service.ControlService.zookeepersmall = true;
+    } else {
+        roart.service.ControlService.zookeepersmall = false;
+    }
+
+    String distributedtraverse = roart.util.Prop.getProp().getProperty(ConfigConstants.DISTRIBUTEDPROCESS);
+    if (true || distributedtraverse != null && distributedtraverse.equals("true")) {
+        roart.service.ControlService.distributedtraverse = true;
+        GetHazelcastInstance.instance();
+        ControlService.locker = roart.util.Constants.HAZELCAST;
+    } else {
+        roart.service.ControlService.distributedtraverse = false;
+   }
+
+    if (roart.util.Constants.CURATOR.equals(ControlService.locker)) {
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
+        String zookeeperConnectionString = myzoo;
+        ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        ControlService.curatorClient.start();
+    }
+    
+    //ControlService.lock = MyLockFactory.create();
+    
 	roart.service.ControlService maininst = new roart.service.ControlService();
 	maininst.startThreads();
 

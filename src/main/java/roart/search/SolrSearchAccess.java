@@ -16,8 +16,8 @@ public class SolrSearchAccess extends SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, List<ResultItem> retlist, IndexFiles index) {
-	return SearchSolr.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, retlist, index);
+    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
+	return SearchSolr.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, index);
     }
 
     public ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {

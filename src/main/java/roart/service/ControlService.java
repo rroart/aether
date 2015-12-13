@@ -6,22 +6,20 @@ import javax.servlet.http.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
-
 import java.util.concurrent.TimeUnit;
-
 import java.io.*;
 
 import roart.dir.Traverse;
-
 import roart.queue.ClientQueueElement;
 import roart.queue.ClientQueueElement.Function;
-
+import roart.queue.TikaQueueElement;
 import roart.model.FileLocation;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
@@ -29,6 +27,7 @@ import roart.model.SearchDisplay;
 import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.thread.ControlRunner;
+import roart.thread.TraverseQueueRunner;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
@@ -39,14 +38,22 @@ import roart.thread.DbRunner;
 import roart.thread.ZKRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
-import roart.zkutil.ZKLockUtil;
+import roart.util.MyCollections;
+import roart.util.MyList;
+import roart.util.MyListFactory;
+import roart.util.MyLists;
+import roart.util.MyLock;
+import roart.util.MyLockFactory;
+import roart.util.MyQueue;
+import roart.util.MySet;
+import roart.util.MySetFactory;
+import roart.util.MySets;
 import roart.zkutil.ZKMessageUtil;
-import roart.zkutil.ZKWriteLock;
-import roart.zkutil.ZKBlockWriteLock;
-
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.queue.DistributedQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,17 +68,27 @@ public class ControlService {
 
     private static int dirsizelimit = 100;
 
+    private static volatile int mycounter = 0;
+    
+    public static int getMyCounter() {
+        return mycounter++;
+    }
+    
+    public static String getMyId() {
+        return nodename + getMyCounter();
+    }
+    
     // called from ui
     // returns list: new file
     public void traverse(String add) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEM, add, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEM, add, null, null, null, false, false, false);
 	Queues.clientQueue.add(e);
     }
 
     // called from ui
     // returns list: new file
     public void traverse() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEM, null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEM, null, null, null, null, false, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -95,7 +112,7 @@ public class ControlService {
 
     // called from ui
     public void overlapping() {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.OVERLAPPING, null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.OVERLAPPING, null, null, null, null, false, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -233,7 +250,7 @@ public class ControlService {
     // returns list: not indexed
     // returns list: deleted
     public void indexsuffix(String suffix, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXSUFFIX, null, suffix, null, null, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXSUFFIX, null, suffix, null, null, reindex, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -243,7 +260,7 @@ public class ControlService {
     // returns list: file does not exist
     // returns list: not indexed
     public void index(String add, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.INDEX, add, null, null, null, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.INDEX, add, null, null, null, reindex, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -252,12 +269,12 @@ public class ControlService {
     // returns list: tika timeout
     // returns list: not indexed
     public void reindexdatelower(String date, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXDATE, null, null, date, null, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXDATE, null, null, date, null, reindex, false, false);
 	Queues.clientQueue.add(e);
     }
 
     public void reindexdatehigher(String date, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXDATE, null, null, null, date, reindex, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXDATE, null, null, null, date, reindex, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -267,24 +284,25 @@ public class ControlService {
     // returns list: file does not exist
     // returns list: not indexed
     public void reindexlanguage(String lang) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXLANGUAGE, null, lang, null, null, true, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.REINDEXLANGUAGE, null, lang, null, null, true, false, false);
 	Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
 	public List<List> clientDo(ClientQueueElement el) throws Exception {
 		    synchronized (writelock) {
-			ZKBlockWriteLock writelock = null;
-			if (zookeeper != null) {
-			    writelock = ZKLockUtil.blocklockme();
+			MyLock lock = null;
+			if (zookeeper != null && !zookeepersmall) {
+			    lock = MyLockFactory.create();
+			    lock.lock(Constants.GLOBALLOCK);
 			}
 	Function function = el.function;
 	String filename = el.file;
-	boolean reindex = el.reindex;
-	boolean newmd5 = el.md5change;
-	log.info("function " + function + " " + filename + " " + reindex);
+	//boolean reindex = el.reindex;
+	//boolean newmd5 = el.md5change;
+	log.info("function " + function + " " + filename + " " + el.reindex);
 
-	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	SearchDisplay display = el.display;
 	
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retList = new ArrayList<ResultItem>();
@@ -300,10 +318,24 @@ public class ControlService {
 	List<ResultItem> retNotExistList = new ArrayList<ResultItem>();
 	retNotExistList.add(new ResultItem("File does not exist"));
 
-	Set<String> notfoundset = new HashSet<String>();
-	Set<String> filesetnew = new HashSet<String>();
+	String myid = getMyId();
+	String filesetnewid = Constants.FILESETNEWID + myid;
+    MySet<String> filesetnew = MySets.get(filesetnewid);
+	//MySets.put(filesetnewid, filesetnew);
 
-	Traverse traverse = new Traverse(el, retList, retNotList, filesetnew, null, dirlistnot, notfoundset, reindex, newmd5, false);
+	String notfoundsetid = Constants.NOTFOUNDSETID + myid;
+    MySet<String> notfoundset = MySets.get(notfoundsetid);
+    //MySets.put(notfoundsetid, notfoundset);
+
+    String retlistid = Constants.RETLISTID + myid;
+    MyList<ResultItem> retlist = MyLists.get(retlistid);
+    //MyLists.put(retlistid, retlist);
+
+    String retnotlistid = Constants.RETNOTLISTID + myid;
+    MyList<ResultItem> retnotlist = MyLists.get(retnotlistid);
+    //MyLists.put(retnotlistid, retnotlist);
+	
+	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, dirlistnot, notfoundsetid, false);
 	
 	// filesystem
 	// reindexsuffix
@@ -327,23 +359,38 @@ public class ControlService {
 	    TimeUnit.SECONDS.sleep(60);
 	}
 
-	for (String file : notfoundset) {
-	    retNotExistList.add(new ResultItem(file));
+	for (ResultItem file : retlist.getAll()) {
+	    retList.add(file);
 	}
 
-	for (String s : filesetnew) {
-	    retNewFilesList.add(new ResultItem(s));
+	for (ResultItem s : retnotlist.getAll()) {
+	    retNewFilesList.add(s);
 	}
 
+    for (String file : notfoundset.getAll()) {
+        retNotExistList.add(new ResultItem(file));
+    }
+
+    for (String s : filesetnew.getAll()) {
+        retNewFilesList.add(new ResultItem(s));
+    }
+
+	// TODO set clear
+	
+	MyCollections.remove(retlistid);
+    MyCollections.remove(retnotlistid);
+    MyCollections.remove(notfoundsetid);
+    MyCollections.remove(filesetnewid);
+	
 	retlistlist.add(retList);
 	retlistlist.add(retNotList);
 	retlistlist.add(retNewFilesList);
 	retlistlist.add(retDeletedList);
 	retlistlist.add(retTikaTimeoutList);
 	retlistlist.add(retNotExistList);
-	if (zookeeper != null) {
+	if (zookeeper != null && !zookeepersmall) {
 	    ZKMessageUtil.dorefresh();
-	    ZKLockUtil.unlockme(writelock);
+	    lock.unlock();
 	    ClientRunner.notify("Sending refresh request");
 	}
 	return retlistlist;
@@ -390,7 +437,7 @@ public class ControlService {
 
     // called from ui
     public void memoryusage() {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.MEMORYUSAGE, null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.MEMORYUSAGE, null, null, null, null, false, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -419,7 +466,7 @@ public class ControlService {
     // returns list: not indexed
     // returns list: another with columns
     public void notindexed() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.NOTINDEXED, null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.NOTINDEXED, null, null, null, null, false, false, false);
 	Queues.clientQueue.add(e);
     }
 
@@ -509,17 +556,17 @@ public class ControlService {
     // returns list: file does not exist
     // returns list: not indexed
     public void filesystemlucenenew() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEMLUCENENEW, null, null, null, null, false, false);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEMLUCENENEW, null, null, null, null, false, false, false);
 	Queues.clientQueue.add(e);
     }
 
     public void filesystemlucenenew(String add, boolean md5checknew) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEMLUCENENEW, add, null, null, null, false, md5checknew);
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.FILESYSTEMLUCENENEW, add, null, null, null, false, md5checknew, false);
 	Queues.clientQueue.add(e);
     }
 
     public void dbindex(String md5) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DBINDEX, md5, null, null, null, false, false); // dumb overload habit
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DBINDEX, md5, null, null, null, false, false, false); // dumb overload habit
 	Queues.clientQueue.add(e);
     }
 
@@ -529,7 +576,7 @@ public class ControlService {
 	String md5 = el.file;
 	log.info("function " + function + " " + md5);
 
-	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	SearchDisplay display = el.display;
 
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
@@ -568,7 +615,7 @@ public class ControlService {
     }
 
     public void dbsearch(String md5) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DBSEARCH, md5, null, null, null, false, false); // dumb overload habit
+	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DBSEARCH, md5, null, null, null, false, false, false); // dumb overload habit
 	Queues.clientQueue.add(e);
     }
 
@@ -583,7 +630,7 @@ public class ControlService {
 	if (i < 0) {
 	    return retlistlist;
 	}
-	SearchDisplay display = SearchService.getSearchDisplay(el.ui);
+	SearchDisplay display = el.display;
 	String field = searchexpr.substring(0, i);
 	String text = searchexpr.substring(i + 1);
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
@@ -662,9 +709,17 @@ public class ControlService {
     private static Thread controlWorker = null;
     private static ZKRunner zkRunnable = null;
     public static Thread zkWorker = null;
+    private static TraverseQueueRunner traverseQueueRunnable = null;
+    public static Thread traverseQueueWorker = null;
 
     public static volatile String zookeeper = null;
+    public static boolean zookeepersmall = false;
+    public static CuratorFramework curatorClient = null;
+    public static boolean distributedtraverse = false;
 
+    public static String locker = null; // null, curator, zk, hz
+    //public static MyLock lock;
+    
     public void startThreads() {
     	if (tikaRunnable == null) {
 	    startTikaWorker();
@@ -687,6 +742,12 @@ public class ControlService {
     	if (zookeeper != null && zkRunnable == null) {
     	startZKWorker();
     	}
+        if (zookeeper != null && ControlService.zookeepersmall && traverseQueueRunnable == null) {
+        startTraversequeueWorker();
+        }
+        if (traverseQueueRunnable == null) {
+        startTraversequeueWorker();
+        }
     }
 
 	private void startControlWorker() {
@@ -751,6 +812,14 @@ public class ControlService {
     	log.info("starting zk worker");
 	}
 
+    public void startTraversequeueWorker() {
+        traverseQueueRunnable = new TraverseQueueRunner();
+        traverseQueueWorker = new Thread(traverseQueueRunnable);
+        traverseQueueWorker.setName("TraverseWorker");
+        traverseQueueWorker.start();
+        log.info("starting traverse queue worker");
+    }
+
     @SuppressWarnings("rawtypes")
 	private List<List> mergeListSet(Set<List> listSet, int size) {
 	List<List> retlistlist = new ArrayList<List>();
@@ -768,7 +837,7 @@ public class ControlService {
 
 	public void consistentclean(boolean clean) {
 		// TODO Auto-generated method stub
-		ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.CONSISTENTCLEAN, null, null, null, null, clean, false); // more dumb overload
+		ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.CONSISTENTCLEAN, null, null, null, null, false, false, clean); // more dumb overload
 		Queues.clientQueue.add(e);
 	    }
 
@@ -788,10 +857,21 @@ public class ControlService {
 		Set<String> delfileset = new HashSet<String>();
 
 		Set<String> filesetnew = new HashSet<String>(); // just a dir list
-		Set<String> newset = new HashSet<String>();
-		Set<String> notfoundset = new HashSet<String>();
+		//Set<String> newset = new HashSet<String>();
 		
-		Traverse traverse = new Traverse(el, null, null, newset, null, dirlistnot, notfoundset, false, false, true);
+	    String myid = getMyId();
+	    String newsetid = "newsetid"+myid;
+	    MySet<String> newset = MySets.get(newsetid);
+	    //MySets.put(newsetid, newset);
+
+	    String notfoundsetid = "notfoundsetid"+myid;
+	    MySet<String> notfoundset = MySets.get(notfoundsetid);
+	    //MySets.put(notfoundsetid, notfoundset);
+
+        String md5sdoneid = "md5sdoneid"+myid;
+        MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+	    
+	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, dirlistnot, notfoundsetid, true);
 			    
 		List<IndexFiles> indexes;
 		try {
@@ -812,27 +892,33 @@ public class ControlService {
 		
 		traverse.traverse(null);
 		
-		for (String file : newset) {
+		for (String file : newset.getAll()) {
 			newList.add(new ResultItem(file));
 		}
-		for (String file : notfoundset) {
+		for (String file : notfoundset.getAll()) {
 			nonexistList.add(new ResultItem(file));
 		}
 		
 		if (clean) {
 		    synchronized (writelock) {
-			ZKBlockWriteLock writelock = null;
-			if (zookeeper != null) {
-			    writelock = ZKLockUtil.blocklockme();
+			MyLock lock = null;
+			if (zookeeper != null && !zookeepersmall) {
+	             lock = MyLockFactory.create();
+	                lock.lock(Constants.GLOBALLOCK);
 			}
+			Set<IndexFiles> ifs = new HashSet<IndexFiles>();
 		    //DbRunner.doupdate = false;
 			for (String filename : delfileset) {
 				String md5 = IndexFilesDao.getMd5ByFilename(filename);
 				if (md5 != null) {
+		            MyLock lock2 = MyLockFactory.create();
+		            lock2.lock(md5);
 					IndexFiles ifile = IndexFilesDao.getByMd5(md5);
 					FileLocation fl = new FileLocation(filename);
 					boolean removed = ifile.removeFilelocation(fl);
 					//log.info("fls2 size " + removed + ifile.getFilelocations().size());
+	                IndexFilesDao.add(ifile);
+			ifs.add(ifile);
 				} else {
 					log.info("trying the hard way, no md5 for " + filename);
 					for (IndexFiles index : indexes) {
@@ -840,6 +926,8 @@ public class ControlService {
 					    if (index.getFilelocations().contains(fl)) {
 						boolean removed = index.removeFilelocation(fl);
 						//log.info("fls3 size " + removed + index.getFilelocations().size());
+	                    IndexFilesDao.add(index);
+			    ifs.add(index);
 					    }
 					}
 				}
@@ -849,10 +937,16 @@ public class ControlService {
 			while (IndexFilesDao.dirty() > 0) {
 			    TimeUnit.SECONDS.sleep(60);
 			}
+			for (IndexFiles i : ifs) {
+			    MyLock filelock = i.getLock();
+	            filelock.unlock();
+	            i.setLock(null);
+
+			}
 			
-			if (zookeeper != null) {
+			if (zookeeper != null && !zookeepersmall) {
 				ZKMessageUtil.dorefresh();
-			    ZKLockUtil.unlockme(writelock);
+			    lock.unlock();
 			}
 		    }
 		}
@@ -869,27 +963,32 @@ public class ControlService {
 	    }
 
         public void deletepathdb(String path) {
-            ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DELETEPATH, path, null, null, null, true, false);
+            ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.DELETEPATH, path, null, null, null, true, false, false);
             Queues.clientQueue.add(e);
         }
 
         public List deletepathdbDo(ClientQueueElement el) throws Exception {
             synchronized (writelock) {
-            ZKBlockWriteLock writelock = null;
-            if (zookeeper != null) {
-                writelock = ZKLockUtil.blocklockme();
+            MyLock lock = null;
+            if (zookeeper != null && !zookeepersmall) {
+                lock = MyLockFactory.create();
+                lock.lock(Constants.GLOBALLOCK);
             }
             List<List> retlistlist = new ArrayList<List>();
             List<ResultItem> delList = new ArrayList<ResultItem>();
             delList.add(new ResultItem("Deleted"));
+            Set<IndexFiles> ifs = new HashSet<IndexFiles>();
             String path = el.file;
             if (path.isEmpty()) {
                 log.info("skipping empty path");
                 retlistlist.add(delList);
                 return retlistlist;
             }
-            List<IndexFiles> indexes = IndexFilesDao.getAll();
-            for (IndexFiles index : indexes) {
+            Set<String> indexes = IndexFilesDao.getAllMd5();
+            for (String md5 : indexes) {
+                MyLock lock2 = MyLockFactory.create();
+                lock2.lock(md5);               
+                IndexFiles index = IndexFilesDao.getByMd5(md5);
                 Set<FileLocation> deletes = new HashSet<FileLocation>();
                 for (FileLocation fl : index.getFilelocations()) {
                      if (fl.toString().contains(path)) {
@@ -903,14 +1002,24 @@ public class ControlService {
                     if (index.getFilelocations().isEmpty()) {
                         IndexFilesDao.delete(index);
                         SearchDao.deleteme(index.getMd5());
-                    } else {
-                        IndexFilesDao.save(index);
                     }
-                }
+                    IndexFilesDao.add(index);
+                    ifs.add(index);
+                 }
             }
-            if (zookeeper != null) {
+            while (IndexFilesDao.dirty() > 0) {
+                TimeUnit.SECONDS.sleep(60);
+            }
+
+            for (IndexFiles i : ifs) {
+                MyLock filelock = i.getLock();
+                filelock.unlock();
+                i.setLock(null);
+            }
+
+            if (zookeeper != null && !zookeepersmall) {
                 ZKMessageUtil.dorefresh();
-                ZKLockUtil.unlockme(writelock);
+                lock.unlock();
                 ClientRunner.notify("Sending refresh request");
             }
             retlistlist.add(delList);
