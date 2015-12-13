@@ -20,7 +20,7 @@ diff -ru ../../configsets/basic_configs/conf/schema.xml ./schema.xml
 diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
 --- ../../configsets/basic_configs/conf/solrconfig.xml	2015-02-15 20:38:59.000000000 +0100
 +++ ./solrconfig.xml	2015-02-27 09:55:24.896108652 +0100
-@@ -206,7 +206,7 @@
+@@ -214,7 +214,7 @@
           be based on the last SolrCore to be initialized.
           
        -->
@@ -29,7 +29,7 @@ diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
  
  
      <!-- Solr Internal Query Caches
-@@ -434,7 +434,7 @@
+@@ -445,7 +445,7 @@
         <str name="echoParams">explicit</str>
         <str name="wt">json</str>
         <str name="indent">true</str>
@@ -38,7 +38,7 @@ diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
       </lst>
    </requestHandler>
  
-@@ -457,7 +457,7 @@
+@@ -468,7 +468,7 @@
  
    <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell">
      <lst name="defaults">
