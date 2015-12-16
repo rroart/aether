@@ -94,6 +94,7 @@ solrurl=http://localhost:8983/solr/mystuff
 
 mkdir -p server/solr/MYCORE/conf
 rsync -v -a server/solr/configsets/basic_configs/conf/  server/solr/MYCORE/conf
+if creating manually, create server/solr/MYCORE/core.properties
 go to server/solr/MYCORE/conf
 in server/solr/MYCORE/conf apply patch with
 patch -p0 < core.nostore.patch
@@ -104,6 +105,11 @@ Download from https://code.google.com/p/language-detection/wiki/Downloads,
 and put profiles* in the same dir as pom.xml.
 Languages to be used for classification, configure (default en) with:
 languages=en,fr
+
+2.1.4 Distributed mode
+There are two config settings for this.
+With distributedlockmode=small there is a lock for each index entry.
+With distributedprocess=true the files are placed in a distributed queue.
 
 2.2 Non-mandatory
 
@@ -242,7 +248,7 @@ Settings for More Like This, max number of hits, minimum term frequency and mini
 
 3.3 General
 
-Status label has rows for t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
+Status label has rows for f(ile) queue t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
 Also, a d for counting dirty database objects and for prioritized (which have finished).
 
 4. Caution
@@ -272,12 +278,18 @@ Java 8.
 Usage of mime type probing.
 DataNucleus table changes.
 
+0.7
+New distributed mode, with usage of Curator and Hazelcast.
+A lot of refactoring have been done.
+
 6. Version numbers of external software
 
-Solr 5.1.0
-Hbase 1.0.0
+Solr 5.4.0
+Hbase 1.1.2
 Mahout 0.9
 OpenNLP 1.5.3
+Curator 2.9.1
+Hazelcast 3.5.4
 
 7. Database dumps
 

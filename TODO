@@ -6,7 +6,7 @@ handle delete move
 detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
 display diff docs and number indexed
 db persistence, more db handling
-more granular multitasking and locking capabilities
+distributed locking and node loss
 #package lang profiles
 get metadata if too small?
 hbase delete from db incomplete
