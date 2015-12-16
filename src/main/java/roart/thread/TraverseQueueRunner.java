@@ -28,7 +28,7 @@ public class TraverseQueueRunner implements Runnable {
    
     public void run() {
 
-        int nThreads = 50;
+        int nThreads = 10;
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
         String queueid = Constants.TRAVERSEQUEUE;
@@ -78,7 +78,25 @@ public class TraverseQueueRunner implements Runnable {
                                 return null; //myMethod();              
                         }
                 };
-                    Future<Object> task = executorService.submit(callable);
+                   Callable<Object> callablesimple = new Callable<Object>() {
+                        public Object call() /* throws Exception*/ {
+                                try {
+				    TraverseFile.handleFo3(trav);
+                                } catch (Exception e) {
+                                    log.error(Constants.EXCEPTION, e);
+                                } catch (Error e) {
+                                    System.gc();
+                                log.error("Error " + Thread.currentThread().getId());
+                                    log.error(Constants.ERROR, e);
+                                }
+                                finally {
+                                        //log.info("myend");            
+                                }
+                                return null; //myMethod();              
+                        }
+		   };
+		   log.info("submitting " + executorService.getCompletedTaskCount() + " " + executorService.getPoolSize() + " " + executorService.getActiveCount());
+                    Future<Object> task = executorService.submit(callablesimple);
 
                     //TraverseFile.handleFo3(trav);
                 } catch (Exception e) {
