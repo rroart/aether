@@ -27,6 +27,8 @@ public class IndexFilesDao {
 
     private static volatile ConcurrentMap<String, IndexFiles> dbi = new ConcurrentHashMap<String, IndexFiles>();
 
+    private static volatile ConcurrentMap<String, IndexFiles> dbitemp = new ConcurrentHashMap<String, IndexFiles>();
+
     private static IndexFilesAccess indexFiles = null;
 
     public static void instance(String type) {
@@ -185,6 +187,10 @@ public class IndexFilesDao {
         dbi.putIfAbsent(i.getMd5(), i);
     }
     
+    public static void addTemp(IndexFiles i) {
+        dbitemp.putIfAbsent(i.getMd5(), i);
+    }
+    
     public static void commit() {
 	close();
     }
@@ -216,6 +222,21 @@ public class IndexFilesDao {
             LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
             lockqueue.offer(lock);
             dbi.remove(k);
+	    dbitemp.remove(k);
+        }
+        for (String k : dbitemp.keySet()) {
+            IndexFiles i = dbitemp.get(k);
+            if (level != i.getPriority()) {
+                continue;
+            }
+            if (level == 0 && i.hasChanged()) {
+                count++;
+            }
+            if (count > 1000) {
+                break;
+            }
+            IndexFilesDao.save(i);
+            dbitemp.remove(k);
         }
 	//all.clear();
 	try {
