@@ -115,7 +115,7 @@ public class Queues {
     }
     
     public static boolean traverseQueueHeavyLoaded() {
-    return traverseQueue.size() >= limit;
+	return traverseQueue.size() >= 10 /* limit */;
     }
     
    public static String webstat() {
