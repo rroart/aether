@@ -62,14 +62,14 @@ public class TraverseFile {
     String filename = trav.getFilename();
     FileObject fo = FileSystemDao.get(filename);
 
-    MyLock lock2 = MyLockFactory.create();
+    //MyLock lock2 = MyLockFactory.create();
     //lock2.lock(fo.toString());
              log.debug("timer");
             String md5 = IndexFilesDao.getMd5ByFilename(filename);
             log.debug("info " + md5 + " " + filename);
             IndexFiles files = null;
-            MyLock lock = MyLockFactory.create();
-            lock.lock(md5);
+            MyLock lock = null; 
+	    boolean lockwait = false;
            if (trav.getClientQueueElement().md5change == true || md5 == null) {
                 try {
                     if (!FileSystemDao.exists(fo)) {
@@ -82,10 +82,13 @@ public class TraverseFile {
                         if (files == null) {
                             //z.lock(md5);
                             // get read file
+			    lock = MyLockFactory.create();
+			    lock.lock(md5);
                             files = IndexFilesDao.getByMd5(md5);
                         }
                         // modify write file
                         files.addFile(filename);
+			IndexFilesDao.addTemp(files);
                         log.info("adding md5 file " + filename);
                     }
                     // calculatenewmd5 and nodbchange are never both true
@@ -105,19 +108,24 @@ public class TraverseFile {
                     log.error(Constants.EXCEPTION, e);
                     return;
                 }
-            } else {
+	   } else {
                 log.debug("timer2");
                 // get read file
+		lock = MyLockFactory.create();
+		lock.lock(md5);
                 files = IndexFilesDao.getByMd5(md5);
                 log.debug("info " + md5 + " " + files);
             }
+	   if (files != null && lock != null) {
             files.setLock(lock);
             LinkedBlockingQueue lockqueue = new LinkedBlockingQueue();
             files.setLockqueue(lockqueue);
+	   }
         String md5sdoneid = "md5sdoneid"+trav.getMyid();
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
         
-            if (md5sdoneset != null && !md5sdoneset.add(md5)) {
+            try {
+            if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
                 return;
             }
             if (trav.getClientQueueElement().function == Function.FILESYSTEM) {
@@ -126,16 +134,30 @@ public class TraverseFile {
             if (!Traverse.filterindex(files, trav)) {
                 return;
             }
-            try {
+	   lockwait = true;
                 indexsingle(trav, md5, filename, files);
             } catch (Exception e) {
                 log.info("Error: " + e.getMessage());
                 log.error(Constants.EXCEPTION, e);
-            }
+            } finally {
+		log.debug("hereend");
+		if (lockwait) {
+		    // TODO better flag than this?
                 LinkedBlockingQueue lockqueue2 = (LinkedBlockingQueue) files.getLockqueue();
-             MyLock unlock = (MyLock) lockqueue2.poll(3600, TimeUnit.SECONDS);
-            lock.unlock();
-            files.setLock(null);
+		if (lockqueue2 != null) {
+		    log.debug("waiting");
+		    lockqueue2.take();
+		    log.debug("done waiting");
+		}
+		}
+		if (files != null) {
+		MyLock unlock = files.getLock();
+		if (unlock != null) {
+		unlock.unlock();
+		files.setLock(null);
+		}
+		}
+	    }
             //md5set.add(md5);
         }
     }
