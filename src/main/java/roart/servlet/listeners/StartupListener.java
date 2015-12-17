@@ -7,7 +7,9 @@ import roart.model.ResultItem;
 import roart.queue.TikaQueueElement;
 import roart.service.ControlService;
 import roart.util.ConfigConstants;
+import roart.util.MyCollections;
 import roart.util.MyHazelcastQueue;
+import roart.util.MyHazelcastRemover;
 import roart.util.MyJavaQueue;
 import roart.util.MyLockFactory;
 import roart.util.Prop;
@@ -125,6 +127,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
         roart.service.ControlService.distributedtraverse = true;
         GetHazelcastInstance.instance();
         ControlService.locker = roart.util.Constants.HAZELCAST;
+        MyCollections.remover = new MyHazelcastRemover();
     } else {
         roart.service.ControlService.distributedtraverse = false;
    }

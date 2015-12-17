@@ -13,6 +13,8 @@ public abstract class MyCollections<T> {
 
     protected static volatile ConcurrentMap<String, Object> mycollections = new ConcurrentHashMap<String, Object>();
 
+    public static MyRemover remover = null;
+    
     public static Object get(String id, MyFactory myfactory) {
 	Object obj = null;
 	if (id != null) {
@@ -35,6 +37,9 @@ public abstract class MyCollections<T> {
     }
     
     public static boolean remove(String id) {
+	if (remover != null) {
+	    remover.remove(id);
+	}
         return mycollections.remove(id) != null;
     }
     
