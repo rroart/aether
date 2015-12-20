@@ -46,7 +46,7 @@ public class TraverseQueueRunner implements Runnable {
     		}
     	    
     		String filename = trav.getFilename();
-    		log.info("trav cli " + trav.getClientQueueElement());
+    		log.info("trav cli " + filename);
             FileObject fo = FileSystemDao.get(filename);
     		
     		if (Traverse.isLocal(fo)) {
