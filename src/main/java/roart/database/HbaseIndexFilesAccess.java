@@ -77,8 +77,13 @@ public class HbaseIndexFilesAccess extends IndexFilesAccess {
     }
 
 	@Override
+    public void commit() throws Exception {
+	HbaseIndexFiles.commit();
+    }
+
+    @Override
     public void close() throws Exception {
-	HbaseIndexFiles.close();
+    HbaseIndexFiles.close();
     }
 
 	@Override

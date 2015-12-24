@@ -299,6 +299,10 @@ import roart.util.Constants;
                 roart.database.DataNucleusUtil.commit();
 	}
 
+	public static void close() throws Exception {
+                roart.database.DataNucleusUtil.close();
+	}
+
 	public static Set<String> getAllMd5() throws Exception {
     	Set<String> md5s = null;
     	Query query = DataNucleusUtil.currentSession().getPm().newQuery("select md5 from " + DataNucleusIndexFiles.class.getName());

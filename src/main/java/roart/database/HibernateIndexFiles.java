@@ -359,6 +359,10 @@ import roart.util.Constants;
                 roart.database.HibernateUtil.commit();
 	}
 
+	public static void close() throws Exception {
+                roart.database.HibernateUtil.close();
+	}
+
 	public static Set<String> getAllMd5() throws Exception {
 		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select md5 from HibernateIndexFiles").list(), String.class);
 	}

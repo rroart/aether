@@ -418,6 +418,9 @@ public class HbaseIndexFiles {
 	    ((HTable) indexTable).flushCommits();
     }
 
+    public static void commit() throws Exception {        
+    }
+    
     public static void close() throws Exception {
 	    log.info("closing db");
 	    if (filesTable != null) {

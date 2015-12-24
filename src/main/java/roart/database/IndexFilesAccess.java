@@ -29,6 +29,8 @@ public abstract class IndexFilesAccess {
 
     public abstract void close() throws Exception;
 
+        public abstract void commit() throws Exception;
+
 	public abstract Set<String> getAllMd5() throws Exception;
 
 	public abstract Set<String> getLanguages() throws Exception;
