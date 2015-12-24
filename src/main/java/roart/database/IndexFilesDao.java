@@ -191,11 +191,17 @@ public class IndexFilesDao {
         dbitemp.putIfAbsent(i.getMd5(), i);
     }
     
-    public static void commit() {
-	close();
+    public static void close() {
+        try {
+            synchronized(IndexFilesDao.class) {
+        indexFiles.close();
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
     }
 
-    public static void close() {
+    public static void commit() {
         int[] pris = getPris();
         int level = 0;
         if (pris[1] > 0) {
@@ -241,7 +247,7 @@ public class IndexFilesDao {
 	//all.clear();
 	try {
 	    synchronized(IndexFilesDao.class) {
-	indexFiles.close();
+	indexFiles.commit();
 	    }
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);

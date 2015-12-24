@@ -73,6 +73,13 @@ public class DataNucleusUtil {
     	return session;
     }
 
+    public static void close() throws Exception {
+	if (pm != null) {
+	    pm.close();
+	    pm = null;
+	}
+    }
+    
     public static void commit() throws Exception {
 	log.info("Doing DataNucleus commit");
 	if (transaction != null) {
@@ -83,10 +90,12 @@ public class DataNucleusUtil {
      }
 		transaction = null;
 	}
+	/*
 	if (pm != null) {
 	pm.close();
 	pm = null;
 	}
+	*/
 
 	if (transaction2 != null) {
 	transaction2.commit();

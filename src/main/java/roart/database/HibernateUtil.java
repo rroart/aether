@@ -62,16 +62,25 @@ public class HibernateUtil {
 	return session;
     }
 
+    public static void close() throws /*MappingException,*/ HibernateException, Exception {
+	if (session != null && session.isOpen()) {
+	    session.close();
+	session = null;
+	}
+    }
+    
     public static void commit() throws /*MappingException,*/ HibernateException, Exception {
 	log.info("Doing hibernate commit");
 	if (transaction != null) {
 	transaction.commit();
 	transaction = null;
 	}
+	/*
 	if (session != null && session.isOpen()) {
 	    session.close();
 	session = null;
 	}
+	*/
     }
 
     public static <T> List<T> convert(List l, Class<T> type) {

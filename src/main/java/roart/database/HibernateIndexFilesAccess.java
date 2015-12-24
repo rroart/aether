@@ -115,8 +115,13 @@ public class HibernateIndexFilesAccess extends IndexFilesAccess {
     }
 
 	@Override
-    public void close() throws Exception {
+    public void commit() throws Exception {
 	HibernateIndexFiles.commit();
+    }
+
+	@Override
+    public void close() throws Exception {
+	HibernateIndexFiles.close();
     }
 
 	@Override

@@ -137,8 +137,13 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
     }
 
     @Override
-    public void close() throws Exception {
+    public void commit() throws Exception {
         DataNucleusIndexFiles.commit();
+    }
+
+    @Override
+    public void close() throws Exception {
+        DataNucleusIndexFiles.close();
     }
 
     @Override
