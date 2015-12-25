@@ -165,7 +165,6 @@ public class Queues {
         for (MySet set : workQueues) {
             ret += set.size();
         }
-        log.info("mysize + " + workQueues.size() + " " + ret);
         return ret;
     }
 }
