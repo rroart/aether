@@ -28,7 +28,7 @@ public class TraverseQueueRunner implements Runnable {
    
     public void run() {
 
-        int nThreads = 10;
+        int nThreads = 20;
 	if (roart.service.ControlService.hasHibernate) {
 	    nThreads = 100;
 	    log.info("more threads with hibernate");
