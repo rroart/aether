@@ -125,6 +125,13 @@ public class Traverse {
         }
         for (FileObject fo : listDir) {
             String filename = FileSystemDao.getAbsolutePath(fo);
+	    // for encoding problems
+	    if (!FileSystemDao.exists(fo)) {
+		MySet<String> notfoundset = (MySet<String>) MySets.get(notfoundsetid); 
+		notfoundset.add(filename);
+		continue;
+		//throw new FileNotFoundException("File does not exist " + filename);
+	    }
             if (filename.length() > MAXFILE) {
                 log.info("Too large filesize " + filename);
                 continue;

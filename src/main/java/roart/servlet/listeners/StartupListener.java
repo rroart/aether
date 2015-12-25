@@ -88,6 +88,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 	} else if (mydb.equals(ConfigConstants.DATANUCLEUS)) {
 		new roart.database.DataNucleusIndexFiles();
 	}
+	roart.service.ControlService.hasHibernate = mydb.equals(ConfigConstants.HIBERNATE);
 	if (mydb.equals(ConfigConstants.HIBERNATE) || myindex.equals(ConfigConstants.LUCENE)) {
 		roart.service.ControlService.nodename = ConfigConstants.LOCALHOST; // force this
 	}

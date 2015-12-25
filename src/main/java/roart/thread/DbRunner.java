@@ -33,7 +33,7 @@ public class DbRunner implements Runnable {
 
     public static final Set<UI> uiset = new HashSet<UI>();
 	
-    static final int update = 60;
+    static final int update = 6;
     static long lastupdate = 0;
 
     //public static volatile boolean doupdate = true;
@@ -53,7 +53,7 @@ public class DbRunner implements Runnable {
                 lastupdate = System.currentTimeMillis();
             }
             try {
-                int sleepsec = 60 - (int) ((lastupdate - now)/1000);  
+                int sleepsec = update - (int) ((lastupdate - now)/1000);  
                 if (sleepsec < 1) {
                     sleepsec = 1;
                 }

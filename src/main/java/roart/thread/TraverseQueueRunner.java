@@ -29,6 +29,10 @@ public class TraverseQueueRunner implements Runnable {
     public void run() {
 
         int nThreads = 10;
+	if (roart.service.ControlService.hasHibernate) {
+	    nThreads = 100;
+	    log.info("more threads with hibernate");
+	}
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
         String queueid = Constants.TRAVERSEQUEUE;
@@ -46,7 +50,7 @@ public class TraverseQueueRunner implements Runnable {
     		}
     	    
     		String filename = trav.getFilename();
-    		log.info("trav cli " + trav.getClientQueueElement());
+    		log.info("trav cli " + filename);
             FileObject fo = FileSystemDao.get(filename);
     		
     		if (Traverse.isLocal(fo)) {

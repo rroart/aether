@@ -14,6 +14,7 @@ import roart.util.Constants;
 import roart.util.MyList;
 import roart.util.MyLists;
 import roart.filesystem.FileSystemDao;
+import roart.database.IndexFilesDao;
 
 import java.io.*;
 import java.util.Arrays;
@@ -233,6 +234,9 @@ public class TikaHandler {
 	                    //index.save();
 	                }
                     index.setPriority(1);
+		    // file unlock dbindex
+		    // config with finegrained distrib
+		    IndexFilesDao.add(index);
 	            }
 	        }
 	        if (outputStream != null) {

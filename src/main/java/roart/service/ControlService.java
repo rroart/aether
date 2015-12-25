@@ -723,6 +723,7 @@ public class ControlService {
     public static boolean zookeepersmall = false;
     public static CuratorFramework curatorClient = null;
     public static boolean distributedtraverse = false;
+    public static boolean hasHibernate = false;
 
     public static String locker = null; // null, curator, zk, hz
     //public static MyLock lock;
