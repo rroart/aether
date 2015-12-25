@@ -29,6 +29,10 @@ public class TraverseQueueRunner implements Runnable {
     public void run() {
 
         int nThreads = 10;
+	if (roart.service.ControlService.hasHibernate) {
+	    nThreads = 100;
+	    log.info("more threads with hibernate");
+	}
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
         String queueid = Constants.TRAVERSEQUEUE;
