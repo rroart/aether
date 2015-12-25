@@ -137,40 +137,6 @@ public class Traverse {
                 retset.add(filename);
                 if (!nomd5) {
                     String queueid = Constants.TRAVERSEQUEUE;
-                    /*
-                    MyQueue<FileObject> queue2 = MyQueues.get(queueid+"2");
-                    try {
-                        queue2.offer(fo);
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        XMLEncoder encoder = new XMLEncoder( bos );
-                        encoder.writeObject( fo );
-                        encoder.close();
-                        log.info(encoder.toString());
-                    } catch (Exception e) {
-                        log.error(Constants.EXCEPTION, e);
-                    }
-                    MyQueue<ClientQueueElement> queue3 = MyQueues.get(queueid+"3");
-                    try {
-                        queue3.offer(new ClientQueueElement(null, null, queueid, queueid, queueid, queueid, nomd5, nomd5, nomd5));
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        XMLEncoder encoder = new XMLEncoder( bos );
-                        encoder.writeObject( new ClientQueueElement(null, null, queueid, queueid, queueid, queueid, nomd5, nomd5, nomd5) );
-                        encoder.close();
-                        log.info(encoder.toString());
-                    } catch (Exception e) {
-                        log.error(Constants.EXCEPTION, e);
-                    }
-                    try {
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        XMLEncoder encoder = new XMLEncoder( bos );
-                        TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid);
-                        encoder.writeObject( trav);
-                        encoder.close();
-                        log.info(encoder.toString());
-                    } catch (Exception e) {
-                        log.error(Constants.EXCEPTION, e);
-                    }
-                    */
                     MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
                     TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid);
                     queue.offer(trav);
