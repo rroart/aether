@@ -335,7 +335,12 @@ public class ControlService {
     MyList<ResultItem> retnotlist = MyLists.get(retnotlistid);
     //MyLists.put(retnotlistid, retnotlist);
 	
-	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, dirlistnot, notfoundsetid, false);
+    String filestodosetid = Constants.FILESTODOSETID + myid;
+    MySet<String> filestodoset = MySets.get(filestodosetid);
+    //MyLists.put(retnotlistid, retnotlist);
+    Queues.workQueues.add(filestodoset);
+    
+	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, dirlistnot, notfoundsetid, filestodosetid, false);
 	
 	// filesystem
 	// reindexsuffix
@@ -345,7 +350,7 @@ public class ControlService {
 
 	traverse.traverse(filename);
 	
-	while ((Queues.queueSize() + Queues.runSize()) > 0) {
+	while (filestodoset.size() > 0 && (Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
@@ -381,6 +386,8 @@ public class ControlService {
     MyCollections.remove(retnotlistid);
     MyCollections.remove(notfoundsetid);
     MyCollections.remove(filesetnewid);
+    MyCollections.remove(filestodosetid);
+    Queues.workQueues.remove(filestodoset);
 	
 	retlistlist.add(retList);
 	retlistlist.add(retNotList);
@@ -871,7 +878,7 @@ public class ControlService {
         String md5sdoneid = "md5sdoneid"+myid;
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 	    
-	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, dirlistnot, notfoundsetid, true);
+	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, dirlistnot, notfoundsetid, null, true);
 			    
 		List<IndexFiles> indexes;
 		try {

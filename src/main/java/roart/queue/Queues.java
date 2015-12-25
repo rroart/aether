@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import roart.util.Constants;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
+import roart.util.MySet;
 
 public class Queues {
 	
@@ -31,6 +32,8 @@ public class Queues {
     public static volatile Queue<ClientQueueElement> clientQueue = new ConcurrentLinkedQueue<ClientQueueElement>();
     public static volatile Queue<TraverseQueueElement> traverseQueue = new ConcurrentLinkedQueue<TraverseQueueElement>();
 
+    public static Set<MySet> workQueues = new HashSet();
+    
     public static volatile Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     
     private static volatile AtomicInteger tikas = new AtomicInteger(0);
@@ -121,13 +124,13 @@ public class Queues {
    public static String webstat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + traverseQueue.size() + " / " + traverseQueue.size() + "\nt " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
+       return "f " + work() + " / " + traverseQueue.size() + "\nt " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
     }
 
    public static String stat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + traverseQueue.size() + " / " + traverseQueue.size() + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
+       return "f " + work() + " / " + traverseQueue.size() + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
     }
 
    public static void queueStat() {
@@ -148,5 +151,13 @@ public class Queues {
     
     public static void resetTikaTimeoutQueue() {
     	tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
+    }
+    
+    public static int work() {
+        int ret = 0;
+        for (MySet set : workQueues) {
+            ret += set.size();
+        }
+        return ret;
     }
 }

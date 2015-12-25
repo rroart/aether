@@ -31,5 +31,6 @@ public static final String ZOOKEEPER = "zookeeper";
 public static final String CURATOR = "curator";
 public static final String HAZELCAST = "hazelcast";
 public static final String GLOBALLOCK = "globallock";
+public static final String FILESTODOSETID = "filestodoset";
 
 }

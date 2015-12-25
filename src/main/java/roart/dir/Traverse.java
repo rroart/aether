@@ -138,9 +138,8 @@ public class Traverse {
                 if (!nomd5) {
                     String queueid = Constants.TRAVERSEQUEUE;
                     MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
-                    TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid);
+                    TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid);
                     queue.offer(trav);
-
                     //TraverseFile.handleFo3(null, fo);
                 }
             }
@@ -462,7 +461,7 @@ public class Traverse {
 				continue;
 			}
 			// TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid);
+            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid);
 			if (!filterindex(index, trav)) {
 				continue;
 			}
@@ -509,6 +508,7 @@ public class Traverse {
 	String notfoundsetid;
 	//boolean reindex = false;
 	//boolean calculatenewmd5;
+    String filestodosetid;
 	boolean nomd5;
 
 	   String[] dirlistnot;
@@ -516,7 +516,7 @@ public class Traverse {
 
     //Set<String> md5sdone = new HashSet<String>();
 	
-	public Traverse(String myid, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, boolean nomd5) {
+	public Traverse(String myid, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, String filestodosetid, boolean nomd5) {
 
 	    this.myid = myid;
 	    this.element = element;
@@ -526,6 +526,7 @@ public class Traverse {
 		this.notfoundsetid = notfoundsetid;
 		//this.reindex = reindex;
 		//this.calculatenewmd5 = newmd5;
+		this.filestodosetid = filestodosetid;
 		this.nomd5 = nomd5;
 		
 		this.dirlistnot = ControlService.dirlistnot;

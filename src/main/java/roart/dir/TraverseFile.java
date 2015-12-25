@@ -67,6 +67,8 @@ public class TraverseFile {
              log.debug("timer");
             String md5 = IndexFilesDao.getMd5ByFilename(filename);
             log.debug("info " + md5 + " " + filename);
+            MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
+            filestodoset.add(md5);
             IndexFiles files = null;
             MyLock lock = null; 
 	    boolean lockwait = false;
@@ -157,6 +159,9 @@ public class TraverseFile {
 		files.setLock(null);
 		}
 		}
+        if (!filestodoset.remove(md5)) {
+            log.error("already removed " + md5);
+        }
 	    }
             //md5set.add(md5);
         }
