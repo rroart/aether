@@ -33,7 +33,7 @@ public class DbRunner implements Runnable {
 
     public static final Set<UI> uiset = new HashSet<UI>();
 	
-    static final int update = 6;
+    static final int update = 2;
     static long lastupdate = 0;
 
     //public static volatile boolean doupdate = true;
