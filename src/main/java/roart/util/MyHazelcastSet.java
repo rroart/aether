@@ -20,6 +20,16 @@ public class MyHazelcastSet<T> extends MySet<T> {
         return false;
     }
 
+    @Override
+    public boolean remove(T o) {
+        try {
+            return set.remove(o);
+        } catch (Exception e) {
+            log.error(roart.util.Constants.EXCEPTION, e);
+        }
+        return false;
+    }
+
     public MyHazelcastSet(String setname) {
         HazelcastInstance hz = GetHazelcastInstance.instance();
         set = hz.getSet(setname);       

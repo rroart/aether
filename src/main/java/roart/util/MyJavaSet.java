@@ -13,6 +13,11 @@ public class MyJavaSet<T> extends MySet<T> {
         return set.add(o);
     }
     
+    @Override
+    public boolean remove(T o) {
+        return set.remove(o);
+    }
+    
     public MyJavaSet() {
         set = new HashSet<T>();
     }
