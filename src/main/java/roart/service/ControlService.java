@@ -38,6 +38,8 @@ import roart.thread.DbRunner;
 import roart.thread.ZKRunner;
 import roart.util.ConfigConstants;
 import roart.util.Constants;
+import roart.util.MyAtomicLong;
+import roart.util.MyAtomicLongs;
 import roart.util.MyCollections;
 import roart.util.MyList;
 import roart.util.MyListFactory;
@@ -335,12 +337,15 @@ public class ControlService {
     MyList<ResultItem> retnotlist = MyLists.get(retnotlistid);
     //MyLists.put(retnotlistid, retnotlist);
 	
+    String traversecountid = Constants.TRAVERSECOUNT + myid;
+    MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid);
+    
     String filestodosetid = Constants.FILESTODOSETID + myid;
     MySet<String> filestodoset = MySets.get(filestodosetid);
     //MyLists.put(retnotlistid, retnotlist);
     Queues.workQueues.add(filestodoset);
     
-	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, dirlistnot, notfoundsetid, filestodosetid, false);
+	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, dirlistnot, notfoundsetid, filestodosetid, traversecountid, false);
 	
 	// filesystem
 	// reindexsuffix
@@ -352,7 +357,7 @@ public class ControlService {
 	
 	TimeUnit.SECONDS.sleep(5);
 	
-	while (filestodoset.size() > 0 && (Queues.queueSize() + Queues.runSize()) > 0) {
+	while (traversecount.get() > 0 && filestodoset.size() > 0 && (Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
@@ -389,6 +394,7 @@ public class ControlService {
     MyCollections.remove(notfoundsetid);
     MyCollections.remove(filesetnewid);
     MyCollections.remove(filestodosetid);
+    MyCollections.remove(traversecountid);
     Queues.workQueues.remove(filestodoset);
 	
 	retlistlist.add(retList);
@@ -881,7 +887,7 @@ public class ControlService {
         String md5sdoneid = "md5sdoneid"+myid;
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 	    
-	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, dirlistnot, notfoundsetid, null, true);
+	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, dirlistnot, notfoundsetid, null, null, true);
 			    
 		List<IndexFiles> indexes;
 		try {

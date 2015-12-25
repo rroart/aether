@@ -164,6 +164,8 @@ public class TraverseFile {
         }
         MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
         total.addAndGet(-1);
+        MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+        count.addAndGet(-1);
 	    }
             //md5set.add(md5);
         }

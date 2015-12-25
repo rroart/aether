@@ -145,9 +145,11 @@ public class Traverse {
                 if (!nomd5) {
                     String queueid = Constants.TRAVERSEQUEUE;
                     MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
-                    TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid);
+                    TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
                     MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                     total.addAndGet(1);
+                    MyAtomicLong count = MyAtomicLongs.get(traversecountid);
+                    count.addAndGet(1);
                     queue.offer(trav);
                     //TraverseFile.handleFo3(null, fo);
                 }
@@ -470,7 +472,7 @@ public class Traverse {
 				continue;
 			}
 			// TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid);
+            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, null);
 			if (!filterindex(index, trav)) {
 				continue;
 			}
@@ -520,6 +522,7 @@ public class Traverse {
 	//boolean reindex = false;
 	//boolean calculatenewmd5;
     String filestodosetid;
+    String traversecountid;
 	boolean nomd5;
 
 	   String[] dirlistnot;
@@ -527,7 +530,7 @@ public class Traverse {
 
     //Set<String> md5sdone = new HashSet<String>();
 	
-	public Traverse(String myid, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, String filestodosetid, boolean nomd5) {
+	public Traverse(String myid, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
 
 	    this.myid = myid;
 	    this.element = element;
@@ -538,6 +541,7 @@ public class Traverse {
 		//this.reindex = reindex;
 		//this.calculatenewmd5 = newmd5;
 		this.filestodosetid = filestodosetid;
+		this.traversecountid = traversecountid;
 		this.nomd5 = nomd5;
 		
 		this.dirlistnot = ControlService.dirlistnot;

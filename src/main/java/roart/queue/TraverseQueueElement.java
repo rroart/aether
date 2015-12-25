@@ -13,11 +13,12 @@ public class TraverseQueueElement {
         private String newsetid = null; 
 	private String notfoundsetid;
 	private String filestodoid;
+	private String traversecountid;
 
     public TraverseQueueElement() {
 	}
 	
-	public TraverseQueueElement(String myid, String filename, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid) {
+	public TraverseQueueElement(String myid, String filename, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
 
 	    this.setMyid(myid);
 	    this.filename = filename;
@@ -27,6 +28,7 @@ public class TraverseQueueElement {
 		this.setNewsetid(newsetid);
 		this.setNotfoundsetid(notfoundsetid);
 		this.setFilestodoid(filestodosetid);
+		this.setTraversecountid(traversecountid);
 		//this.setNomd5(nomd5);
 	}
 
@@ -92,6 +94,14 @@ public class TraverseQueueElement {
 
     public void setFilestodoid(String filestodoid) {
         this.filestodoid = filestodoid;
+    }
+
+    public String getTraversecountid() {
+        return traversecountid;
+    }
+
+    public void setTraversecountid(String traversecountid) {
+        this.traversecountid = traversecountid;
     }
 
 }
