@@ -162,6 +162,8 @@ public class TraverseFile {
         if (!filestodoset.remove(md5)) {
             log.error("already removed " + md5);
         }
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+        total.addAndGet(-1);
 	    }
             //md5set.add(md5);
         }

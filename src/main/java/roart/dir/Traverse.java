@@ -146,6 +146,8 @@ public class Traverse {
                     String queueid = Constants.TRAVERSEQUEUE;
                     MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
                     TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid);
+                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+                    total.addAndGet(1);
                     queue.offer(trav);
                     //TraverseFile.handleFo3(null, fo);
                 }
@@ -473,6 +475,8 @@ public class Traverse {
 				continue;
 			}
 	        // config with finegrained distrib
+			MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+			total.addAndGet(1);
 	        queue.offer(trav);
 	        //TraverseFile.indexsingle(trav, md5, name, index);
 		}

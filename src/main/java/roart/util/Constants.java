@@ -23,6 +23,7 @@ public static final String FILESCONTENTTYPE = "Files-Content-Type";
 
 public static final String INDEXCOUNT = "indexcount";
 public static final String TRAVERSEQUEUE = "traversequeue";
+public static final String TRAVERSECOUNT = "traversecount";
 public static final String FILESETNEWID = "filesetnewid";
 public static final String NOTFOUNDSETID = "notfoundsetid";
 public static final String RETLISTID = "retlistid";

@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.util.Constants;
+import roart.util.MyAtomicLong;
+import roart.util.MyAtomicLongs;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
 import roart.util.MySet;
@@ -124,13 +126,13 @@ public class Queues {
    public static String webstat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + work() + " / " + traverseQueue.size() + "\nt " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
+       return "f " + total() + " / " + work() + "\nt " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
     }
 
    public static String stat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + work() + " / " + traverseQueue.size() + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
+       return "f " + total() + " / " + work() + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
     }
 
    public static void queueStat() {
@@ -153,11 +155,17 @@ public class Queues {
     	tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     }
     
+    public static long total() {
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+        return total.get();
+    }     
+        
     public static int work() {
         int ret = 0;
         for (MySet set : workQueues) {
             ret += set.size();
         }
+        log.info("mysize + " + workQueues.size() + " " + ret);
         return ret;
     }
 }
