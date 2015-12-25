@@ -23,6 +23,7 @@ import roart.queue.TikaQueueElement;
 import roart.util.Constants;
 import roart.util.ExecCommand;
 import roart.filesystem.FileSystemDao;
+import roart.database.IndexFilesDao;
 
 import org.apache.tika.metadata.Metadata;
 
@@ -158,6 +159,9 @@ public class OtherHandler {
 		    //index.save();
 		}
 		index.setPriority(1);
+		// file unlock dbindex
+		// config with finegrained distrib
+		IndexFilesDao.add(index);
 		log.info("delete file " + tmp);
 		txt.delete();
 	}
