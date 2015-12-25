@@ -350,6 +350,8 @@ public class ControlService {
 
 	traverse.traverse(filename);
 	
+	TimeUnit.SECONDS.sleep(5);
+	
 	while (filestodoset.size() > 0 && (Queues.queueSize() + Queues.runSize()) > 0) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
