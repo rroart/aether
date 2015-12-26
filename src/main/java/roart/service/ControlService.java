@@ -357,7 +357,7 @@ public class ControlService {
 	
 	TimeUnit.SECONDS.sleep(5);
 	
-	while (traversecount.get() > 0 && filestodoset.size() > 0 && (Queues.queueSize() + Queues.runSize()) > 0) {
+	while (traversecount.get() > 0 || filestodoset.size() > 0 /* && (Queues.queueSize() + Queues.runSize()) > 0*/) {
 		TimeUnit.SECONDS.sleep(60);
 		Queues.queueStat();
 	}
