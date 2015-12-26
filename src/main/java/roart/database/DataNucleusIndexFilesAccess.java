@@ -124,8 +124,10 @@ public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
         ifile.setNoindexreason(hif.getNoindexreason());
         ifile.setLanguage(hif.getLanguage());
         Set<String> files = hif.getFilelocations();
+        if (files != null) {
         for (String file : files) {
             ifile.addFile(new FileLocation(file));
+        }
         }
         ifile.setUnchanged();
         return ifile;
