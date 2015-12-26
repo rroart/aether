@@ -968,7 +968,7 @@ public class ControlService {
 		}
 		
 		} catch (Exception e) {
-			log.info(Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 
 		List<List> retlistlist = new ArrayList<List>();
