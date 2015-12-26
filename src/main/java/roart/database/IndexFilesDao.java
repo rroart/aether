@@ -203,44 +203,24 @@ public class IndexFilesDao {
 
     public static void commit() {
         int[] pris = getPris();
-        int level = 0;
-        if (pris[1] > 0) {
-            level = 1;
+        log.info("pris levels " + pris[0] + " " + pris[1]);
+        if (pris[0] > 0) {
+            log.info("saving finished");
         }
-        log.info("pris levels " + pris[1] + " " + pris[0]);
-        if (level == 0) {
-            log.info("saving for level 0");
-        }
-        int count = 0;
         for (String k : dbi.keySet()) {
             IndexFiles i = dbi.get(k);
-            if (level != i.getPriority()) {
-                continue;
-            }
-            if (level == 0 && i.hasChanged()) {
-                count++;
-            }
-            if (count > 1000) {
-                break;
-            }
             IndexFilesDao.save(i);
             MyLock lock = i.getLock();
             LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
             lockqueue.offer(lock);
             dbi.remove(k);
-	    dbitemp.remove(k);
+            dbitemp.remove(k);
+        }
+        if (pris[1] > 0) {
+            log.info("saving temporarily");
         }
         for (String k : dbitemp.keySet()) {
             IndexFiles i = dbitemp.get(k);
-            if (level != i.getPriority()) {
-                continue;
-            }
-            if (level == 0 && i.hasChanged()) {
-                count++;
-            }
-            if (count > 1000) {
-                break;
-            }
             IndexFilesDao.save(i);
             dbitemp.remove(k);
         }
@@ -255,7 +235,8 @@ public class IndexFilesDao {
     }
 
     private static int[] getPris() {
-        int pris[] = { 0, 0 };
+        int pris[] = { dbi.size(), dbitemp.size() };
+        /*
         for (String k : all.keySet()) {
             IndexFiles i = all.get(k);
             int priority = i.getPriority();
@@ -265,6 +246,7 @@ public class IndexFilesDao {
                 log.error("priority " + priority);
             }
         }
+        */
         return pris;
     }
 
@@ -279,12 +261,13 @@ public class IndexFilesDao {
     }
 
    public static String webstat() {
-       int dirty1 = dirty();
        int [] pris = getPris();
-       return "d " + dirty1 + " / " + pris[1];
+       return "d " + pris[0] + " / " + pris[1];
     }
 
    public static int dirty() {
+       int [] pris = getPris();
+       if (true) return pris[0] + pris[1];
        int dirty1 = 0;
        for (String k : dbi.keySet()) {
 	    //log.info("save try " + Thread.currentThread().getId() + " " + k);
