@@ -79,6 +79,11 @@ public class TikaHandler {
 	    log.error(Constants.EXCEPTION, e);
 	    index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
 	    output = null;
+	} catch (java.lang.ThreadDeath e) {
+	    log.error("Error expected " + Thread.currentThread().getId() + " " + filename);
+	    log.error(Constants.ERROR, e);
+	    index.setFailedreason(index.getFailedreason() + "tika timeout " + e.getClass().getName() + " ");
+	    output = null;
 	} catch (Error e) {
 	    System.gc();
 	    log.error("Error " + Thread.currentThread().getId() + " " + filename);
