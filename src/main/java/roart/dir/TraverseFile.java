@@ -67,7 +67,14 @@ public class TraverseFile {
 	String md5 = IndexFilesDao.getMd5ByFilename(filename);
 	log.debug("info " + md5 + " " + filename);
 	MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
-	filestodoset.add(md5);
+	if (!filestodoset.add(md5)) {
+	    log.info("already added " + md5 + " " + filename);
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+            total.addAndGet(-1);
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+            count.addAndGet(-1);
+	    return;
+	}
 	IndexFiles files = null;
 	MyLock lock = null; 
 	boolean lockwait = false;
