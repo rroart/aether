@@ -211,8 +211,16 @@ public class IndexFilesDao {
             IndexFiles i = dbi.get(k);
             IndexFilesDao.save(i);
             MyLock lock = i.getLock();
-            LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
-            lockqueue.offer(lock);
+            if (lock != null) {
+                LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
+                if (lockqueue != null) {
+                    lockqueue.offer(lock);
+                } else {
+                    log.error("lockqueue null for " + i.getMd5());
+                }
+            } else {
+                log.error("lock null for "  + i.getMd5());
+            }
             dbi.remove(k);
             dbitemp.remove(k);
         }
