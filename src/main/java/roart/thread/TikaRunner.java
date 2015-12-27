@@ -220,7 +220,8 @@ public class TikaRunner implements Runnable {
 			// TODO Auto-generated catch block
 		}
 		log.info("Tikaworker timeout " + tikaWorker + " " + tikaRunnable + " " + tikaWorker.isAlive() + " " + tikaWorker.isInterrupted() + " " + tikaWorker.interrupted());
-		Queues.otherQueue.add(el);
+		// TODO not needed here anymore? double insertion to otherQueue bug 
+		//Queues.otherQueue.add(el);
 		return (String) null;
     }
     
