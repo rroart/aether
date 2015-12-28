@@ -249,7 +249,7 @@ Settings for More Like This, max number of hits, minimum term frequency and mini
 3.3 General
 
 Status label has rows for f(ile) queue t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
-Also, a d for counting dirty database objects and for prioritized (which have finished).
+Also, a d for counting database objects which are finished or to be temporarily saved.
 
 4. Caution
 Multitasking issues, some locking may be insufficient, it is at best at a very coarse level.

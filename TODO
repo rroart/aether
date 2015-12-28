@@ -7,6 +7,8 @@ detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
 display diff docs and number indexed
 db persistence, more db handling
 distributed locking and node loss
+deleted/missing files and distributed system
+request end criteria, ending and displaying too early
 #package lang profiles
 get metadata if too small?
 hbase delete from db incomplete
