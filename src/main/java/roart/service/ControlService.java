@@ -362,6 +362,10 @@ public class ControlService {
 		Queues.queueStat();
 	}
 
+	for (String str : filestodoset.getAll()) {
+	    System.out.println("todo " + str);
+	}
+
 	for (String ret : Queues.tikaTimeoutQueue) {
 	    retTikaTimeoutList.add(new ResultItem(ret));
 	}

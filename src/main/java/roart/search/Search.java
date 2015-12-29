@@ -91,7 +91,9 @@ public class Search {
 	retlist.add(ri);
 	
     try {
+	if (inputStream != null) {
 		inputStream.close();
+	}
 	} catch (IOException e) {
 		log.error(roart.util.Constants.EXCEPTION, e);
 	}
