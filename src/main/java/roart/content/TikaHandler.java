@@ -301,6 +301,9 @@ public class TikaHandler {
 
 	private String getString(InputStream inputStream) {
 	try {
+	    if (inputStream == null) {
+		return "";
+	    }
 	    DataInputStream in = new DataInputStream(inputStream);
 	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	    String line = null;
