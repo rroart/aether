@@ -381,7 +381,7 @@ public class ControlService {
 	}
 
 	for (ResultItem s : retnotlist.getAll()) {
-	    retNewFilesList.add(s);
+	    retNotList.add(s);
 	}
 
     for (String file : notfoundset.getAll()) {
