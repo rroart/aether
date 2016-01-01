@@ -58,18 +58,7 @@ public class TraverseFile {
 	//              handleFo2(retset, md5set, filename);
 	//          } else {
 	// config with finegrained distrib
-        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid()); 
-        if (trav.getClientQueueElement().reindex && max > 0 && indexcount.get() > max) {
-	    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-	    total.addAndGet(-1);
-	    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-	    count.addAndGet(-1);
-            return;
-        }
-
-	int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
-        if (!trav.getClientQueueElement().reindex && maxindex > 0 && indexcount.get() > maxindex) {
+        if (Traverse.isMaxed(trav.getMyid(), trav.getClientQueueElement())) {
 	    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
 	    total.addAndGet(-1);
 	    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());

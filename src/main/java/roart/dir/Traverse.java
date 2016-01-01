@@ -101,14 +101,7 @@ public class Traverse {
     
     public Set<String> doList(String dirname) throws Exception {
         Set<String> retset = new HashSet<String>();
-        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
-        if (element.reindex && max > 0 && indexcount.get() > max) {
-            return retset;
-        }
-
-	int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
-        if (!element.reindex && maxindex > 0 && indexcount.get() > maxindex) {
+        if (isMaxed(myid, element)) {
             return retset;
         }
 
@@ -451,20 +444,13 @@ public class Traverse {
 	}
 	
 	public Set<String> traversedb() throws Exception {
-        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
-		int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
         String queueid = Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
         List<IndexFiles> indexes = IndexFilesDao.getAll();
 		for (IndexFiles index : indexes) {
-			if (element.reindex && max > 0 && indexcount.get() > max) {
-				break;
-			}
-		
-			if (!element.reindex && maxindex > 0 && indexcount.get() > maxindex) {
-				break;
-			}
+	        if (isMaxed(myid, element)) {
+	            break;
+	        }
 			String md5 = index.getMd5();
 			String name = getExistingLocalFile(index);
 			if (name == null) {
@@ -485,6 +471,20 @@ public class Traverse {
 		
 		return null;
 	}
+
+    static boolean isMaxed(String myid, ClientQueueElement element) {
+        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
+        int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
+        boolean isMaxed = false;
+        if (element.reindex && max > 0 && indexcount.get() > max) {
+        	isMaxed = true;
+        }		
+        if (!element.reindex && maxindex > 0 && indexcount.get() > maxindex) {
+        	isMaxed = true;
+        }
+        return isMaxed;
+    }
 	
     public Set<String> traverse(String add) throws Exception {
     	try {
