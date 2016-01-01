@@ -58,6 +58,24 @@ public class TraverseFile {
 	//              handleFo2(retset, md5set, filename);
 	//          } else {
 	// config with finegrained distrib
+        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid()); 
+        if (trav.getClientQueueElement().reindex && max > 0 && indexcount.get() > max) {
+	    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+	    total.addAndGet(-1);
+	    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+	    count.addAndGet(-1);
+            return;
+        }
+
+	int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
+        if (!trav.getClientQueueElement().reindex && maxindex > 0 && indexcount.get() > maxindex) {
+	    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+	    total.addAndGet(-1);
+	    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+	    count.addAndGet(-1);
+            return;
+        }
 	String filename = trav.getFilename();
 	FileObject fo = FileSystemDao.get(filename);
 
@@ -102,11 +120,19 @@ public class TraverseFile {
 		    }
 		}
 	    } catch (FileNotFoundException e) {
+	    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+	    total.addAndGet(-1);
+	    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+	    count.addAndGet(-1);
 		log.error(Constants.EXCEPTION, e);
 		MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
 		notfoundset.add(filename);
 		return;
 	    } catch (Exception e) {
+	    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+	    total.addAndGet(-1);
+	    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+	    count.addAndGet(-1);
 		log.info("Error: " + e.getMessage());
 		log.error(Constants.EXCEPTION, e);
 		return;
@@ -117,6 +143,15 @@ public class TraverseFile {
 	    lock = MyLockFactory.create();
 	    lock.lock(md5);
 	    files = IndexFilesDao.getByMd5(md5);
+	    // TODO implement other wise
+	    // error case for handling when the supporting filename indexed
+	    // table has an entry, but no corresponding in the md5 indexed
+	    // table, and the files here just got created
+	    if (files.getFilelocations().size() == 0) {
+		log.error("existing file only");
+		files.addFile(filename);
+		IndexFilesDao.addTemp(files);
+	    }
 	    log.debug("info " + md5 + " " + files);
 	}
 	if (files != null && lock != null) {
