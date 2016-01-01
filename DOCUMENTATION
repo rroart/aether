@@ -44,6 +44,9 @@ reindexlimit=10000
 How many to max index each turn, or 0 for no limit.
 indexlimit=10000
 
+The (re)indexing limits may be exceeded a bit, due to the parallell nature
+of the application.
+
 Don't try to index if the file has failed this many times
 failedlimit=10
 
@@ -293,4 +296,5 @@ Hazelcast 3.5.4
 
 7. Database dumps
 
-echo "scan 'files',{COLUMNS=>'fi'}" | ./bin/hbase shell > /tmp/hb
+echo "scan 'files',{COLUMNS=>'fi'}" | ./bin/hbase shell > /tmp/hbf
+echo "scan 'index',{COLUMNS=>'if'}" | ./bin/hbase shell > /tmp/hbi

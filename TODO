@@ -14,3 +14,6 @@ get metadata if too small?
 hbase delete from db incomplete
 better handling of thrown errors
 tesseract (through) tika is running english only
+consistent clean with filename only, or md5 without any files
+exceeding (re)indexing limits
+work indexcount problem
