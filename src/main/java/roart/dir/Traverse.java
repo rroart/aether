@@ -459,7 +459,7 @@ public class Traverse {
 				continue;
 			}
 			// TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, null);
+            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
 			if (!filterindex(index, trav)) {
 				continue;
 			}
