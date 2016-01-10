@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -36,9 +35,10 @@ import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
 
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 
 import org.slf4j.Logger;
@@ -78,9 +78,9 @@ public class HbaseIndexFiles {
     public HbaseIndexFiles() {
 	try {
 	Configuration conf = HBaseConfiguration.create();
-	String quorum = roart.util.Prop.getProp().getProperty(ConfigConstants.HBASEQUORUM);
-	String port = roart.util.Prop.getProp().getProperty(ConfigConstants.HBASEPORT);
-	String master = roart.util.Prop.getProp().getProperty(ConfigConstants.HBASEMASTER);
+	String quorum = MyConfig.conf.hbasequorum; 
+	String port = MyConfig.conf.hbaseport;
+	String master = MyConfig.conf.hbasemaster;
 	conf.set("hbase.zookeeper.quorum", quorum);
 	conf.set("hbase.zookeeper.property.clientPort", port);
 	conf.set("hbase.master", master);

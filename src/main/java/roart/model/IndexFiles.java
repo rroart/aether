@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.Date;
 
+import roart.config.ConfigConstants;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.service.ControlService;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 import roart.util.MyLock;
 import roart.util.Prop;

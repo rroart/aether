@@ -8,10 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.model.IndexFiles;
 import roart.model.FileLocation;
 import roart.service.ControlService;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 import roart.util.MyLock;
 
@@ -51,7 +52,7 @@ public class IndexFilesDao {
 	if (md5 == null) {
 	    return null;
 	}
-	if (false && !ControlService.zookeepersmall) {
+	if (false && !MyConfig.conf.zookeepersmall) {
 	if (all.containsKey(md5)) {
 	    return all.get(md5);
 	}

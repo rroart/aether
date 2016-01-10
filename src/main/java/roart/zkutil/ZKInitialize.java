@@ -8,6 +8,7 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.config.MyConfig;
 import roart.service.ControlService;
 import roart.thread.ZKRunner;
 import roart.util.Constants;
@@ -23,7 +24,7 @@ public class ZKInitialize {
 		return;
 	    }
 	    try {
-		zk = new ZooKeeper(ControlService.zookeeper, Integer.MAX_VALUE, watcher);
+		zk = new ZooKeeper(MyConfig.conf.zookeeper, Integer.MAX_VALUE, watcher);
 		Stat s;
 		s = zk.exists("/" + Constants.AETHER, false);
 		if (s == null) {

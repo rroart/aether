@@ -1,14 +1,14 @@
 package roart.classification;
 
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.io.InputStream;
 import java.io.FileInputStream;
 
@@ -28,7 +28,7 @@ public class OpennlpClassify {
 	try {
 		categorizerMap = new HashMap<String, DocumentCategorizerME>();
 		String[] languages = LanguageDetect.getLanguages();
-	    String modelFilePath = roart.util.Prop.getProp().getProperty(ConfigConstants.OPENNLPMODELPATH);
+	    String modelFilePath = MyConfig.conf.opennlpmodelpath; 
 	    for (String lang : languages) {
 	    	String path = new String(modelFilePath);
 	    	path = path.replaceFirst("LANG", lang);

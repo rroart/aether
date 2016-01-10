@@ -8,12 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
-
+import roart.config.ConfigConstants;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 import roart.model.IndexFiles;
-import roart.util.ConfigConstants;
- 
+
 import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

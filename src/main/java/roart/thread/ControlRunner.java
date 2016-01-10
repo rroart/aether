@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.config.MyConfig;
 import roart.service.ControlService;
 import roart.util.Constants;
 
@@ -43,7 +44,7 @@ public class ControlRunner implements Runnable {
     			if (!ControlService.clientWorker.isAlive()) {
     				cs.startClientWorker();
     			}
-    			if (ControlService.zookeeper != null && !ControlService.zkWorker.isAlive()) {
+    			if (MyConfig.conf.zookeeper != null && !ControlService.zkWorker.isAlive()) {
     				cs.startZKWorker();
     			}
                 if (!ControlService.traverseQueueWorker.isAlive()) {

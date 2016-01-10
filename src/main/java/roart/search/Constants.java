@@ -5,7 +5,6 @@ public interface Constants {
     String NAME = "name";
     String LANG = "lang";
     String METADATA = "metadata";
-    String LUCENEPATH = "lucenepath";
     String MD5 = "id";
     String ID = "id";
     String CAT = "cat";

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import roart.util.Constants;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
+import roart.config.MyConfig;
 import roart.dir.Traverse;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
@@ -29,7 +30,7 @@ public class TraverseQueueRunner implements Runnable {
     public void run() {
 
         int nThreads = 20;
-	if (roart.service.ControlService.hasHibernate) {
+	if (MyConfig.conf.hasHibernate) {
 	    nThreads = 100;
 	    log.info("more threads with hibernate");
 	}

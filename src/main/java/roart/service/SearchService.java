@@ -4,17 +4,17 @@ import roart.queue.ClientQueueElement;
 import roart.queue.ClientQueueElement.Function;
 import roart.queue.Queues;
 import roart.search.SearchDao;
-import roart.util.ConfigConstants;
 
 import javax.servlet.http.*;
+
 import java.util.Vector;
 import java.util.Enumeration;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import java.io.*;
 
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 //import roart.dao.FilesDao;
 import roart.database.IndexFilesDao;
 import roart.model.ResultItem;
@@ -69,7 +69,7 @@ public class SearchService {
 
 	public static SearchDisplay getSearchDisplay(UI ui) {
 		SearchDisplay display = new SearchDisplay();
-		String myclassify = roart.util.Prop.getProp().getProperty(ConfigConstants.CLASSIFY);
+		String myclassify = MyConfig.conf.classify;
 		display.classify = myclassify != null && myclassify.length() > 0;
 		// if lost session, it doesn't really matter much whether displaying for admin?
 		if (ui != null && ui.getSession() != null) {
@@ -80,8 +80,8 @@ public class SearchService {
 	}
 
 	public static boolean isHighlightMLT() {
-		String mystorehighlight = roart.util.Prop.getProp().getProperty(ConfigConstants.HIGHLIGHTMLT);
-		return mystorehighlight != null && mystorehighlight.equals("true");
+		
+		return MyConfig.conf.highlightmlt;
 	}
     
     public void searchsimilar(String md5) {

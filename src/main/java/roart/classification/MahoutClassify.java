@@ -1,20 +1,20 @@
 package roart.classification;
 
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
-
 import java.io.InputStream;
 import java.io.StringReader;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -36,6 +36,7 @@ import org.apache.mahout.math.Vector;
 import org.apache.mahout.math.Vector.Element;
 import org.apache.mahout.vectorizer.TFIDF;
 import org.apache.mahout.common.nlp.NGrams;
+
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
@@ -65,20 +66,21 @@ public class MahoutClassify {
 	    documentCountMap = new HashMap<String, Integer>();
         String[] languages = LanguageDetect.getLanguages();
         
-	    String basepath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTBASEPATH);
+        
+	    String basepath = MyConfig.conf.mahoutbasepath;
 	    if (basepath == null) {
 	    	basepath = "";
 	    }
-	    String modelPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTMODELPATH);
-	    String labelIndexPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTLABELINDEXFILEPATH);
-	    String dictionaryPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTDICTIONARYPATH);
-	    String documentFrequencyPath = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH);
-	    String bayestype = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTALGORITHM);
+        String modelPath = MyConfig.conf.mahoutmodelpath;
+        String labelIndexPath = MyConfig.conf.mahoutlabelindexpath;
+        String dictionaryPath = MyConfig.conf.mahoutdictionarypath;
+        String documentFrequencyPath = MyConfig.conf.mahoutdocumentfrequencypath;
+        String bayestype = MyConfig.conf.mahoutalgorithm;
 	    // not waterproof on purpose, won't check if var correctly set	    
 	    bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
-	    String fsdefaultname = roart.util.Prop.getProp().getProperty(ConfigConstants.MAHOUTCONFFS);
+	    String fsdefaultname = MyConfig.conf.mahoutconffs;
 	    if (fsdefaultname != null) {
 		configuration.set("fs.default.name", fsdefaultname);
 	    }

@@ -1,13 +1,13 @@
 package roart.util;
 
-import roart.service.ControlService;
+import roart.config.MyConfig;
 
 public class MyLockFactory {
     public static MyLock create() {
-        if (ControlService.locker == null) {
+        if (MyConfig.conf.locker == null) {
             return new MyDummyLock();
         }
-        switch (ControlService.locker) {
+        switch (MyConfig.conf.locker) {
         case Constants.HAZELCAST:
             return new MyHazelcastLock();
         case Constants.CURATOR:

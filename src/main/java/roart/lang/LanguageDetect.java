@@ -2,6 +2,7 @@ package roart.lang;
 
 import java.util.Date;
 import java.util.ArrayList;
+
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.Language;
@@ -10,7 +11,8 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.util.ConfigConstants;
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.util.Constants;
 
 import java.io.*;
@@ -39,7 +41,7 @@ public class LanguageDetect {
     
     public static void init(String profileDirectory) throws LangDetectException {
 	DetectorFactory.loadProfile(profileDirectory);
-    String mylang = roart.util.Prop.getProp().getProperty(ConfigConstants.LANGUAGES);
+    String mylang = MyConfig.conf.languages;
     if (mylang != null) {
     	languages = mylang;
     }

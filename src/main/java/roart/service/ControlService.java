@@ -31,12 +31,13 @@ import roart.thread.TraverseQueueRunner;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.content.OtherHandler;
 import roart.content.ClientHandler;
 import roart.thread.ClientRunner;
 import roart.thread.DbRunner;
 import roart.thread.ZKRunner;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 import roart.util.MyAtomicLong;
 import roart.util.MyAtomicLongs;
@@ -62,10 +63,6 @@ import org.slf4j.LoggerFactory;
 public class ControlService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF };
-    public static Map<Config, Integer> configMap = new HashMap<Config, Integer>();
-    public static Map<Config, String> configStrMap = new HashMap<Config, String>();
-    
     private static volatile Integer writelock = new Integer(-1);
 
     private static int dirsizelimit = 100;
@@ -94,24 +91,8 @@ public class ControlService {
 	Queues.clientQueue.add(e);
     }
 
-    public static String[] dirlist = null;
-    public static String[] dirlistnot = null;
-
     static public String nodename = "localhost";
     
-    public static void parseconfig() {
-	System.out.println("config2 parsed");
-	//log.info("config2 parsed");
-	nodename  = roart.util.Prop.getProp().getProperty(ConfigConstants.NODENAME);
-	if (nodename == null || nodename.length() == 0) {
-		nodename = "localhost";
-	}
-	String dirliststr = roart.util.Prop.getProp().getProperty(ConfigConstants.DIRLIST);
-	String dirlistnotstr = roart.util.Prop.getProp().getProperty(ConfigConstants.DIRLISTNOT);
-	dirlist = dirliststr.split(",");
-	dirlistnot = dirlistnotstr.split(",");
-    }
-
     // called from ui
     public void overlapping() {
 	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.OVERLAPPING, null, null, null, null, false, false, false);
@@ -294,7 +275,7 @@ public class ControlService {
 	public List<List> clientDo(ClientQueueElement el) throws Exception {
 		    synchronized (writelock) {
 			MyLock lock = null;
-			if (zookeeper != null && !zookeepersmall) {
+			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
 			    lock = MyLockFactory.create();
 			    lock.lock(Constants.GLOBALLOCK);
 			}
@@ -345,7 +326,7 @@ public class ControlService {
     //MyLists.put(retnotlistid, retnotlist);
     Queues.workQueues.add(filestodoset);
     
-	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, dirlistnot, notfoundsetid, filestodosetid, traversecountid, false);
+	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, MyConfig.conf.dirlistnot, notfoundsetid, filestodosetid, traversecountid, false);
 	
 	// filesystem
 	// reindexsuffix
@@ -408,7 +389,7 @@ public class ControlService {
 	retlistlist.add(retDeletedList);
 	retlistlist.add(retTikaTimeoutList);
 	retlistlist.add(retNotExistList);
-	if (zookeeper != null && !zookeepersmall) {
+	if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
 	    ZKMessageUtil.dorefresh();
 	    lock.unlock();
 	    ClientRunner.notify("Sending refresh request");
@@ -732,15 +713,7 @@ public class ControlService {
     private static TraverseQueueRunner traverseQueueRunnable = null;
     public static Thread traverseQueueWorker = null;
 
-    public static volatile String zookeeper = null;
-    public static boolean zookeepersmall = false;
     public static CuratorFramework curatorClient = null;
-    public static boolean distributedtraverse = false;
-    public static boolean hasHibernate = false;
-
-    public static String locker = null; // null, curator, zk, hz
-    //public static MyLock lock;
-    
     public void startThreads() {
     	if (tikaRunnable == null) {
 	    startTikaWorker();
@@ -760,10 +733,10 @@ public class ControlService {
     	if (controlRunnable == null) {
     	startControlWorker();
     	}
-    	if (zookeeper != null && zkRunnable == null) {
+    	if (MyConfig.conf.zookeeper != null && zkRunnable == null) {
     	startZKWorker();
     	}
-        if (zookeeper != null && ControlService.zookeepersmall && traverseQueueRunnable == null) {
+        if (MyConfig.conf.zookeeper != null && MyConfig.conf.zookeepersmall && traverseQueueRunnable == null) {
         startTraversequeueWorker();
         }
         if (traverseQueueRunnable == null) {
@@ -780,7 +753,7 @@ public class ControlService {
 	}
 
 	public void startTikaWorker() {
-	    int timeout = ControlService.configMap.get(ControlService.Config.TIKATIMEOUT);
+	    int timeout = MyConfig.conf.configMap.get(MyConfig.Config.TIKATIMEOUT);
 	    TikaRunner.timeout = timeout;
 
     	tikaRunnable = new TikaRunner();
@@ -799,7 +772,7 @@ public class ControlService {
 	}
 
 	public void startOtherWorker() {
-	    int timeout = ControlService.configMap.get(ControlService.Config.OTHERTIMEOUT);
+	    int timeout = MyConfig.conf.configMap.get(MyConfig.Config.OTHERTIMEOUT);
 	    OtherHandler.timeout = timeout;
 
     	otherRunnable = new OtherRunner();
@@ -892,7 +865,7 @@ public class ControlService {
         String md5sdoneid = "md5sdoneid"+myid;
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 	    
-	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, dirlistnot, notfoundsetid, null, null, true);
+	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, MyConfig.conf.dirlistnot, notfoundsetid, null, null, true);
 			    
 		List<IndexFiles> indexes;
 		try {
@@ -923,7 +896,7 @@ public class ControlService {
 		if (clean) {
 		    synchronized (writelock) {
 			MyLock lock = null;
-			if (zookeeper != null && !zookeepersmall) {
+			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
 	             lock = MyLockFactory.create();
 	                lock.lock(Constants.GLOBALLOCK);
 			}
@@ -965,7 +938,7 @@ public class ControlService {
 
 			}
 			
-			if (zookeeper != null && !zookeepersmall) {
+			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
 				ZKMessageUtil.dorefresh();
 			    lock.unlock();
 			}
@@ -991,7 +964,7 @@ public class ControlService {
         public List deletepathdbDo(ClientQueueElement el) throws Exception {
             synchronized (writelock) {
             MyLock lock = null;
-            if (zookeeper != null && !zookeepersmall) {
+            if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
                 lock = MyLockFactory.create();
                 lock.lock(Constants.GLOBALLOCK);
             }
@@ -1038,7 +1011,7 @@ public class ControlService {
                 i.setLock(null);
             }
 
-            if (zookeeper != null && !zookeepersmall) {
+            if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
                 ZKMessageUtil.dorefresh();
                 lock.unlock();
                 ClientRunner.notify("Sending refresh request");

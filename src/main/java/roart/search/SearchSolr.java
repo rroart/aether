@@ -25,13 +25,13 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.highlight.DefaultSolrHighlighter;
 import org.apache.tika.metadata.Metadata;
 
-import roart.service.ControlService;
 import roart.service.SearchService;
-import roart.util.ConfigConstants;
 import roart.lang.LanguageDetect;
 import roart.model.SearchDisplay;
 import roart.model.ResultItem;
 import roart.model.IndexFiles;
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.database.IndexFilesDao;
 
 
@@ -44,7 +44,7 @@ public class SearchSolr {
 	if (server != null) {
 	    return;
 	}
-	String url = roart.util.Prop.getProp().getProperty(ConfigConstants.SOLRURL);
+	String url = MyConfig.conf.solrurl; 
 	server = new HttpSolrClient( url );
 	log.info("server " + server);
 	System.out.println("server " + server);
@@ -212,9 +212,9 @@ public class SearchSolr {
     public static ResultItem[] searchmlt(String id, String searchtype, SearchDisplay display) {
 	ResultItem[] strarr = new ResultItem[0];
 	try {
-	    int count = ControlService.configMap.get(ControlService.Config.MLTCOUNT);
-	    int mintf = ControlService.configMap.get(ControlService.Config.MLTMINTF);
-	    int mindf = ControlService.configMap.get(ControlService.Config.MLTMINDF);
+	    int count = MyConfig.conf.configMap.get(MyConfig.Config.MLTCOUNT);
+	    int mintf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINTF);
+	    int mindf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINDF);
 	    //Construct a SolrQuery 
 	    SolrQuery query = new SolrQuery();
 	    query.setQuery( Constants.ID + ":" + id);

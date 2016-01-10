@@ -1,4 +1,4 @@
-package roart.util;
+package roart.config;
 
 import roart.service.ControlService;
 
@@ -6,6 +6,7 @@ public class ConfigConstants {
 
     public static final String FS = "fs";
     public static final String LOCAL = "local";
+    public static final String HADOOP = "hadoop";
     public static final String INDEX = "index";
     public static final String SOLR = "solr";
     public static final String LUCENE = "lucene";
@@ -50,7 +51,9 @@ public class ConfigConstants {
     public static final String MLTMINTF = "mltmintf";	
     public static final String DISTRIBUTEDLOCKMODE = "distributedlockmode";
     public static final String SMALL = "small";
+    public static final String BIG = "big";
     public static final String DISTRIBUTEDPROCESS = "distributedprocess";
+    public static final String CONFIG = "config";
     
     public static final int DEFAULT_CONFIG_FAILEDLIMIT = 0;
     public static final int DEFAULT_CONFIG_TIKATIMEOUT = 600;
@@ -60,4 +63,7 @@ public class ConfigConstants {
     public static final int DEFAULT_CONFIG_MLTCOUNT = 10;
     public static final int DEFAULT_CONFIG_MLTMINDF = 5;
     public static final int DEFAULT_CONFIG_MLTMINTF = 2;
+    
+    public static final String PROPFILE = "aether.prop";
+    public static final String LUCENEPATH = "lucenepath";
 }

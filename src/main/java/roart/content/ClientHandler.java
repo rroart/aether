@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import roart.queue.ClientQueueElement.Function;
 import roart.queue.Queues;
 import roart.queue.ClientQueueElement;
+import roart.service.ControlService;
 import roart.util.Constants;
 
 public class ClientHandler {
@@ -85,7 +86,7 @@ public class ClientHandler {
     }
 
     private static List client(ClientQueueElement el) {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.clientDo(el);
 	} catch (Exception e) {
@@ -95,7 +96,7 @@ public class ClientHandler {
     }
 
     private static List notindexed(ClientQueueElement el) {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.notindexedDo(el);
 	} catch (Exception e) {
@@ -105,7 +106,7 @@ public class ClientHandler {
     }
 
     private static List overlapping() {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.overlappingDo();
 	} catch (Exception e) {
@@ -115,7 +116,7 @@ public class ClientHandler {
     }
 
     private static List memoryusage() {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.memoryusageDo();
 	} catch (Exception e) {
@@ -125,7 +126,7 @@ public class ClientHandler {
     }
 
     private static List dbindex(ClientQueueElement el) {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.dbindexDo(el);
 	} catch (Exception e) {
@@ -134,7 +135,7 @@ public class ClientHandler {
     }
 
     private static List dbsearch(ClientQueueElement el) {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.dbsearchDo(el);
 	} catch (Exception e) {
@@ -143,7 +144,7 @@ public class ClientHandler {
     }
 
     private static List consistentclean(ClientQueueElement el) {
-	roart.service.ControlService maininst = new roart.service.ControlService();
+	ControlService maininst = new ControlService();
 	try {
 	    return maininst.consistentcleanDo(el);
 	} catch (Exception e) {
@@ -152,7 +153,7 @@ public class ClientHandler {
     }
 
     private static List deletepath(ClientQueueElement el) {
-    roart.service.ControlService maininst = new roart.service.ControlService();
+    ControlService maininst = new ControlService();
     try {
         return maininst.deletepathdbDo(el);
     } catch (Exception e) {

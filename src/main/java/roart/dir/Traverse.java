@@ -15,6 +15,8 @@ import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.thread.ClientRunner;
 import roart.thread.TikaRunner;
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.model.FileObject;
@@ -34,7 +36,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 import roart.util.ExecCommand;
 import roart.util.MyAtomicLong;
@@ -412,7 +413,7 @@ public class Traverse {
 		// and a failed limit it set
 		// and the file has come to that limit
 
-		int maxfailed = ControlService.configMap.get(ControlService.Config.FAILEDLIMIT);
+		int maxfailed = MyConfig.conf.configMap.get(MyConfig.Config.FAILEDLIMIT);
 		if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
 		return false;
 		}
@@ -473,8 +474,8 @@ public class Traverse {
 	}
 
     static boolean isMaxed(String myid, ClientQueueElement element) {
-        int max = ControlService.configMap.get(ControlService.Config.REINDEXLIMIT);
-        int maxindex = ControlService.configMap.get(ControlService.Config.INDEXLIMIT);
+        int max = MyConfig.conf.configMap.get(MyConfig.Config.REINDEXLIMIT);
+        int maxindex = MyConfig.conf.configMap.get(MyConfig.Config.INDEXLIMIT);
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
@@ -496,8 +497,8 @@ public class Traverse {
     			return doList(add);    
     		} else {
     			Set<String> retList = new HashSet<String>();
-    			for (int i = 0; i < ControlService.dirlist.length; i ++) {
-    				retList.addAll(doList(ControlService.dirlist[i]));
+    			for (int i = 0; i < MyConfig.conf.dirlist.length; i ++) {
+    				retList.addAll(doList(MyConfig.conf.dirlist[i]));
     			}
     		}
     	} catch (Exception e) {
@@ -544,7 +545,7 @@ public class Traverse {
 		this.traversecountid = traversecountid;
 		this.nomd5 = nomd5;
 		
-		this.dirlistnot = ControlService.dirlistnot;
+		this.dirlistnot = MyConfig.conf.dirlistnot;
 		//UI ui = element.ui;
 		//this.display = SearchService.getSearchDisplay(ui);
 	}

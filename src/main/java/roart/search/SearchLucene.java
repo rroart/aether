@@ -1,11 +1,11 @@
 package roart.search;
 
+import roart.config.MyConfig;
 import roart.database.HibernateUtil;
 import roart.database.IndexFilesDao;
 import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
-import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
@@ -284,9 +284,9 @@ public class SearchLucene {
 		Directory index = FSDirectory.open(getLucenePath(type));
     StandardAnalyzer analyzer = new StandardAnalyzer();
 
-    int count = ControlService.configMap.get(ControlService.Config.MLTCOUNT);
-    int mintf = ControlService.configMap.get(ControlService.Config.MLTMINTF);
-    int mindf = ControlService.configMap.get(ControlService.Config.MLTMINDF);
+    int count = MyConfig.conf.configMap.get(MyConfig.Config.MLTCOUNT);
+    int mintf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINTF);
+    int mindf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINDF);
 
     // searching ...
     int hitsPerPage = count;
@@ -517,7 +517,7 @@ public class SearchLucene {
     }//End of removeDuplicate method
 
     private static String getLucenePath() {
-	return roart.util.Prop.getProp().getProperty(Constants.LUCENEPATH);
+	return MyConfig.conf.lucenepath;
     }
 
  }

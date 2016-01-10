@@ -13,8 +13,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.model.FileObject;
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class HDFS {
 	
 	public HDFS() {
 		configuration = new Configuration();
-		String fsdefaultname = roart.util.Prop.getProp().getProperty(ConfigConstants.HDFSCONFFS);
+		String fsdefaultname = MyConfig.conf.fsdefaultname;
 		if (fsdefaultname != null) {
 		    configuration.set("fs.default.name", fsdefaultname);
 		    log.info("Setting hadoop fs.default.name " + fsdefaultname);

@@ -9,10 +9,11 @@ import roart.queue.TikaQueueElement;
 import roart.queue.ClientQueueElement;
 import roart.queue.ClientQueueElement.Function;
 import roart.queue.TraverseQueueElement;
-import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.thread.ClientRunner;
 import roart.thread.TikaRunner;
+import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.model.FileObject;
@@ -34,7 +35,6 @@ import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import roart.util.ConfigConstants;
 import roart.util.Constants;
 import roart.util.ExecCommand;
 import roart.util.MyAtomicLong;
@@ -197,7 +197,7 @@ public class TraverseFile {
 
     public static void indexsingle(TraverseQueueElement trav,
             String md5, String filename, IndexFiles index) {
-        int maxfailed = ControlService.configMap.get(ControlService.Config.FAILEDLIMIT);
+        int maxfailed = MyConfig.conf.configMap.get(MyConfig.Config.FAILEDLIMIT);
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
         int failed = index.getFailed();
         if (failed >= maxfailed) {
