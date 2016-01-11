@@ -129,7 +129,7 @@ downloader=true
 Whether to use authenication
 authenticate=true
 The admin user has username/password admin/admin, and the user has user/user.
-The admin has access to the control panel, and will see more search results than the user.
+The admin has access to the control panel and configuration, and will see more search results than the user.
 The admin user will get results regarding indexing time usage and error messages from the indexing.
 If no authentication is used, everything is open.
 Accessing from localhost will determine admin right in both cases.
@@ -245,11 +245,15 @@ Stats, listing non-indexed, memory usage or overlapping directories.
 Database, get items related to md5 id.
 Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
 
+To get the configuration of other nodes.
+
+3.3 The node configuration
+
 Setting limits for how many times an indexing may fail before being ignored, limits for max indexing and reindexing, timeout for tika and other (alternative) conversion.
 
 Settings for More Like This, max number of hits, minimum term frequency and minimum doc frequency.
 
-3.3 General
+3.4 General
 
 Status label has rows for f(ile) queue t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
 Also, a d for counting database objects which are finished or to be temporarily saved.
@@ -284,6 +288,10 @@ DataNucleus table changes.
 0.7
 New distributed mode, with usage of Curator and Hazelcast.
 A lot of refactoring have been done.
+
+0.8
+Redoing configuration, more validity checking.
+Multinode configuration.
 
 6. Version numbers of external software
 
