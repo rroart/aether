@@ -9,6 +9,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs.Ids;
 
+import roart.config.MyConfig;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 import roart.thread.ClientRunner;
@@ -36,6 +37,10 @@ public class ZKMessageUtil {
 		    IndexFilesDao.getAll();
 		    log.info(Constants.REFRESH + " " + ControlService.nodename);
 		    ClientRunner.notify("Finished refresh");
+		} else if (child.equals(Constants.RECONFIG)) {
+	            MyConfig.instance().reconfig();
+	            log.info(Constants.RECONFIG + " " + ControlService.nodename);
+	            ClientRunner.notify("Finished reconfig");
 		} else {
 		    log.info("unknown command " + child);
 		}
@@ -63,6 +68,24 @@ public class ZKMessageUtil {
 	    log.error(Constants.EXCEPTION, e);
 	}
 	}
+
+    public static void doreconfig() {
+    if (ZKInitialize.zk == null) {
+        return;
+    }
+    log.info("sendMsgReconfig");
+    try {
+        List<String> nodes = ZKInitialize.zk.getChildren("/" + Constants.AETHER + "/" + Constants.NODES, false);
+        for (String node : nodes) {
+        if (!ControlService.nodename.equals(node)) {
+            ZKInitialize.zk.create("/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.RECONFIG, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            log.info("send reconfig to " + node);
+        }
+        }
+    } catch (Exception e) {
+        log.error(Constants.EXCEPTION, e);
+    }
+    }
 
 public static class MessageWatcher implements Watcher {
 

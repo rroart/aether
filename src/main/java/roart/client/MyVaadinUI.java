@@ -7,6 +7,7 @@ import roart.model.FileObject;
 import roart.model.SearchDisplay;
 import roart.thread.ClientRunner;
 import roart.util.Constants;
+import roart.zkutil.ZKMessageUtil;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
 import roart.config.NodeConfig;
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.TreeSet;
 import java.io.File;
 import java.io.InputStream;
+
 
 
 
@@ -74,6 +76,7 @@ import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.shared.ui.label.ContentMode;
+
 
 
 
@@ -410,11 +413,11 @@ public class MyVaadinUI extends UI
     horConfig.setCaption("Indexing parameters");
     horConfig.setHeight("20%");
     horConfig.setWidth("60%");
-    horConfig.addComponent(getConfigValue(MyConfig.Config.FAILEDLIMIT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.INDEXLIMIT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.REINDEXLIMIT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.TIKATIMEOUT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.OTHERTIMEOUT));
+    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.FAILEDLIMIT));
+    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.INDEXLIMIT));
+    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.REINDEXLIMIT));
+    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.TIKATIMEOUT));
+    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.OTHERTIMEOUT));
 
     tab.addComponent(horConfig);
     if (config.highlightmlt) {
@@ -422,9 +425,9 @@ public class MyVaadinUI extends UI
         mltConfig.setCaption("Searching for MoreLikeThis");
         mltConfig.setHeight("20%");
         mltConfig.setWidth("60%");
-        mltConfig.addComponent(getConfigValue(MyConfig.Config.MLTCOUNT));
-        mltConfig.addComponent(getConfigValue(MyConfig.Config.MLTMINTF));
-        mltConfig.addComponent(getConfigValue(MyConfig.Config.MLTMINDF));
+        mltConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.MLTCOUNT));
+        mltConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.MLTMINTF));
+        mltConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.MLTMINDF));
         tab.addComponent(mltConfig);
     }
 
@@ -771,7 +774,7 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
-    private TextField getConfigValue(final MyConfig.Config config) {
+    private TextField getConfigValue(String nodename, NodeConfig conf, final MyConfig.Config config) {
 	TextField tf = new TextField("Set " + MyConfig.configStrMap.get(config));
 	tf.setValue("" + MyConfig.conf.configMap.get(config));
 	
@@ -786,8 +789,10 @@ public class MyVaadinUI extends UI
 		    	if (i.intValue() < 0) {
 		    		throw new NumberFormatException();
 		    	}
-		    	MyConfig.conf.configMap.put(config, i);
+		    	conf.configMap.put(config, i);
+		    	MyConfig.instance().myput(nodename, conf);
 		    	Notification.show("Value changed");
+		    	ZKMessageUtil.doreconfig();
 		    } catch (NumberFormatException e) {
 		    	Notification.show("Illegal value, unchanged");
 		    	log.error(Constants.EXCEPTION, e);

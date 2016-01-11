@@ -46,6 +46,14 @@ public abstract class MyConfig {
         return set;
     }
     
+    public void myput(String nodename, NodeConfig config) {
+        nodemap.put(nodename, config);
+    }
+    
+    public void reconfig() {
+        conf = mynode();
+    }
+    
     public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF }
     public static Map<Config, Integer> configDefaultMap = new HashMap<Config, Integer>();
     public static Map<Config, String> configStrMap = new HashMap<Config, String>();

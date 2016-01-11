@@ -14,6 +14,7 @@ public static final String AETHER = "aether";
 public static final String LOCK = "lock";
 public static final String NODES = "nodes";
 public static final String REFRESH = "refresh";
+public static final String RECONFIG = "reconfig";
 public static final String QUEUE = "queue";
 public static final String DB = "db";
 
