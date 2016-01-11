@@ -364,27 +364,35 @@ public class MyVaadinUI extends UI
 	return tab;
     }
 
+    private String stringify(String[] strs) {
+        String ret = "";
+        if (strs != null) {
+            for (String str : strs) {
+                ret = ret + str + " ";
+            }
+        }
+        return ret;
+    }
+    
     private VerticalLayout getConfigTab(String nodename) {
+        String DELIMITER = " = ";
         NodeConfig config = MyConfig.instance().getNode(nodename);
         
     VerticalLayout tab = new VerticalLayout();
     tab.setCaption("Configuration");
 
     HorizontalLayout name = new HorizontalLayout();
-    Label nameLabel = new Label(ConfigConstants.NODENAME + " " +nodename);    
+    Label nameLabel = new Label(ConfigConstants.NODENAME + DELIMITER + nodename);    
     tab.addComponent(nameLabel);
+    Label dirLabel = new Label(ConfigConstants.DIRLIST + DELIMITER + stringify(config.dirlist));    
+    tab.addComponent(dirLabel);
+    if (config.dirlistnot != null) {
+    Label dirnotLabel = new Label(ConfigConstants.DIRLISTNOT + DELIMITER + stringify(config.dirlistnot));    
+    tab.addComponent(dirnotLabel);
+    }
     
-    HorizontalLayout horConfig = new HorizontalLayout();
-    horConfig.setHeight("20%");
-    horConfig.setWidth("60%");
-    horConfig.addComponent(getConfigValue(MyConfig.Config.FAILEDLIMIT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.INDEXLIMIT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.REINDEXLIMIT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.TIKATIMEOUT));
-    horConfig.addComponent(getConfigValue(MyConfig.Config.OTHERTIMEOUT));
-
-    tab.addComponent(horConfig);
-    HorizontalLayout indexConfig = new HorizontalLayout();
+    VerticalLayout indexConfig = new VerticalLayout();
+    indexConfig.setCaption("Indexing");
     Label idxLabel = new Label("Index type " + config.index);
     indexConfig.addComponent(idxLabel);
     if (config.index.equals(ConfigConstants.LUCENE)) {
@@ -395,11 +403,23 @@ public class MyVaadinUI extends UI
         Label solrLabel = new Label("Solr URL " + config.solrurl); 
         indexConfig.addComponent(solrLabel);
     }
-    Label mltLabel = new Label(ConfigConstants.HIGHLIGHTMLT + " " + config.highlightmlt);
+    Label mltLabel = new Label(ConfigConstants.HIGHLIGHTMLT + DELIMITER + config.highlightmlt);
     tab.addComponent(indexConfig);    
     
+    HorizontalLayout horConfig = new HorizontalLayout();
+    horConfig.setCaption("Indexing parameters");
+    horConfig.setHeight("20%");
+    horConfig.setWidth("60%");
+    horConfig.addComponent(getConfigValue(MyConfig.Config.FAILEDLIMIT));
+    horConfig.addComponent(getConfigValue(MyConfig.Config.INDEXLIMIT));
+    horConfig.addComponent(getConfigValue(MyConfig.Config.REINDEXLIMIT));
+    horConfig.addComponent(getConfigValue(MyConfig.Config.TIKATIMEOUT));
+    horConfig.addComponent(getConfigValue(MyConfig.Config.OTHERTIMEOUT));
+
+    tab.addComponent(horConfig);
     if (config.highlightmlt) {
         HorizontalLayout mltConfig = new HorizontalLayout();
+        mltConfig.setCaption("Searching for MoreLikeThis");
         mltConfig.setHeight("20%");
         mltConfig.setWidth("60%");
         mltConfig.addComponent(getConfigValue(MyConfig.Config.MLTCOUNT));
@@ -413,62 +433,76 @@ public class MyVaadinUI extends UI
     dbConfig.addComponent(dbLabel);
     
     if (config.db.equals(ConfigConstants.HBASE)) {
-        HorizontalLayout hbaseConfig = new HorizontalLayout();
+        VerticalLayout hbaseConfig = new VerticalLayout();
+        hbaseConfig.setCaption("Hbase settings");
         hbaseConfig.setHeight("20%");
         hbaseConfig.setWidth("60%");
-        Label quorumLabel = new Label(ConfigConstants.HBASEQUORUM + " " + config.hbasequorum);
-        Label portLabel = new Label(ConfigConstants.HBASEPORT + " " + config.hbaseport);
-        Label masterLabel = new Label(ConfigConstants.HBASEMASTER + " " + config.hbasemaster);
+        Label quorumLabel = new Label(ConfigConstants.HBASEQUORUM + DELIMITER + config.hbasequorum);
+        Label portLabel = new Label(ConfigConstants.HBASEPORT + DELIMITER + config.hbaseport);
+        Label masterLabel = new Label(ConfigConstants.HBASEMASTER + DELIMITER + config.hbasemaster);
         hbaseConfig.addComponent(quorumLabel);
         hbaseConfig.addComponent(portLabel);
         hbaseConfig.addComponent(masterLabel);
     }
     tab.addComponent(dbConfig);
 
-    HorizontalLayout cloudConfig = new HorizontalLayout();
-    Label hdfsLabel = new Label(ConfigConstants.HDFSCONFFS + " " + config.fsdefaultname);
+    VerticalLayout cloudConfig = new VerticalLayout();
+    cloudConfig.setCaption("Misc cloud or distributed settings");
+    if (config.fsdefaultname != null) {
+    Label hdfsLabel = new Label(ConfigConstants.HDFSCONFFS + DELIMITER + config.fsdefaultname);
     cloudConfig.addComponent(hdfsLabel);
-    Label zooLabel = new Label(ConfigConstants.ZOOKEEPER + " " + config.zookeeper);
+    }
+    if (config.zookeeper != null) {
+    Label zooLabel = new Label(ConfigConstants.ZOOKEEPER + DELIMITER + config.zookeeper);
     cloudConfig.addComponent(zooLabel);
-    Label lockmodeLabel = new Label(ConfigConstants.DISTRIBUTEDLOCKMODE + " " + config.zookeepersmall);
+    }
+    Label lockmodeLabel = new Label(ConfigConstants.DISTRIBUTEDLOCKMODE + DELIMITER + config.zookeepersmall);
     cloudConfig.addComponent(lockmodeLabel);
-    Label distprocLabel = new Label(ConfigConstants.DISTRIBUTEDPROCESS + " " + config.distributedtraverse);
+    Label distprocLabel = new Label(ConfigConstants.DISTRIBUTEDPROCESS + DELIMITER + config.distributedtraverse);
     cloudConfig.addComponent(distprocLabel);
-    Label lockerLabel = new Label("locker" + " " + config.locker);
+    if (config.locker != null) {
+    Label lockerLabel = new Label("locker" + DELIMITER + config.locker);
     cloudConfig.addComponent(lockerLabel);
+    }
     tab.addComponent(cloudConfig);
     
     if (config.classify != null) {
-        HorizontalLayout classifyConfig = new HorizontalLayout();
-        Label classifyLabel = new Label(ConfigConstants.CLASSIFY + " " + config.classify);
+        VerticalLayout classifyConfig = new VerticalLayout();
+        Label classifyLabel = new Label(ConfigConstants.CLASSIFY + DELIMITER + config.classify);
         classifyConfig.addComponent(classifyLabel);
         if (config.classify.equals(ConfigConstants.OPENNLP)) {
-            Label pathLabel = new Label(ConfigConstants.OPENNLPMODELPATH + " " + config.opennlpmodelpath);
+            Label pathLabel = new Label(ConfigConstants.OPENNLPMODELPATH + DELIMITER + config.opennlpmodelpath);
             classifyConfig.addComponent(pathLabel);
         }
         if (config.classify.equals(ConfigConstants.MAHOUT)) {
-            Label algorithmLabel = new Label(ConfigConstants.MAHOUTALGORITHM + " " + config.mahoutalgorithm);
+            classifyConfig.setCaption("Mahout settings");
+            Label algorithmLabel = new Label(ConfigConstants.MAHOUTALGORITHM + DELIMITER + config.mahoutalgorithm);
             classifyConfig.addComponent(algorithmLabel);
-            Label basepathLabel = new Label(ConfigConstants.MAHOUTBASEPATH + " " + config.mahoutbasepath);
+            if (config.mahoutbasepath != null) {
+            Label basepathLabel = new Label(ConfigConstants.MAHOUTBASEPATH + DELIMITER + config.mahoutbasepath);
             classifyConfig.addComponent(basepathLabel);
-            Label conffsLabel = new Label(ConfigConstants.MAHOUTCONFFS + " " + config.mahoutconffs);
+            }
+            if (config.mahoutconffs != null) {
+            Label conffsLabel = new Label(ConfigConstants.MAHOUTCONFFS + DELIMITER + config.mahoutconffs);
             classifyConfig.addComponent(conffsLabel);
-            Label dictpathLabel = new Label(ConfigConstants.MAHOUTDICTIONARYPATH + " " + config.mahoutdictionarypath);
+            }
+            Label dictpathLabel = new Label(ConfigConstants.MAHOUTDICTIONARYPATH + DELIMITER + config.mahoutdictionarypath);
             classifyConfig.addComponent(dictpathLabel);
-            Label docfreqpathLabel = new Label(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH + " " + config.mahoutdocumentfrequencypath);
+            Label docfreqpathLabel = new Label(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH + DELIMITER + config.mahoutdocumentfrequencypath);
             classifyConfig.addComponent(docfreqpathLabel);
-            Label labelpathLabel = new Label(ConfigConstants.MAHOUTLABELINDEXFILEPATH + " " + config.mahoutlabelindexpath);
+            Label labelpathLabel = new Label(ConfigConstants.MAHOUTLABELINDEXFILEPATH + DELIMITER + config.mahoutlabelindexpath);
             classifyConfig.addComponent(labelpathLabel);
-            Label modelpathLabel = new Label(ConfigConstants.MAHOUTMODELPATH + " " + config.mahoutmodelpath);
+            Label modelpathLabel = new Label(ConfigConstants.MAHOUTMODELPATH + DELIMITER + config.mahoutmodelpath);
             classifyConfig.addComponent(modelpathLabel);
       }
         tab.addComponent(classifyConfig);
     }
     
-    HorizontalLayout miscConfig = new HorizontalLayout();
-    Label downloadLabel = new Label(ConfigConstants.DOWNLOADER + " " + config.downloader);
+    VerticalLayout miscConfig = new VerticalLayout();
+    miscConfig.setCaption("Misc settings");
+    Label downloadLabel = new Label(ConfigConstants.DOWNLOADER + DELIMITER + config.downloader);
     miscConfig.addComponent(downloadLabel);
-    Label authLabel = new Label(ConfigConstants.AUTHENTICATE + " " + config.authenticate);
+    Label authLabel = new Label(ConfigConstants.AUTHENTICATE + DELIMITER + config.authenticate);
     miscConfig.addComponent(authLabel);
     tab.addComponent(miscConfig);
     

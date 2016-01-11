@@ -2,6 +2,7 @@ package roart.config;
 
 import java.util.NoSuchElementException;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -35,6 +36,7 @@ public class MyPropertyConfig extends MyConfig {
         super();
 	try {
          config = new PropertiesConfiguration(ConfigConstants.PROPFILE);
+         //((AbstractConfiguration) config).setDelimiterParsingDisabled(true);
     } catch (ConfigurationException e) {
         log.error(Constants.EXCEPTION, e); 
     }
@@ -108,7 +110,7 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     private void configLockmode() {
-        String zookeepermode = getString(ConfigConstants.DISTRIBUTEDLOCKMODE, ConfigConstants.SMALL, false, false, lockmodevalues);
+        String zookeepermode = getString(ConfigConstants.DISTRIBUTEDLOCKMODE, ConfigConstants.BIG, false, false, lockmodevalues);
         if (zookeepermode != null && zookeepermode.equals(ConfigConstants.SMALL)) {
             conf.zookeepersmall = true;
         } else {
@@ -226,16 +228,25 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     private void configDirlist() {
+        /*
         String dirliststr = getString(ConfigConstants.DIRLIST, null, true, true, null);
         String dirlistnotstr = getString(ConfigConstants.DIRLISTNOT, null, false, false, null);
-        String [] dirlist = dirliststr.split(",");
-        String [] dirlistnot = dirlistnotstr.split(",");
+        String[] dirlist = dirliststr.split(",");
+        String[] dirlistnot = dirlistnotstr.split(",");
+        System.out.println("dirliststr " + dirliststr);
+        */
+        String[] dirlist = getStringArray(ConfigConstants.DIRLIST, null, true, true);
+        String[] dirlistnot = getStringArray(ConfigConstants.DIRLISTNOT, null, false, false);
         conf.dirlist = dirlist;
         conf.dirlistnot = dirlistnot;
     }
 
     public String getString(String string) {
         return config.getString(string);
+    }
+    
+    public String[] getStringArray(String string) {
+        return config.getStringArray(string);
     }
     
     public Boolean getBoolean(String string) {
@@ -292,6 +303,32 @@ public class MyPropertyConfig extends MyConfig {
             } else {
                 log.error("Ignoring illegal value " + key + " = " + value);
             }
+        }
+        return value;
+    }
+    
+    public String[] getStringArray(String key, String[] defaultvalue, boolean mandatory, boolean fatal) {
+        String value[] = null;
+        try {
+            value = getStringArray(key);
+        } catch (NoSuchElementException e) {
+        } catch (ConversionException e) {
+            if (fatal) {
+                System.out.println("Can not convert config " + key);
+                log.error("Can not convert config " + key);
+                System.exit(0);
+            } else {
+                System.out.println("Can not convert config " + key);
+                log.error("Can not convert config " + key);                
+            }
+        }
+        if (value == null && mandatory) {
+            System.out.println("Can not find mandatory config " + key);
+            log.error("Can not find mandatory config " + key);
+            System.exit(0);            
+        }
+        if (value == null) {
+            value = defaultvalue;
         }
         return value;
     }

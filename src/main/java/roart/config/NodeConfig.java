@@ -6,8 +6,8 @@ import java.util.Map;
 public class NodeConfig {
     public String languages = null;
     
-    public String dirlist[] = null;
-    public String dirlistnot[] = null;
+    public String[] dirlist = null;
+    public String[] dirlistnot = null;
     
     public boolean hasHibernate = false;
     public String db = null;
