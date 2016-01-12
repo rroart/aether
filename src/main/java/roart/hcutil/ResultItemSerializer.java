@@ -14,7 +14,7 @@ public class ResultItemSerializer implements StreamSerializer<ResultItem> {
 
   @Override
       public int getTypeId() {
-      return 10;
+      return 4;
   }
 
   @Override
