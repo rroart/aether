@@ -9,6 +9,7 @@ import roart.service.ControlService;
 import roart.util.MyMap;
 import roart.util.MyMaps;
 import roart.util.MySet;
+import roart.zkutil.ZKMessageUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ public abstract class MyConfig {
     
     public void myput(String nodename, NodeConfig config) {
         nodemap.put(nodename, config);
+	ZKMessageUtil.doreconfig();
     }
     
     public void reconfig() {

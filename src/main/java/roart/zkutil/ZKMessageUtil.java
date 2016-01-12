@@ -40,6 +40,7 @@ public class ZKMessageUtil {
 		} else if (child.equals(Constants.RECONFIG)) {
 	            MyConfig.instance().reconfig();
 	            log.info(Constants.RECONFIG + " " + ControlService.nodename);
+		    ClientRunner.replace();
 	            ClientRunner.notify("Finished reconfig");
 		} else {
 		    log.info("unknown command " + child);

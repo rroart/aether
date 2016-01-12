@@ -157,6 +157,24 @@ public class ClientRunner implements Runnable {
 	}
     }
 
+    public static void replace() {
+	for (final UI ui : uiset.keySet()) {
+	    try {
+		ui.access(new Runnable() {
+			@Override
+			public void run() {
+			    ((roart.client.MyVaadinUI) ui).replace();
+			}
+		    });
+	    } catch (UIDetachedException e) {
+		log.error("UIDetachedException", e);
+		uiset.remove(ui, "value");
+	    } catch (Exception e) {
+		log.error(Constants.EXCEPTION, e);
+	    }
+	}
+    }
+
     // not yet
     /*
     public static void abort() {

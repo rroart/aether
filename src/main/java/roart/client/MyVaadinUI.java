@@ -377,11 +377,30 @@ public class MyVaadinUI extends UI
         return ret;
     }
     
+    public Map<String, Component> nodeTabMap = new HashMap<String, Component>();
+
+    public void replace() {
+	for (String node : nodeTabMap.keySet()) {
+	    Component oldComponent = nodeTabMap.get(node);
+	    Component newComponent = getConfigTab(node);
+	    tabsheet.replaceComponent(oldComponent, newComponent);
+	    if (ControlService.nodename.equals(node)) {
+		getSession().setAttribute("config", newComponent);
+	    }
+	    nodeTabMap.put(node, newComponent);
+	}
+	Component oldControlPanelTab = (Component) getSession().getAttribute("controlpanel");
+	Component newControlPanelTab = getControlPanelTab();
+	tabsheet.replaceComponent(oldControlPanelTab, newControlPanelTab);
+        getSession().setAttribute("controlpanel", newControlPanelTab);
+    }
+
     private VerticalLayout getConfigTab(String nodename) {
         String DELIMITER = " = ";
         NodeConfig config = MyConfig.instance().getNode(nodename);
         
     VerticalLayout tab = new VerticalLayout();
+    nodeTabMap.put(nodename, tab);
     tab.setCaption("Configuration");
 
     HorizontalLayout name = new HorizontalLayout();
@@ -776,7 +795,7 @@ public class MyVaadinUI extends UI
 
     private TextField getConfigValue(String nodename, NodeConfig conf, final MyConfig.Config config) {
 	TextField tf = new TextField("Set " + MyConfig.configStrMap.get(config));
-	tf.setValue("" + MyConfig.conf.configMap.get(config));
+	tf.setValue("" + conf.configMap.get(config));
 	
 	// Handle changes in the value
 	tf.addValueChangeListener(new Property.ValueChangeListener() {
