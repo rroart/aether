@@ -17,3 +17,8 @@ tesseract (through) tika is running english only
 consistent clean with filename only, or md5 without any files
 exceeding (re)indexing limits
 work indexcount problem
+tab refreshing
+config property file , delimiter handling (language, other lists)
+config file save.
+full gui config.
+join a master config.
