@@ -594,10 +594,10 @@
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
     <jdk.version>1.8</jdk.version>
-    <lucene.version>5.4.0</lucene.version>
-    <solr.version>5.4.0</solr.version>
+    <lucene.version>5.5.0</lucene.version>
+    <solr.version>5.5.0</solr.version>
     <hbase.version>1.1.2</hbase.version>
-    <tika.version>1.11</tika.version>
+    <tika.version>1.12</tika.version>
     <mahout.version>0.9</mahout.version>
     <opennlp.version>1.5.3</opennlp.version>
     <hadoop.version>2.7.1</hadoop.version>
@@ -607,7 +607,7 @@
     <curator.version>2.9.1</curator.version>
     <hazelcast.version>3.5.4</hazelcast.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-    <hibernate.version>5.0.5.Final</hibernate.version>
+    <hibernate.version>5.1.0.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
     <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
     <h2.version>1.4.190</h2.version>
