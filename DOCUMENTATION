@@ -295,7 +295,7 @@ Multinode configuration.
 
 6. Version numbers of external software
 
-Solr 5.4.0
+Solr 5.5.0
 Hbase 1.1.2
 Mahout 0.9
 OpenNLP 1.5.3
