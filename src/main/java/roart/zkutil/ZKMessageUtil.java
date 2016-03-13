@@ -61,7 +61,7 @@ public class ZKMessageUtil {
 	    List<String> nodes = ZKInitialize.zk.getChildren("/" + Constants.AETHER + "/" + Constants.NODES, false);
 	    for (String node : nodes) {
 		if (!ControlService.nodename.equals(node)) {
-			ZKInitialize.zk.create("/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.REFRESH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+			ZKInitialize.createTempIfNotExists(ZKInitialize.zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.REFRESH);
 		    log.info("send refresh to " + node);
 		}
 	    }
@@ -79,7 +79,7 @@ public class ZKMessageUtil {
         List<String> nodes = ZKInitialize.zk.getChildren("/" + Constants.AETHER + "/" + Constants.NODES, false);
         for (String node : nodes) {
         if (!ControlService.nodename.equals(node)) {
-            ZKInitialize.zk.create("/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.RECONFIG, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            ZKInitialize.createTempIfNotExists(ZKInitialize.zk,"/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.RECONFIG);
             log.info("send reconfig to " + node);
         }
         }

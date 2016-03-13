@@ -25,25 +25,24 @@ public class ZKInitialize {
 	    }
 	    try {
 		zk = new ZooKeeper(MyConfig.conf.zookeeper, Integer.MAX_VALUE, watcher);
-		Stat s;
-		s = zk.exists("/" + Constants.AETHER, false);
-		if (s == null) {
-		    zk.create("/" + Constants.AETHER, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		}
-		s = zk.exists("/" + Constants.AETHER + "/" + Constants.LOCK, false);
-		if (s == null) {
-		    zk.create("/" + Constants.AETHER + "/" + Constants.LOCK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		}
-		s = zk.exists("/" + Constants.AETHER + "/" + Constants.NODES, false);
-		if (s == null) {
-		    zk.create("/" + Constants.AETHER + "/" + Constants.NODES, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		}
-		s = zk.exists("/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename, false);
-		if (s == null) {
-		    zk.create("/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		}
+		createTempIfNotExists(zk, "/" + Constants.AETHER);
+		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.LOCK);
+		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES);
+		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename);
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	    }
 	}
+	
+	public static void createTempIfNotExists(ZooKeeper zk, String path) {
+        try {
+            Stat s = zk.exists(path, false);
+            if (s == null) {
+                zk.create(path, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+	}
+	
 }
