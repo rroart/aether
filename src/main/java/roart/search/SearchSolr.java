@@ -48,7 +48,6 @@ public class SearchSolr {
 	server = new HttpSolrClient( url );
 	log.info("server " + server);
 	System.out.println("server " + server);
-	server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
 	server.setConnectionTimeout(5000); // 5 seconds to establish TCP
 	// Setting the XML response parser is only required for cross
 	// version compatibility and only when one side is 1.4.1 or
