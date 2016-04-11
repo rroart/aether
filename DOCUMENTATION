@@ -25,6 +25,32 @@ For standalone single node: aether.prop.standalone
 For standalone using cloud services: aether.prop.cloud
 For two nodes: aether.prop.testnode1 aether.prop.testnode2
 
+There are two modes, standalone and multi mode.
+The standalone is set if hibernate or lucene is chosen.
+(Assuming multinodes connect to the same Solr and Hbase, it is not checked.)
+If standalone is used, the nodename will be localhost automatically,
+otherwise a nodename will have to be set.
+Standalone will use no global locker.
+
+The content source is a directory list in dirlist.
+The directory list may be ordinary, local filesystem, or it may be HDFS.
+(More about HDFS later)
+The exceptions are to be listedd in dirlistnot.
+
+The indexed filenames and metadata are stored in a database.
+This may either be the standalone H2 (with Hibernate) or the multinode Hbase (with or without DataNucleus).
+The standalone is currently too slow to handle as big disks/sizes as multimode.
+
+The indexed file content and metadata are stored in Lucene or Solr.
+Lucene is the standalone, while Solr is the multinode.
+
+If using multinode, the setting distributedlockmode is for setting
+big or small granularity using Curator, if the mode is big only
+one node may use the indexer or other write operations at one single time.
+
+If using multinode, and setting distributedprocess, it will use
+Hazelcast to distribute through the nodes, and use Hazelcast locking.
+
 Configure aether.prop:
 
 2.1 Mandatory configuration.
@@ -206,6 +232,12 @@ The metadata is stored by key/value pairs, and are searchable by metadata:key\:t
 
 Query parser is behaving differently according to Lucene or Solr, see specific docs.
 
+If searching in Solr with other search fields than default, they will set the query parser type, so you will not have to write {!queryparser} to use them.
+
+https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser
+
+https://cwiki.apache.org/confluence/display/solr/Other+Parsers
+
 Search results.
 The admin user gets more fields.
 Note that when hovering over metadata, the metadata is shown.
@@ -295,8 +327,8 @@ Multinode configuration.
 
 6. Version numbers of external software
 
-Solr 5.5.0
-Hbase 1.1.2
+Solr 6.0.0
+Hbase 1.2.1
 Mahout 0.9
 OpenNLP 1.5.3
 Curator 2.9.1
