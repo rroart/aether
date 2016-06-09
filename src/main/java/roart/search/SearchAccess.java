@@ -22,6 +22,12 @@ public abstract class SearchAccess {
 
     public abstract ResultItem[] searchsimilar(String id, String searchtype, SearchDisplay display);
 
+    /**
+     * Delete the entry with given id
+     * 
+     * @param str md5 id
+     */
+    
     public abstract void delete(String str);
     
 }
