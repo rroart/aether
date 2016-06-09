@@ -38,6 +38,7 @@ public class NodeConfig {
     public String mahoutdictionarypath = null;
     public String mahoutdocumentfrequencypath = null;
     public String mahoutalgorithm = null;
+    public String mahoutsparkmaster = null;
 
     public boolean downloader = false;
     public boolean authenticate = false;

@@ -172,6 +172,23 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutalgorithm = mahoutbayestype;
             new roart.classification.MahoutClassify();
         }
+        if (classify != null && classify.equals(ConfigConstants.MAHOUTSPARK)) {
+            String mahoutconffs = getString(ConfigConstants.MAHOUTCONFFS, null, false, false, null);
+            String mahoutbasepath = getString(ConfigConstants.MAHOUTBASEPATH, null, false, false, null);
+            String mahoutmodelPath = getString(ConfigConstants.MAHOUTMODELPATH, null, true, true, null);
+            String mahoutdictionaryPath = getString(ConfigConstants.MAHOUTDICTIONARYPATH, null, true, true, null);
+            String mahoutdocumentFrequencyPath = getString(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH, null, true, true, null);
+            String mahoutbayestype = getString(ConfigConstants.MAHOUTALGORITHM, null, true, true, null);
+            String mahoutsparkmaster = getString(ConfigConstants.MAHOUTSPARKMASTER, null, true, true, null);
+            conf.mahoutconffs = mahoutconffs;
+            conf.mahoutbasepath = mahoutbasepath;
+            conf.mahoutmodelpath = mahoutmodelPath;
+            conf.mahoutdictionarypath = mahoutdictionaryPath;
+            conf.mahoutdocumentfrequencypath = mahoutdocumentFrequencyPath;
+            conf.mahoutalgorithm = mahoutbayestype;
+            conf.mahoutsparkmaster = mahoutsparkmaster;
+            new roart.classification.MahoutSparkClassify();
+        }
         if (classify != null && classify.equals(ConfigConstants.OPENNLP)) {
             String opennlpmodelpath = getString(ConfigConstants.OPENNLPMODELPATH, null, true, true, null);
             conf.opennlpmodelpath = opennlpmodelpath;

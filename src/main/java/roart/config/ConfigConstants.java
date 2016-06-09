@@ -16,6 +16,8 @@ public class ConfigConstants {
     public static final String HIBERNATE = "hibernate";
     public static final String CLASSIFY = "classify";
     public static final String MAHOUT = "mahout";
+    public static final String MAHOUTSPARK = "mahoutspark";
+    public static final String MAHOUTSPARKMASTER = "mahoutsparkmaster";
     public static final String OPENNLP = "opennlp";
     public static final String DOWNLOADER = "downloader";
     public static final String AUTHENTICATE = "authenticate";

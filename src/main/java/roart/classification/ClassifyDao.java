@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
-
+import roart.config.ConfigConstants;
 import roart.model.ResultItem;
- 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +26,13 @@ public class ClassifyDao {
 	  return;
 	}
 	if (classify == null) {
-	    if (type.equals("mahout")) {
+	    if (type.equals(ConfigConstants.MAHOUT)) {
 		classify = new MahoutClassifyAccess();
 	    }
-	    if (type.equals("opennlp")) {
+        if (type.equals(ConfigConstants.MAHOUTSPARK)) {
+        classify = new MahoutSparkClassifyAccess();
+        }
+	    if (type.equals(ConfigConstants.OPENNLP)) {
 		classify = new OpennlpClassifyAccess();
 	    }
 	}

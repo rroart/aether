@@ -7,7 +7,7 @@
   <artifactId>aether</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
   <!--artifactId>akashic-disk-search-engine</artifactId-->
-  <version>0.8-SNAPSHOT</version>
+  <version>0.9-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Aether Disk Search Engine</name>
   <!--name>Vaadin Web Application</name-->
@@ -191,6 +191,20 @@
                         </goals>
                     </execution>
                 </executions>
+      </plugin>
+      <!-- we need to include ourselves in spark setJars -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-jar-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <id>make-a-jar</id>
+	    <phase>compile</phase>
+	    <goals>
+	      <goal>jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
       </plugin>
     </plugins>
     <pluginManagement>
@@ -525,6 +539,34 @@
       <artifactId>mahout-mr</artifactId>
       <version>${mahout.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-spark_2.10</artifactId>
+      <version>${mahout.version}</version>
+      <!--scope>provided</scope-->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-math-scala_2.10</artifactId>
+      <version>${mahout.version}</version>
+      <!--scope>provided</scope-->
+    </dependency>
+    <dependency>
+      <groupId>com.esotericsoftware.kryo</groupId>
+      <artifactId>kryo</artifactId>
+      <version>${kryo.version}</version>
+    </dependency>
+     <!--dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.10</artifactId>
+      <version>${spark.version}</version>
+      </dependency-->
+    <!--dependency>
+      <groupId>org.xerial.snappy</groupId>
+      <artifactId>snappy-java</artifactId>
+      <version>${snappyjava.version}</version>
+      <scope>provided</scope>
+    </dependency-->
 <dependency>
  <groupId>org.apache.opennlp</groupId>
  <artifactId>opennlp-tools</artifactId>
@@ -539,6 +581,12 @@
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-hbase</artifactId>
   <version>${datanucleus.version}</version>
+  <exclusions>
+    <exclusion>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase</artifactId>
+    </exclusion>
+  </exclusions>
 </dependency>
 <dependency>
   <groupId>org.datanucleus</groupId>
@@ -590,6 +638,12 @@
   <artifactId>commons-configuration</artifactId>
   <version>${commons.version}</version>
 </dependency>
+<!-- dependent package for sparkconf setjars -->
+<dependency>
+  <groupId>it.unimi.dsi</groupId>
+  <artifactId>fastutil</artifactId>
+  <version>${fastutil.version}</version>
+</dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
@@ -597,15 +651,22 @@
     <lucene.version>6.0.0</lucene.version>
     <solr.version>6.0.0</solr.version>
     <hbase.version>1.2.1</hbase.version>
-    <tika.version>1.12</tika.version>
+    <tika.version>1.13</tika.version>
     <mahout.version>0.12.0</mahout.version>
+    <!-- must keep at old version for some time -->
+    <spark.version>1.5.2</spark.version>
+    <!-- must keep at old version for some time -->
+    <kryo.version>2.21</kryo.version>
     <opennlp.version>1.5.3</opennlp.version>
     <hadoop.version>2.7.1</hadoop.version>
     <datanucleus.version>4.1.0-release</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
+    <!-- must keep at old version for some time -->
     <curator.version>2.9.1</curator.version>
+    <!-- must keep at old version for some time -->
     <hazelcast.version>3.5.4</hazelcast.version>
+    <snappyjava.version>1.0.4.1</snappyjava.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>5.1.0.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
@@ -625,8 +686,10 @@
     <slf4j.version>1.7.13</slf4j.version>
     <ehcache.version>2.6.11</ehcache.version>
     <servlet.version>3.1.0</servlet.version>
+    <!-- must keep at old version for some time -->
     <guava.version>16.0.1</guava.version>
     <commons.version>1.10</commons.version>
+    <fastutil.version>7.0.11</fastutil.version>
   </properties>
 	<repositories>
 		<repository>

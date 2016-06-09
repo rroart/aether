@@ -496,7 +496,7 @@ public class MyVaadinUI extends UI
             Label pathLabel = new Label(ConfigConstants.OPENNLPMODELPATH + DELIMITER + config.opennlpmodelpath);
             classifyConfig.addComponent(pathLabel);
         }
-        if (config.classify.equals(ConfigConstants.MAHOUT)) {
+        if (config.classify.equals(ConfigConstants.MAHOUT) || config.classify.equals(ConfigConstants.MAHOUTSPARK)) {
             classifyConfig.setCaption("Mahout settings");
             Label algorithmLabel = new Label(ConfigConstants.MAHOUTALGORITHM + DELIMITER + config.mahoutalgorithm);
             classifyConfig.addComponent(algorithmLabel);
@@ -514,8 +514,13 @@ public class MyVaadinUI extends UI
             classifyConfig.addComponent(docfreqpathLabel);
             Label labelpathLabel = new Label(ConfigConstants.MAHOUTLABELINDEXFILEPATH + DELIMITER + config.mahoutlabelindexpath);
             classifyConfig.addComponent(labelpathLabel);
-            Label modelpathLabel = new Label(ConfigConstants.MAHOUTMODELPATH + DELIMITER + config.mahoutmodelpath);
-            classifyConfig.addComponent(modelpathLabel);
+            if (config.classify.equals(ConfigConstants.MAHOUT)) {
+                Label modelpathLabel = new Label(ConfigConstants.MAHOUTMODELPATH + DELIMITER + config.mahoutmodelpath);               
+                classifyConfig.addComponent(modelpathLabel);
+            } else {
+                Label sparkMaster = new Label(ConfigConstants.MAHOUTSPARKMASTER + DELIMITER + config.mahoutsparkmaster);
+                classifyConfig.addComponent(sparkMaster);
+            }
       }
         tab.addComponent(classifyConfig);
     }
