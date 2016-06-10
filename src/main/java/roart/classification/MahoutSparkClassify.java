@@ -156,12 +156,7 @@ public class MahoutSparkClassify {
             // analyzer used to extract word from content
             int labelCount = labels.size();
             log.info("Docs " + documentFrequency.size());
-            for(Integer s : documentFrequency.keySet()) {
-                if (s.intValue() < 10) {
-                log.info("key " + s);
-                }
-            }
-            // the -1 is in df-count/part-r-00000
+           // the -1 is in df-count/part-r-00000
             if (documentFrequency.get(-1) != null) {
             	documentCount = documentFrequency.get(-1).intValue();
             } else {
@@ -217,7 +212,7 @@ public class MahoutSparkClassify {
 		    bestScore = score;
 		    bestCategoryId = categoryId;
 		}
-		log.info(" " + labels.get(categoryId) + ": " + score);
+		//log.info(" " + labels.get(categoryId) + ": " + score);
 	    }
 	    log.info(" cat " + labels.get(bestCategoryId));
 	    return labels.get(new Integer(bestCategoryId));

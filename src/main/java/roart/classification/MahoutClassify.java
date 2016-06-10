@@ -170,7 +170,7 @@ public class MahoutClassify {
 		    bestScore = score;
 		    bestCategoryId = categoryId;
 		}
-		log.info(" " + labels.get(categoryId) + ": " + score);
+		//log.info(" " + labels.get(categoryId) + ": " + score);
 	    }
 	    log.info(" cat " + labels.get(bestCategoryId));
 	    return labels.get(bestCategoryId);
