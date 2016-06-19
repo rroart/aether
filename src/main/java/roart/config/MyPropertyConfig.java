@@ -45,7 +45,7 @@ public class MyPropertyConfig extends MyConfig {
     public static String[] fsvalues = { ConfigConstants.LOCAL, ConfigConstants.HADOOP };
     public static String[] indexvalues = { ConfigConstants.LUCENE, ConfigConstants.SOLR };
     public static String[] dbvalues = { ConfigConstants.HIBERNATE, ConfigConstants.DATANUCLEUS, ConfigConstants.HBASE };
-    public static String[] classifyvalues = { ConfigConstants.MAHOUT, ConfigConstants.OPENNLP };
+    public static String[] classifyvalues = { ConfigConstants.MAHOUT, ConfigConstants.MAHOUTSPARK, ConfigConstants.OPENNLP };
     public static String[] lockmodevalues = { ConfigConstants.SMALL, ConfigConstants.BIG };
     
     public void config() {
