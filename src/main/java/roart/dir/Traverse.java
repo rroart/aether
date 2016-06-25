@@ -474,6 +474,8 @@ public class Traverse {
             // config with finegrained distrib
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(1);
+            MyAtomicLong count = MyAtomicLongs.get(traversecountid);
+            count.addAndGet(1);
             queue.offer(trav);
             //TraverseFile.indexsingle(trav, md5, name, index);
         }
