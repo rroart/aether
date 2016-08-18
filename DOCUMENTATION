@@ -1,6 +1,27 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!--!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd"-->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book id="top">
+<title>
 Aether disk search engine
-
-0. Introduction
+</title>
+<bookinfo>
+  <author>
+    <firstname>Roar</firstname>
+    <surname>Thronæs</surname>
+  </author>
+    <abstract>
+    <para>
+	Aether is an application for indexing and searching unstructured collections.
+    </para>
+  </abstract>
+</bookinfo>
+<chapter>
+<title>
+Introduction
+</title>
+<para>
 Aether is an application for indexing and searching unstructured collections.
 Unstructured, in a way that the collections may be overlapping, may be randomly put together, or may be too large to go through manually.
 The collections themselves is meant to be mainly books and documents, but also music may work.
@@ -11,171 +32,317 @@ Both searching and indexing is initiated through the web client.
 The server may be a single server, or a set of clustered/cloudy servers.
 It is currently set for a standard analyzer (presumably for English), and is automatically able to recognize language.
 Given a bit of manual training with classifier software, it is possible to use the training data to automatically classify the documents during indexing.
-
-1. Installing
-
-Use Java 8.
-Unpack language profiles (see 2.1.3.3).
+</para>
+</chapter>
+<chapter>
+<title>
+Installing
+</title>
+<para>
+  Get git from <ulink url="https://github.com/rroart/aether">here</ulink>.
+  <itemizedlist>
+    <title>
+      Required software
+    </title>
+    <listitem>
+      <para>
+	Maven
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Java 8
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Languagedetect
+      </para>
+    </listitem>
+  </itemizedlist>
+  
+Unpack language profiles, see <link linkend="langdetect" endterm="langdetectterm"/>.
 Install other software, like calibre, pdftotext, djvutxt, wv, tesseract.
 Run (after configuring) with mvn package, mvn jetty:run
-
-2. Configuration
+</para>
+</chapter>
+<chapter>
+  <title>
+    Configuration
+  </title>
+  <para>
 Sample files are available.
 For standalone single node: aether.prop.standalone
 For standalone using cloud services: aether.prop.cloud
 For two nodes: aether.prop.testnode1 aether.prop.testnode2
-
+  </para>
+  <para>
 There are two modes, standalone and multi mode.
 The standalone is set if hibernate or lucene is chosen.
 (Assuming multinodes connect to the same Solr and Hbase, it is not checked.)
 If standalone is used, the nodename will be localhost automatically,
 otherwise a nodename will have to be set.
 Standalone will use no global locker.
-
-The content source is a directory list in dirlist.
+  </para>
+  <para>
+    The content source is a directory list in dirlist.
 The directory list may be ordinary, local filesystem, or it may be HDFS.
 (More about HDFS later)
 The exceptions are to be listedd in dirlistnot.
-
-The indexed filenames and metadata are stored in a database.
+  </para>
+  <para>
+    The indexed filenames and metadata are stored in a database.
 This may either be the standalone H2 (with Hibernate) or the multinode Hbase (with or without DataNucleus).
 The standalone is currently too slow to handle as big disks/sizes as multimode.
-
-The indexed file content and metadata are stored in Lucene or Solr.
+  </para>
+  <para>
+    The indexed file content and metadata are stored in Lucene or Solr.
 Lucene is the standalone, while Solr is the multinode.
-
-If using multinode, the setting distributedlockmode is for setting
+  </para>
+  <para>
+    If using multinode, the setting distributedlockmode is for setting
 big or small granularity using Curator, if the mode is big only
 one node may use the indexer or other write operations at one single time.
-
-If using the small granularity, the locking will be on the level on the
+  </para>
+  <para>
+    If using the small granularity, the locking will be on the level on the
 indexed item.
-
-If using multinode, and setting distributedprocess, it will use
+  </para>
+  <para>
+    If using multinode, and setting distributedprocess, it will use
 Hazelcast to distribute through the nodes, and use Hazelcast locking.
 
 Configure aether.prop:
-
-2.1 Mandatory configuration.
-2.1.1 General
-Which directories to include, and subdirectories to exclude.
+  </para>
+  <sect1>
+    <title>
+      Mandatory configuration.
+    </title>
+    <sect2>
+    <title>
+      General
+    </title>
+    <para>
+      Which directories to include, and subdirectories to exclude.
+      <programlisting>
 dirlist=file:/home/dir/dir1,hdfs:/home/dir/dir2...
 dirlistnot=/home/dir/dir1/tmp (just pure /, no file:/hdfs:)
+      </programlisting>
 Known uses are file, hdfs and none (defaulting to file).
-
+    </para>
+    <para>
 Name of the node.
-Nodename=...
+<programlisting>
+  Nodename=...
+</programlisting>
 (But if db is hibernate or lucene, it is localhost anyway).
-
+    </para>
+    <para>
 How many to max reindex each turn, or 0 for no limit.
+<programlisting>
 reindexlimit=10000
-
+</programlisting>
+    </para>
+    <para>
 How many to max index each turn, or 0 for no limit.
+<programlisting>
 indexlimit=10000
+</programlisting>
 
 The (re)indexing limits may be exceeded a bit, due to the parallell nature
 of the application.
-
+    </para>
+    <para>
 Don't try to index if the file has failed this many times
-failedlimit=10
-
+<programlisting>
+  failedlimit=10
+</programlisting>
+    </para>
+    <para>
 Number of seconds for Tika conversion timeout
+<programlisting>
 tikatimeout=600
-
+</programlisting>
+    </para>
+<para>
 Number of seconds for Other conversion timeout
-othertimeout=600
-
-2.1.2 Database
+<programlisting>
+  othertimeout=600
+</programlisting>
+    </para>
+    </sect2>
+    <sect2>
+      <title>
+	Database
+      </title>
+      <para>
 The database may be HBase, DataNucleus/HBase or Hibernate/H2.
-
-2.1.2.1 Hibernate/H2
-Hibernate/H2 relevant settings:
+      </para>
+      <sect3>
+	<title>
+	Hibernate/H2
+	</title>
+	<para>
+	  Hibernate/H2 relevant settings:
+	  <programlisting>
 db=hibernate
 h2dir=...
+	  </programlisting>
 Hibernate/H2 is for standalone only.
-
-2.1.2.2 Hbase
-Hbase relevant settings:
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	Hbase
+	</title>
+	<para>
+	  Hbase relevant settings:
+	<programlisting>
 db=hbase
 hbasequorum=localhost
 hbaseport=2181
 hbasemaster=localhost:2181
-
-2.1.2.3 DataNucleus/HBase
-DataNucleus/HBase elevant settings:
+	</programlisting>
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	DataNucleus/HBase
+	</title>
+	<para>
+	  DataNucleus/HBase elevant settings:
+	  <programlisting>
 db=datanucleus
-
+	  </programlisting>
 And before starting jetty, do this in a hbase shell:
+<programlisting>
 create 'IndexFiles', { NAME => 'IndexFiles' }
 create 'Files', { NAME => 'Files' }
+</programlisting>
 (A temporary fix until datanucleus creates it itself)
-
-2.1.3 Indexing/search:
+	</para>
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>
+	Indexing/search
+      </title>
+      <para>
 Can be Lucene directly or Solr.
 Lucene is for standalone only.
-
-2.1.3.1 Lucene
-Lucene relevant settings:
+      </para>
+      <sect3>
+	<title>
+	Lucene
+	</title>
+	<para>
+	  Lucene relevant settings:
+	  <programlisting>
 index=lucene
 lucenepath=...
-
-2.1.3.2 Solr
-Solr relevant settings:
+	  </programlisting>
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	Solr
+	</title>
+	<para>
+	  Solr relevant settings:
+	  <programlisting>
 index=solr
 solrurl=http://localhost:8983/solr/mystuff
 
 mkdir -p server/solr/MYCORE/conf
 rsync -v -a server/solr/configsets/basic_configs/conf/  server/solr/MYCORE/conf
+	  </programlisting>
 if creating manually, create server/solr/MYCORE/core.properties
 go to server/solr/MYCORE/conf
 in server/solr/MYCORE/conf apply patch with
-patch -p0 < core.nostore.patch
+<programlisting>
+  patch -p0 &lt; core.nostore.patch
+</programlisting>
 (or core.store.patch, if using highlight and morelikethis)
-
-2.1.3.3 Langdetect
-Download from https://code.google.com/p/language-detection/wiki/Downloads,
+	</para>
+      </sect3>
+      <sect3 id="langdetect">
+<title id="langdetectterm">Langdetect</title>
+<para>
+Download from <ulink url="https://code.google.com/p/language-detection/wiki/Downloads">here</ulink>,
 and put profiles* in the same dir as pom.xml.
 Languages to be used for classification, configure (default en) with:
-languages=en,fr
-
-2.1.4 Distributed mode
+<programlisting>
+  languages=en,fr
+</programlisting>
+</para>
+      </sect3>
+    </sect2>
+    <sect2>
+<title>
+Distributed mode
+</title>
+<para>
 There are two config settings for this.
 With distributedlockmode=small there is a lock for each index entry.
 With distributedprocess=true the files are placed in a distributed queue.
-
-2.2 Non-mandatory
-
-2.2.1 General
-If using Hadoop HDFS
+</para>
+    </sect2>
+  </sect1>
+  <sect1>
+  <title>
+Non-mandatory
+  </title>
+  <sect2>
+  <title>
+   General
+  </title>
+  <para>
+    If using Hadoop HDFS
+    <programlisting>
 hdfsconffs=hadoop uri (sets fs.default.name)
-
-Where to log
+    </programlisting>
+    Where to log
+    <programlisting>
 logdir=...
-
-Whether to enable downloading
+    </programlisting>
+    Whether to enable downloading
+    <programlisting>
 downloader=true
-
-Whether to use authenication
-authenticate=true
+    </programlisting>
+    Whether to use authenication
+    <programlisting>
+      authenticate=true
+    </programlisting>
 The admin user has username/password admin/admin, and the user has user/user.
 The admin has access to the control panel and configuration, and will see more search results than the user.
 The admin user will get results regarding indexing time usage and error messages from the indexing.
 If no authentication is used, everything is open.
 Accessing from localhost will determine admin right in both cases.
-
+<programlisting>
 mltcount=...
 mltmindf=...
 mltmintf...
+</programlisting>
 For setting More Like This search document count, minimum term frequency and minimum document frequency.
 These settings may influence the time More Like Queries take.
-
-2.2.2 Classifying
+  </para>
+  </sect2>
+  <sect2>
+<title>
+  Classifying
+</title>
+<para>
 There are two types, Mahout and OpenNLP.
-
-2.2.2.1 Mahout
+</para>
+<sect3>
+<title>
+  Mahout
+</title>
+<para>
 Mahout relevant settings:
 
 For the older map reduce based:
+<programlisting>
 classify=mahout
 mahoutbasepath=.../mahoutc/LANG
 mahoutalgorithm=bayes (or cbayes)
@@ -184,8 +351,9 @@ mahoutlabelindexfilepath=.../mahout/labelindex
 mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 mahaoutconffs=hadoop uri (sets fs.default.name in this specific case)
-
-For the newer Spark baed:
+</programlisting>
+For the newer Spark based:
+<programlisting>
 classify=mahoutspark
 mahoutbasepath=.../mahoutc/LANG
 mahoutalgorithm=bayes (or cbayes)
@@ -194,51 +362,88 @@ mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 mahaoutconffs=hadoop uri (sets fs.default.name in this specific case)
 mahoutsparkmaster=spark-master
-
+</programlisting>
 The LANG will be replaced by the detected languages configured, so the files
 and directories will be required to exist.
 The mahoutbasepath, if existing, will just be prepended to the other paths,
 which then will just indicate relative paths.
-
+</para>
+<para>
 Training could be based on the Bayes part of 
 examples/bin/classify-20newsgroups.sh in the Mahout distribution.
-
-2.2.2.2 OpenNLP
-OpenNLP relevant settings:
+</para>
+</sect3>
+<sect3>
+<title>
+  OpenNLP
+</title>
+<para>
+  OpenNLP relevant settings:
+  <programlisting>
 classify=opennlp
 opennlpmodelpath=.../opennlp/LANG-doccat.bin
+  </programlisting>
 The LANG will be replaced by the detected languages configured, so the file
 will be required to exist.
-
+</para>
+<para>
 Training is standard, done with ./bin/opennlp DoccatTrainer in the
 OpenNLP distribution.
-
-2.2.3 Zookeeper
-Configured by
-zookeeper=...
+</para>
+</sect3>
+  </sect2>
+  <sect2>
+<title>
+  Zookeeper
+</title>
+<para>
+  Configured by
+  <programlisting>
+    zookeeper=...
+  </programlisting>
 Should be used in a multinode environment (not yet mandatory).
-
-2.2.4 Highlight and MoreLikeThis
-Configured by
+</para>
+  </sect2>
+  <sect2>
+<title>
+  Highlight and MoreLikeThis
+</title>
+<para>
+  Configured by
+  <programlisting>
 highlightmlt=true
-
+  </programlisting>
 If using Solr, also
 
 go to server/solr/MYCORE/conf
 in server/solr/MYCORE/conf apply patch with
-patch -p0 < core.store.patch
-
+<programlisting>
+patch -p0 &lt; core.store.patch
+</programlisting>
 Beware that this also stores the content, and increases disk space usage.
-
-2.2.5 Metadata
-
+</para>
+  </sect2>
+  <sect2>
+<title>
+  Metadata
+</title>
+<para>
 Tika is providing the metadata, but it is not always sufficient.
 Therefore, have added a property Files-Content-Type for content type probed
 by the Files class, in cases not supported by Tika.
-
-3. GUI
-
-3.1 Search
+</para>
+  </sect2>
+  </sect1>
+</chapter>
+<chapter>
+  <title>
+    GUI
+  </title>
+  <sect1>
+    <title>
+      Search
+    </title>
+<para>
 Use Lucene syntax
 Searchable fields:
 Id, lang, metadata, content (Lucene), content (Solr).
@@ -248,112 +453,203 @@ The metadata is stored by key/value pairs, and are searchable by metadata:key\:t
 Query parser is behaving differently according to Lucene or Solr, see specific docs.
 
 If searching in Solr with other search fields than default, they will set the query parser type, so you will not have to write {!queryparser} to use them.
-
-https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser
-
-https://cwiki.apache.org/confluence/display/solr/Other+Parsers
-
+  </para>
+  <para>
+<ulink url="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser">The Standard Query Parser</ulink>
+  </para>
+  <para>
+<ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers">Other parsers</ulink>
+  </para>
+  <para>
 Search results.
 The admin user gets more fields.
 Note that when hovering over metadata, the metadata is shown.
 Under "highlight and similar", by clicking the highlighted part, you will trigger a search for similar documents (More Like This).
-
-3.2 Control panel
+</para>
+  </sect1>
+<sect1>
+  <title>
+    Control panel
+  </title>
+  <para>
 The control panel is admin functionality not seen by the user.
 Here we see adding content from the file system, index, reindexing, consistency checks, cleaning, statistics, database querying.
-
+  </para>
+  <para>
 Index filesystem new items
 Button: Crawl the whole filesystem for new, and index.
 Textfield: Use only the given path.
 Filesystem index on changed md5 checks if md5 has changed, and reindexes.
-
+  </para>
+  <para>
 Filesystem add new
 Button: Add new files from the filesystem, but do not index.
 Textfield: Use only the given path.
-
+  </para>
+  <para>
 Index non-indexed items:
 Button: Index all previously non-indexed (including failed).
 Textfield: Use only the given path.
 Reindex/index of suffix: Try to reindex/index all known items with suffix.
-
+  </para>
+  <para>
 Reindex, textfield, use only the given path.
 Reindex on before or after given date.
-
+  </para>
+  <para>
 Reindex specific languages, found and configured.
-
+  </para>
+  <para>
 Delete from database and lucene/solr (but does not actually delete from disk).
-
+  </para>
+  <para>
 Consistency checks, with cleaning.
 It lists files not currenly present in the filesystem (will be cleaned).
 It also lists non-existing files (encoding problems) and new files.
-
+  </para>
+  <para>
 Stats, listing non-indexed, memory usage or overlapping directories.
-
+  </para>
+  <para>
 Database, get items related to md5 id.
 Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
-
+  </para>
+  <para>
 To get the configuration of other nodes.
-
-3.3 The node configuration
-
+  </para>
+</sect1>
+  <sect1>
+    <title>
+The node configuration
+    </title>
+    <para>
 Setting limits for how many times an indexing may fail before being ignored, limits for max indexing and reindexing, timeout for tika and other (alternative) conversion.
 
 Settings for More Like This, max number of hits, minimum term frequency and minimum doc frequency.
-
-3.4 General
-
+    </para>
+  </sect1>
+  <sect1>
+    <title>
+      General
+    </title>
+<para>
 Status label has rows for f(ile) queue t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
 Also, a d for counting database objects which are finished or to be temporarily saved.
-
-4. Caution
+</para>
+  </sect1>
+</chapter>
+<chapter>
+  <title>
+    Caution
+  </title>
+  <para>
 Multitasking issues, some locking may be insufficient, it is at best at a very coarse level.
 For standalone the ordinary java locking is using.
 For multinode zookeeper is needed, or some concurrent modification will happen.
 With zookeeper, only node may index at a given time due to database access.
-
-5. Changes
-
+  </para>
+</chapter>
+<chapter>
+  <title>
+Changes
+  </title>
+  <para>
 Since 0.4, with 0.5:
-Solr and Lucene 5
-Highlight and MoreLikeThis
-
-opennlpmodelpath=/home/user/data/opennlp/LANG-doccat.bin (before only en)
-new property mahoutbasepath=/home/user/data/mahoutc/LANG
+Solr and Lucene 5.
+Highlight and MoreLikeThis.
+<programlisting>
+  opennlpmodelpath=/home/user/data/opennlp/LANG-doccat.bin (before only en)
+</programlisting>
+new property
+<programlisting>
+  mahoutbasepath=/home/user/data/mahoutc/LANG
+</programlisting>
 if present the rest just added, otherwise, use with old full path.
 mahoutlabelindexfilepath=/labelindex (before /home/user/data/mahoutc/labelindex)
 
 Classifier multilanguage support
 new property comma-separated languages
-
+  </para>
+  <para>
 0.6:
 Metadata change handling, stored, multi-valued.
 No more limit check for using alternative converters, only do that if tika crashes.
 Java 8.
 Usage of mime type probing.
 DataNucleus table changes.
-
-0.7
+  </para>
+  <para>
+0.7:
 New distributed mode, with usage of Curator and Hazelcast.
 A lot of refactoring have been done.
-
-0.8
+  </para>
+  <para>
+0.8:
 Redoing configuration, more validity checking.
 Multinode configuration.
-
-0.9
+  </para>
+  <para>
+0.9:
 Mahout spark.
-
-6. Version numbers of external software
-
-Solr 6.0.0
+  </para>
+</chapter>
+<chapter>
+  <title>
+    Version numbers of external software
+  </title>
+  <para>
+    <itemizedlist>
+      <title>
+	Version numbers of external software
+      </title>
+      <listitem>
+	<para>
+	  Solr 6.0.0
+	</para>
+      </listitem>
+      <listitem>
+	<para>
 Hbase 1.2.1
+	</para>
+      </listitem>
+      <listitem>
+	<para>
 Mahout 0.12.0
+	</para>
+      </listitem>
+      <listitem>
+	<para>
 Spark 1.5.2
+	</para>
+      </listitem>
+      <listitem>
+	<para>
 OpenNLP 1.5.3
+	</para>
+      </listitem>
+      <listitem>
+	<para>
 Curator 2.9.1
-Hazelcast 3.5.4
-
-7. Database dumps
-
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Hazelcast 3.5.4
+	  </para>
+      </listitem>
+    </itemizedlist>
+</para>
+</chapter>
+<chapter>
+  <title>
+    Database dumps
+  </title>
+  <para>
+    This is how to make database dumps.
+    <programlisting>
 echo "scan 'files',{COLUMNS=>'fi'}" | ./bin/hbase shell > /tmp/hbf
 echo "scan 'index',{COLUMNS=>'if'}" | ./bin/hbase shell > /tmp/hbi
+    </programlisting>
+</para>
+</chapter>
+</book>
