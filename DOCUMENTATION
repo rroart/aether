@@ -298,9 +298,11 @@ Non-mandatory
   </title>
   <para>
     If using Hadoop HDFS
-    <programlisting>
+    <programlisting id="hdfsconffs">
 hdfsconffs=hadoop uri (sets fs.default.name)
     </programlisting>
+    see also <link linkend="hadoop" endterm="hadoopterm"/>.
+
     Where to log
     <programlisting>
 logdir=...
@@ -353,7 +355,7 @@ mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
 mahaoutconffs=hadoop uri (sets fs.default.name in this specific case)
 </programlisting>
 For the newer Spark based:
-<programlisting>
+<programlisting id="mahoutconf">
 classify=mahoutspark
 mahoutbasepath=.../mahoutc/LANG
 mahoutalgorithm=bayes (or cbayes)
@@ -367,10 +369,12 @@ The LANG will be replaced by the detected languages configured, so the files
 and directories will be required to exist.
 The mahoutbasepath, if existing, will just be prepended to the other paths,
 which then will just indicate relative paths.
+For more about Spark, see
+<link linkend="spark" endterm="sparkterm"/>.
 </para>
 <para>
 Training could be based on the Bayes part of 
-examples/bin/classify-20newsgroups.sh in the Mahout distribution.
+examples/bin/classify-20newsgroups.sh in the Mahout distribution, more about this here: <link linkend="mahout" endterm="mahoutterm"/>.
 </para>
 </sect3>
 <sect3>
@@ -637,8 +641,90 @@ Curator 2.9.1
 	  Hazelcast 3.5.4
 	  </para>
       </listitem>
+      <listitem>
+	<para>
+	  Hadoop (2.7.1)
+	  </para>
+      </listitem>
     </itemizedlist>
 </para>
+</chapter>
+<chapter>
+  <title>
+    External software configuration
+  </title>
+  <sect1 id="hbase">
+    <title id="hbaseterm">
+      Hbase
+    </title>
+    <para>
+      No special needs, in conf/hbase-site.xml, just set the basic hbase.rootdir and hbase.zookeeper.property.dataDir.
+      For more heavy usage, increase the number of open files with
+      <programlisting>
+	ulimit -n
+      </programlisting>
+      Then start Hbase with
+      <programlisting>
+	./bin/start-hbase.sh &amp;
+      </programlisting>
+      If using Hue in addition, also start Thrift with
+      <programlisting>
+	./bin/hbase thrift start &amp;
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1 id="solr">
+    <title id="solrterm">
+      Solr
+    </title>
+    <para>
+      Solr is started with
+      <programlisting>
+	./bin/solr start &amp;
+      </programlisting>
+      If heavy duty, add also more memory, like -m 8g.
+    </para>
+  </sect1>
+  <sect1 id="hadoop">
+    <title id="hadoopterm">
+      Hadoop
+    </title>
+    <para>
+      The etc/hadoop/core-site.xml fs.default.name is set, the corresponding setting in aether.prop is hdfsconffs= (see <link linkend="hdfsconffs">here</link>).
+      Then there are no more corresponding settings, the etc/hadoop/hdfs-site.xml got dfs.name.dir, dfs.data.dir, fs.checkpoint.dir and etc/hadoop/mapred-site.xml mostly contains repeated values, like the settings mapred.job.tracker, mapred.local.dir, mapreduce.cluster.local.dir.
+      Hadoop is started with (the now deprecated)
+      <programlisting>
+	./sbin/start-all.sh &amp;
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1 id="spark">
+    <title id="sparkterm">
+      Spark
+    </title>
+    <para>
+      My current has no configuration. The only configuration lies in my current startup scripts, which goes:
+      <programlisting>
+	SPARK_MASTER_IP=127.0.0.1  ./sbin/start-master.sh --webui-port 8088 &amp;
+	./sbin/start-slave.sh  -c 1 -m 1G spark://127.0.0.1:7077 &amp;
+      </programlisting>
+  </para>
+  </sect1>
+  <sect1 id="mahout">
+    <title id="mahoutterm">
+      Mahout
+    </title>
+    <para>
+      I basically modified the examples/bin/classify-20newsgroups.sh in Mahout, adding
+      <programlisting>
+	export MASTER=spark://127.0.0.1:7077
+	export SPARK_HOME=... spark install directory ...
+	WORK_DIR=~/usr/data/mahoutspark
+	alg=naivebayes
+      </programlisting>
+      The WORK_DIR will have to correspond with the mahout directories given in aether.prop. The alg=naivebayes and cnaivebayes corresponds to mahoutalgorithm=bayes and cbayes, correspondingly. The downloading and unpacking of the newsgroups can be replaced with for instance the top level Dewey classes having directories philosophy and psychology, religion, social sciences etc, each containing sample books or documents used to make the classification model. For more about the settings in aether.prop, see <link linkend="mahoutconf">here</link>.
+    </para>
+  </sect1>
 </chapter>
 <chapter>
   <title>

@@ -1,16 +1,21 @@
 package roart.util;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class MyJavaAtomicLong extends MyAtomicLong {
-    public volatile AtomicLong mylong;
+/**
+ * 
+ * @author roart
+ *
+ * Use the Java core implementation of AtomicLong
+ */
 
+public class MyJavaAtomicLong extends MyAtomicLong {
+    private volatile AtomicLong mylong;
+
+    /**
+     * Create a Java core AtomicLong
+     */
+    
     public MyJavaAtomicLong() {
         mylong = new AtomicLong();
     }
