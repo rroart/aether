@@ -398,28 +398,6 @@ public class ControlService {
 		    }
     }
 
-    // outdated, did run once, had a bug which made duplicates
-    public List<String> cleanup() {
-	List<String> retlist = new ArrayList<String>();
-	try {
-	    return roart.search.SearchLucene.removeDuplicate();
-	} catch (Exception e) {
-		log.error(Constants.EXCEPTION, e);
-	}
-	return retlist;
-    }
-
-    // outdated, used once, when bug added filename instead of md5
-    public List<String> cleanup2() {
-	List<String> retlist = new ArrayList<String>();
-	try {
-	    //return roart.jpa.SearchLucene.cleanup2();
-	} catch (Exception e) {
-		log.error(Constants.EXCEPTION, e);
-	}
-	return retlist;
-    }
-
     // old, probably oudated by overlapping?
     public List<String> cleanupfs(String dirname) {
 	//List<String> retlist = new ArrayList<String>();
