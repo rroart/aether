@@ -67,6 +67,149 @@ Run (after configuring) with mvn package, mvn jetty:run
 </para>
 </chapter>
 <chapter>
+<title>
+Architecture
+</title>
+<para>
+  This chapter describes the components this application is comprised of.
+  <table>
+    <title>
+      Components
+    </title>
+    <tgroup cols="3">
+      <colspec colnum="1" colname="col1" colwidth="1*"/>
+      <colspec colnum="2" colname="col2" colwidth="1*"/>
+      <colspec colnum="3" colname="col3" colwidth="1*"/>
+      <thead>
+	<row>
+	  <entry>
+	    Component
+	  </entry>
+	  <entry>
+	    Description
+	  </entry>
+	  <entry>
+	    Threaded
+	  </entry>
+	</row>
+      </thead>
+      <tbody>
+	<row>
+	  <entry>
+	    GUI client
+	  </entry>
+	  <entry>
+	    Vaadin based
+	  </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	</row>
+	<row>
+	  <entry>
+	    Traverser
+	  </entry>
+	  <entry>
+	    Traverse the file system(s)
+	  </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	</row>
+	  <row>
+	    <entry>
+	      Text converter
+	    </entry>
+	    <entry>
+	      Uses Tika
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Alternate converter
+	    </entry>
+	    <entry>
+	      Uses not Tika
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Indexer
+	    </entry>
+	    <entry>
+	      Uses Solr/Lucene
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Searcher
+	    </entry>
+	    <entry>
+	      Uses Solr/Lucene
+	    </entry>
+	  <entry>
+	    Yes (no own thread, via controller)
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Classifier
+	    </entry>
+	    <entry>
+	      Uses Mahout
+	    </entry>
+	  <entry>
+	    No
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Database
+	    </entry>
+	    <entry>
+	      Saves data
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Global locker
+	    </entry>
+	    <entry>
+	      Uses Zookeeper
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Control
+	    </entry>
+	    <entry>
+	      Controlling
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  </tbody>
+	</tgroup>
+    </table>
+</para>
+</chapter>
+<chapter>
   <title>
     Configuration
   </title>
@@ -457,12 +600,17 @@ The metadata is stored by key/value pairs, and are searchable by metadata:key\:t
 Query parser is behaving differently according to Lucene or Solr, see specific docs.
 
 If searching in Solr with other search fields than default, they will set the query parser type, so you will not have to write {!queryparser} to use them.
+
+More about the fields of Lucene/Solr, see <link linkend="solrfields">here</link>.
   </para>
   <para>
 <ulink url="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser">The Standard Query Parser</ulink>
   </para>
   <para>
 <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers">Other parsers</ulink>
+  </para>
+  <para>
+    For full description of all parsers, see <link linkend="solrlucene">here</link>.
   </para>
   <para>
 Search results.
@@ -516,7 +664,7 @@ Stats, listing non-indexed, memory usage or overlapping directories.
   </para>
   <para>
 Database, get items related to md5 id.
-Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
+Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language. See more about the database fields <link linkend="datafields">here</link>. For the possibility of doing external search tools when using HBase, see also <link linkend="hue" endterm="hueterm">Hue</link>.
   </para>
   <para>
 To get the configuration of other nodes.
@@ -725,6 +873,369 @@ Curator 2.9.1
       The WORK_DIR will have to correspond with the mahout directories given in aether.prop. The alg=naivebayes and cnaivebayes corresponds to mahoutalgorithm=bayes and cbayes, correspondingly. The downloading and unpacking of the newsgroups can be replaced with for instance the top level Dewey classes having directories philosophy and psychology, religion, social sciences etc, each containing sample books or documents used to make the classification model. For more about the settings in aether.prop, see <link linkend="mahoutconf">here</link>.
     </para>
   </sect1>
+  <sect1 id="hue">
+    <title id="hueterm">
+      Hue
+    </title>
+    <para>
+      Hue is simple to start and grasp, just do
+      <programlisting>
+	hue/build/env/bin/supervisor
+      </programlisting>
+    </para>
+  </sect1>
+</chapter>
+<chapter id="datafields">
+  <title>
+    Database fields
+  </title>
+  <para>
+    This is a description of the used database fields.
+Database, get items related to md5 id.
+Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
+<table>
+  <title>
+    Database fields
+  </title>
+  <tgroup cols="3">
+    <colspec colnum="1" colname="col1" colwidth="1*"/>
+    <colspec colnum="2" colname="col2" colwidth="1*"/>
+    <colspec colnum="3" colname="col3" colwidth="1*"/>
+    <thead>
+      <row>
+	<entry>
+	  Field
+	</entry>
+	<entry>
+	  Description
+	</entry>
+	<entry>
+	  Searchable
+	</entry>
+      </row>
+    </thead>
+  <tbody>
+    <row>
+      <entry>
+	md5
+      </entry>
+      <entry>
+	The md5 sum of the item
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	indexed
+      </entry>
+      <entry>
+	Indexed or not
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	timestamp
+      </entry>
+      <entry>
+	Time index attempted
+      </entry>
+      <entry>
+	No
+      </entry>
+    </row>
+    <row>
+      <entry>
+	timeclass
+      </entry>
+      <entry>
+	Time spent in classifcation
+      </entry>
+      <entry>
+	No
+      </entry>
+    </row>
+    <row>
+      <entry>
+	convertsw
+      </entry>
+      <entry>
+	Software used to convert to text
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	classification
+      </entry>
+      <entry>
+	Classification result
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	failedreason
+      </entry>
+      <entry>
+	Exception for failed conversion
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	noindexreason
+      </entry>
+      <entry>
+	Exception for failed indexing
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	language
+      </entry>
+      <entry>
+	Detected language
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	failed
+      </entry>
+      <entry>
+	Number of times indexing failed
+      </entry>
+      <entry>
+	No
+      </entry>
+    </row>
+  </tbody>
+  </tgroup>
+</table>
+For the possibility of doing external search tools when using HBase, see also <link linkend="hue" endterm="hueterm">Hue</link>.
+  </para>
+</chapter>
+<chapter id="solrfields">
+  <title>
+    Solr/Lucene fields
+  </title>
+  <para>
+    This is a description of the Solr/Lucene fields.
+    Id, lang, metadata, content (Lucene), content (Solr).
+  </para>
+<table>
+  <title>
+    Solr/Lucene fields
+  </title>
+  <tgroup cols="3">
+    <colspec colnum="1" colname="col1" colwidth="1*"/>
+    <colspec colnum="2" colname="col2" colwidth="1*"/>
+    <colspec colnum="3" colname="col3" colwidth="1*"/>
+    <thead>
+      <row>
+	<entry>
+	  Field
+	</entry>
+	<entry>
+	  Description
+	</entry>
+	<entry>
+	  Searchable
+	</entry>
+      </row>
+    </thead>
+  <tbody>
+    <row>
+      <entry>
+	id
+      </entry>
+      <entry>
+	The md5 sum of the item
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	lang
+      </entry>
+      <entry>
+	The detected language
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	metadata
+      </entry>
+      <entry>
+	The detected metadata
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	content
+      </entry>
+      <entry>
+	The searchable content
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	classification
+      </entry>
+      <entry>
+	The classification result of the item
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+  </tbody>
+  </tgroup>
+</table>
+</chapter>
+<chapter id="solrlucene">
+  <title>
+    Solr/Lucene search
+  </title>
+  <para>
+    This chapter covers Solr and Lucene search.
+    <table> <title> Lucene search </title> <tgroup cols="2"> <colspec
+colnum="1" colname="col1" colwidth="1*"/> <colspec colnum="2"
+colname="col2" colwidth="1*"/> <thead> <row> <entry> Query type
+</entry> <entry> Description </entry> </row> </thead> <tbody> <row>
+<entry> <ulink
+url="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser">Standard</ulink>
+</entry> <entry> </entry> </row> <row> <entry> <ulink
+url="">Analyzing</ulink> </entry> <entry> </entry> </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-ComplexPhraseQueryParser">Complexphrase</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/The+Extended+DisMax+Query+Parser">Extendable</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://lucene.apache.org/core/6_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html">Multi</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="">Surround</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://lucene.apache.org/core/6_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html">Classic</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://lucene.apache.org/core/6_0_0/queryparser/org/apache/lucene/queryparser/simple/package-summary.html">Simple</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+    <table>
+      <title>
+	Solr search
+      </title>
+      <tgroup cols="2">
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="1*"/>
+	<thead>
+	  <row>
+	    <entry>
+	      Query type
+	    </entry>
+	    <entry>
+	      Description
+	    </entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-LuceneQueryParser">Default</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-LuceneQueryParser">Lucene</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-ComplexPhraseQueryParser">Complexphrase</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-SurroundQueryParser">Surround</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-SimpleQueryParser">Simple</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+</para>
 </chapter>
 <chapter>
   <title>
