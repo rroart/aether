@@ -200,7 +200,7 @@ public class SearchSolr {
 			if (list != null && list.size() > 0) {
 			highlights[0] = list.get(0);
 			} else {
-				highlights[0] = null;
+				highlights[0] = "none";
 			}
 		}
 		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display, metadata);

@@ -265,7 +265,7 @@ public class SearchLucene {
             String filename = indexmd5.getFilelocation();
             log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
 
-            String[] highlights = null;
+            String[] highlights = { "none" };
             if (dohighlight && SearchService.isHighlightMLT()) {
                 FieldQuery fieldQuery  = highlighter.getFieldQuery( q, ind );
                 String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, Constants.CONTENT, 100, 1);
