@@ -32,7 +32,7 @@ public class IndexFilesDao {
 
     private static IndexFilesAccess indexFiles = null;
 
-    public static void instance(String type) {
+    public synchronized static void instance(String type) {
 	if (indexFiles == null) {
 	    if (type.equals(ConfigConstants.HIBERNATE)) {
 		indexFiles = new HibernateIndexFilesAccess();
@@ -293,7 +293,7 @@ public static void delete(IndexFiles index) {
     synchronized(IndexFilesDao.class) {
 indexFiles.delete(index);
     }
-    all.remove(index);
+    all.remove(index.getMd5());
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }

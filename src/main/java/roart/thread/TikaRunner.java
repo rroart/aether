@@ -225,6 +225,8 @@ public class TikaRunner implements Runnable {
 		return (String) null;
     }
     
+    // not used
+    
     public static String doTikaTimeout2() {
         Callable<Object> callable = new Callable<Object>() {
             public Object call() throws Exception {
@@ -262,7 +264,7 @@ public class TikaRunner implements Runnable {
         }
         List list = executorService.shutdownNow();
         log.error("Shutdown now list size " + list.size());
-        return (String) result;
+        return (String) null;
     }
 
 }

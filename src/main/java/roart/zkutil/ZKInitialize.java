@@ -19,7 +19,7 @@ public class ZKInitialize {
 
     public static volatile ZooKeeper zk = null;
 
-	public static void initZK(Watcher watcher) {
+	public synchronized static void initZK(Watcher watcher) {
 	    if (zk != null) {
 		return;
 	    }

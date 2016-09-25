@@ -16,7 +16,9 @@ public final class Prop {
     private Prop() {
     }
 
-    public static Properties getProp() {
+    // not used
+    
+    public synchronized static Properties getProp() {
         if (properties == null) {
             properties = new Properties();
             InputStream input = null;
