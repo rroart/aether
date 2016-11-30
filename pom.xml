@@ -279,6 +279,12 @@
         <scope>system</scope>
         <systemPath>${java.home}/../lib/tools.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
     <!--dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId>
@@ -648,6 +654,7 @@
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
     <jdk.version>1.8</jdk.version>
+    <junit.version>4.12</junit.version>
     <lucene.version>6.0.0</lucene.version>
     <solr.version>6.0.0</solr.version>
     <hbase.version>1.2.1</hbase.version>
