@@ -143,7 +143,7 @@ Architecture
 	      Indexer
 	    </entry>
 	    <entry>
-	      Uses Solr/Lucene
+	      Uses Solr/Lucene/Elasticsearch
 	    </entry>
 	  <entry>
 	    Yes
@@ -154,7 +154,7 @@ Architecture
 	      Searcher
 	    </entry>
 	    <entry>
-	      Uses Solr/Lucene
+	      Uses Solr/Lucene/Elasticsearch
 	    </entry>
 	  <entry>
 	    Yes (no own thread, via controller)
@@ -222,7 +222,7 @@ For two nodes: aether.prop.testnode1 aether.prop.testnode2
   <para>
 There are two modes, standalone and multi mode.
 The standalone is set if hibernate or lucene is chosen.
-(Assuming multinodes connect to the same Solr and Hbase, it is not checked.)
+(Assuming multinodes connect to the same Solr/Elasticsearch and Hbase, it is not checked.)
 If standalone is used, the nodename will be localhost automatically,
 otherwise a nodename will have to be set.
 Standalone will use no global locker.
@@ -239,8 +239,8 @@ This may either be the standalone H2 (with Hibernate) or the multinode Hbase (wi
 The standalone is currently too slow to handle as big disks/sizes as multimode.
   </para>
   <para>
-    The indexed file content and metadata are stored in Lucene or Solr.
-Lucene is the standalone, while Solr is the multinode.
+    The indexed file content and metadata are stored in Lucene, Elasticsearch or Solr.
+Lucene is the standalone, while Solr and Elasticsearch is the multinode.
   </para>
   <para>
     If using multinode, the setting distributedlockmode is for setting
@@ -371,7 +371,7 @@ create 'Files', { NAME => 'Files' }
 	Indexing/search
       </title>
       <para>
-Can be Lucene directly or Solr.
+Can be Lucene directly or Solr/Elasticsearch.
 Lucene is for standalone only.
       </para>
       <sect3>
@@ -406,6 +406,25 @@ in server/solr/MYCORE/conf apply patch with
   patch -p0 &lt; core.nostore.patch
 </programlisting>
 (or core.store.patch, if using highlight and morelikethis)
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	Elasticsearch
+	</title>
+	<para>
+	  Elasticsearch relevant settings:
+	  <programlisting>
+index=elastic
+elastichost=localhost
+elasticport=9300
+
+Will probably need something here, as for Solr.
+	  </programlisting>
+Will probably need something here, as for Solr.
+<programlisting>
+Something.
+</programlisting>
 	</para>
       </sect3>
       <sect3 id="langdetect">
@@ -593,7 +612,7 @@ by the Files class, in cases not supported by Tika.
 <para>
 Use Lucene syntax
 Searchable fields:
-Id, lang, metadata, content (Lucene), content (Solr).
+Id, lang, metadata, content (Lucene), content (Solr), something (Elasticsearch).
 
 The metadata is stored by key/value pairs, and are searchable by metadata:key\:text (note the escaping of the :).
 
@@ -602,6 +621,8 @@ Query parser is behaving differently according to Lucene or Solr, see specific d
 If searching in Solr with other search fields than default, they will set the query parser type, so you will not have to write {!queryparser} to use them.
 
 More about the fields of Lucene/Solr, see <link linkend="solrfields">here</link>.
+
+For Elasticsearch, ...
   </para>
   <para>
 <ulink url="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser">The Standard Query Parser</ulink>
@@ -652,7 +673,7 @@ Reindex on before or after given date.
 Reindex specific languages, found and configured.
   </para>
   <para>
-Delete from database and lucene/solr (but does not actually delete from disk).
+Delete from database and Lucene/Solr/Elasticsearch (but does not actually delete from disk).
   </para>
   <para>
 Consistency checks, with cleaning.
@@ -743,6 +764,10 @@ Multinode configuration.
   <para>
 0.9:
 Mahout spark.
+</para>
+<para>
+0.10:
+Elasticsearch.
   </para>
 </chapter>
 <chapter>
@@ -757,6 +782,11 @@ Mahout spark.
       <listitem>
 	<para>
 	  Solr 6.0.0
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Elasticsearch 5.0.2
 	</para>
       </listitem>
       <listitem>
@@ -831,6 +861,17 @@ Curator 2.9.1
 	./bin/solr start &amp;
       </programlisting>
       If heavy duty, add also more memory, like -m 8g.
+    </para>
+  </sect1>
+  <sect1 id="elasticsearch">
+    <title id="elasticsearchterm">
+      Elasticsearch
+    </title>
+    <para>
+      Elasticsearch is started with
+      <programlisting>
+	./bin/elasticsearch &amp;
+      </programlisting>
     </para>
   </sect1>
   <sect1 id="hadoop">
@@ -1036,6 +1077,7 @@ For the possibility of doing external search tools when using HBase, see also <l
     Solr/Lucene fields
   </title>
   <para>
+    Don't forget Elasticsearch...
     This is a description of the Solr/Lucene fields.
     Id, lang, metadata, content (Lucene), content (Solr).
   </para>
@@ -1125,6 +1167,7 @@ For the possibility of doing external search tools when using HBase, see also <l
     Solr/Lucene search
   </title>
   <para>
+    Don't forget Elasticsearch...
     This chapter covers Solr and Lucene search.
     <table> <title> Lucene search </title> <tgroup cols="2"> <colspec
 colnum="1" colname="col1" colwidth="1*"/> <colspec colnum="2"

@@ -101,13 +101,13 @@ public class MahoutSparkClassify {
             String userDir = System.getProperty("user.dir");
             log.info("user.dir " + userDir);
             String[] jars = { 
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT/WEB-INF/lib/mahout-spark_2.10-0.12.0.jar", 
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT/WEB-INF/lib//mahout-hdfs-0.12.0.jar", 
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT/WEB-INF/lib/mahout-math-0.12.0.jar", 
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT/WEB-INF/lib//guava-16.0.1.jar", 
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT/WEB-INF/lib/fastutil-7.0.11.jar", 
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT/WEB-INF/lib//mahout-math-scala_2.10-0.12.0.jar",
-                    "file:" + userDir + "/target/aether-0.9-SNAPSHOT.jar" 
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib/mahout-spark_2.10-0.12.0.jar", 
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib//mahout-hdfs-0.12.0.jar", 
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib/mahout-math-0.12.0.jar", 
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib//guava-16.0.1.jar", 
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib/fastutil-7.0.11.jar", 
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib//mahout-math-scala_2.10-0.12.0.jar",
+                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT.jar" 
             };
             sparkconf.setJars(jars);
             //SparkContext sc = new SparkContext(sparkconf);
