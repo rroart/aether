@@ -10,6 +10,7 @@ public class ConfigConstants {
     public static final String INDEX = "index";
     public static final String SOLR = "solr";
     public static final String LUCENE = "lucene";
+    public static final String ELASTIC = "elastic";
     public static final String DB = "db";
     public static final String LOCALHOST = "localhost";
     public static final String HBASE = "hbase";
@@ -32,6 +33,8 @@ public class ConfigConstants {
     public static final String CBAYES = "cbayes";
     public static final String OPENNLPMODELPATH = "opennlpmodelpath";
     public static final String SOLRURL = "solrurl";
+    public static final String ELASTICHOST = "elastichost";
+    public static final String ELASTICPORT = "elasticport";
     public static final String HDFSCONFFS = "hdfsconffs";
     public static final String HBASEQUORUM = "hbasequorum";
     public static final String HBASEPORT = "hbaseport";
