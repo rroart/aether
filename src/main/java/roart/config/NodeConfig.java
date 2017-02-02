@@ -22,7 +22,11 @@ public class NodeConfig {
     //public boolean searchsimilar = false;
     
     public Map<MyConfig.Config, Integer> configMap = new HashMap<MyConfig.Config, Integer>();
-    public String fsdefaultname = null;
+    public String hdfsdefaultname = null;
+    public String swifturl = null;
+    public String swiftuser = null;
+    public String swiftkey = null;
+    public String swiftcontainer = null;
     public String zookeeper = null;
     public boolean zookeepersmall = false;
     public boolean distributedtraverse = false;

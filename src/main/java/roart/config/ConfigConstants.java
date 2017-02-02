@@ -33,6 +33,10 @@ public class ConfigConstants {
     public static final String OPENNLPMODELPATH = "opennlpmodelpath";
     public static final String SOLRURL = "solrurl";
     public static final String HDFSCONFFS = "hdfsconffs";
+    public static final String SWIFTCONFURL = "swiftconfurl";
+    public static final String SWIFTCONFUSER = "swiftconfuser";
+    public static final String SWIFTCONFKEY = "swiftconfkey";
+    public static final String SWIFTCONFCONTAINER = "swiftconfcontainer";
     public static final String HBASEQUORUM = "hbasequorum";
     public static final String HBASEPORT = "hbaseport";
     public static final String HBASEMASTER = "hbasemaster";

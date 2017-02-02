@@ -12,6 +12,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import roart.filesystem.HDFS;
+import roart.filesystem.Swift;
 import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
 import roart.service.ControlService;
@@ -78,6 +79,8 @@ public class MyPropertyConfig extends MyConfig {
         }
 
         configHdfs();
+        
+        configSwift();
         
         configClassify();
         
@@ -201,12 +204,27 @@ public class MyPropertyConfig extends MyConfig {
         new roart.filesystem.LocalFileSystemAccess();
         String fsdefaultname = getString(ConfigConstants.HDFSCONFFS, null, false, false, null);
         if (fsdefaultname != null) {
-            conf.fsdefaultname = fsdefaultname;
+            conf.hdfsdefaultname = fsdefaultname;
             new HDFS();
         }
     }
 
-    private void configDb() {
+    private void configSwift() {
+        new roart.filesystem.SwiftAccess();
+        String swifturl = getString(ConfigConstants.SWIFTCONFURL, null, false, false, null);
+        if (swifturl != null) {
+            String swiftuser = getString(ConfigConstants.SWIFTCONFUSER, null, false, false, null);
+            String swiftkey = getString(ConfigConstants.SWIFTCONFKEY, null, false, false, null);
+            String swiftcontainer = getString(ConfigConstants.SWIFTCONFCONTAINER, null, false, false, null);
+            conf.swifturl = swifturl;
+            conf.swiftuser = swiftuser;
+            conf.swiftkey = swiftkey;
+            conf.swiftcontainer = swiftcontainer;
+            new Swift();
+        }
+    }
+
+   private void configDb() {
         String db = getString(ConfigConstants.DB, ConfigConstants.HIBERNATE, false, false, dbvalues);
         if (db.equals(ConfigConstants.HBASE)) {
             String quorum = getString(ConfigConstants.HBASEQUORUM, null, true, true, null);

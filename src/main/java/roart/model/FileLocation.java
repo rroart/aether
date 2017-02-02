@@ -27,11 +27,20 @@ public class FileLocation {
     public FileLocation(String filename) {
     	String file = filename;
     	String prefix = "";
-    	if (filename.startsWith(FileSystemDao.FILESLASH) || filename.startsWith(FileSystemDao.HDFSSLASH)) {
-    		prefix = file.substring(0, FileSystemDao.FILELEN); // no double slash
+    	// TODO redo this if system. make it oo.
+    	if (filename.startsWith(FileSystemDao.FILESLASH) || filename.startsWith(FileSystemDao.HDFSSLASH) || filename.startsWith(FileSystemDao.SWIFTSLASH)) {
+    		int split;
+    		if (filename.startsWith(FileSystemDao.SWIFT)) {
+    	   		prefix = file.substring(0, FileSystemDao.SWIFTLEN); // no double slash
+        	    file = file.substring(FileSystemDao.SWIFTSLASHLEN);
+        	    split = file.indexOf("/");
+        	    this.node = file.substring(0, split);
+    		} else {
+   		prefix = file.substring(0, FileSystemDao.FILELEN); // no double slash
     	    file = file.substring(FileSystemDao.FILESLASHLEN);
-    	    int split = file.indexOf("/");
+    	    split = file.indexOf("/");
     	    this.node = file.substring(0, split);
+    		}
 	    if (this.node == null || this.node.length() == 0) {
 		log.error("No nodename ");
 	    }
@@ -64,9 +73,15 @@ public class FileLocation {
 	    log.error("No nodename");
 	    return filename;
 	}
-	if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
+	// TODO make OO version
+	if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS) || filename.startsWith(FileSystemDao.SWIFT)) {
+		if (filename.startsWith(FileSystemDao.SWIFT)) {
+			String prefix = filename.substring(0, FileSystemDao.SWIFTLEN);
+			return prefix + "//" + node + filename.substring(FileSystemDao.SWIFTLEN);				
+		} else {
 		String prefix = filename.substring(0, FileSystemDao.FILELEN);
 		return prefix + "//" + node + filename.substring(FileSystemDao.FILELEN);
+		}
 	} else {
 		return FileSystemDao.FILESLASH + node + filename;
 	}

@@ -153,7 +153,8 @@ public class TikaHandler {
                 if (dbfilename.equals(filename)) {
                     String fn = null;
                     String tmpfn = null;
-                    if (filename.startsWith(FileSystemDao.HDFS)) {
+                    // TODO make OO version of this
+                    if (filename.startsWith(FileSystemDao.HDFS) || filename.startsWith(FileSystemDao.SWIFT)) {
                         tmpfn = copyFileToTmp(filename);
                         fn = tmpfn;
                     } else {
@@ -220,7 +221,8 @@ public class TikaHandler {
             } else {
                 //log.info("filenames " + dbfilename + " " + filename);
                 if (dbfilename.equals(filename)) {
-                    if (filename.startsWith(FileSystemDao.HDFS)) {
+                    // TODO make OO version of this
+                    if (filename.startsWith(FileSystemDao.HDFS) || filename.startsWith(FileSystemDao.SWIFT)) {
                         String fn = copyFileToTmp(filename);
                         el.filename = fn;
                     }
