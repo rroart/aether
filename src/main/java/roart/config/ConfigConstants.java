@@ -22,7 +22,7 @@ public class ConfigConstants {
     public static final String DOWNLOADER = "downloader";
     public static final String AUTHENTICATE = "authenticate";
     public static final String FAILEDLIMIT = "failedlimit";
-    public static final String MAHOUTMODELPATH = "mahaoutmodelpath";
+    public static final String MAHOUTMODELPATH = "mahoutmodelpath";
     public static final String MAHOUTLABELINDEXFILEPATH = "mahoutlabelindexfilepath";
     public static final String MAHOUTDICTIONARYPATH = "mahoutdictionarypath";
     public static final String MAHOUTDOCUMENTFREQUENCYPATH = "mahoutdocumentfrequencypath";
