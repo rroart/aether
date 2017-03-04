@@ -672,13 +672,19 @@
   <version>${apachelog.version}</version>
   <!--scope>test</scope-->
 </dependency>
+<!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+<dependency>
+  <groupId>io.netty</groupId>
+  <artifactId>netty-all</artifactId>
+  <version>${netty.version}</version>
+</dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
     <jdk.version>1.8</jdk.version>
     <junit.version>4.12</junit.version>
-    <lucene.version>6.0.0</lucene.version>
-    <solr.version>6.0.0</solr.version>
+    <lucene.version>6.2.1</lucene.version>
+    <solr.version>6.2.1</solr.version>
     <hbase.version>1.2.1</hbase.version>
     <tika.version>1.13</tika.version>
     <mahout.version>0.12.0</mahout.version>
@@ -721,6 +727,7 @@
     <fastutil.version>7.0.11</fastutil.version>
     <elasticsearch.version>5.0.2</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
+    <netty.version>4.1.7.Final</netty.version>
   </properties>
 	<repositories>
 		<repository>

@@ -96,15 +96,17 @@ public class SearchElastic {
 	String indexName = "bla";
 	String typeName = "grr";
 	try {
-	IndexRequestBuilder irb = client.prepareIndex(indexName, typeName, "1").setSource(XContentFactory.jsonBuilder()
+	IndexRequestBuilder irb = client.prepareIndex(indexName, typeName, "" + md5).setSource(XContentFactory.jsonBuilder()
 	.startObject()
     .field(Constants.ID, md5)
     .field(Constants.LANG, lang)
     .field(Constants.CAT, cat)
 	.field(Constants.CONTENT, content)
+	/*
 	.startArray()
 	.array(Constants.METADATA, mdarr.toArray(new String[0]))
 	.endArray()
+	*/
 	.endObject());
 	IndexResponse response = irb.execute().actionGet();
 	System.out.println("re " + response.toString());
@@ -153,15 +155,13 @@ public class SearchElastic {
 	ResultItem[] strarr = new ResultItem[0];
 	int stype = new Integer(searchtype).intValue();
 
-	
-	SearchResponse response = client.prepareSearch("index1", "index2")
-	        .setTypes("type1", "type2")
-	        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-	        .setQuery(QueryBuilders.termQuery("multi", "test"))                 // Query
-	        .setPostFilter(QueryBuilders.rangeQuery("age").from(12).to(18))     // Filter
-	        .setFrom(0).setSize(60).setExplain(true)
-	        .get();
-	
+	System.out.println("haha");
+	SearchResponse response = client.prepareSearch("index1", "bla")
+	        .setTypes("type1", "grr")
+	        .setQuery(QueryBuilders.termQuery("content", str))                 // Query
+		    .setFrom(0).setSize(60).setExplain(true)
+	        .execute().actionGet();
+	System.out.println("resp " + response.toString());
 	 for (SearchHit hit : response.getHits()) {
 	        Long id = hit.field("id").<Long>getValue();
 	        System.out.println("re " + hit.toString());
@@ -214,6 +214,7 @@ public class SearchElastic {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
 	*/
+	 System.out.println("strarr");
 	return strarr;
     }
 
