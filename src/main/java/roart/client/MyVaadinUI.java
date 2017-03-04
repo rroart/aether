@@ -522,6 +522,15 @@ public class MyVaadinUI extends UI
                 classifyConfig.addComponent(sparkMaster);
             }
       }
+        if (config.classify.equals(ConfigConstants.SPARKML)) {
+            classifyConfig.setCaption("Spark ML settings");
+            Label modelpathLabel = new Label(ConfigConstants.SPARKMLMODELPATH + DELIMITER + config.sparkmlmodelpath);               
+            classifyConfig.addComponent(modelpathLabel);
+            Label labelindexpathLabel = new Label(ConfigConstants.SPARKMLLABELINDEXPATH + DELIMITER + config.sparkmllabelindexpath);               
+            classifyConfig.addComponent(labelindexpathLabel);
+               Label sparkMaster = new Label(ConfigConstants.SPARKMASTER + DELIMITER + config.sparkmaster);
+                classifyConfig.addComponent(sparkMaster);
+            }
         tab.addComponent(classifyConfig);
     }
     

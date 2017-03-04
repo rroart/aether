@@ -40,6 +40,10 @@ public class NodeConfig {
     public String mahoutalgorithm = null;
     public String mahoutsparkmaster = null;
 
+    public String sparkmlmodelpath = null;
+    public String sparkmllabelindexpath = null;
+    public String sparkmaster = null;
+    
     public boolean downloader = false;
     public boolean authenticate = false;
 }
