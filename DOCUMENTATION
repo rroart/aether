@@ -510,21 +510,21 @@ For the older map reduce based:
 classify=mahout
 mahoutbasepath=.../mahoutc/LANG
 mahoutalgorithm=bayes (or cbayes)
-mahaoutmodelpath=.../mahout/model
+mahoutmodelpath=.../mahout/model
 mahoutlabelindexfilepath=.../mahout/labelindex
 mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
-mahaoutconffs=hadoop uri (sets fs.default.name in this specific case)
+mahoutconffs=hadoop uri (sets fs.default.name in this specific case)
 </programlisting>
 For the newer Spark based:
 <programlisting id="mahoutconf">
 classify=mahoutspark
 mahoutbasepath=.../mahoutc/LANG
 mahoutalgorithm=bayes (or cbayes)
-mahaoutmodelpath=.../mahout/model
+mahoutmodelpath=.../mahout/model
 mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
 mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
-mahaoutconffs=hadoop uri (sets fs.default.name in this specific case)
+mahoutconffs=hadoop uri (sets fs.default.name in this specific case)
 mahoutsparkmaster=spark-master
 </programlisting>
 The LANG will be replaced by the detected languages configured, so the files
@@ -781,7 +781,7 @@ Elasticsearch.
       </title>
       <listitem>
 	<para>
-	  Solr 6.0.0
+	  Solr 6.2.1
 	</para>
       </listitem>
       <listitem>
