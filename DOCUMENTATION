@@ -419,9 +419,9 @@ index=elastic
 elastichost=localhost
 elasticport=9300
 
-Will probably need something here, as for Solr.
+No changes needing, since Elastic stores and highlights.
 	  </programlisting>
-Will probably need something here, as for Solr.
+	  The search is extremely basic (due to no found client side query parser yet).
 <programlisting>
 Something.
 </programlisting>

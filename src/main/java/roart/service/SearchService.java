@@ -41,7 +41,6 @@ public class SearchService {
 	SearchDisplay display = e.display;
 
 	ResultItem[] strarr = roart.search.Search.searchme(str, type, display);
-	System.out.println("baba");
 	
 	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
