@@ -26,11 +26,15 @@ public class ClassifyDao {
 	  return;
 	}
 	if (classify == null) {
+		// TODO make OO of this
 	    if (type.equals(ConfigConstants.MAHOUT)) {
 		classify = new MahoutClassifyAccess();
 	    }
         if (type.equals(ConfigConstants.MAHOUTSPARK)) {
         classify = new MahoutSparkClassifyAccess();
+        }
+        if (type.equals(ConfigConstants.SPARKML)) {
+        classify = new SparkMLClassifyAccess();
         }
 	    if (type.equals(ConfigConstants.OPENNLP)) {
 		classify = new OpennlpClassifyAccess();

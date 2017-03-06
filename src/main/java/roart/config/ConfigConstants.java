@@ -30,6 +30,10 @@ public class ConfigConstants {
     public static final String MAHOUTCONFFS = "mahoutconffs";
     public static final String BAYES = "bayes";
     public static final String CBAYES = "cbayes";
+    public static final String SPARKML = "sparkml";
+    public static final String SPARKMLMODELPATH = "sparkmlmodelpath";
+    public static final String SPARKMLLABELINDEXPATH = "sparkmllabelindexpath";
+    public static final String SPARKMASTER = "sparkmaster";
     public static final String OPENNLPMODELPATH = "opennlpmodelpath";
     public static final String SOLRURL = "solrurl";
     public static final String HDFSCONFFS = "hdfsconffs";

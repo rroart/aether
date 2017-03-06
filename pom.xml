@@ -562,11 +562,16 @@
       <artifactId>kryo</artifactId>
       <version>${kryo.version}</version>
     </dependency>
-     <!--dependency>
+     <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_2.10</artifactId>
+      <version>${spark.version}</version>
+      </dependency>
+     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_2.10</artifactId>
       <version>${spark.version}</version>
-      </dependency-->
+      </dependency>
     <!--dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
@@ -655,6 +660,11 @@
             <artifactId>joss</artifactId>
             <version>${joss.version}</version>
         </dependency>
+      <dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>${jackson.version}</version>
+</dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
@@ -666,7 +676,7 @@
     <tika.version>1.13</tika.version>
     <mahout.version>0.12.0</mahout.version>
     <!-- must keep at old version for some time -->
-    <spark.version>1.5.2</spark.version>
+    <spark.version>1.6.1</spark.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
     <opennlp.version>1.5.3</opennlp.version>
@@ -679,6 +689,7 @@
     <!-- must keep at old version for some time -->
     <hazelcast.version>3.5.4</hazelcast.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
+    <jackson.version>2.4.4</jackson.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>5.1.0.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>

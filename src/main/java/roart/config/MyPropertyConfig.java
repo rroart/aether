@@ -46,7 +46,7 @@ public class MyPropertyConfig extends MyConfig {
     public static String[] fsvalues = { ConfigConstants.LOCAL, ConfigConstants.HADOOP };
     public static String[] indexvalues = { ConfigConstants.LUCENE, ConfigConstants.SOLR };
     public static String[] dbvalues = { ConfigConstants.HIBERNATE, ConfigConstants.DATANUCLEUS, ConfigConstants.HBASE };
-    public static String[] classifyvalues = { ConfigConstants.MAHOUT, ConfigConstants.MAHOUTSPARK, ConfigConstants.OPENNLP };
+    public static String[] classifyvalues = { ConfigConstants.MAHOUT, ConfigConstants.MAHOUTSPARK, ConfigConstants.SPARKML, ConfigConstants.OPENNLP };
     public static String[] lockmodevalues = { ConfigConstants.SMALL, ConfigConstants.BIG };
     
     public void config() {
@@ -191,6 +191,15 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutalgorithm = mahoutbayestype;
             conf.mahoutsparkmaster = mahoutsparkmaster;
             new roart.classification.MahoutSparkClassify();
+        }
+        if (classify != null && classify.equals(ConfigConstants.SPARKML)) {
+            String sparkmlmodelPath = getString(ConfigConstants.SPARKMLMODELPATH, null, true, true, null);
+            String sparkmllabelindexPath = getString(ConfigConstants.SPARKMLLABELINDEXPATH, null, true, true, null);
+            String sparkmaster = getString(ConfigConstants.SPARKMASTER, null, true, true, null);
+            conf.sparkmlmodelpath = sparkmlmodelPath;
+            conf.sparkmllabelindexpath = sparkmllabelindexPath;
+            conf.sparkmaster = sparkmaster;
+            new roart.classification.SparkMLClassify();
         }
         if (classify != null && classify.equals(ConfigConstants.OPENNLP)) {
             String opennlpmodelpath = getString(ConfigConstants.OPENNLPMODELPATH, null, true, true, null);

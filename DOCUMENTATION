@@ -530,6 +530,39 @@ examples/bin/classify-20newsgroups.sh in the Mahout distribution, more about thi
 </sect3>
 <sect3>
 <title>
+  Spark Ml
+</title>
+<para>
+Spark Ml relevant settings:
+
+For the Spark Ml:
+<programlisting id="sparkmlconf">
+  classify=sparkml
+ not yet:  sparkmlalgorithm=bayes
+ sparkmlmodelpath=.../spark/model
+ sparkmllabelindexpath=...path for labelindex
+sparkmaster=spark-master
+</programlisting>
+The LANG will be replaced by the detected languages configured, so the files
+and directories will be required to exist.
+For more about Spark, see
+<link linkend="sparkml" endterm="sparkmlterm"/>.
+</para>
+<para>
+  Check the directory spark for sample code for training model.
+  The shell sub directory contains code to be run in the Spark shell.
+  The createmodel does the same, and is run with spark-submit.
+
+  <programlisting>
+    sbt assembly
+    spark-submit --class roart.NaiveBayesSpark target/scala-2.10/createmodel-assembly-1.0.jar
+  </programlisting>
+  The directory structure for this must have the categories as directories, and in the the documents to be learned.
+  Both save a model and labelmap.
+</para>
+</sect3>
+<sect3>
+<title>
   OpenNLP
 </title>
 <para>
@@ -779,7 +812,7 @@ Mahout 0.12.0
       </listitem>
       <listitem>
 	<para>
-Spark 1.5.2
+Spark 1.6.1
 	</para>
       </listitem>
       <listitem>
@@ -869,6 +902,21 @@ Curator 2.9.1
     <title id="sparkterm">
       Spark
     </title>
+    <para>
+      My current has no configuration. The only configuration lies in my current startup scripts, which goes:
+      <programlisting>
+	SPARK_MASTER_IP=127.0.0.1  ./sbin/start-master.sh --webui-port 8088 &amp;
+	./sbin/start-slave.sh  -c 1 -m 1G spark://127.0.0.1:7077 &amp;
+      </programlisting>
+  </para>
+  </sect1>
+  <sect1 id="sparkml">
+    <title id="sparkmlterm">
+      Spark Ml
+    </title>
+    <para>
+
+    </para>
     <para>
       My current has no configuration. The only configuration lies in my current startup scripts, which goes:
       <programlisting>
