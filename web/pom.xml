@@ -2,19 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>roart</groupId>
+    <artifactId>aether</artifactId>
+    <relativePath>../pom.xml</relativePath>
+    <version>0.10-SNAPSHOT</version>
+  </parent>
   <groupId>roart</groupId>
   <!--artifactId>myweb</artifactId-->
-  <artifactId>aether</artifactId>
+  <artifactId>aether-web</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
   <!--artifactId>akashic-disk-search-engine</artifactId-->
   <version>0.10-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>Aether Disk Search Engine Parent</name>
+  <packaging>war</packaging>
+  <name>Aether Disk Search Engine</name>
   <!--name>Vaadin Web Application</name-->
-<modules>
-  <module>web</module>
-  <module>eureka</module>
-</modules>
   <build>
     <plugins>
       <plugin>
@@ -60,7 +62,7 @@
 	  </systemproperties>
 	</configuration>
       </plugin-->
-      <!--plugin>
+      <plugin>
 	<artifactId>maven-clean-plugin</artifactId>
 	<version>2.4.1</version>
 	<configuration>
@@ -70,7 +72,7 @@
 	    </fileset>
 	  </filesets>
 	</configuration>
-      </plugin-->
+      </plugin>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-war-plugin</artifactId>
@@ -79,30 +81,40 @@
 	  <failOnMissingWebXml>false</failOnMissingWebXml>
 	</configuration>
       </plugin>
-      <!--plugin>
+      <plugin>
 	<groupId>com.vaadin</groupId>
 	<artifactId>vaadin-maven-plugin</artifactId>
 	<version>${vaadin.plugin.version}</version>
 	<configuration>
 	  <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+	  <!-- <runTarget>mobilemail</runTarget> -->
+	  <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
+	       way compatible with Vaadin eclipse plugin. -->
 	  <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
 	  </webappDirectory>
 	  <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
 	  </hostedWebapp>
+	  <!-- Most Vaadin apps don't need this stuff, guide that to target -->
 	  <persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
 	  <deploy>${project.build.directory}/gwt-deploy</deploy>
+	  <!-- Compile report is not typically needed either, saves hunreds of mb disk -->
 	  <compileReport>false</compileReport>
 	  <noServer>true</noServer>
+	  <!-- Remove draftCompile when project is ready -->
 	  <draftCompile>false</draftCompile>
 	  
 	  <style>OBF</style>
 	  <strict>true</strict>
 	  <runTarget>http://localhost:8080/</runTarget>
+	  <!-- not from the generated pom -->
 	  <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
 	</configuration>
 	<executions>
 	  <execution>
 	    <configuration>
+	      <!-- if you don't specify any modules, the plugin will find them -->
+	      <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> 
+		   </modules> -->
 	    </configuration>
 	    <goals>
 	      <goal>clean</goal>
@@ -114,7 +126,7 @@
 	    </goals>
 	  </execution>
 	</executions>
-      </plugin-->
+      </plugin>
       <plugin>
 	<groupId>org.mortbay.jetty</groupId>
 	<artifactId>jetty-maven-plugin</artifactId>
@@ -139,7 +151,7 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
+      <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
         <version>1.5.2</version>
@@ -167,8 +179,8 @@
                 </replacement>
             </replacements>
         </configuration>
-      </plugin-->
-      <!--plugin>
+      </plugin>
+      <plugin>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-maven-plugin</artifactId>
                 <version>4.0.0-release</version>
@@ -185,9 +197,9 @@
                         </goals>
                     </execution>
                 </executions>
-      </plugin-->
+      </plugin>
       <!-- we need to include ourselves in spark setJars -->
-      <!--plugin>
+      <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-jar-plugin</artifactId>
 	<executions>
@@ -199,12 +211,12 @@
 	    </goals>
 	  </execution>
 	</executions>
-      </plugin-->
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
 	<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-	<!--plugin>
+	<plugin>
 	  <groupId>org.eclipse.m2e</groupId>
 	  <artifactId>lifecycle-mapping</artifactId>
 	  <version>1.0.0</version>
@@ -248,7 +260,7 @@
 	      </pluginExecutions>
 	    </lifecycleMappingMetadata>
 	  </configuration>
-	</plugin-->
+	</plugin>
 	<plugin>
 	  <artifactId>maven-eclipse-plugin</artifactId>
 	  <configuration>
@@ -266,7 +278,7 @@
     </pluginManagement>
   </build>
   <dependencies>
-    <!--dependency>
+    <dependency>
         <groupId>jdk.tools</groupId>
         <artifactId>jdk.tools</artifactId>
 	<version>1.8</version>
@@ -278,7 +290,7 @@
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId>
@@ -300,7 +312,7 @@
       <version>1.1.2</version>
     </dependency-->
 
-    <!--dependency>
+    <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
       <version>${lucene.version}</version>
@@ -324,13 +336,13 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-highlighter</artifactId>
       <version>${lucene.version}</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>lucene</groupId>
       <artifactId>lucene</artifactId>
       <version>1.4.3</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
@@ -339,18 +351,18 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
       <version>${tika.version}</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
       <version>${hibernate.version}</version>
       <type>pom</type>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate.version}</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-commons-annotations</artifactId>
@@ -361,7 +373,7 @@
       <artifactId>hibernate-annotations</artifactId>
       <version>3.5.6-Final</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-ehcache</artifactId>
       <version>${hibernate.version}</version>
@@ -385,7 +397,7 @@
       <groupId>org.hibernate</groupId>
       <artifactId>ejb3-persistence</artifactId>
       <version>3.3.2.Beta1</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
@@ -406,17 +418,17 @@
       <artifactId>derbytools</artifactId>
       <version>10.7.1.1</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>${h2.version}</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.1.1</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
@@ -425,13 +437,13 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-langdetect</artifactId>
       <version>3.5.0</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>com.cybozu.labs</groupId>
       <artifactId>langdetect</artifactId>
       <version>1.1-20120112</version>
@@ -465,7 +477,7 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-client</artifactId>
       <version>${hadoop.version}</version>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jsp-2.1</artifactId>
@@ -482,7 +494,7 @@
       <artifactId>thrift</artifactId>
       <version>0.2.0</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-server</artifactId>
       <version>${vaadin.version}</version>
@@ -491,7 +503,7 @@
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-client-compiled</artifactId>
       <version>${vaadin.version}</version>
-    </dependency-->
+    </dependency>
 		<!--
 		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 		  
@@ -507,7 +519,7 @@
 			<scope>provided</scope>
 		</dependency>
 		-->
-    <!--dependency>
+    <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-client</artifactId>
       <version>${vaadin.version}</version>
@@ -528,13 +540,13 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>${servlet.version}</version>
       <scope>provided</scope>
-    </dependency-->
+    </dependency>
     <!--dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-maven-plugin</artifactId>
       <version>${jetty.version}</version>
     </dependency-->
-    <!--dependency>
+    <dependency>
       <groupId>org.apache.mahout</groupId>
       <artifactId>mahout-mr</artifactId>
       <version>${mahout.version}</version>
@@ -542,15 +554,15 @@
     <dependency>
       <groupId>org.apache.mahout</groupId>
       <artifactId>mahout-spark_2.10</artifactId>
-      <version>${mahout.version}</version-->
+      <version>${mahout.version}</version>
       <!--scope>provided</scope-->
-    <!--/dependency>
+    </dependency>
     <dependency>
       <groupId>org.apache.mahout</groupId>
       <artifactId>mahout-math-scala_2.10</artifactId>
-      <version>${mahout.version}</version-->
+      <version>${mahout.version}</version>
       <!--scope>provided</scope-->
-    <!--/dependency>
+    </dependency>
     <dependency>
       <groupId>com.esotericsoftware.kryo</groupId>
       <artifactId>kryo</artifactId>
@@ -565,14 +577,14 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_2.10</artifactId>
       <version>${spark.version}</version>
-      </dependency-->
+      </dependency>
     <!--dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
       <version>${snappyjava.version}</version>
       <scope>provided</scope>
     </dependency-->
-<!--dependency>
+<dependency>
  <groupId>org.apache.opennlp</groupId>
  <artifactId>opennlp-tools</artifactId>
  <version>${opennlp.version}</version>
@@ -597,23 +609,23 @@
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-rdbms</artifactId>
   <version>${datanucleus.version}</version>
-</dependency-->
+</dependency>
 <!--dependency>
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-api-jpa</artifactId>
   <version>${datanucleus.version}</version>
 </dependency-->
-<!--dependency>
+<dependency>
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-api-jdo</artifactId>
   <version>${datanucleus.version}</version>
-</dependency-->
+</dependency>
 <!--dependency>
   <groupId>org.apache.zookeeper</groupId>
   <artifactId>zookeeper</artifactId>
   <version>${zookeeper.version}</version>
 </dependency-->
-<!--dependency>
+<dependency>
 	<groupId>com.hazelcast</groupId>
 	<artifactId>hazelcast</artifactId>
 	<version>${hazelcast.version}</version>
@@ -622,13 +634,13 @@
 	<groupId>org.apache.curator</groupId>
 	<artifactId>curator-framework</artifactId>
 	<version>${curator.version}</version>
-</dependency-->
+</dependency>
 <!--dependency>
 	<groupId>org.apache.curator</groupId>
 	<artifactId>curator-recipes</artifactId>
 	<version>${curator.version}</version>
 </dependency-->
-<!--dependency>
+<dependency>
 	<groupId>org.apache.curator</groupId>
 	<artifactId>curator-client</artifactId>
 	<version>${curator.version}</version>
@@ -642,9 +654,9 @@
   <groupId>commons-configuration</groupId>
   <artifactId>commons-configuration</artifactId>
   <version>${commons.version}</version>
-</dependency-->
+</dependency>
 <!-- dependent package for sparkconf setjars -->
-<!--dependency>
+<dependency>
   <groupId>it.unimi.dsi</groupId>
   <artifactId>fastutil</artifactId>
   <version>${fastutil.version}</version>
@@ -672,23 +684,23 @@
 <dependency>
   <groupId>org.apache.logging.log4j</groupId>
   <artifactId>log4j-api</artifactId>
-  <version>${apachelog.version}</version-->
+  <version>${apachelog.version}</version>
   <!--scope>test</scope-->
-<!--/dependency>
+</dependency>
 <dependency>
   <groupId>org.apache.logging.log4j</groupId>
   <artifactId>log4j-core</artifactId>
-  <version>${apachelog.version}</version-->
+  <version>${apachelog.version}</version>
   <!--scope>test</scope-->
-<!--/dependency-->
+</dependency>
 <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
-<!--dependency>
+<dependency>
   <groupId>io.netty</groupId>
   <artifactId>netty-all</artifactId>
   <version>${netty.version}</version>
-</dependency-->
+</dependency>
   </dependencies>
-  <properties>
+  <!--properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
     <jdk.version>1.8</jdk.version>
     <junit.version>4.12</junit.version>
@@ -697,18 +709,14 @@
     <hbase.version>1.2.1</hbase.version>
     <tika.version>1.13</tika.version>
     <mahout.version>0.12.0</mahout.version>
-    <!-- must keep at old version for some time -->
     <spark.version>1.6.1</spark.version>
-    <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
     <opennlp.version>1.5.3</opennlp.version>
     <hadoop.version>2.7.1</hadoop.version>
     <datanucleus.version>4.1.0-release</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
-    <!-- must keep at old version for some time -->
     <curator.version>2.9.1</curator.version>
-    <!-- must keep at old version for some time -->
     <hazelcast.version>3.5.4</hazelcast.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
     <jackson.version>2.4.4</jackson.version>
@@ -731,7 +739,6 @@
     <slf4j.version>1.7.13</slf4j.version>
     <ehcache.version>2.6.11</ehcache.version>
     <servlet.version>3.1.0</servlet.version>
-    <!-- must keep at old version for some time -->
     <guava.version>16.0.1</guava.version>
     <commons.version>1.10</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
@@ -739,7 +746,7 @@
     <elasticsearch.version>5.0.2</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
-  </properties>
+  </properties-->
 	<repositories>
 		<repository>
 			<id>vaadin-addons</id>
