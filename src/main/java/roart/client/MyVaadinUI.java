@@ -266,6 +266,7 @@ public class MyVaadinUI extends UI
 	//tab.addComponent(tf);
 	tab.setCaption("Search");
 	String myindex = MyConfig.conf.index;
+	// TODO make OO of this
 	if (myindex.equals(ConfigConstants.LUCENE)) {
 	tab.addComponent(getSearch("Search standard", 0));
 	tab.addComponent(getSearch("Search analyzing", 1));
@@ -275,12 +276,16 @@ public class MyVaadinUI extends UI
 	tab.addComponent(getSearch("Search surround", 5));
 	tab.addComponent(getSearch("Search classic", 6));
 	tab.addComponent(getSearch("Search simple", 7));
-	} else {
+	}
+	if (myindex.equals(ConfigConstants.SOLR)) {
 	tab.addComponent(getSearch("Search default", 0));
 	tab.addComponent(getSearch("Search lucene", 1));
 	tab.addComponent(getSearch("Search complexphrase", 2));
 	tab.addComponent(getSearch("Search surround", 3));
 	tab.addComponent(getSearch("Search simple", 4));
+	}
+	if (myindex.equals(ConfigConstants.ELASTIC)) {
+	tab.addComponent(getSearch("Search", 0));
 	}
 	return tab;
     }

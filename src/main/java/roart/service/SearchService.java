@@ -41,7 +41,7 @@ public class SearchService {
 	SearchDisplay display = e.display;
 
 	ResultItem[] strarr = roart.search.Search.searchme(str, type, display);
-
+	
 	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
 	}

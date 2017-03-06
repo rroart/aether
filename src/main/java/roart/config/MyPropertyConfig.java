@@ -44,7 +44,7 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     public static String[] fsvalues = { ConfigConstants.LOCAL, ConfigConstants.HADOOP };
-    public static String[] indexvalues = { ConfigConstants.LUCENE, ConfigConstants.SOLR };
+    public static String[] indexvalues = { ConfigConstants.LUCENE, ConfigConstants.SOLR, ConfigConstants.ELASTIC };
     public static String[] dbvalues = { ConfigConstants.HIBERNATE, ConfigConstants.DATANUCLEUS, ConfigConstants.HBASE };
     public static String[] classifyvalues = { ConfigConstants.MAHOUT, ConfigConstants.MAHOUTSPARK, ConfigConstants.SPARKML, ConfigConstants.OPENNLP };
     public static String[] lockmodevalues = { ConfigConstants.SMALL, ConfigConstants.BIG };
@@ -262,6 +262,13 @@ public class MyPropertyConfig extends MyConfig {
             String lucenepath = getString(ConfigConstants.LUCENEPATH, null, true, true, null);
             conf.lucenepath = lucenepath;
             org.apache.lucene.search.BooleanQuery.setMaxClauseCount(16384);
+        }
+        if (index.equals(ConfigConstants.ELASTIC)) {
+            String elastichost = getString(ConfigConstants.ELASTICHOST, null, true, true, null);
+            String elasticport = getString(ConfigConstants.ELASTICPORT, null, true, true, null);
+            conf.elastichost = elastichost;
+            conf.elasticport = elasticport;
+            new roart.search.SearchElastic();
         }
         conf.index = index;
         Boolean storehighlight = getBoolean(ConfigConstants.HIGHLIGHTMLT, false, false, false);

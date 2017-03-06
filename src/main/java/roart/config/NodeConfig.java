@@ -18,6 +18,8 @@ public class NodeConfig {
     public String index = null;
     public String lucenepath = null;
     public String solrurl = null;
+    public String elastichost = null;
+    public String elasticport = null;
     public boolean highlightmlt = false;
     //public boolean searchsimilar = false;
     

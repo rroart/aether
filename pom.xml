@@ -7,7 +7,7 @@
   <artifactId>aether</artifactId>
   <!--artifactId>disksearchengine</artifactId-->
   <!--artifactId>akashic-disk-search-engine</artifactId-->
-  <version>0.9-SNAPSHOT</version>
+  <version>0.10-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Aether Disk Search Engine</name>
   <!--name>Vaadin Web Application</name-->
@@ -665,6 +665,34 @@
   <artifactId>jackson-databind</artifactId>
   <version>${jackson.version}</version>
 </dependency>
+<dependency>
+    <groupId>org.elasticsearch</groupId>
+    <artifactId>elasticsearch</artifactId>
+    <version>${elasticsearch.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.elasticsearch.client</groupId>
+    <artifactId>transport</artifactId>
+    <version>${elasticsearch.version}</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.logging.log4j</groupId>
+  <artifactId>log4j-api</artifactId>
+  <version>${apachelog.version}</version>
+  <!--scope>test</scope-->
+</dependency>
+<dependency>
+  <groupId>org.apache.logging.log4j</groupId>
+  <artifactId>log4j-core</artifactId>
+  <version>${apachelog.version}</version>
+  <!--scope>test</scope-->
+</dependency>
+<!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+<dependency>
+  <groupId>io.netty</groupId>
+  <artifactId>netty-all</artifactId>
+  <version>${netty.version}</version>
+</dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
@@ -714,6 +742,9 @@
     <commons.version>1.10</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
     <joss.version>0.9.14</joss.version>
+    <elasticsearch.version>5.0.2</elasticsearch.version>
+    <apachelog.version>2.7</apachelog.version>
+    <netty.version>4.1.7.Final</netty.version>
   </properties>
 	<repositories>
 		<repository>

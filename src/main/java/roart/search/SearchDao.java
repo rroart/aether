@@ -32,6 +32,9 @@ public class SearchDao {
 	    if (type.equals(ConfigConstants.SOLR)) {
 		search = new SolrSearchAccess();
 	    }
+	    if (type.equals(ConfigConstants.ELASTIC)) {
+		search = new ElasticSearchAccess();
+	    }
 	}
     }
 
