@@ -470,9 +470,18 @@ public class MyVaadinUI extends UI
 
     VerticalLayout cloudConfig = new VerticalLayout();
     cloudConfig.setCaption("Misc cloud or distributed settings");
-    if (config.fsdefaultname != null) {
-    Label hdfsLabel = new Label(ConfigConstants.HDFSCONFFS + DELIMITER + config.fsdefaultname);
+    if (config.hdfsdefaultname != null) {
+    	if (config.hdfsdefaultname.contains("hdfs")) {
+    Label hdfsLabel = new Label(ConfigConstants.HDFSCONFFS + DELIMITER + config.hdfsdefaultname);
     cloudConfig.addComponent(hdfsLabel);
+    	} else {
+    		   Label swiftUrlLabel = new Label(ConfigConstants.SWIFTCONFURL + DELIMITER + config.swifturl);
+    		   Label swiftUserLabel = new Label(ConfigConstants.SWIFTCONFUSER + DELIMITER + config.swiftuser);
+    		   Label swiftKeyLabel = new Label(ConfigConstants.SWIFTCONFKEY + DELIMITER + config.swiftkey);
+    		   cloudConfig.addComponent(swiftUrlLabel);
+    		   cloudConfig.addComponent(swiftUserLabel);
+    		   cloudConfig.addComponent(swiftKeyLabel);
+    	}
     }
     if (config.zookeeper != null) {
     Label zooLabel = new Label(ConfigConstants.ZOOKEEPER + DELIMITER + config.zookeeper);
@@ -1253,9 +1262,13 @@ public Object generateCell(Table source, Object itemId,
     if (false) {
 	return null;
     }
+    // TODO make OO of this
     final FileObject fo = FileSystemDao.get(filename);
     if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
-	filename = filename.substring(5);
+    	filename = filename.substring(FileSystemDao.FILELEN);
+    }
+    if (filename.startsWith(FileSystemDao.SWIFT)) {
+    	filename = filename.substring(FileSystemDao.SWIFTLEN);
     }
     int i = filename.lastIndexOf("/");
     String fn = filename.substring(i + 1);

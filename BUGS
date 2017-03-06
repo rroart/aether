@@ -1,0 +1,1 @@
+If uploading an empty directory to Swift, it will be seen as an empty file. This is inherited from Joss. This is noted in the documentation.

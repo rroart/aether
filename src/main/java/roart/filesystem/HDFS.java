@@ -28,7 +28,7 @@ public class HDFS {
 	
 	public HDFS() {
 		configuration = new Configuration();
-		String fsdefaultname = MyConfig.conf.fsdefaultname;
+		String fsdefaultname = MyConfig.conf.hdfsdefaultname;
 		if (fsdefaultname != null) {
 		    configuration.set("fs.default.name", fsdefaultname);
 		    log.info("Setting hadoop fs.default.name " + fsdefaultname);
@@ -118,7 +118,7 @@ public class HDFS {
 
 	public static FileObject get(String string) {
 	    if (string.startsWith(FileSystemDao.HDFS)) {
-		string = string.substring(5);
+	    	string = string.substring(FileSystemDao.HDFSLEN);
 	    }
 		return new FileObject(new Path(string));
 	}

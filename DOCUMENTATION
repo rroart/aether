@@ -229,8 +229,8 @@ Standalone will use no global locker.
   </para>
   <para>
     The content source is a directory list in dirlist.
-The directory list may be ordinary, local filesystem, or it may be HDFS.
-(More about HDFS later)
+The directory list may be ordinary, local filesystem, or it may be HDFS or Swift.
+(More about HDFS and Swift later)
 The exceptions are to be listedd in dirlistnot.
   </para>
   <para>
@@ -268,10 +268,10 @@ Configure aether.prop:
     <para>
       Which directories to include, and subdirectories to exclude.
       <programlisting>
-dirlist=file:/home/dir/dir1,hdfs:/home/dir/dir2...
+dirlist=file:/home/dir/dir1,hdfs:/home/dir/dir2...,swift:/container/dir3
 dirlistnot=/home/dir/dir1/tmp (just pure /, no file:/hdfs:)
       </programlisting>
-Known uses are file, hdfs and none (defaulting to file).
+Known uses are file, hdfs, swift and none (defaulting to file).
     </para>
     <para>
 Name of the node.
@@ -446,6 +446,14 @@ hdfsconffs=hadoop uri (sets fs.default.name)
     </programlisting>
     see also <link linkend="hadoop" endterm="hadoopterm"/>.
 
+    If using Openstack Swift
+    <programlisting>
+      swiftconfurl=the authentication url
+      swiftconfuser=the user:tenant
+      swiftconfkey=authentication key
+      swiftconfcontainer=container
+    </programlisting>
+    
     Where to log
     <programlisting>
 logdir=...
@@ -844,6 +852,17 @@ Curator 2.9.1
       <programlisting>
 	./sbin/start-all.sh &amp;
       </programlisting>
+    </para>
+  </sect1>
+  <sect1 id="swift">
+    <title id="swiftterm">
+      Swift
+    </title>
+    <para>
+      For Swift itself, I used http://serverascode.com/2014/06/12/run-swift-in-docker.html.
+    </para>
+    <para>
+      Beware of uploading empty directories, they will be seen as empty files.
     </para>
   </sect1>
   <sect1 id="spark">

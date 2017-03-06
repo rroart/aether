@@ -650,6 +650,11 @@
   <artifactId>fastutil</artifactId>
   <version>${fastutil.version}</version>
 </dependency>
+<dependency>
+            <groupId>org.javaswift</groupId>
+            <artifactId>joss</artifactId>
+            <version>${joss.version}</version>
+        </dependency>
   </dependencies>
   <properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
@@ -697,6 +702,7 @@
     <guava.version>16.0.1</guava.version>
     <commons.version>1.10</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
+    <joss.version>0.9.14</joss.version>
   </properties>
 	<repositories>
 		<repository>
