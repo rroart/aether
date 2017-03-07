@@ -657,6 +657,16 @@
   <artifactId>netty-all</artifactId>
   <version>${netty.version}</version>
 </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-searchengine</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-config</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <!--properties>
     <jetty.version>9.2.2.v20140723</jetty.version>
