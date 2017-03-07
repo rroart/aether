@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>roart</groupId>
+    <artifactId>aether</artifactId>
+    <relativePath>../pom.xml</relativePath>
+    <version>0.10-SNAPSHOT</version>
+  </parent>
+  <groupId>roart</groupId>
+  <!--artifactId>myweb</artifactId-->
+  <artifactId>aether-searchengine</artifactId>
+  <!--artifactId>disksearchengine</artifactId-->
+  <!--artifactId>akashic-disk-search-engine</artifactId-->
+  <version>0.10-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Aether Disk Search Engine Search Engine</name>
+  <build>
+  <plugins>
+          <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-install-plugin</artifactId>
+	<version>2.4</version>
+	<configuration>
+	  <skip>true</skip>
+	</configuration>
+      </plugin>
+  </plugins>
+</build>
+<modules>
+  <module>elastic</module>
+  <module>lucene</module>
+  <module>solr</module>
+</modules>
+</project>
+
