@@ -138,7 +138,7 @@
         <version>1.0-alpha-2</version>
         <executions>
            <!-- Associate the read-project-properties goal with the initialize phase, to read the properties file. -->
-          <execution>
+          <!--execution>
             <phase>initialize</phase>
             <goals>
               <goal>read-project-properties</goal>
@@ -148,7 +148,7 @@
                 <file>aether.prop</file>
               </files>
             </configuration>
-          </execution>
+          </execution-->
         </executions>
       </plugin>
       <plugin>
@@ -211,6 +211,14 @@
 	    </goals>
 	  </execution>
 	</executions>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-install-plugin</artifactId>
+	<version>2.4</version>
+	<configuration>
+	  <skip>true</skip>
+	</configuration>
       </plugin>
     </plugins>
     <pluginManagement>
