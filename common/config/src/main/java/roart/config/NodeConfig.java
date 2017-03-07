@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NodeConfig {
+    public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF }
+
     public String languages = null;
     
     public String[] dirlist = null;
@@ -23,7 +25,7 @@ public class NodeConfig {
     public boolean highlightmlt = false;
     //public boolean searchsimilar = false;
     
-    public Map<MyConfig.Config, Integer> configMap = new HashMap<MyConfig.Config, Integer>();
+    public Map<Config, Integer> configMap = new HashMap<Config, Integer>();
     public String hdfsdefaultname = null;
     public String swifturl = null;
     public String swiftuser = null;

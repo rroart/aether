@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import roart.config.MyConfig.Config;
+import roart.config.NodeConfig;
 import roart.service.ControlService;
 import roart.util.MyMap;
 import roart.util.MyMaps;
@@ -56,9 +56,8 @@ public abstract class MyConfig {
         conf = mynode();
     }
     
-    public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF }
-    public static Map<Config, Integer> configDefaultMap = new HashMap<Config, Integer>();
-    public static Map<Config, String> configStrMap = new HashMap<Config, String>();
+    public static Map<NodeConfig.Config, Integer> configDefaultMap = new HashMap<NodeConfig.Config, Integer>();
+    public static Map<NodeConfig.Config, String> configStrMap = new HashMap<NodeConfig.Config, String>();
     //public static volatile String zookeeper = null;
     //public static boolean zookeepersmall = false;
     //public static boolean distributedtraverse = false;
@@ -68,26 +67,26 @@ public abstract class MyConfig {
     public abstract void config();
 
     public static void createMaps() {
-        configDefaultMap.put(Config.FAILEDLIMIT, ConfigConstants.DEFAULT_CONFIG_FAILEDLIMIT);
-        configDefaultMap.put(Config.TIKATIMEOUT, ConfigConstants.DEFAULT_CONFIG_TIKATIMEOUT);
-        configDefaultMap.put(Config.OTHERTIMEOUT, ConfigConstants.DEFAULT_CONFIG_OTHERTIMEOUT);
-        configDefaultMap.put(Config.INDEXLIMIT, ConfigConstants.DEFAULT_CONFIG_INDEXLIMIT);
-        configDefaultMap.put(Config.REINDEXLIMIT, ConfigConstants.DEFAULT_CONFIG_REINDEXLIMIT);
+        configDefaultMap.put(NodeConfig.Config.FAILEDLIMIT, ConfigConstants.DEFAULT_CONFIG_FAILEDLIMIT);
+        configDefaultMap.put(NodeConfig.Config.TIKATIMEOUT, ConfigConstants.DEFAULT_CONFIG_TIKATIMEOUT);
+        configDefaultMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.DEFAULT_CONFIG_OTHERTIMEOUT);
+        configDefaultMap.put(NodeConfig.Config.INDEXLIMIT, ConfigConstants.DEFAULT_CONFIG_INDEXLIMIT);
+        configDefaultMap.put(NodeConfig.Config.REINDEXLIMIT, ConfigConstants.DEFAULT_CONFIG_REINDEXLIMIT);
     
         // solr defaults
-        configDefaultMap.put(Config.MLTCOUNT, ConfigConstants.DEFAULT_CONFIG_MLTCOUNT);
-        configDefaultMap.put(Config.MLTMINDF, ConfigConstants.DEFAULT_CONFIG_MLTMINDF);
-        configDefaultMap.put(Config.MLTMINTF, ConfigConstants.DEFAULT_CONFIG_MLTMINTF);
+        configDefaultMap.put(NodeConfig.Config.MLTCOUNT, ConfigConstants.DEFAULT_CONFIG_MLTCOUNT);
+        configDefaultMap.put(NodeConfig.Config.MLTMINDF, ConfigConstants.DEFAULT_CONFIG_MLTMINDF);
+        configDefaultMap.put(NodeConfig.Config.MLTMINTF, ConfigConstants.DEFAULT_CONFIG_MLTMINTF);
         
-        configStrMap.put(Config.FAILEDLIMIT, ConfigConstants.FAILEDLIMIT);
-        configStrMap.put(Config.TIKATIMEOUT, ConfigConstants.TIKATIMEOUT);
-        configStrMap.put(Config.OTHERTIMEOUT, ConfigConstants.OTHERTIMEOUT);
-        configStrMap.put(Config.INDEXLIMIT, ConfigConstants.INDEXLIMIT);
-        configStrMap.put(Config.REINDEXLIMIT, ConfigConstants.REINDEXLIMIT);
+        configStrMap.put(NodeConfig.Config.FAILEDLIMIT, ConfigConstants.FAILEDLIMIT);
+        configStrMap.put(NodeConfig.Config.TIKATIMEOUT, ConfigConstants.TIKATIMEOUT);
+        configStrMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.OTHERTIMEOUT);
+        configStrMap.put(NodeConfig.Config.INDEXLIMIT, ConfigConstants.INDEXLIMIT);
+        configStrMap.put(NodeConfig.Config.REINDEXLIMIT, ConfigConstants.REINDEXLIMIT);
     
-        configStrMap.put(Config.MLTCOUNT, ConfigConstants.MLTCOUNT);
-        configStrMap.put(Config.MLTMINDF, ConfigConstants.MLTMINDF);
-        configStrMap.put(Config.MLTMINTF, ConfigConstants.MLTMINTF);
+        configStrMap.put(NodeConfig.Config.MLTCOUNT, ConfigConstants.MLTCOUNT);
+        configStrMap.put(NodeConfig.Config.MLTMINDF, ConfigConstants.MLTMINDF);
+        configStrMap.put(NodeConfig.Config.MLTMINTF, ConfigConstants.MLTMINTF);
     }
     
 }
