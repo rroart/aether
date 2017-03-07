@@ -147,7 +147,7 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     private void configRW() {
-        for (Config key : configDefaultMap.keySet()) {
+        for (NodeConfig.Config key : configDefaultMap.keySet()) {
             String keyStr = configStrMap.get(key);
             Integer deflt = configDefaultMap.get(key);
             Integer integer = getInteger(keyStr, deflt, false, false);

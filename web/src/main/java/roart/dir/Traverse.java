@@ -17,6 +17,7 @@ import roart.thread.ClientRunner;
 import roart.thread.TikaRunner;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
+import roart.config.NodeConfig;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.model.FileObject;
