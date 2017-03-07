@@ -731,7 +731,7 @@ public class ControlService {
 	}
 
 	public void startTikaWorker() {
-	    int timeout = MyConfig.conf.configMap.get(MyConfig.Config.TIKATIMEOUT);
+	    int timeout = MyConfig.conf.configMap.get(NodeConfig.Config.TIKATIMEOUT);
 	    TikaRunner.timeout = timeout;
 
     	tikaRunnable = new TikaRunner();
@@ -750,7 +750,7 @@ public class ControlService {
 	}
 
 	public void startOtherWorker() {
-	    int timeout = MyConfig.conf.configMap.get(MyConfig.Config.OTHERTIMEOUT);
+	    int timeout = MyConfig.conf.configMap.get(NodeConfig.Config.OTHERTIMEOUT);
 	    OtherHandler.timeout = timeout;
 
     	otherRunnable = new OtherRunner();

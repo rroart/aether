@@ -437,11 +437,11 @@ public class MyVaadinUI extends UI
     horConfig.setCaption("Indexing parameters");
     horConfig.setHeight("20%");
     horConfig.setWidth("60%");
-    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.FAILEDLIMIT));
-    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.INDEXLIMIT));
-    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.REINDEXLIMIT));
-    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.TIKATIMEOUT));
-    horConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.OTHERTIMEOUT));
+    horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.FAILEDLIMIT));
+    horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.INDEXLIMIT));
+    horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.REINDEXLIMIT));
+    horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.TIKATIMEOUT));
+    horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.OTHERTIMEOUT));
 
     tab.addComponent(horConfig);
     if (config.highlightmlt) {
@@ -449,9 +449,9 @@ public class MyVaadinUI extends UI
         mltConfig.setCaption("Searching for MoreLikeThis");
         mltConfig.setHeight("20%");
         mltConfig.setWidth("60%");
-        mltConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.MLTCOUNT));
-        mltConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.MLTMINTF));
-        mltConfig.addComponent(getConfigValue(nodename, config, MyConfig.Config.MLTMINDF));
+        mltConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.MLTCOUNT));
+        mltConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.MLTMINTF));
+        mltConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.MLTMINDF));
         tab.addComponent(mltConfig);
     }
 
@@ -821,7 +821,7 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
-    private TextField getConfigValue(String nodename, NodeConfig conf, final MyConfig.Config config) {
+    private TextField getConfigValue(String nodename, NodeConfig conf, final NodeConfig.Config config) {
 	TextField tf = new TextField("Set " + MyConfig.configStrMap.get(config));
 	tf.setValue("" + conf.configMap.get(config));
 	

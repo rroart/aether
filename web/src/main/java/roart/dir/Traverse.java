@@ -421,7 +421,7 @@ public class Traverse {
         // and a failed limit it set
         // and the file has come to that limit
 
-        int maxfailed = MyConfig.conf.configMap.get(MyConfig.Config.FAILEDLIMIT);
+        int maxfailed = MyConfig.conf.configMap.get(NodeConfig.Config.FAILEDLIMIT);
         if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
             return false;
         }
@@ -484,8 +484,8 @@ public class Traverse {
     }
 
     static boolean isMaxed(String myid, ClientQueueElement element) {
-        int max = MyConfig.conf.configMap.get(MyConfig.Config.REINDEXLIMIT);
-        int maxindex = MyConfig.conf.configMap.get(MyConfig.Config.INDEXLIMIT);
+        int max = MyConfig.conf.configMap.get(NodeConfig.Config.REINDEXLIMIT);
+        int maxindex = MyConfig.conf.configMap.get(NodeConfig.Config.INDEXLIMIT);
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {

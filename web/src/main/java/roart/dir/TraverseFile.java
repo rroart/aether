@@ -213,7 +213,7 @@ public class TraverseFile {
     
     public static void indexsingle(TraverseQueueElement trav,
             String md5, String filename, IndexFiles index) {
-        int maxfailed = MyConfig.conf.configMap.get(MyConfig.Config.FAILEDLIMIT);
+        int maxfailed = MyConfig.conf.configMap.get(NodeConfig.Config.FAILEDLIMIT);
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
             int failed = index.getFailed();
             if (failed >= maxfailed) {
