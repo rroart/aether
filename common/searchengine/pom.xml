@@ -11,6 +11,5 @@
   <artifactId>aether-common-searchengine</artifactId>
   <packaging>jar</packaging>
   <name>Aether Disk Search Engine Common Search Engine</name>
-  <!--name>Vaadin Web Application</name-->
 </project>
 

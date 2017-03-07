@@ -18,6 +18,7 @@
   <name>Aether Disk Search Engine Common</name>
   <!--name>Vaadin Web Application</name-->
 <modules>
+  <module>config</module>
   <module>searchengine</module>
 </modules>
 </project>
