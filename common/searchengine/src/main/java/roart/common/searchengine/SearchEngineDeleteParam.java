@@ -1,6 +1,6 @@
 package roart.common.searchengine;
 
-public class SearchEngineDeleteParam {
+public class SearchEngineDeleteParam extends SearchEngineParam {
 
     public String delete;
 }

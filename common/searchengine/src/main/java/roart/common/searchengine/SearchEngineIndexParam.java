@@ -1,6 +1,6 @@
 package roart.common.searchengine;
 
-public class SearchEngineIndexParam {
+public class SearchEngineIndexParam extends SearchEngineParam {
 
     public String type;
     public String md5;
