@@ -12,8 +12,10 @@
   <name>Aether Disk Search Engine Parent</name>
   <!--name>Vaadin Web Application</name-->
 <modules>
-  <module>web</module>
+  <module>common</module>
   <module>eureka</module>
+  <module>searchengine</module>
+  <module>web</module>
 </modules>
   <build>
     <plugins>
@@ -133,7 +135,7 @@
             </goals>
             <configuration>
               <files>
-                <file>aether.prop</file>
+                <file>${session.executionRootDirectory}/aether.prop</file>
               </files>
             </configuration>
           </execution>
