@@ -9,6 +9,7 @@ import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.queue.TikaQueueElement;
 import roart.service.ControlService;
+import roart.util.EurekaUtil;
 import roart.util.MyCollections;
 import roart.util.MyHazelcastQueue;
 import roart.util.MyHazelcastRemover;
@@ -39,6 +40,8 @@ public class StartupListener implements javax.servlet.ServletContextListener {
 
     public void contextInitialized(ServletContextEvent context)  {
 	    
+    	EurekaUtil.initEurekaClient();
+    	
 	MyConfig conf = MyPropertyConfig.instance();
 	conf.config();
 	
