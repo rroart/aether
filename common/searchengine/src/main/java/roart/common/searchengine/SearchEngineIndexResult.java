@@ -1,6 +1,6 @@
 package roart.common.searchengine;
 
-public class SearchEngineIndexResult {
+public class SearchEngineIndexResult extends SearchEngineResult {
     public int size;
     public String noindexreason;
 }

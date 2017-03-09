@@ -8,20 +8,8 @@
     <relativePath>../pom.xml</relativePath>
     <version>0.10-SNAPSHOT</version>
   </parent>
-  <artifactId>aether-common-searchengine</artifactId>
+  <artifactId>aether-common-config</artifactId>
   <packaging>jar</packaging>
-  <name>Aether Disk Search Engine Common Search Engine</name>
-  <dependencies>
-    <dependency>
-      <groupId>roart</groupId>
-      <artifactId>aether-common-constants</artifactId>
-      <version>0.10-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>roart</groupId>
-      <artifactId>aether-common-config</artifactId>
-      <version>0.10-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+  <name>Aether Disk Search Engine Common Config</name>
 </project>
 
