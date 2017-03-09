@@ -10,6 +10,10 @@ import roart.util.MyLists;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
+import roart.common.searchengine.SearchEngineDeleteResult;
+import roart.common.searchengine.SearchEngineIndexResult;
+import roart.common.searchengine.SearchEngineSearchResult;
+import roart.common.searchengine.SearchResult;
 import roart.database.HibernateUtil;
 import roart.database.IndexFilesDao;
 
@@ -21,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +62,7 @@ public class Search {
 
     try {
     retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, dbindex);
-	} catch (Exception e) {
+    } catch (Exception e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    retsize = -1;
@@ -107,17 +112,12 @@ public class Search {
 	}
 
     public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-		ResultItem[] strarr = new ResultItem[0];
-		
-		strarr = SearchDao.searchme(str, searchtype, display);
-    return strarr;
+    	return SearchDao.searchme(str, searchtype, display);
 }
 
     // not yet usable, lacking termvector
     public static ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
-		ResultItem[] strarr = new ResultItem[0];
-		strarr = SearchDao.searchsimilar(md5i, searchtype, display);
-		return strarr;
+		return SearchDao.searchsimilar(md5i, searchtype, display);
 }
 
     // not yet usable, lacking termvector
@@ -125,6 +125,7 @@ public class Search {
     }
 
     public static void deleteme(String str) {
+		SearchDao.deleteme(str);
     }
 
     // outdated, did run once, had a bug which made duplicates

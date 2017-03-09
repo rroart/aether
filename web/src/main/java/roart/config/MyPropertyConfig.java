@@ -256,7 +256,6 @@ public class MyPropertyConfig extends MyConfig {
         if (index.equals(ConfigConstants.SOLR)) {
             String solrurl = getString(ConfigConstants.SOLRURL, null, true, true, null);
             conf.solrurl = solrurl;
-            new roart.search.SearchSolr();
         }
         if (index.equals(ConfigConstants.LUCENE)) {
             String lucenepath = getString(ConfigConstants.LUCENEPATH, null, true, true, null);
@@ -268,7 +267,6 @@ public class MyPropertyConfig extends MyConfig {
             String elasticport = getString(ConfigConstants.ELASTICPORT, null, true, true, null);
             conf.elastichost = elastichost;
             conf.elasticport = elasticport;
-            new roart.search.SearchElastic();
         }
         conf.index = index;
         Boolean storehighlight = getBoolean(ConfigConstants.HIGHLIGHTMLT, false, false, false);

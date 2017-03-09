@@ -1,15 +1,15 @@
 package roart.search;
 
-import roart.config.MyConfig;
-import roart.database.HibernateUtil;
-import roart.database.IndexFilesDao;
-import roart.model.IndexFiles;
-import roart.queue.IndexQueueElement;
-import roart.queue.Queues;
-import roart.service.SearchService;
-import roart.lang.LanguageDetect;
-import roart.model.ResultItem;
-import roart.model.SearchDisplay;
+import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchEngineConstructorParam;
+import roart.common.searchengine.SearchEngineDeleteParam;
+import roart.common.searchengine.SearchEngineDeleteResult;
+import roart.common.searchengine.SearchEngineIndexParam;
+import roart.common.searchengine.SearchEngineIndexResult;
+import roart.common.searchengine.SearchEngineSearchParam;
+import roart.common.searchengine.SearchEngineSearchResult;
+import roart.common.searchengine.SearchResult;
+import roart.config.NodeConfig;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -72,25 +72,37 @@ import org.apache.lucene.search.vectorhighlight.FieldQuery;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
-import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SearchLucene {
     private static Logger log = LoggerFactory.getLogger(SearchLucene.class);
 
+    public SearchLucene(SearchEngineConstructorParam constructor) {
+    }
+    
     //public static int indexme(String type, String md5, InputStream inputStream) {
     //public static void indexme() {
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles dbindex) {
+    public static SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
+		NodeConfig conf = index.conf;
+		String type = index.type; 
+    	String md5 = index.md5; 
+    	//InputStream inputStream, 
+    	String dbfilename = index.dbfilename;
+    	String[] metadata = index.metadata;
+    	String lang = index.lang;
+    	String content = index.content;
+    	String classification = index.classification;
+
         int retsize = 0;
         // create some index
         // we could also create an index in our ram ...
         // Directory index = new RAMDirectory();
         try {
-            Directory index = FSDirectory.open(getLucenePath(type));
+            Directory lindex = FSDirectory.open(getLucenePath(conf, type));
             StandardAnalyzer analyzer = new StandardAnalyzer();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-            IndexWriter w = new IndexWriter(index, iwc);
+            IndexWriter w = new IndexWriter(lindex, iwc);
 
             retsize = content.length();
 
@@ -107,7 +119,7 @@ public class SearchLucene {
                 doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
             }
             Field.Store store = Field.Store.NO;
-            if (SearchService.isHighlightMLT()) {
+            if (conf.highlightmlt) {
                 FieldType fieldtype = new FieldType(TextField.TYPE_STORED);
                 fieldtype.setStoreTermVectors(true);
                 fieldtype.setStoreTermVectorOffsets(true);
@@ -121,10 +133,10 @@ public class SearchLucene {
             if (metadata != null) {
                 log.info("with md " + metadata.toString());
                 //doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
-                Metadata md = metadata;
-                for (String name : md.names()) {
-                    String value = md.get(name);
-                    doc.add(new TextField(Constants.METADATA, name + ":" + value, Field.Store.YES));
+                String[] md = metadata;
+                for (String name : md) {
+                    String value = name;
+                    doc.add(new TextField(Constants.METADATA, name, Field.Store.YES));
                 }
             }
             //Term oldTerm = new Term(Constants.TITLE, md5); // remove after reindex
@@ -140,22 +152,28 @@ public class SearchLucene {
         } catch (Exception e) {
             log.info("Error3: " + e.getMessage());
             log.error(roart.util.Constants.EXCEPTION, e);
-            dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
-            return -1;
+    		SearchEngineIndexResult result = new SearchEngineIndexResult();
+    		result.noindexreason = "index exception " + e.getClass().getName();
+    	    result.size = -1;
+            return result;
         }
-        return retsize;
+		SearchEngineIndexResult result = new SearchEngineIndexResult();
+		result.size = retsize;        
+        return result;
     }
 
-    private static Path getLucenePath(String type) {
-        return new File(getLucenePath()+type).toPath();
+    private static Path getLucenePath(NodeConfig conf, String type) {
+        return new File(getLucenePath(conf)+type).toPath();
     }
 
-    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-        String type = "all";
+    public static SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
+    	String str = search.str;
+    	String searchtype = search.searchtype;
+
+    	String type = "all";
         int stype = new Integer(searchtype).intValue();
-        ResultItem[] strarr = new ResultItem[0];
         try {
-            Directory index = FSDirectory.open(getLucenePath(type));
+            Directory index = FSDirectory.open(getLucenePath(search.conf, type));
             StandardAnalyzer analyzer = new StandardAnalyzer();
             // parse query over multiple fields
             QueryParser cp = null;
@@ -203,19 +221,20 @@ public class SearchLucene {
             searcher.search(q, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            strarr = handleDocs(display, q, ind, searcher, hits, true);
+            SearchEngineSearchResult result = handleDocs(search, q, ind, searcher, hits, true);
+            return result;
         } catch (Exception e) {
             log.info("Error3: " + e.getMessage());
             log.error(roart.util.Constants.EXCEPTION, e);
         }
 
-        return strarr;
+        return null;
     }
 
     // or could use docid as id instead of md5 here and there
-    public static int searchdocid(String md5) {
+    public static int searchdocid(NodeConfig conf, String md5) {
         try {
-            Directory index = FSDirectory.open(getLucenePath("all"));
+            Directory index = FSDirectory.open(getLucenePath(conf, "all"));
             StandardAnalyzer analyzer = new StandardAnalyzer();
             Query tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.ID, md5);
             Query q = tmpQuery;
@@ -237,15 +256,14 @@ public class SearchLucene {
         return -1;
     }
 
-    private static ResultItem[] handleDocs(SearchDisplay display, Query q,
+    private static SearchEngineSearchResult handleDocs(SearchEngineSearchParam search, Query q,
             IndexReader ind, IndexSearcher searcher, ScoreDoc[] hits, boolean dohighlight)
                     throws IOException, Exception {
-        ResultItem[] strarr;
-        strarr = new ResultItem[hits.length + 1];
-        strarr[0] = IndexFiles.getHeaderSearch(display);
+		SearchEngineSearchResult result = new SearchEngineSearchResult();
+		result.results = new SearchResult[hits.length];
 
         FastVectorHighlighter highlighter = null;
-        if (SearchService.isHighlightMLT()) {
+        if (search.conf.highlightmlt) {
             highlighter = new FastVectorHighlighter();
         }    
         // output results
@@ -261,32 +279,37 @@ public class SearchLucene {
             if (metadataArray != null) {
                 metadata = Arrays.asList(metadataArray);
             }
-            IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
-            String filename = indexmd5.getFilelocation();
-            log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
 
             String[] highlights = { "none" };
-            if (dohighlight && SearchService.isHighlightMLT()) {
+            if (dohighlight && search.conf.highlightmlt) {
                 FieldQuery fieldQuery  = highlighter.getFieldQuery( q, ind );
                 String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, Constants.CONTENT, 100, 1);
                 highlights = bestFragments;
             }
-            strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display, metadata);
+    		SearchResult res = new SearchResult();
+    		res.md5 = md5;
+    		res.score = score;
+    		res.lang = lang;
+    		res.highlights = highlights;
+    		res.metadata = metadata;
+    		result.results[i] = res;
         }
-        return strarr;
+        return result;
     }
 
     // not yet usable, lacking termvector
-    public static ResultItem[] searchmlt(String md5i, String searchtype, SearchDisplay display) {
+    public static SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
+    	NodeConfig conf = search.conf;
+    	String md5i = search.str;
+    		String searchtype = search.searchtype;
         String type = "all";
-        ResultItem[] strarr = new ResultItem[0];
         try {
-            Directory index = FSDirectory.open(getLucenePath(type));
+            Directory index = FSDirectory.open(getLucenePath(conf, type));
             StandardAnalyzer analyzer = new StandardAnalyzer();
 
-            int count = MyConfig.conf.configMap.get(MyConfig.Config.MLTCOUNT);
-            int mintf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINTF);
-            int mindf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINDF);
+            int count = conf.configMap.get(NodeConfig.Config.MLTCOUNT);
+            int mintf = conf.configMap.get(NodeConfig.Config.MLTMINTF);
+            int mindf = conf.configMap.get(NodeConfig.Config.MLTMINDF);
 
             // searching ...
             int hitsPerPage = count;
@@ -298,7 +321,7 @@ public class SearchLucene {
             int totalDocs = ind.numDocs();
             //Document found = null;
             int doc = 0;
-            doc = searchdocid(md5i);
+            doc = searchdocid(conf, md5i);
             if (doc < 0) {
                 log.error("not found " + md5i);
                 return null;
@@ -353,13 +376,14 @@ public class SearchLucene {
             //searcher.search(query, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            strarr = handleDocs(display, query, ind, searcher, hits, false);
+            SearchEngineSearchResult result = handleDocs(search, query, ind, searcher, hits, false);
+            return result;
         } catch (Exception e) {
             log.info("Error3: " + e.getMessage());
             log.error(roart.util.Constants.EXCEPTION, e);
         }
 
-        return strarr;
+        return null;
     }
 
     /**
@@ -368,25 +392,26 @@ public class SearchLucene {
      * @param str md5 id
      */
     
-    public static void deleteme(String str) {
+    public static SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
         try {
             String type = "all";
-            Directory index = FSDirectory.open(getLucenePath(type));
+            Directory index = FSDirectory.open(getLucenePath(delete.conf, type));
             StandardAnalyzer analyzer = new StandardAnalyzer();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
             IndexWriter iw = new IndexWriter(index, iwc);
             //IndexReader r = IndexReader.open(index, false);
             //iw.deleteDocuments(new Term(Constants.TITLE, str));
-            iw.deleteDocuments(new Term(Constants.ID, str));
+            iw.deleteDocuments(new Term(Constants.ID, delete.delete));
             iw.close();
         } catch (Exception e) {
             log.info("Error3: " + e.getMessage());
             log.error(roart.util.Constants.EXCEPTION, e);
         }
+        return null;
     }
 
-    private static String getLucenePath() {
-        return MyConfig.conf.lucenepath;
+    private static String getLucenePath(NodeConfig conf) {
+        return conf.lucenepath;
     }
 
 }

@@ -37,18 +37,18 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tools.ant.taskdefs.Execute;
 
-import roart.service.SearchService;
-import roart.lang.LanguageDetect;
-import roart.model.SearchDisplay;
-import roart.model.ResultItem;
-import roart.model.IndexFiles;
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.database.IndexFilesDao;
+import roart.config.NodeConfig;
 
+import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchEngineConstructorParam;
+import roart.common.searchengine.SearchEngineDeleteParam;
+import roart.common.searchengine.SearchEngineDeleteResult;
+import roart.common.searchengine.SearchEngineIndexParam;
+import roart.common.searchengine.SearchEngineIndexResult;
+import roart.common.searchengine.SearchEngineSearchParam;
+import roart.common.searchengine.SearchEngineSearchResult;
+import roart.common.searchengine.SearchResult;
 
 public class SearchElastic {
 	private static Logger log = LoggerFactory.getLogger(SearchElastic.class);
@@ -58,12 +58,13 @@ public class SearchElastic {
 	
 	static Client client = null;
 
-	public SearchElastic() {
+	public SearchElastic(SearchEngineConstructorParam constructor) {
 		if (client != null) {
 			return;
 		}
-		String host = MyConfig.conf.elastichost; 
-		String port = MyConfig.conf.elasticport; 
+		NodeConfig conf = constructor.conf;
+		String host = conf.elastichost; 
+		String port = conf.elasticport; 
 
 		try {
 			client = new PreBuiltTransportClient(Settings.EMPTY).
@@ -73,25 +74,22 @@ public class SearchElastic {
 		}
 	}
 
-	public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
+	public static SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
+		NodeConfig conf = index.conf;
+		String type = index.type;
+		String md5 = index.md5;  
+		//InputStream inputStream, 
+		String dbfilename = index.dbfilename;
+		String metadata[] = index.metadata;
+		String lang = index.lang;
+		String content = index.content;
+		String classification = index.classification;
+		//, IndexFiles index) {
 		int retsize = content.length();
 		// this to a method
 		log.info("indexing " + md5);
 
 		String cat = classification;
-		List mdarr = new ArrayList();
-		if (metadata == null) {
-			//md = "";
-
-		} else {
-			log.info("with md " + metadata);
-			//doc.addField(Constants.METADATA, metadata);
-			Metadata md = metadata;
-			for (String name : md.names()) {
-				String value = md.get(name);
-				mdarr.add(name + ":" + value);
-			}
-		}
 
 		String indexName = myindex;
 		String typeName = mytype;
@@ -104,7 +102,7 @@ public class SearchElastic {
 					.field(Constants.CONTENT, content)
 					.startArray(Constants.METADATA + "array")
 					.startObject()
-					.array(Constants.METADATA, mdarr.toArray(new String[0]))
+					.array(Constants.METADATA, metadata)
 					.endObject()
 					.endArray()
 					.endObject());
@@ -112,11 +110,14 @@ public class SearchElastic {
 		} catch (Exception e) {
 			log.error(roart.util.Constants.EXCEPTION, e);
 		}
-		return retsize;
+		SearchEngineIndexResult result = new SearchEngineIndexResult();
+		result.size = retsize;
+		return result;
 	}
 
-	public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-		ResultItem[] strarr = new ResultItem[0];
+	public static SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
+		String str = search.str;
+		String searchtype = search.searchtype;
 
 		int stype = new Integer(searchtype).intValue();
 		try {
@@ -129,27 +130,26 @@ public class SearchElastic {
 					.setFrom(0)
 					.setSize(100)
 					.setExplain(true);
-			if (SearchService.isHighlightMLT()) {
+			if (search.conf.highlightmlt) {
 				q = q.highlighter(new HighlightBuilder().field(Constants.CONTENT));
 			}
 			SearchResponse response = q.execute().actionGet();//get();
 			SearchHits docs = response.getHits();
 
-			strarr = handleDocs(display, response, docs, true);
+			SearchEngineSearchResult result = handleDocs(search, response, docs, true);
+			return result;
 		} catch (Exception e) {
 			log.error(roart.util.Constants.EXCEPTION, e);
 		}
-		return strarr;
+		return null;
 	}
 
-	private static ResultItem[] handleDocs(SearchDisplay display,
-			SearchResponse rsp, SearchHits docs, boolean dohighlight) throws Exception {
-		ResultItem[] strarr;
+	private static SearchEngineSearchResult handleDocs(SearchEngineSearchParam search, SearchResponse rsp, SearchHits docs, boolean dohighlight) throws Exception {
+		SearchEngineSearchResult result = new SearchEngineSearchResult();
+		result.results = new SearchResult[docs.getHits().length];
 		// To read Documents as beans, the bean must be annotated as given in the example. 
 
-		strarr = new ResultItem[(int) (docs.getHits().length + 1)];
-		try {
-			strarr[0] = IndexFiles.getHeaderSearch(display);
+		try {			
 			int i = -1;
 			for (SearchHit doc : docs.getHits()) {
 				i++;
@@ -158,12 +158,10 @@ public class SearchElastic {
 				Map<String, Object> map = d.getSource();
 				String md5 = (String) map.get(Constants.ID);
 				String lang = (String) map.get(Constants.LANG);
+				// TODO fix metadata
 				List<String> metadata = null; //new ArrayList(map.get(Constants.METADATA));
-				IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
-				String filename = indexmd5.getFilelocation();
-				log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
 				String[] highlights = null;
-				if (dohighlight && SearchService.isHighlightMLT()) {
+				if (dohighlight && search.conf.highlightmlt) {
 					Map<String, HighlightField> m = d.getHighlightFields();
 					HighlightField hlf = m.get(Constants.CONTENT);
 					highlights = new String[1];
@@ -175,24 +173,33 @@ public class SearchElastic {
 						}				
 					}
 				}
-				strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display, metadata);
+				SearchResult res = new SearchResult();
+				res.md5 = md5;
+				res.score = score;
+				res.lang = lang;
+				res.highlights = highlights;
+				res.metadata = null; // metadata;
+				result.results[i] = res;
 			}
 		} catch (Exception e) {
 			log.error(roart.util.Constants.EXCEPTION, e);
 		}
-		return strarr;
+		return result;
 	}
 
-	public static ResultItem[] searchmlt(String id, String searchtype, SearchDisplay display) {
-		ResultItem[] strarr = new ResultItem[0];
+	public static SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
+		NodeConfig conf = search.conf;
+		String id = search.str;
+		String searchtype = search.searchtype;
+		//SearchDisplay display) {
 		MoreLikeThisQueryBuilder moreLikeThisRequestBuilder;
 		Item[] items = MoreLikeThisQueryBuilder.ids(id);
 		Item item = new Item(myindex, mytype, id);
 		Item likeItems[] = new Item[1];
 		likeItems[0] = item;
-		int count = MyConfig.conf.configMap.get(MyConfig.Config.MLTCOUNT);
-		int mintf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINTF);
-		int mindf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINDF);
+		int count = conf.configMap.get(NodeConfig.Config.MLTCOUNT);
+		int mintf = conf.configMap.get(NodeConfig.Config.MLTMINTF);
+		int mindf = conf.configMap.get(NodeConfig.Config.MLTMINDF);
 		MoreLikeThisQueryBuilder queryBuilder = QueryBuilders.moreLikeThisQuery(items)
 				.minDocFreq(mindf)
 				.minTermFreq(mintf);
@@ -209,15 +216,17 @@ public class SearchElastic {
 
 		try {
 			SearchHits docs = searchResponse.getHits();
-			strarr = handleDocs(display, searchResponse, docs, false);
+			SearchEngineSearchResult result = handleDocs(search, searchResponse, docs, false);
+			return result;
 		} catch (Exception e) {
 			log.error(roart.util.Constants.EXCEPTION, e);
 		}
-		return strarr;
+		return null;
 	}
 
 	// TODO untested
-	public static void deleteme(String str) {
+	public static SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
+	    String str = delete.delete;
 		ListenableActionFuture<DeleteResponse> action1 = client.prepareDelete(myindex, mytype, str).execute();
 		DeleteRequest deleteRequest = new DeleteRequest(myindex, mytype, str);
 		ActionFuture<DeleteResponse> action2 = client.delete(deleteRequest);
@@ -226,6 +235,7 @@ public class SearchElastic {
 		DeleteResponse response2 = action2.actionGet(requestTimeout);
 		System.out.println("r1 " + response.toString());
 		System.out.println("r2 " + response.toString());
+		return null;
 	}
 
 }

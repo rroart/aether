@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
+import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineDeleteParam;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexParam;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
+import roart.util.EurekaConstants;
 
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -27,27 +29,42 @@ public class ElasticController {
         @Autowired
 	private DiscoveryClient discoveryClient;
     
-    @RequestMapping(value = "/delete",
+    @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
+		    method = RequestMethod.POST)
+		    public void processConstructor(@RequestBody SearchEngineConstructorParam constructor)
+	throws Exception {
+    	new SearchElastic(constructor);
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.DELETE,
 		    method = RequestMethod.POST)
 		    public SearchEngineDeleteResult processDelete(@RequestBody SearchEngineDeleteParam delete)
 	throws Exception {
-    	SearchEngineDeleteResult ret = null;
+    	SearchEngineDeleteResult ret = SearchElastic.deleteme(delete);
     	return ret;
     }
 
-    @RequestMapping(value = "/index",
+    @RequestMapping(value = "/" + EurekaConstants.INDEX,
 		    method = RequestMethod.POST)
 		    public SearchEngineIndexResult processIndex(@RequestBody SearchEngineIndexParam index)
 	throws Exception {
-    	SearchEngineIndexResult ret = null;
+    	SearchEngineIndexResult ret = SearchElastic.indexme(index);
     	return ret;
     }
 
-    @RequestMapping(value = "/search",
+    @RequestMapping(value = "/" + EurekaConstants.SEARCH,
 		    method = RequestMethod.POST)
 		    public SearchEngineSearchResult processSearch(@RequestBody SearchEngineSearchParam search)
 	throws Exception {
-    	SearchEngineSearchResult ret = null;
+    	SearchEngineSearchResult ret = SearchElastic.searchme(search);;
+    	return ret;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.SEARCHMLT,
+		    method = RequestMethod.POST)
+		    public SearchEngineSearchResult processSearchSimilar(@RequestBody SearchEngineSearchParam search)
+	throws Exception {
+    	SearchEngineSearchResult ret = SearchElastic.searchmlt(search);
     	return ret;
     }
 

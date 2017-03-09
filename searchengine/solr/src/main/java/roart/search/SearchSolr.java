@@ -23,28 +23,29 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.highlight.DefaultSolrHighlighter;
-import org.apache.tika.metadata.Metadata;
 
-import roart.service.SearchService;
-import roart.lang.LanguageDetect;
-import roart.model.SearchDisplay;
-import roart.model.ResultItem;
-import roart.model.IndexFiles;
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.database.IndexFilesDao;
-
+import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchEngineConstructorParam;
+import roart.common.searchengine.SearchEngineDeleteParam;
+import roart.common.searchengine.SearchEngineDeleteResult;
+import roart.common.searchengine.SearchEngineIndexParam;
+import roart.common.searchengine.SearchEngineIndexResult;
+import roart.common.searchengine.SearchEngineSearchParam;
+import roart.common.searchengine.SearchEngineSearchResult;
+import roart.common.searchengine.SearchResult;
+import roart.config.NodeConfig;
 
 public class SearchSolr {
     private static Logger log = LoggerFactory.getLogger(SearchSolr.class);
 
     static HttpSolrClient server = null;
 
-    public SearchSolr() {
+    public SearchSolr(SearchEngineConstructorParam constructor) {
 	if (server != null) {
 	    return;
 	}
-	String url = MyConfig.conf.solrurl; 
+	NodeConfig conf = constructor.conf;
+	String url = conf.solrurl; 
 	server = new HttpSolrClient( url );
 	log.info("server " + server);
 	System.out.println("server " + server);
@@ -66,11 +67,20 @@ public class SearchSolr {
 	server.setAllowCompression(true);
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
+    public static SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
+    	String type = index.type;
+    	String md5 = index.md5; 
+    	//InputStream inputStream,
+    	String dbfilename = index.dbfilename;
+    	String[] metadata = index.metadata;
+    	String lang = index.lang;
+    	String content = index.content;
+    	String classification = index.classification;
 	int retsize = content.length();
 	// this to a method
 	log.info("indexing " + md5);
-
+	SearchEngineIndexResult result = new SearchEngineIndexResult();
+	
 	String cat = classification;
 
 	try {
@@ -86,10 +96,10 @@ public class SearchSolr {
 	    if (metadata != null) {
 		log.info("with md " + metadata);
 		//doc.addField(Constants.METADATA, metadata);
-        Metadata md = metadata;
-        for (String name : md.names()) {
-            String value = md.get(name);
-            doc.addField(Constants.METADATA, name + ":" + value);
+        String[] md = metadata;
+        for (String name : md) {
+            String value = name;
+            doc.addField(Constants.METADATA, name);
         }
 	    }
 
@@ -106,23 +116,29 @@ public class SearchSolr {
 	    req.add( docs );
 	    UpdateResponse rsp = req.process( server );
 	} catch (IOException e) {
-	    log.error(roart.util.Constants.EXCEPTION, e);
-	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
-	    return -1;
+	    log.error(roart.util.Constants.EXCEPTION, e);	    
+	    result.noindexreason = "index exception " + e.getClass().getName();
+	    result.size = -1;
+	    return result;
 	} catch (SolrServerException e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
-	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
-	    return -1;
+	    result.noindexreason = "index exception " + e.getClass().getName();
+	    result.size = -1;
+	    return result;
 	} catch (Exception e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
-	    index.setNoindexreason(index.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
-	    return -1;
+	    result.noindexreason = "index exception " + e.getClass().getName();
+	    result.size = -1;
+	    return result;
 	}
-	return retsize;
+	result.size = retsize;
+	return result;
     }
 
-    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-	ResultItem[] strarr = new ResultItem[0];
+    public static SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
+    	NodeConfig conf = search.conf;
+    	String str = search.str;
+    	String searchtype = search.searchtype;
 	int stype = new Integer(searchtype).intValue();
 	try {
 	    //SolrServer server = null; //getSolrServer();
@@ -153,7 +169,7 @@ public class SearchSolr {
 	    }
 	    //query.addSortField( "price", SolrQuery.ORDER.asc );
 
-	    if (SearchService.isHighlightMLT()) {
+	    if (conf.highlightmlt) {
             query.add("hl", "true");
             query.add("hl.fl", Constants.CONTENT);
             query.add("hl.useFastVectorHighlighter", "true");
@@ -164,22 +180,21 @@ public class SearchSolr {
 	
 	    SolrDocumentList docs = rsp.getResults();
 
-	    strarr = handleDocs(display, rsp, docs, true);
+	    SearchEngineSearchResult result = handleDocs(search, rsp, docs, true);
+	    return result;
 	} catch (SolrServerException e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	} catch (Exception e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
-	return strarr;
+	return null;
     }
 
-	private static ResultItem[] handleDocs(SearchDisplay display,
-			QueryResponse rsp, SolrDocumentList docs, boolean dohighlight) throws Exception {
-		ResultItem[] strarr;
+	private static SearchEngineSearchResult handleDocs(SearchEngineSearchParam param, QueryResponse rsp, SolrDocumentList docs, boolean dohighlight) throws Exception {
+		SearchEngineSearchResult result = new SearchEngineSearchResult();
+		result.results = new SearchResult[docs.size()];
 		// To read Documents as beans, the bean must be annotated as given in the example. 
 	    
-	    strarr = new ResultItem[docs.size() + 1];
-	    strarr[0] = IndexFiles.getHeaderSearch(display);
 	    int i = -1;
 	    for (SolrDocument doc : docs) {
 		i++;
@@ -188,11 +203,8 @@ public class SearchSolr {
 		String md5 = (String) d.getFieldValue(Constants.ID);
 		String lang = (String) d.getFieldValue(Constants.LANG);
 		List<String> metadata = (List<String>) d.getFieldValue(Constants.METADATA);
-		IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
-		String filename = indexmd5.getFilelocation();
-		log.info((i + 1) + ". " + md5 + " : " + filename + " : " + score);
 		String[] highlights = null;
-		if (dohighlight && SearchService.isHighlightMLT()) {
+		if (dohighlight && param.conf.highlightmlt) {
 			Map<String,Map<String,List<String>>> map = rsp.getHighlighting();
 			Map<String,List<String>> map2 = map.get(md5);
 			List<String> list = map2.get(Constants.CONTENT);
@@ -203,17 +215,25 @@ public class SearchSolr {
 				highlights[0] = "none";
 			}
 		}
-		strarr[i + 1] = IndexFiles.getSearchResultItem(indexmd5, lang, score, highlights, display, metadata);
+		SearchResult res = new SearchResult();
+		res.md5 = md5;
+		res.score = score;
+		res.lang = lang;
+		res.highlights = highlights;
+		res.metadata = metadata;
+		result.results[i] = res;
 	    }
-		return strarr;
+		return result;
 	}
 
-    public static ResultItem[] searchmlt(String id, String searchtype, SearchDisplay display) {
-	ResultItem[] strarr = new ResultItem[0];
+    public static SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
+    	NodeConfig conf = search.conf;
+    	String id = search.str;
+    	String searchtype = search.searchtype;
 	try {
-	    int count = MyConfig.conf.configMap.get(MyConfig.Config.MLTCOUNT);
-	    int mintf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINTF);
-	    int mindf = MyConfig.conf.configMap.get(MyConfig.Config.MLTMINDF);
+	    int count = conf.configMap.get(NodeConfig.Config.MLTCOUNT);
+	    int mintf = conf.configMap.get(NodeConfig.Config.MLTMINTF);
+	    int mindf = conf.configMap.get(NodeConfig.Config.MLTMINDF);
 	    //Construct a SolrQuery 
 	    SolrQuery query = new SolrQuery();
 	    query.setQuery( Constants.ID + ":" + id);
@@ -243,17 +263,19 @@ public class SearchSolr {
 
 	    // To read Documents as beans, the bean must be annotated as given in the example. 
 	    
-	    strarr = handleDocs(display, rsp, docs, false);
+	    SearchEngineSearchResult result = handleDocs(search, rsp, docs, false);
+	    return result;
 	} catch (SolrServerException e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	} catch (Exception e) {
 	    log.error(roart.util.Constants.EXCEPTION, e);
 	}
-	return strarr;
+	return null;
     }
 
-    public static void deleteme(String str) {
+    public static SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
         try {
+        	String str = delete.delete;
             server.deleteById(str);
             server.commit();
             UpdateRequest req = new UpdateRequest();
@@ -267,6 +289,7 @@ public class SearchSolr {
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
         }
+        return null;
    }
 
  }

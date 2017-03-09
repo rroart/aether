@@ -8,7 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
+import roart.common.searchengine.SearchEngineDeleteResult;
+import roart.common.searchengine.SearchEngineIndexResult;
+import roart.common.searchengine.SearchEngineSearchResult;
 import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 import roart.model.IndexFiles;
@@ -26,6 +30,7 @@ public class SearchDao {
 	System.out.println("instance " + type);
 	log.info("instance " + type);
 	if (search == null) {
+		// TODO make OO of this?
 	    if (type.equals(ConfigConstants.LUCENE)) {
 		search = new LuceneSearchAccess();
 	    }
@@ -35,6 +40,7 @@ public class SearchDao {
 	    if (type.equals(ConfigConstants.ELASTIC)) {
 		search = new ElasticSearchAccess();
 	    }
+	    search.constructor();
 	}
     }
 
