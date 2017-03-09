@@ -19,6 +19,7 @@
   <!--name>Vaadin Web Application</name-->
 <modules>
   <module>config</module>
+  <module>constants</module>
   <module>searchengine</module>
 </modules>
 </project>
