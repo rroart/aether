@@ -36,7 +36,7 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	public SparkMLClassify(String nodename, NodeConfig nodeConf) {
 			try {
-			SparkMLConfig conf = new SparkMLConfig();
+			conf = new SparkMLConfig();
 				conf.labelsMap = new HashMap();
 				String[] languages = nodeConf.languages;
 
