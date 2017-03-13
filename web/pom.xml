@@ -515,48 +515,16 @@
       <version>${jetty.version}</version>
     </dependency-->
     <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-mr</artifactId>
-      <version>${mahout.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-spark_2.10</artifactId>
-      <version>${mahout.version}</version>
-      <!--scope>provided</scope-->
-    </dependency>
-    <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-math-scala_2.10</artifactId>
-      <version>${mahout.version}</version>
-      <!--scope>provided</scope-->
-    </dependency>
-    <dependency>
       <groupId>com.esotericsoftware.kryo</groupId>
       <artifactId>kryo</artifactId>
       <version>${kryo.version}</version>
     </dependency>
-     <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-mllib_2.10</artifactId>
-      <version>${spark.version}</version>
-      </dependency>
-     <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.10</artifactId>
-      <version>${spark.version}</version>
-      </dependency>
     <!--dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
       <version>${snappyjava.version}</version>
       <scope>provided</scope>
     </dependency-->
-<dependency>
- <groupId>org.apache.opennlp</groupId>
- <artifactId>opennlp-tools</artifactId>
- <version>${opennlp.version}</version>
-</dependency>
 <dependency>
   <groupId>org.datanucleus</groupId>
   <artifactId>datanucleus-core</artifactId>
@@ -664,6 +632,11 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
+      <artifactId>aether-common-machinelearning</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
       <artifactId>aether-common-config</artifactId>
       <version>0.10-SNAPSHOT</version>
     </dependency>
@@ -680,16 +653,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>3.2.0.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <version>${lucene.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>${lucene.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
