@@ -63,14 +63,15 @@ public class MyPropertyConfig extends MyConfig {
         ControlService.nodename = nodename;
         
         String languages = getString(ConfigConstants.LANGUAGES, "en", false, false, null);
-        conf.languages = languages;
+        conf.languages = languages.split(",");
         
         String fs = getString(ConfigConstants.FS, ConfigConstants.LOCAL, false, false, fsvalues); // dead?
         roart.filesystem.FileSystemDao.instance(fs);
         
         configDirlist();
         
-        configIndexing();
+        String index = getString(ConfigConstants.INDEX, ConfigConstants.LUCENE, false, false, indexvalues);
+        configIndexing(index);
 
         configDb();
         
@@ -82,7 +83,8 @@ public class MyPropertyConfig extends MyConfig {
         
         configSwift();
         
-        configClassify();
+        String classify = getString(ConfigConstants.CLASSIFY, null, false, false, classifyvalues);
+        configClassify(classify);
         
         configZoo();
 
@@ -155,8 +157,7 @@ public class MyPropertyConfig extends MyConfig {
         }
     }
 
-    private void configClassify() {
-        String classify = getString(ConfigConstants.CLASSIFY, null, false, false, classifyvalues);
+    public void configClassify(String classify) {
         conf.classify = classify;
         if (classify != null && classify.equals(ConfigConstants.MAHOUT)) {
             String mahoutconffs = getString(ConfigConstants.MAHOUTCONFFS, null, false, false, null);
@@ -173,7 +174,6 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutdictionarypath = mahoutdictionaryPath;
             conf.mahoutdocumentfrequencypath = mahoutdocumentFrequencyPath;
             conf.mahoutalgorithm = mahoutbayestype;
-            new roart.classification.MahoutClassify();
         }
         if (classify != null && classify.equals(ConfigConstants.MAHOUTSPARK)) {
             String mahoutconffs = getString(ConfigConstants.MAHOUTCONFFS, null, false, false, null);
@@ -190,7 +190,6 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutdocumentfrequencypath = mahoutdocumentFrequencyPath;
             conf.mahoutalgorithm = mahoutbayestype;
             conf.mahoutsparkmaster = mahoutsparkmaster;
-            new roart.classification.MahoutSparkClassify();
         }
         if (classify != null && classify.equals(ConfigConstants.SPARKML)) {
             String sparkmlmodelPath = getString(ConfigConstants.SPARKMLMODELPATH, null, true, true, null);
@@ -199,12 +198,10 @@ public class MyPropertyConfig extends MyConfig {
             conf.sparkmlmodelpath = sparkmlmodelPath;
             conf.sparkmllabelindexpath = sparkmllabelindexPath;
             conf.sparkmaster = sparkmaster;
-            new roart.classification.SparkMLClassify();
         }
         if (classify != null && classify.equals(ConfigConstants.OPENNLP)) {
             String opennlpmodelpath = getString(ConfigConstants.OPENNLPMODELPATH, null, true, true, null);
             conf.opennlpmodelpath = opennlpmodelpath;
-            new roart.classification.OpennlpClassify();
         }
         roart.classification.ClassifyDao.instance(classify);
     }
@@ -251,8 +248,7 @@ public class MyPropertyConfig extends MyConfig {
         conf.hasHibernate = db.equals(ConfigConstants.HIBERNATE);
     }
 
-    private void configIndexing() {
-        String index = getString(ConfigConstants.INDEX, ConfigConstants.LUCENE, false, false, indexvalues);
+    public void configIndexing(String index) {
         if (index.equals(ConfigConstants.SOLR)) {
             String solrurl = getString(ConfigConstants.SOLRURL, null, true, true, null);
             conf.solrurl = solrurl;
@@ -260,7 +256,6 @@ public class MyPropertyConfig extends MyConfig {
         if (index.equals(ConfigConstants.LUCENE)) {
             String lucenepath = getString(ConfigConstants.LUCENEPATH, null, true, true, null);
             conf.lucenepath = lucenepath;
-            org.apache.lucene.search.BooleanQuery.setMaxClauseCount(16384);
         }
         if (index.equals(ConfigConstants.ELASTIC)) {
             String elastichost = getString(ConfigConstants.ELASTICHOST, null, true, true, null);
