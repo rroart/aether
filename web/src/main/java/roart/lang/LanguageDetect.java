@@ -23,14 +23,14 @@ public class LanguageDetect {
 
     private static boolean inited = false;
 
-    private static String languages = "en";
+    private static String[] languages = { "en" };
     
     public static String[] getLanguages() {
-    	return languages.split(",");
+    	return languages;
     }
     
     public static boolean isSupportedLanguage(String language) {
-    	String[] langs = languages.split(",");
+    	String[] langs = languages;
     	for (String l : langs) {
     		if (l.equals(language)) {
     			return true;
@@ -41,7 +41,7 @@ public class LanguageDetect {
     
     public static void init(String profileDirectory) throws LangDetectException {
 	DetectorFactory.loadProfile(profileDirectory);
-    String mylang = MyConfig.conf.languages;
+    String[] mylang = MyConfig.conf.languages;
     if (mylang != null) {
     	languages = mylang;
     }
