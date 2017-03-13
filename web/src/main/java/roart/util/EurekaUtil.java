@@ -75,9 +75,10 @@ public class EurekaUtil {
 		return eurekaClient;
 	}
 
-	public static <T extends SearchEngineResult> T sendMe(Class<T> myclass, SearchEngineParam param, String appName, String path) {
+	public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path) {
 
 		String homePageUrl = null;
+		log.info("homePagePre " + appName + " " + path);
 		if (discoveryClient != null) {
 			List<InstanceInfo> li = discoveryClient.getApplication(appName).getInstances();
 			for (InstanceInfo ii : li) {
