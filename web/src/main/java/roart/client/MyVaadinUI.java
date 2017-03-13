@@ -10,6 +10,7 @@ import roart.util.Constants;
 import roart.zkutil.ZKMessageUtil;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
+import roart.config.MyPropertyConfig;
 import roart.config.NodeConfig;
 import roart.database.IndexFilesAccess;
 import roart.database.IndexFilesDao;
@@ -39,6 +40,7 @@ import javax.servlet.annotation.WebServlet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -401,6 +403,8 @@ public class MyVaadinUI extends UI
     }
 
     private VerticalLayout getConfigTab(String nodename) {
+    	boolean isProductionMode = VaadinService.getCurrent()
+    		    .getDeploymentConfiguration().isProductionMode();
         String DELIMITER = " = ";
         NodeConfig config = MyConfig.instance().getNode(nodename);
         
@@ -420,8 +424,13 @@ public class MyVaadinUI extends UI
     
     VerticalLayout indexConfig = new VerticalLayout();
     indexConfig.setCaption("Indexing");
+    if (isProductionMode) {
     Label idxLabel = new Label("Index type " + config.index);
     indexConfig.addComponent(idxLabel);
+    } else {
+    	ListSelect ls = getSearchEngine();
+    	indexConfig.addComponent(ls);
+    }
     if (config.index.equals(ConfigConstants.LUCENE)) {
         Label pathLabel = new Label("Lucene path " + config.lucenepath);
         indexConfig.addComponent(pathLabel);
@@ -506,6 +515,10 @@ public class MyVaadinUI extends UI
         VerticalLayout classifyConfig = new VerticalLayout();
         Label classifyLabel = new Label(ConfigConstants.CLASSIFY + DELIMITER + config.classify);
         classifyConfig.addComponent(classifyLabel);
+        if (!isProductionMode) {
+        	ListSelect ls = getMachineLearning();
+        	indexConfig.addComponent(ls);
+        }
         if (config.classify.equals(ConfigConstants.OPENNLP)) {
             Label pathLabel = new Label(ConfigConstants.OPENNLPMODELPATH + DELIMITER + config.opennlpmodelpath);
             classifyConfig.addComponent(pathLabel);
@@ -1091,6 +1104,58 @@ public class MyVaadinUI extends UI
     		    ControlService maininst = new ControlService();
     		    try {
     			maininst.reindexlanguage(value);
+    			Notification.show("Request sent");
+    		    } catch (Exception e) {
+    			log.error(Constants.EXCEPTION, e);
+    		    }
+    		}
+    	    });
+    	// Fire value changes immediately when the field loses focus
+    	ls.setImmediate(true);
+    	return ls;
+    }
+    
+    private ListSelect getSearchEngine() {
+    	ListSelect ls = new ListSelect("Select search engine");
+    	String[] engines = MyPropertyConfig.indexvalues;
+    	ls.addItems(engines);
+        ls.setNullSelectionAllowed(false);
+        // Show 5 items and a scrollbar if there are more                       
+        ls.setRows(5);
+        ls.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String                 
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value                              
+    		    ControlService maininst = new ControlService();
+    		    try {
+    			maininst.searchengine(value);
+    			Notification.show("Request sent");
+    		    } catch (Exception e) {
+    			log.error(Constants.EXCEPTION, e);
+    		    }
+    		}
+    	    });
+    	// Fire value changes immediately when the field loses focus
+    	ls.setImmediate(true);
+    	return ls;
+    }
+    
+    private ListSelect getMachineLearning() {
+    	ListSelect ls = new ListSelect("Select search engine");
+    	String[] learning = MyPropertyConfig.classifyvalues;
+    	ls.addItems(learning);
+        ls.setNullSelectionAllowed(false);
+        // Show 5 items and a scrollbar if there are more                       
+        ls.setRows(5);
+        ls.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String                 
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value                              
+    		    ControlService maininst = new ControlService();
+    		    try {
+    			maininst.machinelearning(value);
     			Notification.show("Request sent");
     		    } catch (Exception e) {
     			log.error(Constants.EXCEPTION, e);

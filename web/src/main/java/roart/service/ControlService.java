@@ -33,6 +33,7 @@ import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
+import roart.config.MyPropertyConfig;
 import roart.config.NodeConfig;
 import roart.content.OtherHandler;
 import roart.content.ClientHandler;
@@ -1000,4 +1001,13 @@ public class ControlService {
             }
        }
     
+        public void searchengine(String engine) {
+        	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
+        	property.configIndexing(engine);
+        }
+        
+        public void machinelearning(String learning) {
+        	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
+        	property.configClassify(learning);      	
+        }
 }
