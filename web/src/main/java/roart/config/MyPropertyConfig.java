@@ -158,6 +158,7 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     public void configClassify(String classify) {
+    	try {
         conf.classify = classify;
         if (classify != null && classify.equals(ConfigConstants.MAHOUT)) {
             String mahoutconffs = getString(ConfigConstants.MAHOUTCONFFS, null, false, false, null);
@@ -204,6 +205,10 @@ public class MyPropertyConfig extends MyConfig {
             conf.opennlpmodelpath = opennlpmodelpath;
         }
         roart.classification.ClassifyDao.instance(classify);
+        } catch (Exception e) {
+        	// TODO propagate
+            log.error(Constants.EXCEPTION, e); 
+        }
     }
 
     private void configHdfs() {
@@ -249,6 +254,7 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     public void configIndexing(String index) {
+    	try {
         if (index.equals(ConfigConstants.SOLR)) {
             String solrurl = getString(ConfigConstants.SOLRURL, null, true, true, null);
             conf.solrurl = solrurl;
@@ -269,6 +275,10 @@ public class MyPropertyConfig extends MyConfig {
             conf.highlightmlt = true;
         }
         roart.search.SearchDao.instance(index);
+    } catch (Exception e) {
+    	// TODO propagate
+        log.error(Constants.EXCEPTION, e); 
+    }
     }
 
     private void configDirlist() {
