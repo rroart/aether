@@ -96,7 +96,7 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	}
 
-	public  MachineLearningConstructorResult deconstruct(String nodename) {
+	public  MachineLearningConstructorResult destroy(String nodename) {
 			conf.jsc.close();
 		return null;
 	}

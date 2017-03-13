@@ -167,7 +167,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		return result;
 	}
 
-	public SearchEngineConstructorResult deconstruct() throws IOException {
+	public SearchEngineConstructorResult destroy() throws IOException {
 		return null;
 	}
 

@@ -6,7 +6,7 @@ import roart.common.machinelearning.MachineLearningConstructorResult;
 
 public abstract class MachineLearningAbstractClassifier {
 
-    public abstract MachineLearningConstructorResult deconstruct(String nodename);
+    public abstract MachineLearningConstructorResult destroy(String nodename);
 
     public abstract MachineLearningClassifyResult classify(MachineLearningClassifyParam classify);
     

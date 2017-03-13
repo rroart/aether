@@ -65,11 +65,11 @@ public abstract class SearchAccess {
         return result.error;
     }
     
-    public String deconstructor() {
+    public String destructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
-        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DECONSTRUCTOR);
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
         return result.error;
     }
     

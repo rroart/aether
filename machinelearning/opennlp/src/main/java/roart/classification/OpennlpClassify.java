@@ -44,7 +44,7 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
 	}
     }
 
-	public MachineLearningConstructorResult deconstruct(String nodename) {
+	public MachineLearningConstructorResult destroy(String nodename) {
 		return null;
 	}
 	

@@ -31,7 +31,7 @@ public class SearchDao {
 	log.info("instance " + type);
 	if (search != null) {
 		// TODO propagate error
-		search.deconstructor();
+		search.destructor();
 	}
 	if (true || search == null) {
 		// TODO make OO of this?

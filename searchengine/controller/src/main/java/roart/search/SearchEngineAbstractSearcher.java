@@ -10,7 +10,7 @@ import roart.common.searchengine.SearchEngineSearchResult;
 
 public abstract class SearchEngineAbstractSearcher {
     
-    public abstract SearchEngineConstructorResult deconstruct() throws Exception;
+    public abstract SearchEngineConstructorResult destroy() throws Exception;
 	
     public abstract SearchEngineIndexResult indexme(SearchEngineIndexParam index);
     

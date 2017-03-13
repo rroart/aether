@@ -66,7 +66,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		}
 	}
 
-	public  SearchEngineConstructorResult deconstruct() {
+	public  SearchEngineConstructorResult destroy() {
 		conf.client.close();
 		return null;
 	}

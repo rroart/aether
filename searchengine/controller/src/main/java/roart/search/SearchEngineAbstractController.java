@@ -59,15 +59,15 @@ public abstract class SearchEngineAbstractController {
 		return result;
 	}
 
-	@RequestMapping(value = "/" + EurekaConstants.DECONSTRUCTOR,
+	@RequestMapping(value = "/" + EurekaConstants.DESTRUCTOR,
 			method = RequestMethod.POST)
-	public SearchEngineConstructorResult processDeconstructor(@RequestBody SearchEngineConstructorParam param)
+	public SearchEngineConstructorResult processDestructor(@RequestBody SearchEngineConstructorParam param)
 			throws Exception {
 		SearchEngineAbstractSearcher search = searchMap.remove(param.nodename);
 		String error = null;
 		if (search != null) {
 			try {
-				search.deconstruct();
+				search.destroy();
 			} catch (Exception e) {
 				log.error(roart.util.Constants.EXCEPTION, e);
 				error = e.getMessage();

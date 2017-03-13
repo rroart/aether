@@ -66,7 +66,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		server.setAllowCompression(true);
 	}
 
-	public SearchEngineConstructorResult deconstruct() throws IOException {
+	public SearchEngineConstructorResult destroy() throws IOException {
 		conf.server.close();
 		return null;
 	}

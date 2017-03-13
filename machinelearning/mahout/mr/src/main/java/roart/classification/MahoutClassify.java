@@ -127,7 +127,7 @@ public class MahoutClassify extends MachineLearningAbstractClassifier {
 
     }
 
-	public MachineLearningConstructorResult deconstruct(String nodename) {
+	public MachineLearningConstructorResult destroy(String nodename) {
 		return null;
 	}
 	

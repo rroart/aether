@@ -33,11 +33,11 @@ public abstract class ClassifyAccess {
         return result.error;
     }
     
-    public String deconstructor() {
+    public String destructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
-        MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.DECONSTRUCTOR);   	
+        MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);   	
         return result.error;
     }
     

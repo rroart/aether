@@ -27,7 +27,7 @@ public class ClassifyDao {
 	}
 	if (classify != null) {
 		// TODO propagate error
-		classify.deconstructor();
+		classify.destructor();
 	}
 	if (true || classify == null) {
 		// TODO make OO of this

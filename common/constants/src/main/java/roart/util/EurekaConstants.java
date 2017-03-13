@@ -9,7 +9,7 @@ public class EurekaConstants {
 	public static final String MAHOUTSPARK = "MAHOUTSPARK";
 	public static final String OPENNLP = "OPENNLP";
 	public static final String CONSTRUCTOR = "constructor";
-	public static final String DECONSTRUCTOR = "deconstructor";
+	public static final String DESTRUCTOR = "destructor";
 	public static final String DELETE = "delete";
 	public static final String INDEX = "index";
 	public static final String SEARCH = "search";

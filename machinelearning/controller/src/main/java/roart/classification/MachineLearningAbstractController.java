@@ -58,15 +58,15 @@ public abstract class MachineLearningAbstractController {
 		return result;
     }
 
-    @RequestMapping(value = "/" + EurekaConstants.DECONSTRUCTOR,
+    @RequestMapping(value = "/" + EurekaConstants.DESTRUCTOR,
 		    method = RequestMethod.POST)
-		    public MachineLearningConstructorResult processDeconstructor(@RequestBody MachineLearningConstructorParam param)
+		    public MachineLearningConstructorResult processDestructor(@RequestBody MachineLearningConstructorParam param)
 	throws Exception {
 		MachineLearningAbstractClassifier classifier = classifierMap.remove(param.nodename);
 		String error = null;
 		if (classifier != null) {
 			try {
-			classifier.deconstruct(param.nodename);
+			classifier.destroy(param.nodename);
 		} catch (Exception e) {
 		    log.error(roart.util.Constants.EXCEPTION, e);
 		    error = e.getMessage();

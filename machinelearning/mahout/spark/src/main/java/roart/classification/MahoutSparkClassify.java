@@ -168,7 +168,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier {
 
     }
 
-	public MachineLearningConstructorResult deconstruct(String nodename) {
+	public MachineLearningConstructorResult destroy(String nodename) {
 		// TODO close context
 		return null;
 	}
