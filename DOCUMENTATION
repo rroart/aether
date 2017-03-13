@@ -737,6 +737,9 @@ To get the configuration of other nodes.
 The node configuration
     </title>
     <para>
+      If you are running the default in test mode, it is also possible to dynamically change the search engines and machine learning.
+    </para>
+    <para>
 Setting limits for how many times an indexing may fail before being ignored, limits for max indexing and reindexing, timeout for tika and other (alternative) conversion.
 
 Settings for More Like This, max number of hits, minimum term frequency and minimum doc frequency.
