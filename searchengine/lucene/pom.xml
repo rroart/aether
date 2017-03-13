@@ -28,6 +28,14 @@
 	  </execution>
 	</executions>
       </plugin>
+          <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-install-plugin</artifactId>
+	<version>2.4</version>
+	<configuration>
+	  <skip>true</skip>
+	</configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencyManagement>
@@ -91,6 +99,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jetty</artifactId>
       <version>1.5.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-searchengine-controller</artifactId>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>roart</groupId>

@@ -29,7 +29,11 @@ public class SearchDao {
     public static void instance(String type) {
 	System.out.println("instance " + type);
 	log.info("instance " + type);
-	if (search == null) {
+	if (search != null) {
+		// TODO propagate error
+		search.deconstructor();
+	}
+	if (true || search == null) {
 		// TODO make OO of this?
 	    if (type.equals(ConfigConstants.LUCENE)) {
 		search = new LuceneSearchAccess();
@@ -40,7 +44,8 @@ public class SearchDao {
 	    if (type.equals(ConfigConstants.ELASTIC)) {
 		search = new ElasticSearchAccess();
 	    }
-	    search.constructor();
+	    // TODO propagate
+	    String error = search.constructor();
 	}
     }
 

@@ -1,14 +1,8 @@
 package roart.search;
 
-import java.io.*;
 import java.net.InetAddress;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
-import java.util.HashSet;
 
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ListenableActionFuture;
@@ -42,6 +36,7 @@ import roart.config.NodeConfig;
 
 import roart.common.searchengine.Constants;
 import roart.common.searchengine.SearchEngineConstructorParam;
+import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexParam;
@@ -50,32 +45,34 @@ import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 
-public class SearchElastic {
-	private static Logger log = LoggerFactory.getLogger(SearchElastic.class);
+public class SearchElastic extends SearchEngineAbstractSearcher {
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	final static String myindex = "index";
 	final static String mytype = "type";
-	
-	static Client client = null;
 
-	public SearchElastic(SearchEngineConstructorParam constructor) {
-		if (client != null) {
-			return;
-		}
-		NodeConfig conf = constructor.conf;
-		String host = conf.elastichost; 
-		String port = conf.elasticport; 
+	private ElasticConfig conf;
+
+	public SearchElastic(String nodename, NodeConfig nodeConf) {
+		conf = new ElasticConfig();
+		String host = nodeConf.elastichost; 
+		String port = nodeConf.elasticport; 
 
 		try {
-			client = new PreBuiltTransportClient(Settings.EMPTY).
+			conf.client = new PreBuiltTransportClient(Settings.EMPTY).
 					addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), new Integer(port)));
 		} catch (Exception e) {
 			log.error(roart.util.Constants.EXCEPTION, e);
 		}
 	}
 
-	public static SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
-		NodeConfig conf = index.conf;
+	public  SearchEngineConstructorResult deconstruct() {
+		conf.client.close();
+		return null;
+	}
+
+	public  SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
+		NodeConfig nodeConf = index.conf;
 		String type = index.type;
 		String md5 = index.md5;  
 		//InputStream inputStream, 
@@ -94,7 +91,7 @@ public class SearchElastic {
 		String indexName = myindex;
 		String typeName = mytype;
 		try {
-			IndexRequestBuilder irb = client.prepareIndex(indexName, typeName, "" + md5).setSource(XContentFactory.jsonBuilder()
+			IndexRequestBuilder irb = conf.client.prepareIndex(indexName, typeName, "" + md5).setSource(XContentFactory.jsonBuilder()
 					.startObject()
 					.field(Constants.ID, md5)
 					.field(Constants.LANG, lang)
@@ -115,13 +112,13 @@ public class SearchElastic {
 		return result;
 	}
 
-	public static SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
+	public SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
 		String str = search.str;
 		String searchtype = search.searchtype;
 
 		int stype = new Integer(searchtype).intValue();
 		try {
-			SearchRequestBuilder q = client.prepareSearch(myindex)
+			SearchRequestBuilder q = conf.client.prepareSearch(myindex)
 					.setTypes(mytype)
 					//.setQuery(QueryBuilders.queryStringQuery(str))
 					.setQuery(QueryBuilders.termQuery(Constants.CONTENT, str))                 // Query
@@ -144,7 +141,7 @@ public class SearchElastic {
 		return null;
 	}
 
-	private static SearchEngineSearchResult handleDocs(SearchEngineSearchParam search, SearchResponse rsp, SearchHits docs, boolean dohighlight) throws Exception {
+	private SearchEngineSearchResult handleDocs(SearchEngineSearchParam search, SearchResponse rsp, SearchHits docs, boolean dohighlight) throws Exception {
 		SearchEngineSearchResult result = new SearchEngineSearchResult();
 		result.results = new SearchResult[docs.getHits().length];
 		// To read Documents as beans, the bean must be annotated as given in the example. 
@@ -178,6 +175,7 @@ public class SearchElastic {
 				res.score = score;
 				res.lang = lang;
 				res.highlights = highlights;
+				// TODO fix metadata
 				res.metadata = null; // metadata;
 				result.results[i] = res;
 			}
@@ -187,8 +185,8 @@ public class SearchElastic {
 		return result;
 	}
 
-	public static SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
-		NodeConfig conf = search.conf;
+	public SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
+		NodeConfig nodeConf = search.conf;
 		String id = search.str;
 		String searchtype = search.searchtype;
 		//SearchDisplay display) {
@@ -197,14 +195,14 @@ public class SearchElastic {
 		Item item = new Item(myindex, mytype, id);
 		Item likeItems[] = new Item[1];
 		likeItems[0] = item;
-		int count = conf.configMap.get(NodeConfig.Config.MLTCOUNT);
-		int mintf = conf.configMap.get(NodeConfig.Config.MLTMINTF);
-		int mindf = conf.configMap.get(NodeConfig.Config.MLTMINDF);
+		int count = nodeConf.configMap.get(NodeConfig.Config.MLTCOUNT);
+		int mintf = nodeConf.configMap.get(NodeConfig.Config.MLTMINTF);
+		int mindf = nodeConf.configMap.get(NodeConfig.Config.MLTMINDF);
 		MoreLikeThisQueryBuilder queryBuilder = QueryBuilders.moreLikeThisQuery(items)
 				.minDocFreq(mindf)
 				.minTermFreq(mintf);
 
-		SearchResponse searchResponse = client.prepareSearch(myindex)
+		SearchResponse searchResponse = conf.client.prepareSearch(myindex)
 				.setTypes(mytype)
 				.setQuery(queryBuilder)
 				.setFetchSource(new String[]{Constants.ID, Constants.LANG, Constants.METADATA}, new String[]{Constants.CONTENT})
@@ -225,11 +223,11 @@ public class SearchElastic {
 	}
 
 	// TODO untested
-	public static SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
-	    String str = delete.delete;
-		ListenableActionFuture<DeleteResponse> action1 = client.prepareDelete(myindex, mytype, str).execute();
+	public SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
+		String str = delete.delete;
+		ListenableActionFuture<DeleteResponse> action1 = conf.client.prepareDelete(myindex, mytype, str).execute();
 		DeleteRequest deleteRequest = new DeleteRequest(myindex, mytype, str);
-		ActionFuture<DeleteResponse> action2 = client.delete(deleteRequest);
+		ActionFuture<DeleteResponse> action2 = conf.client.delete(deleteRequest);
 		int requestTimeout = 30;
 		DeleteResponse response = action1.actionGet(requestTimeout);
 		DeleteResponse response2 = action2.actionGet(requestTimeout);

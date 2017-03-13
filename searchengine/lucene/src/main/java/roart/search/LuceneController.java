@@ -1,74 +1,24 @@
 package roart.search;
 
-import java.util.Map;
-
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
-import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
-import roart.common.searchengine.SearchEngineConstructorParam;
-import roart.common.searchengine.SearchEngineDeleteParam;
-import roart.common.searchengine.SearchEngineDeleteResult;
-import roart.common.searchengine.SearchEngineIndexParam;
-import roart.common.searchengine.SearchEngineIndexResult;
-import roart.common.searchengine.SearchEngineSearchParam;
-import roart.common.searchengine.SearchEngineSearchResult;
-import roart.util.EurekaConstants;
+import roart.config.NodeConfig;
 
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
-//@EnableAutoConfiguration
 @SpringBootApplication
 @EnableDiscoveryClient
-public class LuceneController {
+public class LuceneController extends SearchEngineAbstractController {
 
-        @Autowired
-	private DiscoveryClient discoveryClient;
-    
-    @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
-		    method = RequestMethod.POST)
-		    public void processConstructor(@RequestBody SearchEngineConstructorParam constructor)
-	throws Exception {
-    	new SearchLucene(constructor);
-    }
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(LuceneController.class, args);
+	}
 
-    @RequestMapping(value = "/" + EurekaConstants.DELETE,
-		    method = RequestMethod.POST)
-		    public SearchEngineDeleteResult processDelete(@RequestBody SearchEngineDeleteParam delete)
-	throws Exception {
-    	SearchEngineDeleteResult ret = SearchLucene.deleteme(delete);
-    	return ret;
-    }
-
-    @RequestMapping(value = "/" + EurekaConstants.INDEX,
-		    method = RequestMethod.POST)
-		    public SearchEngineIndexResult processIndex(@RequestBody SearchEngineIndexParam index)
-	throws Exception {
-    	SearchEngineIndexResult ret = SearchLucene.indexme(index);
-    	return ret;
-    }
-
-    @RequestMapping(value = "/" + EurekaConstants.SEARCH,
-		    method = RequestMethod.POST)
-		    public SearchEngineSearchResult processSearch(@RequestBody SearchEngineSearchParam search)
-	throws Exception {
-    	SearchEngineSearchResult ret = SearchLucene.searchme(search);
-    	return ret;
-    }
-
-    @RequestMapping(value = "/" + EurekaConstants.SEARCHMLT,
-		    method = RequestMethod.POST)
-		    public SearchEngineSearchResult processSearchSimilar(@RequestBody SearchEngineSearchParam search)
-	throws Exception {
-    	SearchEngineSearchResult ret = SearchLucene.searchmlt(search);
-    	return ret;
-    }
-
-    public static void main(String[] args) throws Exception {
-	SpringApplication.run(LuceneController.class, args);
-    }
+	@Override
+	protected SearchEngineAbstractSearcher createSearcher(String nodename, NodeConfig nodeConf) {
+		return new SearchLucene(nodename, nodeConf);
+	}
 }

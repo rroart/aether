@@ -3,7 +3,6 @@ package roart.search;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 import roart.util.EurekaConstants;
-import scala.collection.parallel.immutable.ParMap;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexParam;
 import roart.common.searchengine.SearchEngineIndexResult;

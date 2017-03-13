@@ -2,8 +2,11 @@ package roart.search;
 
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
+import roart.service.ControlService;
 import roart.util.EurekaConstants;
 import roart.util.EurekaUtil;
+import roart.common.searchengine.SearchEngineConstructorParam;
+import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexParam;
@@ -54,10 +57,20 @@ public abstract class SearchAccess {
 
     public abstract String getAppName();
     
-    public void constructor() {
-        SearchEngineSearchParam param = new SearchEngineSearchParam();
-        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
-   	
+    public String constructor() {
+        SearchEngineConstructorParam param = new SearchEngineConstructorParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
+        return result.error;
+    }
+    
+    public String deconstructor() {
+        SearchEngineConstructorParam param = new SearchEngineConstructorParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DECONSTRUCTOR);
+        return result.error;
     }
     
     public int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
@@ -69,6 +82,7 @@ public abstract class SearchAccess {
             str[i++] = value;
         }
         SearchEngineIndexParam param = new SearchEngineIndexParam();
+        param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.type = type;
         param.md5 = md5;
@@ -93,6 +107,7 @@ public abstract class SearchAccess {
 
     public ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
+        param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.str = str;
         param.searchtype = searchtype;
@@ -124,6 +139,7 @@ public abstract class SearchAccess {
 
     public ResultItem[] searchsimilar(String id, String searchtype, SearchDisplay display) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
+        param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.str = id;
         param.searchtype = searchtype;
@@ -140,6 +156,7 @@ public abstract class SearchAccess {
     
     public void delete(String str) {
         SearchEngineDeleteParam param = new SearchEngineDeleteParam();
+        param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.delete = str;
         

@@ -9,26 +9,12 @@
     <version>0.10-SNAPSHOT</version>
   </parent>
   <groupId>roart</groupId>
-  <!--artifactId>myweb</artifactId-->
   <artifactId>aether-searchengine</artifactId>
-  <!--artifactId>disksearchengine</artifactId-->
-  <!--artifactId>akashic-disk-search-engine</artifactId-->
   <version>0.10-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Aether Disk Search Engine Search Engine</name>
-  <build>
-  <plugins>
-          <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-install-plugin</artifactId>
-	<version>2.4</version>
-	<configuration>
-	  <skip>true</skip>
-	</configuration>
-      </plugin>
-  </plugins>
-</build>
 <modules>
+  <module>controller</module>
   <module>elastic</module>
   <module>lucene</module>
   <module>solr</module>
