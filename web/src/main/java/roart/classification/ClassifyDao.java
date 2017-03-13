@@ -25,7 +25,11 @@ public class ClassifyDao {
 	if (type == null) {
 	  return;
 	}
-	if (classify == null) {
+	if (classify != null) {
+		// TODO propagate error
+		classify.deconstructor();
+	}
+	if (true || classify == null) {
 		// TODO make OO of this
 	    if (type.equals(ConfigConstants.MAHOUT)) {
 		classify = new MahoutClassifyAccess();
@@ -39,6 +43,8 @@ public class ClassifyDao {
 	    if (type.equals(ConfigConstants.OPENNLP)) {
 		classify = new OpennlpClassifyAccess();
 	    }
+	    // TODO propagate
+	    String error = classify.constructor();
 	}
     }
 

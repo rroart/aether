@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>roart</groupId>
+    <artifactId>aether-common</artifactId>
+    <relativePath>../pom.xml</relativePath>
+    <version>0.10-SNAPSHOT</version>
+  </parent>
+  <artifactId>aether-common-machinelearning</artifactId>
+  <packaging>jar</packaging>
+  <name>Aether Disk Search Engine Common Machine Learning</name>
+  <dependencies>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-constants</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-config</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>
+

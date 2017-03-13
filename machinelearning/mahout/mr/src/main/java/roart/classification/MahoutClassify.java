@@ -1,9 +1,11 @@
 package roart.classification;
 
+import roart.common.machinelearning.MachineLearningClassifyParam;
+import roart.common.machinelearning.MachineLearningClassifyResult;
+import roart.common.machinelearning.MachineLearningConstructorParam;
+import roart.common.machinelearning.MachineLearningConstructorResult;
 import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.lang.LanguageDetect;
-import roart.model.ResultItem;
+import roart.config.NodeConfig;
 import roart.util.Constants;
 
 import java.util.List;
@@ -43,44 +45,38 @@ import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MahoutClassify {
+public class MahoutClassify extends MachineLearningAbstractClassifier {
 
     private static Logger log = LoggerFactory.getLogger(MahoutClassify.class);
-    
-    private static Map<String, Map<String, Integer>> dictionaryMap = null;
-    private static Map<String, Map<Integer, Long>> documentFrequencyMap = null;
-    private static Map<String, ComplementaryNaiveBayesClassifier> classifier2Map = null;
-    private static Map<String, StandardNaiveBayesClassifier> classifierMap = null;
-    private static Map<String, Map<Integer, String>> labelsMap = null;
-    private static Map<String, Integer> documentCountMap = null;
 
-    private static boolean bayes = true;
+    private MahoutMRConfig conf;
     
-    public MahoutClassify() {
-	try {
-		dictionaryMap = new HashMap<String, Map<String, Integer>>();
-	    documentFrequencyMap = new HashMap<String, Map<Integer, Long>>();
-	    classifier2Map = new HashMap<String, ComplementaryNaiveBayesClassifier>();
-	    classifierMap = new HashMap<String, StandardNaiveBayesClassifier>();
-	    labelsMap = new HashMap<String, Map<Integer, String>>();
-	    documentCountMap = new HashMap<String, Integer>();
-        String[] languages = LanguageDetect.getLanguages();
+    public MahoutClassify(String nodename, NodeConfig nodeConf) {
+    	try {
+    		conf = new MahoutMRConfig();
+		conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
+		conf.documentFrequencyMap = new HashMap<String, Map<Integer, Long>>();
+		conf.classifier2Map = new HashMap<String, ComplementaryNaiveBayesClassifier>();
+		conf.classifierMap = new HashMap<String, StandardNaiveBayesClassifier>();
+	    conf.labelsMap = new HashMap<String, Map<Integer, String>>();
+	    conf.documentCountMap = new HashMap<String, Integer>();
+        String[] languages = nodeConf.languages;
         
         
-	    String basepath = MyConfig.conf.mahoutbasepath;
+	    String basepath = nodeConf.mahoutbasepath;
 	    if (basepath == null) {
 	    	basepath = "";
 	    }
-        String modelPath = MyConfig.conf.mahoutmodelpath;
-        String labelIndexPath = MyConfig.conf.mahoutlabelindexpath;
-        String dictionaryPath = MyConfig.conf.mahoutdictionarypath;
-        String documentFrequencyPath = MyConfig.conf.mahoutdocumentfrequencypath;
-        String bayestype = MyConfig.conf.mahoutalgorithm;
+        String modelPath = nodeConf.mahoutmodelpath;
+        String labelIndexPath = nodeConf.mahoutlabelindexpath;
+        String dictionaryPath = nodeConf.mahoutdictionarypath;
+        String documentFrequencyPath = nodeConf.mahoutdocumentfrequencypath;
+        String bayestype = nodeConf.mahoutalgorithm;
 	    // not waterproof on purpose, won't check if var correctly set	    
-	    bayes = "bayes".equals(bayestype);
+	    conf.bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
-	    String fsdefaultname = MyConfig.conf.mahoutconffs;
+	    String fsdefaultname = nodeConf.mahoutconffs;
 	    if (fsdefaultname != null) {
 		configuration.set("fs.default.name", fsdefaultname);
 	    }
@@ -96,8 +92,8 @@ public class MahoutClassify {
             if (ConfigConstants.BAYES.equals(bayestype)) {
             	classifier = new StandardNaiveBayesClassifier( model) ;
             }
-            classifierMap.put(lang, classifier);
-            classifier2Map.put(lang, classifier2);
+            conf.classifierMap.put(lang, classifier);
+            conf.classifier2Map.put(lang, classifier2);
 
             Map<Integer, String> labels = null;
             Map<String, Integer> dictionary = null;
@@ -107,9 +103,9 @@ public class MahoutClassify {
             labels = BayesUtils.readLabelIndex(configuration, new Path(path + labelIndexPath.replaceAll("LANG", lang)));
             dictionary = readDictionnary(configuration, new Path(path + dictionaryPath.replaceAll("LANG", lang)));
             documentFrequency = readDocumentFrequency(configuration, new Path(path + documentFrequencyPath.replaceAll("LANG", lang)));
-            labelsMap.put(lang, labels);
-            dictionaryMap.put(lang, dictionary);
-            documentFrequencyMap.put(lang, documentFrequency);
+            conf.labelsMap.put(lang, labels);
+            conf.dictionaryMap.put(lang, dictionary);
+            conf.documentFrequencyMap.put(lang, documentFrequency);
             
             // analyzer used to extract word from content
             int labelCount = labels.size();
@@ -121,7 +117,7 @@ public class MahoutClassify {
             	log.error("no size info in data");
             	documentCount = 1; // or try to just set one
             }
-            documentCountMap.put(lang, documentCount);
+            conf.documentCountMap.put(lang, documentCount);
             log.info("Number of labels: " + labelCount);
             log.info("Number of documents in training set: " + documentCount);
         }
@@ -131,14 +127,20 @@ public class MahoutClassify {
 
     }
 
-    public static String classify(String content, String language) {
+	public MachineLearningConstructorResult deconstruct(String nodename) {
+		return null;
+	}
+	
+    public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
+    		String content = classify.str;
+    		String language = classify.language;
 	try {
-		Map<String, Integer> dictionary = dictionaryMap.get(language);
-		Map<Integer, Long> documentFrequency = documentFrequencyMap.get(language);
-		ComplementaryNaiveBayesClassifier classifier2 = classifier2Map.get(language);
-	    StandardNaiveBayesClassifier classifier = classifierMap.get(language);
-	    Map<Integer, String> labels = labelsMap.get(language);
-	    int documentCount = documentCountMap.get(language);
+		Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
+		Map<Integer, Long> documentFrequency = conf.documentFrequencyMap.get(language);
+		ComplementaryNaiveBayesClassifier classifier2 = conf.classifier2Map.get(language);
+	    StandardNaiveBayesClassifier classifier = conf.classifierMap.get(language);
+	    Map<Integer, String> labels = conf.labelsMap.get(language);
+	    int documentCount = conf.documentCountMap.get(language);
 	 	    Multiset<String> words = ConcurrentHashMultiset.create();
 	    // extract words from content
 	    int wordCount = getWords(content, dictionary, words);
@@ -156,7 +158,7 @@ public class MahoutClassify {
 	    }
 	    
 	    Vector resultVector = null;
-	    if (bayes) {
+	    if (conf.bayes) {
 		resultVector = classifier.classifyFull(vector);
 	    } else {
 		resultVector = classifier2.classifyFull(vector);
@@ -170,10 +172,12 @@ public class MahoutClassify {
 		    bestScore = score;
 		    bestCategoryId = categoryId;
 		}
-		//log.info(" " + labels.get(categoryId) + ": " + score);
+		log.info(" " + labels.get(categoryId) + ": " + score);
 	    }
 	    log.info(" cat " + labels.get(bestCategoryId));
-	    return labels.get(bestCategoryId);
+	    MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+	    result.result = labels.get(bestCategoryId);
+	    return result;
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
@@ -198,7 +202,7 @@ public static Map<Integer, Long> readDocumentFrequency(Configuration conf, Path 
 
     private static int getWords(String content, Map<String, Integer> dictionary, Multiset<String> words) {
 	try {
-	StandardAnalyzer analyzer = new StandardAnalyzer();
+	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 	TokenStream ts = analyzer.tokenStream("text", new StringReader(content));
 	CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
 	ts.reset();

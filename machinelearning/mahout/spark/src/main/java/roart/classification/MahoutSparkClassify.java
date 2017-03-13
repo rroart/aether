@@ -1,8 +1,11 @@
 package roart.classification;
 
+import roart.common.machinelearning.MachineLearningClassifyParam;
+import roart.common.machinelearning.MachineLearningClassifyResult;
+import roart.common.machinelearning.MachineLearningConstructorParam;
+import roart.common.machinelearning.MachineLearningConstructorResult;
 import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.lang.LanguageDetect;
+import roart.config.NodeConfig;
 import roart.util.Constants;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
@@ -40,48 +43,40 @@ import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MahoutSparkClassify {
+public class MahoutSparkClassify extends MachineLearningAbstractClassifier {
 
     private static Logger log = LoggerFactory.getLogger(MahoutSparkClassify.class);
     
-    private static Map<String, Map<String, Integer>> dictionaryMap = null;
-    private static Map<String, Map<Integer, Long>> documentFrequencyMap = null;
-    private static Map<String, ComplementaryNBClassifier> classifier2Map = null;
-    private static Map<String, StandardNBClassifier> classifierMap = null;
-    private static Map<String, Map<Integer, String>> labelsMap = null;
-    private static Map<String, Integer> documentCountMap = null;
-
-    private static NBModel nbm;
+    private MahoutSparkConfig conf;
     
-    private static boolean bayes = true;
-    
-    public MahoutSparkClassify() {
-	try {
-		dictionaryMap = new HashMap<String, Map<String, Integer>>();
-	    documentFrequencyMap = new HashMap<String, Map<Integer, Long>>();
-	    classifier2Map = new HashMap<String, ComplementaryNBClassifier>();
-	    classifierMap = new HashMap<String, StandardNBClassifier>();
-	    labelsMap = new HashMap<String, Map<Integer, String>>();
-	    documentCountMap = new HashMap<String, Integer>();
-        String[] languages = LanguageDetect.getLanguages();
+    public MahoutSparkClassify(String nodename, NodeConfig nodeConf) {
+    	try {
+    		conf = new MahoutSparkConfig();
+		conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
+		conf.documentFrequencyMap = new HashMap<String, Map<Integer, Long>>();
+		conf.classifier2Map = new HashMap<String, ComplementaryNBClassifier>();
+		conf.classifierMap = new HashMap<String, StandardNBClassifier>();
+		conf.labelsMap = new HashMap<String, Map<Integer, String>>();
+		conf.documentCountMap = new HashMap<String, Integer>();
+        String[] languages = nodeConf.languages;
         
         
-	    String basepath = MyConfig.conf.mahoutbasepath;
+	    String basepath = nodeConf.mahoutbasepath;
 	    if (basepath == null) {
 	    	basepath = "";
 	    }
 	    boolean testComplementary = false;
-        String modelPath = MyConfig.conf.mahoutmodelpath;
-        //String labelIndexPath = MyConfig.conf.mahoutlabelindexpath;
-        String dictionaryPath = MyConfig.conf.mahoutdictionarypath;
-        String documentFrequencyPath = MyConfig.conf.mahoutdocumentfrequencypath;
-        String bayestype = MyConfig.conf.mahoutalgorithm;
-        String sparkmaster = MyConfig.conf.mahoutsparkmaster;
+        String modelPath = nodeConf.mahoutmodelpath;
+        //String labelIndexPath = conf.mahoutlabelindexpath;
+        String dictionaryPath = nodeConf.mahoutdictionarypath;
+        String documentFrequencyPath = nodeConf.mahoutdocumentfrequencypath;
+        String bayestype = nodeConf.mahoutalgorithm;
+        String sparkmaster = nodeConf.mahoutsparkmaster;
 	    // not waterproof on purpose, won't check if var correctly set	    
-	    bayes = "bayes".equals(bayestype);
+        conf.bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
-	    String fsdefaultname = MyConfig.conf.mahoutconffs;
+	    String fsdefaultname = nodeConf.mahoutconffs;
 	    if (fsdefaultname != null) {
 		configuration.set("fs.default.name", fsdefaultname);
 	    }
@@ -114,16 +109,16 @@ public class MahoutSparkClassify {
             JavaSparkContext jsc = new JavaSparkContext(sparkconf);
             SparkDistributedContext sdc = new SparkDistributedContext(jsc.sc());
             DistributedContext dc = sdc;
-            nbm = NBModel.dfsRead(modelPath, dc);
-            NBModel model = nbm;
+            conf.nbm = NBModel.dfsRead(modelPath, dc);
+            NBModel model = conf.nbm;
             if (ConfigConstants.CBAYES.equals(bayestype)) {
             	classifier2 = new ComplementaryNBClassifier(model);
             }
             if (ConfigConstants.BAYES.equals(bayestype)) {
             	classifier = new StandardNBClassifier( model) ;
             }
-            classifierMap.put(lang, classifier);
-            classifier2Map.put(lang, classifier2);
+            conf.classifierMap.put(lang, classifier);
+            conf.classifier2Map.put(lang, classifier2);
 
             scala.collection.Map<String, Integer> labels = null;
             JavaPairRDD<Text, IntWritable> dictionaryRDDSpark = null;
@@ -138,7 +133,7 @@ public class MahoutSparkClassify {
             JavaPairRDD<Integer, Long> documentFrequencyRDD = documentFrequencyRDDSpark.mapToPair(new ConvertToNativeTypes2());
             Map<Integer, Long> documentFrequency = documentFrequencyRDD.collectAsMap();
 
-            labels = nbm.labelIndex();
+            labels = conf.nbm.labelIndex();
             Map<Integer, String> labelsSwapMap = new HashMap<>();
             scala.collection.Set<String> keySetScala = labels.keySet();
             Set<String> keySet = JavaConversions.asJavaSet(keySetScala);
@@ -149,9 +144,9 @@ public class MahoutSparkClassify {
                 }
             }
 
-            labelsMap.put(lang, labelsSwapMap);
-            dictionaryMap.put(lang, dictionary);
-            documentFrequencyMap.put(lang, documentFrequency);
+            conf.labelsMap.put(lang, labelsSwapMap);
+            conf.dictionaryMap.put(lang, dictionary);
+            conf.documentFrequencyMap.put(lang, documentFrequency);
             
             // analyzer used to extract word from content
             int labelCount = labels.size();
@@ -163,7 +158,7 @@ public class MahoutSparkClassify {
             	log.error("no size info in data");
             	documentCount = 1; // or try to just set one
             }
-            documentCountMap.put(lang, documentCount);
+            conf.documentCountMap.put(lang, documentCount);
             log.info("Number of labels: " + labelCount);
             log.info("Number of documents in training set: " + documentCount);
         }
@@ -173,14 +168,21 @@ public class MahoutSparkClassify {
 
     }
 
-    public static String classify(String content, String language) {
+	public MachineLearningConstructorResult deconstruct(String nodename) {
+		// TODO close context
+		return null;
+	}
+	
+    public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
+    		String content = classify.str;
+    		String language = classify.language;
 	try {
-	    Map<String, Integer> dictionary = dictionaryMap.get(language);
-	    Map<Integer, Long> documentFrequency = documentFrequencyMap.get(language);
-		ComplementaryNBClassifier classifier2 = classifier2Map.get(language);
-	    StandardNBClassifier classifier = classifierMap.get(language);
-	    Map<Integer, String> labels = labelsMap.get(language);
-	    int documentCount = documentCountMap.get(language);
+	    Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
+	    Map<Integer, Long> documentFrequency = conf.documentFrequencyMap.get(language);
+		ComplementaryNBClassifier classifier2 = conf.classifier2Map.get(language);
+	    StandardNBClassifier classifier = conf.classifierMap.get(language);
+	    Map<Integer, String> labels = conf.labelsMap.get(language);
+	    int documentCount = conf.documentCountMap.get(language);
 	 	    Multiset<String> words = ConcurrentHashMultiset.create();
 	    // extract words from content
 	    int wordCount = getWords(content, dictionary, words);
@@ -198,7 +200,7 @@ public class MahoutSparkClassify {
 	    }
 	    
 	    Vector resultVector = null;
-	    if (bayes) {
+	    if (conf.bayes) {
 		resultVector = classifier.classifyFull(vector);
 	    } else {
 		resultVector = classifier2.classifyFull(vector);
@@ -215,7 +217,9 @@ public class MahoutSparkClassify {
 		//log.info(" " + labels.get(categoryId) + ": " + score);
 	    }
 	    log.info(" cat " + labels.get(bestCategoryId));
-	    return labels.get(new Integer(bestCategoryId));
+	    MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+	    result.result = labels.get(new Integer(bestCategoryId));
+	    return result;
 	} catch (Exception e) {
 	    log.error(Constants.EXCEPTION, e);
 	}

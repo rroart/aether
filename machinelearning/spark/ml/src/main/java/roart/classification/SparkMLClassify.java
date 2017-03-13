@@ -1,7 +1,10 @@
 package roart.classification;
 
-import roart.config.MyConfig;
-import roart.lang.LanguageDetect;
+import roart.common.machinelearning.MachineLearningClassifyParam;
+import roart.common.machinelearning.MachineLearningClassifyResult;
+import roart.common.machinelearning.MachineLearningConstructorParam;
+import roart.common.machinelearning.MachineLearningConstructorResult;
+import roart.config.NodeConfig;
 import roart.util.Constants;
 
 import java.util.Map;
@@ -25,22 +28,17 @@ import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkMLClassify {
+public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	private static Logger log = LoggerFactory.getLogger(SparkMLClassify.class);
 
-	private static Map<String, Map<Double, String>> labelsMap = null;
+	private SparkMLConfig conf;
 
-	private static PipelineModel nbm;
-
-	private static SparkConf sparkconf;
-
-	private static JavaSparkContext jsc;
-
-	public SparkMLClassify() {
-		try {
-			labelsMap = new HashMap();
-			String[] languages = LanguageDetect.getLanguages();
+	public SparkMLClassify(String nodename, NodeConfig nodeConf) {
+			try {
+			SparkMLConfig conf = new SparkMLConfig();
+				conf.labelsMap = new HashMap();
+				String[] languages = nodeConf.languages;
 
 			// TODO add basepath later
 			/*
@@ -50,13 +48,14 @@ public class SparkMLClassify {
 	    }
 			 */
 			
-			String modelPath = MyConfig.conf.sparkmlmodelpath;
+			String modelPath = nodeConf.sparkmlmodelpath;
 			//modelPath = modelPath.replaceAll("LANG", lang);
-			String labelIndexPath = MyConfig.conf.sparkmllabelindexpath;
-			String sparkmaster = MyConfig.conf.sparkmaster;
+			String labelIndexPath = nodeConf.sparkmllabelindexpath;
+			String sparkmaster = nodeConf.sparkmaster;
 
 			for (String lang : languages) {
-				sparkconf = new SparkConf();
+				SparkConf sparkconf = new SparkConf();
+				conf.sparkconf = sparkconf;
 				String master = sparkmaster;
 				sparkconf.setMaster(master);
 				sparkconf.setAppName("aether");
@@ -81,14 +80,14 @@ public class SparkMLClassify {
             //SparkContext sc = new SparkContext(sparkconf);
 
 				 */
-				jsc = new JavaSparkContext(sparkconf);
-				SQLContext sqlContext = new SQLContext(jsc);
-				nbm = PipelineModel.load(modelPath);
+				conf.jsc = new JavaSparkContext(sparkconf);
+				SQLContext sqlContext = new SQLContext(conf.jsc);
+				conf.nbm = PipelineModel.load(modelPath);
 				String labelpath = labelIndexPath;
 				DataFrame label = sqlContext.read().load(labelpath);
 				Map<Double, String> labelMap = new HashMap();
 				label.javaRDD().collect().forEach(r-> labelMap.put(r.getAs("id"), r.getAs("cat")));
-				labelsMap.put(lang, labelMap);
+				conf.labelsMap.put(lang, labelMap);
 			}
 			System.out.println("Spark ML done");
 		} catch (Exception e) {
@@ -97,9 +96,16 @@ public class SparkMLClassify {
 
 	}
 
-	public static String classify(String content, String language) {
+	public  MachineLearningConstructorResult deconstruct(String nodename) {
+			conf.jsc.close();
+		return null;
+	}
+	
+	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
+			String content = classify.str;
+			String language = classify.language;
 		try {
-			JavaRDD<Row> jrdd = jsc.parallelize(Arrays.asList(
+			JavaRDD<Row> jrdd = conf.jsc.parallelize(Arrays.asList(
 					RowFactory.create(content)));
 
 			/*
@@ -118,16 +124,18 @@ public class SparkMLClassify {
 
 			// TODO check this after spark 2 upgrade
 			// https://fossies.org/diffs/spark/1.6.2_vs_2.0.0/examples/src/main/java/org/apache/spark/examples/ml/JavaTfIdfExample.java-diff.html
-			SQLContext sqlContext = new SQLContext(jsc);
+			SQLContext sqlContext = new SQLContext(conf.jsc);
 
 			DataFrame sentenceDF = sqlContext.createDataFrame(jrdd, schema);
-			DataFrame resultDF = nbm.transform(sentenceDF);
+			DataFrame resultDF = conf.nbm.transform(sentenceDF);
 
 			Double predict = resultDF.first().getAs("prediction");
-			Map<Double, String> label = labelsMap.get(language);
+			Map<Double, String> label = conf.labelsMap.get(language);
 			String cat = label.get(predict);
 			log.info(" cat " + cat);
-			return cat;
+			MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+			result.result = cat;
+			return result;
 		} catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);
 		}

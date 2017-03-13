@@ -14,6 +14,7 @@
 <modules>
   <module>common</module>
   <module>eureka</module>
+  <module>machinelearning</module>
   <module>searchengine</module>
   <module>web</module>
 </modules>
@@ -198,6 +199,22 @@
 	    <phase>compile</phase>
 	    <goals>
 	      <goal>jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
+	</plugin-->
+      <!--plugin>
+	<artifactId>maven-assembly-plugin</artifactId>
+	<version>2.5.3</version>
+	<configuration>
+	  <descriptor>src/assembly/dep.xml</descriptor>
+	</configuration>
+	<executions>
+	  <execution>
+	    <id>create-archive</id>
+	    <phase>package</phase>
+	    <goals>
+	      <goal>single</goal>
 	    </goals>
 	  </execution>
 	</executions>

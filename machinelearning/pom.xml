@@ -9,15 +9,15 @@
     <version>0.10-SNAPSHOT</version>
   </parent>
   <groupId>roart</groupId>
-  <artifactId>aether-common</artifactId>
+  <artifactId>aether-machinelearning</artifactId>
   <version>0.10-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Aether Disk Search Engine Common</name>
+  <name>Aether Disk Search Engine Machine Learning</name>
 <modules>
-  <module>config</module>
-  <module>constants</module>
-  <module>machinelearning</module>
-  <module>searchengine</module>
+  <module>controller</module>
+  <module>mahout</module>
+  <module>opennlp</module>
+  <module>spark</module>
 </modules>
 </project>
 
