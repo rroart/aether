@@ -2,7 +2,6 @@ package roart.classification;
 
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
-import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
 import roart.config.ConfigConstants;
 import roart.config.NodeConfig;
@@ -32,7 +31,6 @@ import org.apache.mahout.classifier.naivebayes.ComplementaryNBClassifier;
 import org.apache.mahout.classifier.naivebayes.NBModel;
 import org.apache.mahout.classifier.naivebayes.StandardNBClassifier;
 import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.PairFunction;
@@ -43,226 +41,228 @@ import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MahoutSparkClassify extends MachineLearningAbstractClassifier {
+public class MahoutSparkClassify extends MachineLearningAbstractClassifier implements java.io.Serializable {
 
-    private static Logger log = LoggerFactory.getLogger(MahoutSparkClassify.class);
-    
-    private MahoutSparkConfig conf;
-    
-    public MahoutSparkClassify(String nodename, NodeConfig nodeConf) {
-    	try {
-    		conf = new MahoutSparkConfig();
-		conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
-		conf.documentFrequencyMap = new HashMap<String, Map<Integer, Long>>();
-		conf.classifier2Map = new HashMap<String, ComplementaryNBClassifier>();
-		conf.classifierMap = new HashMap<String, StandardNBClassifier>();
-		conf.labelsMap = new HashMap<String, Map<Integer, String>>();
-		conf.documentCountMap = new HashMap<String, Integer>();
-        String[] languages = nodeConf.languages;
-        
-        
-	    String basepath = nodeConf.mahoutbasepath;
-	    if (basepath == null) {
-	    	basepath = "";
-	    }
-	    boolean testComplementary = false;
-        String modelPath = nodeConf.mahoutmodelpath;
-        //String labelIndexPath = conf.mahoutlabelindexpath;
-        String dictionaryPath = nodeConf.mahoutdictionarypath;
-        String documentFrequencyPath = nodeConf.mahoutdocumentfrequencypath;
-        String bayestype = nodeConf.mahoutalgorithm;
-        String sparkmaster = nodeConf.mahoutsparkmaster;
-	    // not waterproof on purpose, won't check if var correctly set	    
-        conf.bayes = "bayes".equals(bayestype);
+	private static Logger log = LoggerFactory.getLogger(MahoutSparkClassify.class);
 
-	    Configuration configuration = new Configuration();
-	    String fsdefaultname = nodeConf.mahoutconffs;
-	    if (fsdefaultname != null) {
-		configuration.set("fs.default.name", fsdefaultname);
-	    }
-        for (String lang : languages) {
-            String path = new String(basepath);
-            path = path.replaceAll("LANG", lang);
-            ComplementaryNBClassifier classifier2 = null;
-            StandardNBClassifier classifier = null;
-            SparkConf sparkconf = new SparkConf();
-            String master = sparkmaster;
-            sparkconf.setMaster(master);
-            sparkconf.setAppName("aether");
-            // it does not work well with default snappy
-            sparkconf.set("spark.io.compression.codec", "lzf");
-            sparkconf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
-            sparkconf.set("spark.kryo.registrator", "org.apache.mahout.sparkbindings.io.MahoutKryoRegistrator");
-            String userDir = System.getProperty("user.dir");
-            log.info("user.dir " + userDir);
-            String[] jars = { 
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib/mahout-spark_2.10-0.12.0.jar", 
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib//mahout-hdfs-0.12.0.jar", 
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib/mahout-math-0.12.0.jar", 
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib//guava-16.0.1.jar", 
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib/fastutil-7.0.11.jar", 
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT/WEB-INF/lib//mahout-math-scala_2.10-0.12.0.jar",
-                    "file:" + userDir + "/target/aether-0.10-SNAPSHOT.jar" 
-            };
-            sparkconf.setJars(jars);
-            //SparkContext sc = new SparkContext(sparkconf);
-            JavaSparkContext jsc = new JavaSparkContext(sparkconf);
-            SparkDistributedContext sdc = new SparkDistributedContext(jsc.sc());
-            DistributedContext dc = sdc;
-            conf.nbm = NBModel.dfsRead(modelPath, dc);
-            NBModel model = conf.nbm;
-            if (ConfigConstants.CBAYES.equals(bayestype)) {
-            	classifier2 = new ComplementaryNBClassifier(model);
-            }
-            if (ConfigConstants.BAYES.equals(bayestype)) {
-            	classifier = new StandardNBClassifier( model) ;
-            }
-            conf.classifierMap.put(lang, classifier);
-            conf.classifier2Map.put(lang, classifier2);
+	private MahoutSparkConfig conf;
 
-            scala.collection.Map<String, Integer> labels = null;
-            JavaPairRDD<Text, IntWritable> dictionaryRDDSpark = null;
-            JavaPairRDD<IntWritable, LongWritable> documentFrequencyRDDSpark = null;
-            int documentCount = 0;
+	public MahoutSparkClassify(String nodename, NodeConfig nodeConf) {
+		try {
+			conf = new MahoutSparkConfig();
+			conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
+			conf.documentFrequencyMap = new HashMap<String, Map<Integer, Long>>();
+			conf.classifier2Map = new HashMap<String, ComplementaryNBClassifier>();
+			conf.classifierMap = new HashMap<String, StandardNBClassifier>();
+			conf.labelsMap = new HashMap<String, Map<Integer, String>>();
+			conf.documentCountMap = new HashMap<String, Integer>();
+			String[] languages = nodeConf.languages;
 
-            dictionaryRDDSpark = jsc.sequenceFile(dictionaryPath, Text.class, IntWritable.class);
-            JavaPairRDD<String, Integer> dictionaryRDD = dictionaryRDDSpark.mapToPair(new ConvertToNativeTypes());
-            Map<String, Integer> dictionary = dictionaryRDD.collectAsMap();
-            
-            documentFrequencyRDDSpark = jsc.sequenceFile(documentFrequencyPath, IntWritable.class, LongWritable.class);
-            JavaPairRDD<Integer, Long> documentFrequencyRDD = documentFrequencyRDDSpark.mapToPair(new ConvertToNativeTypes2());
-            Map<Integer, Long> documentFrequency = documentFrequencyRDD.collectAsMap();
 
-            labels = conf.nbm.labelIndex();
-            Map<Integer, String> labelsSwapMap = new HashMap<>();
-            scala.collection.Set<String> keySetScala = labels.keySet();
-            Set<String> keySet = JavaConversions.asJavaSet(keySetScala);
-            for(String key : keySet){
-                scala.Option<Integer> value = labels.get(key);
-                if (value != null) {
-                    labelsSwapMap.put(new Integer(value.get()), key);
-                }
-            }
+			String basepath = nodeConf.mahoutbasepath;
+			if (basepath == null) {
+				basepath = "";
+			}
+			boolean testComplementary = false;
+			String modelPath = nodeConf.mahoutmodelpath;
+			//String labelIndexPath = conf.mahoutlabelindexpath;
+			String dictionaryPath = nodeConf.mahoutdictionarypath;
+			String documentFrequencyPath = nodeConf.mahoutdocumentfrequencypath;
+			String bayestype = nodeConf.mahoutalgorithm;
+			String sparkmaster = nodeConf.mahoutsparkmaster;
+			// not waterproof on purpose, won't check if var correctly set	    
+			conf.bayes = "bayes".equals(bayestype);
 
-            conf.labelsMap.put(lang, labelsSwapMap);
-            conf.dictionaryMap.put(lang, dictionary);
-            conf.documentFrequencyMap.put(lang, documentFrequency);
-            
-            // analyzer used to extract word from content
-            int labelCount = labels.size();
-            log.info("Docs " + documentFrequency.size());
-           // the -1 is in df-count/part-r-00000
-            if (documentFrequency.get(-1) != null) {
-            	documentCount = documentFrequency.get(-1).intValue();
-            } else {
-            	log.error("no size info in data");
-            	documentCount = 1; // or try to just set one
-            }
-            conf.documentCountMap.put(lang, documentCount);
-            log.info("Number of labels: " + labelCount);
-            log.info("Number of documents in training set: " + documentCount);
-        }
-	} catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
+			Configuration configuration = new Configuration();
+			String fsdefaultname = nodeConf.mahoutconffs;
+			if (fsdefaultname != null) {
+				configuration.set("fs.default.name", fsdefaultname);
+			}
+			for (String lang : languages) {
+				String path = new String(basepath);
+				path = path.replaceAll("LANG", lang);
+				ComplementaryNBClassifier classifier2 = null;
+				StandardNBClassifier classifier = null;
+				SparkConf sparkconf = new SparkConf();
+				String master = sparkmaster;
+				sparkconf.setMaster(master);
+				sparkconf.setAppName("aether");
+				// it does not work well with default snappy
+				sparkconf.set("spark.io.compression.codec", "lzf");
+				sparkconf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+				sparkconf.set("spark.kryo.registrator", "org.apache.mahout.sparkbindings.io.MahoutKryoRegistrator");
+				String userDir = System.getProperty("user.dir");
+				log.info("user.dir " + userDir);
+
+				String[] jars = { 
+						"file:" + userDir + "/target/lib/mahout-spark_2.10-0.12.0.jar", 
+						"file:" + userDir + "/target/lib/mahout-hdfs-0.12.0.jar", 
+						"file:" + userDir + "/target/lib/mahout-math-0.12.0.jar", 
+						"file:" + userDir + "/target/lib/mahout-math-scala_2.10-0.12.0.jar", 
+						"file:" + userDir + "/target/lib/guava-16.0.1.jar", 
+						"file:" + userDir + "/target/lib/fastutil-7.0.11.jar", 
+						"file:" + userDir + "/target/aether-machinelearning-mahout-spark-0.10-SNAPSHOT.jar", 
+				};
+				sparkconf.setJars(jars);
+				//SparkContext sc = new SparkContext(sparkconf);
+				JavaSparkContext jsc = new JavaSparkContext(sparkconf);
+				SparkDistributedContext sdc = new SparkDistributedContext(jsc.sc());
+				DistributedContext dc = sdc;
+				conf.nbm = NBModel.dfsRead(modelPath, dc);
+				NBModel model = conf.nbm;
+				if (ConfigConstants.CBAYES.equals(bayestype)) {
+					classifier2 = new ComplementaryNBClassifier(model);
+				}
+				if (ConfigConstants.BAYES.equals(bayestype)) {
+					classifier = new StandardNBClassifier( model) ;
+				}
+				conf.classifierMap.put(lang, classifier);
+				conf.classifier2Map.put(lang, classifier2);
+
+				scala.collection.Map<String, Integer> labels = null;
+				JavaPairRDD<Text, IntWritable> dictionaryRDDSpark = null;
+				JavaPairRDD<IntWritable, LongWritable> documentFrequencyRDDSpark = null;
+				int documentCount = 0;
+				
+				dictionaryRDDSpark = jsc.sequenceFile(dictionaryPath, Text.class, IntWritable.class);
+				JavaPairRDD<String, Integer> dictionaryRDD = dictionaryRDDSpark.mapToPair(new ConvertToNativeTypes());
+				//JavaPairRDD<String, Integer> dictionaryRDD = dictionaryRDDSpark.mapToPair(t -> new Tuple2<String, Integer>(t._1.toString(), t._2$mcI$sp()));
+				Map<String, Integer> dictionary = dictionaryRDD.collectAsMap();
+
+				documentFrequencyRDDSpark = jsc.sequenceFile(documentFrequencyPath, IntWritable.class, LongWritable.class);
+				JavaPairRDD<Integer, Long> documentFrequencyRDD = documentFrequencyRDDSpark.mapToPair(new ConvertToNativeTypes2());
+				Map<Integer, Long> documentFrequency = documentFrequencyRDD.collectAsMap();
+
+				labels = conf.nbm.labelIndex();
+				Map<Integer, String> labelsSwapMap = new HashMap<>();
+				scala.collection.Set<String> keySetScala = labels.keySet();
+				Set<String> keySet = JavaConversions.asJavaSet(keySetScala);
+				for(String key : keySet){
+					scala.Option<Integer> value = labels.get(key);
+					if (value != null) {
+						labelsSwapMap.put(new Integer(value.get()), key);
+					}
+				}
+
+				conf.labelsMap.put(lang, labelsSwapMap);
+				conf.dictionaryMap.put(lang, dictionary);
+				conf.documentFrequencyMap.put(lang, documentFrequency);
+
+				// analyzer used to extract word from content
+				int labelCount = labels.size();
+				log.info("Docs " + documentFrequency.size());
+				// the -1 is in df-count/part-r-00000
+				if (documentFrequency.get(-1) != null) {
+					documentCount = documentFrequency.get(-1).intValue();
+				} else {
+					log.error("no size info in data");
+					documentCount = 1; // or try to just set one
+				}
+				conf.documentCountMap.put(lang, documentCount);
+				log.info("Number of labels: " + labelCount);
+				log.info("Number of documents in training set: " + documentCount);
+			}
+		} catch (Exception e) {
+			log.error(Constants.EXCEPTION, e);
+		}
+
 	}
-
-    }
 
 	public MachineLearningConstructorResult destroy(String nodename) {
 		// TODO close context
 		return null;
 	}
-	
-    public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
-    		String content = classify.str;
-    		String language = classify.language;
-	try {
-	    Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
-	    Map<Integer, Long> documentFrequency = conf.documentFrequencyMap.get(language);
-		ComplementaryNBClassifier classifier2 = conf.classifier2Map.get(language);
-	    StandardNBClassifier classifier = conf.classifierMap.get(language);
-	    Map<Integer, String> labels = conf.labelsMap.get(language);
-	    int documentCount = conf.documentCountMap.get(language);
-	 	    Multiset<String> words = ConcurrentHashMultiset.create();
-	    // extract words from content
-	    int wordCount = getWords(content, dictionary, words);
 
-	    // create vector wordId => weight using tfidf
-	    Vector vector = new RandomAccessSparseVector(Integer.MAX_VALUE);
-	    TFIDF tfidf = new TFIDF();
-	    for (Multiset.Entry<String> entry:words.entrySet()) {
-	        String word = entry.getElement();
-	        int count = entry.getCount();
-	        Integer wordId = dictionary.get(word);
-	        Long freq = documentFrequency.get(wordId);
-	        double tfIdfValue = tfidf.calculate(count, freq.intValue(), wordCount, documentCount);
-	        vector.setQuick(wordId, tfIdfValue);
-	    }
-	    
-	    Vector resultVector = null;
-	    if (conf.bayes) {
-		resultVector = classifier.classifyFull(vector);
-	    } else {
-		resultVector = classifier2.classifyFull(vector);
-	    }		
-	    double bestScore = -Double.MAX_VALUE;
-	    int bestCategoryId = -1;
-	    for(Element element: resultVector.all()) {
-		int categoryId = element.index();
-		double score = element.get();
-		if (score > bestScore) {
-		    bestScore = score;
-		    bestCategoryId = categoryId;
+	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
+		String content = classify.str;
+		String language = classify.language;
+		try {
+			Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
+			Map<Integer, Long> documentFrequency = conf.documentFrequencyMap.get(language);
+			ComplementaryNBClassifier classifier2 = conf.classifier2Map.get(language);
+			StandardNBClassifier classifier = conf.classifierMap.get(language);
+			Map<Integer, String> labels = conf.labelsMap.get(language);
+			int documentCount = conf.documentCountMap.get(language);
+			Multiset<String> words = ConcurrentHashMultiset.create();
+			// extract words from content
+			int wordCount = getWords(content, dictionary, words);
+
+			// create vector wordId => weight using tfidf
+			Vector vector = new RandomAccessSparseVector(Integer.MAX_VALUE);
+			TFIDF tfidf = new TFIDF();
+			for (Multiset.Entry<String> entry:words.entrySet()) {
+				String word = entry.getElement();
+				int count = entry.getCount();
+				Integer wordId = dictionary.get(word);
+				Long freq = documentFrequency.get(wordId);
+				double tfIdfValue = tfidf.calculate(count, freq.intValue(), wordCount, documentCount);
+				vector.setQuick(wordId, tfIdfValue);
+			}
+
+			Vector resultVector = null;
+			if (conf.bayes) {
+				resultVector = classifier.classifyFull(vector);
+			} else {
+				resultVector = classifier2.classifyFull(vector);
+			}		
+			double bestScore = -Double.MAX_VALUE;
+			int bestCategoryId = -1;
+			for(Element element: resultVector.all()) {
+				int categoryId = element.index();
+				double score = element.get();
+				if (score > bestScore) {
+					bestScore = score;
+					bestCategoryId = categoryId;
+				}
+				//log.info(" " + labels.get(categoryId) + ": " + score);
+			}
+			log.info(" cat " + labels.get(bestCategoryId));
+			MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+			result.result = labels.get(new Integer(bestCategoryId));
+			return result;
+		} catch (Exception e) {
+			log.error(Constants.EXCEPTION, e);
 		}
-		//log.info(" " + labels.get(categoryId) + ": " + score);
-	    }
-	    log.info(" cat " + labels.get(bestCategoryId));
-	    MachineLearningClassifyResult result = new MachineLearningClassifyResult();
-	    result.result = labels.get(new Integer(bestCategoryId));
-	    return result;
-	} catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
+		return null;
 	}
-	return null;
-    }
 
-    private static int getWords(String content, Map<String, Integer> dictionary, Multiset<String> words) {
-	try {
-	StandardAnalyzer analyzer = new StandardAnalyzer();
-	TokenStream ts = analyzer.tokenStream("text", new StringReader(content));
-	CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
-	ts.reset();
-	int wordCount = 0;
-	while (ts.incrementToken()) {
-	    if (termAtt.length() > 0) {
-		String word = ts.getAttribute(CharTermAttribute.class).toString();
-		Integer wordId = dictionary.get(word);
-		// if the word is not in the dictionary, skip it
-		if (wordId != null) {
-		    words.add(word);
-		    wordCount++;
+	private static int getWords(String content, Map<String, Integer> dictionary, Multiset<String> words) {
+		try {
+			StandardAnalyzer analyzer = new StandardAnalyzer();
+			TokenStream ts = analyzer.tokenStream("text", new StringReader(content));
+			CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
+			ts.reset();
+			int wordCount = 0;
+			while (ts.incrementToken()) {
+				if (termAtt.length() > 0) {
+					String word = ts.getAttribute(CharTermAttribute.class).toString();
+					Integer wordId = dictionary.get(word);
+					// if the word is not in the dictionary, skip it
+					if (wordId != null) {
+						words.add(word);
+						wordCount++;
+					}
+				}
+			}
+			ts.close();
+			return wordCount;
+		} catch (Exception e) {
+			log.error(Constants.EXCEPTION, e);
 		}
-	    }
+		return 0;
 	}
-	ts.close();
-	return wordCount;
-	} catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
+
+	public static class ConvertToNativeTypes implements PairFunction<Tuple2<Text, IntWritable>, String, Integer> {
+		public Tuple2<String, Integer> call(Tuple2<Text, IntWritable> record) {
+			return new Tuple2(record._1.toString(), record._2.get());
+		}
 	}
-	return 0;
-    }
 
-    public static class ConvertToNativeTypes implements PairFunction<Tuple2<Text, IntWritable>, String, Integer> {
-        public Tuple2<String, Integer> call(Tuple2<Text, IntWritable> record) {
-          return new Tuple2(record._1.toString(), record._2.get());
-        }
-      }
-
-    public static class ConvertToNativeTypes2 implements PairFunction<Tuple2<IntWritable, LongWritable>, Integer, Long> {
-        public Tuple2<Integer, Long> call(Tuple2<IntWritable, LongWritable> record) {
-          return new Tuple2(record._1.get(), record._2.get());
-        }
-      }
+	public static class ConvertToNativeTypes2 implements PairFunction<Tuple2<IntWritable, LongWritable>, Integer, Long> {
+		public Tuple2<Integer, Long> call(Tuple2<IntWritable, LongWritable> record) {
+			return new Tuple2(record._1.get(), record._2.get());
+		}
+	}
 
 }
 

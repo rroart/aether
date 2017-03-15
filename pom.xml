@@ -17,6 +17,7 @@
   <module>machinelearning</module>
   <module>searchengine</module>
   <module>web</module>
+  <module>distribution</module>
 </modules>
   <build>
     <plugins>
@@ -203,22 +204,6 @@
 	  </execution>
 	</executions>
 	</plugin-->
-      <!--plugin>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<version>2.5.3</version>
-	<configuration>
-	  <descriptor>src/assembly/dep.xml</descriptor>
-	</configuration>
-	<executions>
-	  <execution>
-	    <id>create-archive</id>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>single</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin-->
     </plugins>
     <pluginManagement>
       <plugins>
@@ -717,6 +702,7 @@
     <tika.version>1.13</tika.version>
     <mahout.version>0.12.0</mahout.version>
     <!-- must keep at old version for some time -->
+    <mahout.spark.version>1.5.2</mahout.spark.version>
     <spark.version>1.6.1</spark.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>

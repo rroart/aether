@@ -6,7 +6,7 @@ import org.apache.mahout.classifier.naivebayes.ComplementaryNBClassifier;
 import org.apache.mahout.classifier.naivebayes.NBModel;
 import org.apache.mahout.classifier.naivebayes.StandardNBClassifier;
 
-public class MahoutSparkConfig {
+public class MahoutSparkConfig implements java.io.Serializable {
 	
     public Map<String, Map<String, Integer>> dictionaryMap = null;
     public Map<String, Map<Integer, Long>> documentFrequencyMap = null;
