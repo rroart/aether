@@ -57,7 +57,7 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../machinelearning/mahout/spark/target/lib</directory>
+      <directory>${project.basedir}/../machinelearning/mahout/spark/target/deps</directory>
       <includes>
 	<include>mahout-spark_2.10-0.12.0.jar</include>
 	<include>mahout-hdfs-0.12.0.jar</include>
@@ -66,7 +66,7 @@
 	<include>guava-16.0.1.jar</include>
 	<include>fastutil-7.0.11.jar</include>
       </includes>
-      <outputDirectory>deplib</outputDirectory>
+      <outputDirectory>lib/deps</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../machinelearning/spark/ml/target</directory>

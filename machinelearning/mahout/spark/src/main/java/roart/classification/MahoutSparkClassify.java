@@ -56,7 +56,6 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 			conf.classifierMap = new HashMap<String, StandardNBClassifier>();
 			conf.labelsMap = new HashMap<String, Map<Integer, String>>();
 			conf.documentCountMap = new HashMap<String, Integer>();
-			String[] languages = nodeConf.languages;
 
 
 			String basepath = nodeConf.mahoutbasepath;
@@ -64,12 +63,12 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 				basepath = "";
 			}
 			boolean testComplementary = false;
-			String modelPath = nodeConf.mahoutmodelpath;
+			String modelPath = basepath + nodeConf.mahoutmodelpath;
 			//String labelIndexPath = conf.mahoutlabelindexpath;
-			String dictionaryPath = nodeConf.mahoutdictionarypath;
-			String documentFrequencyPath = nodeConf.mahoutdocumentfrequencypath;
-			String bayestype = nodeConf.mahoutalgorithm;
-			String sparkmaster = nodeConf.mahoutsparkmaster;
+			String dictionaryPath = basepath + nodeConf.mahoutdictionarypath;
+			String documentFrequencyPath = basepath + nodeConf.mahoutdocumentfrequencypath;
+			String bayestype = basepath + nodeConf.mahoutalgorithm;
+			String sparkmaster = basepath + nodeConf.mahoutsparkmaster;
 			// not waterproof on purpose, won't check if var correctly set	    
 			conf.bayes = "bayes".equals(bayestype);
 
@@ -78,9 +77,8 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 			if (fsdefaultname != null) {
 				configuration.set("fs.default.name", fsdefaultname);
 			}
+			String[] languages = nodeConf.languages;
 			for (String lang : languages) {
-				String path = new String(basepath);
-				path = path.replaceAll("LANG", lang);
 				ComplementaryNBClassifier classifier2 = null;
 				StandardNBClassifier classifier = null;
 				SparkConf sparkconf = new SparkConf();
@@ -95,21 +93,20 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 				log.info("user.dir " + userDir);
 
 				String[] jars = { 
-						"file:" + userDir + "/target/lib/mahout-spark_2.10-0.12.0.jar", 
-						"file:" + userDir + "/target/lib/mahout-hdfs-0.12.0.jar", 
-						"file:" + userDir + "/target/lib/mahout-math-0.12.0.jar", 
-						"file:" + userDir + "/target/lib/mahout-math-scala_2.10-0.12.0.jar", 
-						"file:" + userDir + "/target/lib/guava-16.0.1.jar", 
-						"file:" + userDir + "/target/lib/fastutil-7.0.11.jar", 
-						"file:" + userDir + "/target/aether-machinelearning-mahout-spark-0.10-SNAPSHOT.jar", 
+						"file:" + userDir + "/deps/mahout-spark_2.10-0.12.0.jar", 
+						"file:" + userDir + "/deps/mahout-hdfs-0.12.0.jar", 
+						"file:" + userDir + "/deps/mahout-math-0.12.0.jar", 
+						"file:" + userDir + "/deps/mahout-math-scala_2.10-0.12.0.jar", 
+						"file:" + userDir + "/deps/guava-16.0.1.jar", 
+						"file:" + userDir + "/deps/fastutil-7.0.11.jar", 
+						"file:" + userDir + "/aether-machinelearning-mahout-spark-0.10-SNAPSHOT.jar", 
 				};
 				sparkconf.setJars(jars);
-				//SparkContext sc = new SparkContext(sparkconf);
 				JavaSparkContext jsc = new JavaSparkContext(sparkconf);
 				conf.jsc = jsc;
 				SparkDistributedContext sdc = new SparkDistributedContext(jsc.sc());
 				DistributedContext dc = sdc;
-				conf.nbm = NBModel.dfsRead(modelPath, dc);
+				conf.nbm = NBModel.dfsRead(modelPath.replaceAll("LANG", lang), dc);
 				NBModel model = conf.nbm;
 				if (ConfigConstants.CBAYES.equals(bayestype)) {
 					classifier2 = new ComplementaryNBClassifier(model);
@@ -125,12 +122,12 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 				JavaPairRDD<IntWritable, LongWritable> documentFrequencyRDDSpark = null;
 				int documentCount = 0;
 				
-				dictionaryRDDSpark = jsc.sequenceFile(dictionaryPath, Text.class, IntWritable.class);
+				dictionaryRDDSpark = jsc.sequenceFile(dictionaryPath.replaceAll("LANG", lang), Text.class, IntWritable.class);
 				JavaPairRDD<String, Integer> dictionaryRDD = dictionaryRDDSpark.mapToPair(new ConvertToNativeTypes());
 				//JavaPairRDD<String, Integer> dictionaryRDD = dictionaryRDDSpark.mapToPair(t -> new Tuple2<String, Integer>(t._1.toString(), t._2$mcI$sp()));
 				Map<String, Integer> dictionary = dictionaryRDD.collectAsMap();
 
-				documentFrequencyRDDSpark = jsc.sequenceFile(documentFrequencyPath, IntWritable.class, LongWritable.class);
+				documentFrequencyRDDSpark = jsc.sequenceFile(documentFrequencyPath.replaceAll("LANG", lang), IntWritable.class, LongWritable.class);
 				JavaPairRDD<Integer, Long> documentFrequencyRDD = documentFrequencyRDDSpark.mapToPair(new ConvertToNativeTypes2());
 				Map<Integer, Long> documentFrequency = documentFrequencyRDD.collectAsMap();
 
