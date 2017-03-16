@@ -1,0 +1,1365 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!--!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd"-->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book id="top">
+<title>
+Aether disk search engine
+</title>
+<bookinfo>
+  <author>
+    <firstname>Roar</firstname>
+    <surname>Thronæs</surname>
+  </author>
+    <abstract>
+    <para>
+	Aether is an application for indexing and searching unstructured collections.
+    </para>
+  </abstract>
+</bookinfo>
+<chapter>
+<title>
+Introduction
+</title>
+<para>
+Aether is an application for indexing and searching unstructured collections.
+Unstructured, in a way that the collections may be overlapping, may be randomly put together, or may be too large to go through manually.
+The collections themselves is meant to be mainly books and documents, but also music may work.
+For items like music we are solely dependent on indexing metadata.
+Since the collections may be overlapping, the main id is an (md5) checksum, and it won't be indexed again if already found.
+The application consists of a web client, that may connect to a server.
+Both searching and indexing is initiated through the web client.
+The server may be a single server, or a set of clustered/cloudy servers.
+It is currently set for a standard analyzer (presumably for English), and is automatically able to recognize language.
+Given a bit of manual training with classifier software, it is possible to use the training data to automatically classify the documents during indexing.
+</para>
+</chapter>
+<chapter>
+<title>
+Installing
+</title>
+<para>
+  Get git from <ulink url="https://github.com/rroart/aether">here</ulink>.
+  <itemizedlist>
+    <title>
+      Required software
+    </title>
+    <listitem>
+      <para>
+	Maven
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Java 8
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Languagedetect
+      </para>
+    </listitem>
+  </itemizedlist>
+  
+Unpack language profiles, see <link linkend="langdetect" endterm="langdetectterm"/>.
+Install other software, like calibre, pdftotext, djvutxt, wv, tesseract.
+Run (after configuring) with mvn package, mvn jetty:run
+</para>
+</chapter>
+<chapter>
+<title>
+Architecture
+</title>
+<para>
+  This chapter describes the components this application is comprised of.
+  <table>
+    <title>
+      Components
+    </title>
+    <tgroup cols="3">
+      <colspec colnum="1" colname="col1" colwidth="1*"/>
+      <colspec colnum="2" colname="col2" colwidth="1*"/>
+      <colspec colnum="3" colname="col3" colwidth="1*"/>
+      <thead>
+	<row>
+	  <entry>
+	    Component
+	  </entry>
+	  <entry>
+	    Description
+	  </entry>
+	  <entry>
+	    Threaded
+	  </entry>
+	</row>
+      </thead>
+      <tbody>
+	<row>
+	  <entry>
+	    GUI client
+	  </entry>
+	  <entry>
+	    Vaadin based
+	  </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	</row>
+	<row>
+	  <entry>
+	    Traverser
+	  </entry>
+	  <entry>
+	    Traverse the file system(s)
+	  </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	</row>
+	  <row>
+	    <entry>
+	      Text converter
+	    </entry>
+	    <entry>
+	      Uses Tika
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Alternate converter
+	    </entry>
+	    <entry>
+	      Uses not Tika
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Indexer
+	    </entry>
+	    <entry>
+	      Uses Solr/Lucene/Elasticsearch
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Searcher
+	    </entry>
+	    <entry>
+	      Uses Solr/Lucene/Elasticsearch
+	    </entry>
+	  <entry>
+	    Yes (no own thread, via controller)
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Classifier
+	    </entry>
+	    <entry>
+	      Uses Mahout
+	    </entry>
+	  <entry>
+	    No
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Database
+	    </entry>
+	    <entry>
+	      Saves data
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Global locker
+	    </entry>
+	    <entry>
+	      Uses Zookeeper
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      Control
+	    </entry>
+	    <entry>
+	      Controlling
+	    </entry>
+	  <entry>
+	    Yes
+	  </entry>
+	  </row>
+	  </tbody>
+	</tgroup>
+    </table>
+</para>
+</chapter>
+<chapter>
+  <title>
+    Configuration
+  </title>
+  <para>
+Sample files are available.
+For standalone single node: aether.prop.standalone
+For standalone using cloud services: aether.prop.cloud
+For two nodes: aether.prop.testnode1 aether.prop.testnode2
+  </para>
+  <para>
+There are two modes, standalone and multi mode.
+The standalone is set if hibernate or lucene is chosen.
+(Assuming multinodes connect to the same Solr/Elasticsearch and Hbase, it is not checked.)
+If standalone is used, the nodename will be localhost automatically,
+otherwise a nodename will have to be set.
+Standalone will use no global locker.
+  </para>
+  <para>
+    The content source is a directory list in dirlist.
+The directory list may be ordinary, local filesystem, or it may be HDFS or Swift.
+(More about HDFS and Swift later)
+The exceptions are to be listedd in dirlistnot.
+  </para>
+  <para>
+    The indexed filenames and metadata are stored in a database.
+This may either be the standalone H2 (with Hibernate) or the multinode Hbase (with or without DataNucleus).
+The standalone is currently too slow to handle as big disks/sizes as multimode.
+  </para>
+  <para>
+    The indexed file content and metadata are stored in Lucene, Elasticsearch or Solr.
+Lucene is the standalone, while Solr and Elasticsearch is the multinode.
+  </para>
+  <para>
+    If using multinode, the setting distributedlockmode is for setting
+big or small granularity using Curator, if the mode is big only
+one node may use the indexer or other write operations at one single time.
+  </para>
+  <para>
+    If using the small granularity, the locking will be on the level on the
+indexed item.
+  </para>
+  <para>
+    If using multinode, and setting distributedprocess, it will use
+Hazelcast to distribute through the nodes, and use Hazelcast locking.
+
+Configure aether.prop:
+  </para>
+  <sect1>
+    <title>
+      Mandatory configuration.
+    </title>
+    <sect2>
+    <title>
+      General
+    </title>
+    <para>
+      Which directories to include, and subdirectories to exclude.
+      <programlisting>
+dirlist=file:/home/dir/dir1,hdfs:/home/dir/dir2...,swift:/container/dir3
+dirlistnot=/home/dir/dir1/tmp (just pure /, no file:/hdfs:)
+      </programlisting>
+Known uses are file, hdfs, swift and none (defaulting to file).
+    </para>
+    <para>
+Name of the node.
+<programlisting>
+  Nodename=...
+</programlisting>
+(But if db is hibernate or lucene, it is localhost anyway).
+    </para>
+    <para>
+How many to max reindex each turn, or 0 for no limit.
+<programlisting>
+reindexlimit=10000
+</programlisting>
+    </para>
+    <para>
+How many to max index each turn, or 0 for no limit.
+<programlisting>
+indexlimit=10000
+</programlisting>
+
+The (re)indexing limits may be exceeded a bit, due to the parallell nature
+of the application.
+    </para>
+    <para>
+Don't try to index if the file has failed this many times
+<programlisting>
+  failedlimit=10
+</programlisting>
+    </para>
+    <para>
+Number of seconds for Tika conversion timeout
+<programlisting>
+tikatimeout=600
+</programlisting>
+    </para>
+<para>
+Number of seconds for Other conversion timeout
+<programlisting>
+  othertimeout=600
+</programlisting>
+    </para>
+    </sect2>
+    <sect2>
+      <title>
+	Database
+      </title>
+      <para>
+The database may be HBase, DataNucleus/HBase or Hibernate/H2.
+      </para>
+      <sect3>
+	<title>
+	Hibernate/H2
+	</title>
+	<para>
+	  Hibernate/H2 relevant settings:
+	  <programlisting>
+db=hibernate
+h2dir=...
+	  </programlisting>
+Hibernate/H2 is for standalone only.
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	Hbase
+	</title>
+	<para>
+	  Hbase relevant settings:
+	<programlisting>
+db=hbase
+hbasequorum=localhost
+hbaseport=2181
+hbasemaster=localhost:2181
+	</programlisting>
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	DataNucleus/HBase
+	</title>
+	<para>
+	  DataNucleus/HBase elevant settings:
+	  <programlisting>
+db=datanucleus
+	  </programlisting>
+And before starting jetty, do this in a hbase shell:
+<programlisting>
+create 'IndexFiles', { NAME => 'IndexFiles' }
+create 'Files', { NAME => 'Files' }
+</programlisting>
+(A temporary fix until datanucleus creates it itself)
+	</para>
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>
+	Indexing/search
+      </title>
+      <para>
+Can be Lucene directly or Solr/Elasticsearch.
+Lucene is for standalone only.
+      </para>
+      <sect3>
+	<title>
+	Lucene
+	</title>
+	<para>
+	  Lucene relevant settings:
+	  <programlisting>
+index=lucene
+lucenepath=...
+	  </programlisting>
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	Solr
+	</title>
+	<para>
+	  Solr relevant settings:
+	  <programlisting>
+index=solr
+solrurl=http://localhost:8983/solr/mystuff
+
+mkdir -p server/solr/MYCORE/conf
+rsync -v -a server/solr/configsets/basic_configs/conf/  server/solr/MYCORE/conf
+	  </programlisting>
+if creating manually, create server/solr/MYCORE/core.properties
+go to server/solr/MYCORE/conf
+in server/solr/MYCORE/conf apply patch with
+<programlisting>
+  patch -p0 &lt; core.nostore.patch
+</programlisting>
+(or core.store.patch, if using highlight and morelikethis)
+	</para>
+      </sect3>
+      <sect3>
+	<title>
+	Elasticsearch
+	</title>
+	<para>
+	  Elasticsearch relevant settings:
+	  <programlisting>
+index=elastic
+elastichost=localhost
+elasticport=9300
+
+No changes needing, since Elastic stores and highlights.
+	  </programlisting>
+	  The search is extremely basic (due to no found client side query parser yet).
+<programlisting>
+Something.
+</programlisting>
+	</para>
+      </sect3>
+      <sect3 id="langdetect">
+<title id="langdetectterm">Langdetect</title>
+<para>
+Download from <ulink url="https://code.google.com/p/language-detection/wiki/Downloads">here</ulink>,
+and put profiles* in the same dir as pom.xml.
+Languages to be used for classification, configure (default en) with:
+<programlisting>
+  languages=en,fr
+</programlisting>
+</para>
+      </sect3>
+    </sect2>
+    <sect2>
+<title>
+Distributed mode
+</title>
+<para>
+There are two config settings for this.
+With distributedlockmode=small there is a lock for each index entry.
+With distributedprocess=true the files are placed in a distributed queue.
+</para>
+    </sect2>
+  </sect1>
+  <sect1>
+  <title>
+Non-mandatory
+  </title>
+  <sect2>
+  <title>
+   General
+  </title>
+  <para>
+    If using Hadoop HDFS
+    <programlisting id="hdfsconffs">
+hdfsconffs=hadoop uri (sets fs.default.name)
+    </programlisting>
+    see also <link linkend="hadoop" endterm="hadoopterm"/>.
+
+    If using Openstack Swift
+    <programlisting>
+      swiftconfurl=the authentication url
+      swiftconfuser=the user:tenant
+      swiftconfkey=authentication key
+      swiftconfcontainer=container
+    </programlisting>
+    
+    Where to log
+    <programlisting>
+logdir=...
+    </programlisting>
+    Whether to enable downloading
+    <programlisting>
+downloader=true
+    </programlisting>
+    Whether to use authenication
+    <programlisting>
+      authenticate=true
+    </programlisting>
+The admin user has username/password admin/admin, and the user has user/user.
+The admin has access to the control panel and configuration, and will see more search results than the user.
+The admin user will get results regarding indexing time usage and error messages from the indexing.
+If no authentication is used, everything is open.
+Accessing from localhost will determine admin right in both cases.
+<programlisting>
+mltcount=...
+mltmindf=...
+mltmintf...
+</programlisting>
+For setting More Like This search document count, minimum term frequency and minimum document frequency.
+These settings may influence the time More Like Queries take.
+  </para>
+  </sect2>
+  <sect2>
+<title>
+  Classifying
+</title>
+<para>
+There are two types, Mahout and OpenNLP.
+</para>
+<sect3>
+<title>
+  Mahout
+</title>
+<para>
+Mahout relevant settings:
+
+For the older map reduce based:
+<programlisting>
+classify=mahout
+mahoutbasepath=.../mahoutc/LANG
+mahoutalgorithm=bayes (or cbayes)
+mahoutmodelpath=.../mahout/model
+mahoutlabelindexfilepath=.../mahout/labelindex
+mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
+mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
+mahoutconffs=hadoop uri (sets fs.default.name in this specific case)
+</programlisting>
+For the newer Spark based:
+<programlisting id="mahoutconf">
+classify=mahoutspark
+mahoutbasepath=.../mahoutc/LANG
+mahoutalgorithm=bayes (or cbayes)
+mahoutmodelpath=.../mahout/model
+mahoutdictionarypath=.../mahout/dataset-vectors/dictionary.file-0
+mahoutdocumentfrequencypath=.../mahout/dataset-vectors/df-count/part-r-00000
+mahoutconffs=hadoop uri (sets fs.default.name in this specific case)
+mahoutsparkmaster=spark-master
+</programlisting>
+The LANG will be replaced by the detected languages configured, so the files
+and directories will be required to exist.
+The mahoutbasepath, if existing, will just be prepended to the other paths,
+which then will just indicate relative paths.
+For more about Spark, see
+<link linkend="spark" endterm="sparkterm"/>.
+</para>
+<para>
+Training could be based on the Bayes part of 
+examples/bin/classify-20newsgroups.sh in the Mahout distribution, more about this here: <link linkend="mahout" endterm="mahoutterm"/>.
+</para>
+</sect3>
+<sect3>
+<title>
+  Spark Ml
+</title>
+<para>
+Spark Ml relevant settings:
+
+For the Spark Ml:
+<programlisting id="sparkmlconf">
+  classify=sparkml
+ not yet:  sparkmlalgorithm=bayes
+ sparkmlmodelpath=.../spark/model
+ sparkmllabelindexpath=...path for labelindex
+sparkmaster=spark-master
+</programlisting>
+The LANG will be replaced by the detected languages configured, so the files
+and directories will be required to exist.
+For more about Spark, see
+<link linkend="sparkml" endterm="sparkmlterm"/>.
+</para>
+<para>
+  Check the directory spark for sample code for training model.
+  The shell sub directory contains code to be run in the Spark shell.
+  The createmodel does the same, and is run with spark-submit.
+
+  <programlisting>
+    sbt assembly
+    spark-submit --class roart.NaiveBayesSpark target/scala-2.10/createmodel-assembly-1.0.jar
+  </programlisting>
+  The directory structure for this must have the categories as directories, and in the the documents to be learned.
+  Both save a model and labelmap.
+</para>
+</sect3>
+<sect3>
+<title>
+  OpenNLP
+</title>
+<para>
+  OpenNLP relevant settings:
+  <programlisting>
+classify=opennlp
+opennlpmodelpath=.../opennlp/LANG-doccat.bin
+  </programlisting>
+The LANG will be replaced by the detected languages configured, so the file
+will be required to exist.
+</para>
+<para>
+Training is standard, done with ./bin/opennlp DoccatTrainer in the
+OpenNLP distribution.
+</para>
+</sect3>
+  </sect2>
+  <sect2>
+<title>
+  Zookeeper
+</title>
+<para>
+  Configured by
+  <programlisting>
+    zookeeper=...
+  </programlisting>
+Should be used in a multinode environment (not yet mandatory).
+</para>
+  </sect2>
+  <sect2>
+<title>
+  Highlight and MoreLikeThis
+</title>
+<para>
+  Configured by
+  <programlisting>
+highlightmlt=true
+  </programlisting>
+If using Solr, also
+
+go to server/solr/MYCORE/conf
+in server/solr/MYCORE/conf apply patch with
+<programlisting>
+patch -p0 &lt; core.store.patch
+</programlisting>
+Beware that this also stores the content, and increases disk space usage.
+</para>
+  </sect2>
+  <sect2>
+<title>
+  Metadata
+</title>
+<para>
+Tika is providing the metadata, but it is not always sufficient.
+Therefore, have added a property Files-Content-Type for content type probed
+by the Files class, in cases not supported by Tika.
+</para>
+  </sect2>
+  </sect1>
+</chapter>
+<chapter>
+  <title>
+    GUI
+  </title>
+  <sect1>
+    <title>
+      Search
+    </title>
+<para>
+Use Lucene syntax
+Searchable fields:
+Id, lang, metadata, content (Lucene), content (Solr), something (Elasticsearch).
+
+The metadata is stored by key/value pairs, and are searchable by metadata:key\:text (note the escaping of the :).
+
+Query parser is behaving differently according to Lucene or Solr, see specific docs.
+
+If searching in Solr with other search fields than default, they will set the query parser type, so you will not have to write {!queryparser} to use them.
+
+More about the fields of Lucene/Solr, see <link linkend="solrfields">here</link>.
+
+For Elasticsearch, ...
+  </para>
+  <para>
+<ulink url="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser">The Standard Query Parser</ulink>
+  </para>
+  <para>
+<ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers">Other parsers</ulink>
+  </para>
+  <para>
+    For full description of all parsers, see <link linkend="solrlucene">here</link>.
+  </para>
+  <para>
+Search results.
+The admin user gets more fields.
+Note that when hovering over metadata, the metadata is shown.
+Under "highlight and similar", by clicking the highlighted part, you will trigger a search for similar documents (More Like This).
+</para>
+  </sect1>
+<sect1>
+  <title>
+    Control panel
+  </title>
+  <para>
+The control panel is admin functionality not seen by the user.
+Here we see adding content from the file system, index, reindexing, consistency checks, cleaning, statistics, database querying.
+  </para>
+  <para>
+Index filesystem new items
+Button: Crawl the whole filesystem for new, and index.
+Textfield: Use only the given path.
+Filesystem index on changed md5 checks if md5 has changed, and reindexes.
+  </para>
+  <para>
+Filesystem add new
+Button: Add new files from the filesystem, but do not index.
+Textfield: Use only the given path.
+  </para>
+  <para>
+Index non-indexed items:
+Button: Index all previously non-indexed (including failed).
+Textfield: Use only the given path.
+Reindex/index of suffix: Try to reindex/index all known items with suffix.
+  </para>
+  <para>
+Reindex, textfield, use only the given path.
+Reindex on before or after given date.
+  </para>
+  <para>
+Reindex specific languages, found and configured.
+  </para>
+  <para>
+Delete from database and Lucene/Solr/Elasticsearch (but does not actually delete from disk).
+  </para>
+  <para>
+Consistency checks, with cleaning.
+It lists files not currenly present in the filesystem (will be cleaned).
+It also lists non-existing files (encoding problems) and new files.
+  </para>
+  <para>
+Stats, listing non-indexed, memory usage or overlapping directories.
+  </para>
+  <para>
+Database, get items related to md5 id.
+Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language. See more about the database fields <link linkend="datafields">here</link>. For the possibility of doing external search tools when using HBase, see also <link linkend="hue" endterm="hueterm">Hue</link>.
+  </para>
+  <para>
+To get the configuration of other nodes.
+  </para>
+</sect1>
+  <sect1>
+    <title>
+The node configuration
+    </title>
+    <para>
+      If you are running the default in test mode, it is also possible to dynamically change the search engines and machine learning.
+    </para>
+    <para>
+Setting limits for how many times an indexing may fail before being ignored, limits for max indexing and reindexing, timeout for tika and other (alternative) conversion.
+
+Settings for More Like This, max number of hits, minimum term frequency and minimum doc frequency.
+    </para>
+  </sect1>
+  <sect1>
+    <title>
+      General
+    </title>
+<para>
+Status label has rows for f(ile) queue t(ika) queue, o(ther) queue, i(ndex) queue, queued / running.
+Also, a d for counting database objects which are finished or to be temporarily saved.
+</para>
+  </sect1>
+</chapter>
+<chapter>
+  <title>
+    Caution
+  </title>
+  <para>
+Multitasking issues, some locking may be insufficient, it is at best at a very coarse level.
+For standalone the ordinary java locking is using.
+For multinode zookeeper is needed, or some concurrent modification will happen.
+With zookeeper, only node may index at a given time due to database access.
+  </para>
+</chapter>
+<chapter>
+  <title>
+Changes
+  </title>
+  <para>
+Since 0.4, with 0.5:
+Solr and Lucene 5.
+Highlight and MoreLikeThis.
+<programlisting>
+  opennlpmodelpath=/home/user/data/opennlp/LANG-doccat.bin (before only en)
+</programlisting>
+new property
+<programlisting>
+  mahoutbasepath=/home/user/data/mahoutc/LANG
+</programlisting>
+if present the rest just added, otherwise, use with old full path.
+mahoutlabelindexfilepath=/labelindex (before /home/user/data/mahoutc/labelindex)
+
+Classifier multilanguage support
+new property comma-separated languages
+  </para>
+  <para>
+0.6:
+Metadata change handling, stored, multi-valued.
+No more limit check for using alternative converters, only do that if tika crashes.
+Java 8.
+Usage of mime type probing.
+DataNucleus table changes.
+  </para>
+  <para>
+0.7:
+New distributed mode, with usage of Curator and Hazelcast.
+A lot of refactoring have been done.
+  </para>
+  <para>
+0.8:
+Redoing configuration, more validity checking.
+Multinode configuration.
+  </para>
+  <para>
+0.9:
+Mahout spark.
+</para>
+<para>
+0.10:
+Elasticsearch.
+  </para>
+</chapter>
+<chapter>
+  <title>
+    Version numbers of external software
+  </title>
+  <para>
+    <itemizedlist>
+      <title>
+	Version numbers of external software
+      </title>
+      <listitem>
+	<para>
+	  Solr 6.2.1
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Elasticsearch 5.0.2
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+Hbase 1.2.1
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+Mahout 0.12.0
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+Spark 1.6.1
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+OpenNLP 1.5.3
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+Curator 2.9.1
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Hazelcast 3.5.4
+	  </para>
+      </listitem>
+      <listitem>
+	<para>
+	  Hadoop (2.7.1)
+	  </para>
+      </listitem>
+    </itemizedlist>
+</para>
+</chapter>
+<chapter>
+  <title>
+    External software configuration
+  </title>
+  <sect1 id="hbase">
+    <title id="hbaseterm">
+      Hbase
+    </title>
+    <para>
+      No special needs, in conf/hbase-site.xml, just set the basic hbase.rootdir and hbase.zookeeper.property.dataDir.
+      For more heavy usage, increase the number of open files with
+      <programlisting>
+	ulimit -n
+      </programlisting>
+      Then start Hbase with
+      <programlisting>
+	./bin/start-hbase.sh &amp;
+      </programlisting>
+      If using Hue in addition, also start Thrift with
+      <programlisting>
+	./bin/hbase thrift start &amp;
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1 id="solr">
+    <title id="solrterm">
+      Solr
+    </title>
+    <para>
+      Solr is started with
+      <programlisting>
+	./bin/solr start &amp;
+      </programlisting>
+      If heavy duty, add also more memory, like -m 8g.
+    </para>
+  </sect1>
+  <sect1 id="elasticsearch">
+    <title id="elasticsearchterm">
+      Elasticsearch
+    </title>
+    <para>
+      Elasticsearch is started with
+      <programlisting>
+	./bin/elasticsearch &amp;
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1 id="hadoop">
+    <title id="hadoopterm">
+      Hadoop
+    </title>
+    <para>
+      The etc/hadoop/core-site.xml fs.default.name is set, the corresponding setting in aether.prop is hdfsconffs= (see <link linkend="hdfsconffs">here</link>).
+      Then there are no more corresponding settings, the etc/hadoop/hdfs-site.xml got dfs.name.dir, dfs.data.dir, fs.checkpoint.dir and etc/hadoop/mapred-site.xml mostly contains repeated values, like the settings mapred.job.tracker, mapred.local.dir, mapreduce.cluster.local.dir.
+      Hadoop is started with (the now deprecated)
+      <programlisting>
+	./sbin/start-all.sh &amp;
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1 id="swift">
+    <title id="swiftterm">
+      Swift
+    </title>
+    <para>
+      For Swift itself, I used http://serverascode.com/2014/06/12/run-swift-in-docker.html.
+    </para>
+    <para>
+      Beware of uploading empty directories, they will be seen as empty files.
+    </para>
+  </sect1>
+  <sect1 id="spark">
+    <title id="sparkterm">
+      Spark
+    </title>
+    <para>
+      My current has no configuration. The only configuration lies in my current startup scripts, which goes:
+      <programlisting>
+	SPARK_MASTER_IP=127.0.0.1  ./sbin/start-master.sh --webui-port 8088 &amp;
+	./sbin/start-slave.sh  -c 1 -m 1G spark://127.0.0.1:7077 &amp;
+      </programlisting>
+  </para>
+  </sect1>
+  <sect1 id="sparkml">
+    <title id="sparkmlterm">
+      Spark Ml
+    </title>
+    <para>
+
+    </para>
+    <para>
+      My current has no configuration. The only configuration lies in my current startup scripts, which goes:
+      <programlisting>
+	SPARK_MASTER_IP=127.0.0.1  ./sbin/start-master.sh --webui-port 8088 &amp;
+	./sbin/start-slave.sh  -c 1 -m 1G spark://127.0.0.1:7077 &amp;
+      </programlisting>
+  </para>
+  </sect1>
+  <sect1 id="mahout">
+    <title id="mahoutterm">
+      Mahout
+    </title>
+    <para>
+      I basically modified the examples/bin/classify-20newsgroups.sh in Mahout, adding
+      <programlisting>
+	export MASTER=spark://127.0.0.1:7077
+	export SPARK_HOME=... spark install directory ...
+	WORK_DIR=~/usr/data/mahoutspark
+	alg=naivebayes
+      </programlisting>
+      The WORK_DIR will have to correspond with the mahout directories given in aether.prop. The alg=naivebayes and cnaivebayes corresponds to mahoutalgorithm=bayes and cbayes, correspondingly. The downloading and unpacking of the newsgroups can be replaced with for instance the top level Dewey classes having directories philosophy and psychology, religion, social sciences etc, each containing sample books or documents used to make the classification model. For more about the settings in aether.prop, see <link linkend="mahoutconf">here</link>.
+    </para>
+  </sect1>
+  <sect1 id="hue">
+    <title id="hueterm">
+      Hue
+    </title>
+    <para>
+      Hue is simple to start and grasp, just do
+      <programlisting>
+	hue/build/env/bin/supervisor
+      </programlisting>
+    </para>
+  </sect1>
+</chapter>
+<chapter id="datafields">
+  <title>
+    Database fields
+  </title>
+  <para>
+    This is a description of the used database fields.
+Database, get items related to md5 id.
+Database search, fields indexed, convertsw, classification, failedreason, noindexreason, timeoutreason, language.
+<table>
+  <title>
+    Database fields
+  </title>
+  <tgroup cols="3">
+    <colspec colnum="1" colname="col1" colwidth="1*"/>
+    <colspec colnum="2" colname="col2" colwidth="1*"/>
+    <colspec colnum="3" colname="col3" colwidth="1*"/>
+    <thead>
+      <row>
+	<entry>
+	  Field
+	</entry>
+	<entry>
+	  Description
+	</entry>
+	<entry>
+	  Searchable
+	</entry>
+      </row>
+    </thead>
+  <tbody>
+    <row>
+      <entry>
+	md5
+      </entry>
+      <entry>
+	The md5 sum of the item
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	indexed
+      </entry>
+      <entry>
+	Indexed or not
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	timestamp
+      </entry>
+      <entry>
+	Time index attempted
+      </entry>
+      <entry>
+	No
+      </entry>
+    </row>
+    <row>
+      <entry>
+	timeclass
+      </entry>
+      <entry>
+	Time spent in classifcation
+      </entry>
+      <entry>
+	No
+      </entry>
+    </row>
+    <row>
+      <entry>
+	convertsw
+      </entry>
+      <entry>
+	Software used to convert to text
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	classification
+      </entry>
+      <entry>
+	Classification result
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	failedreason
+      </entry>
+      <entry>
+	Exception for failed conversion
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	noindexreason
+      </entry>
+      <entry>
+	Exception for failed indexing
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	language
+      </entry>
+      <entry>
+	Detected language
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	failed
+      </entry>
+      <entry>
+	Number of times indexing failed
+      </entry>
+      <entry>
+	No
+      </entry>
+    </row>
+  </tbody>
+  </tgroup>
+</table>
+For the possibility of doing external search tools when using HBase, see also <link linkend="hue" endterm="hueterm">Hue</link>.
+  </para>
+</chapter>
+<chapter id="solrfields">
+  <title>
+    Solr/Lucene fields
+  </title>
+  <para>
+    Don't forget Elasticsearch...
+    This is a description of the Solr/Lucene fields.
+    Id, lang, metadata, content (Lucene), content (Solr).
+  </para>
+<table>
+  <title>
+    Solr/Lucene fields
+  </title>
+  <tgroup cols="3">
+    <colspec colnum="1" colname="col1" colwidth="1*"/>
+    <colspec colnum="2" colname="col2" colwidth="1*"/>
+    <colspec colnum="3" colname="col3" colwidth="1*"/>
+    <thead>
+      <row>
+	<entry>
+	  Field
+	</entry>
+	<entry>
+	  Description
+	</entry>
+	<entry>
+	  Searchable
+	</entry>
+      </row>
+    </thead>
+  <tbody>
+    <row>
+      <entry>
+	id
+      </entry>
+      <entry>
+	The md5 sum of the item
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	lang
+      </entry>
+      <entry>
+	The detected language
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	metadata
+      </entry>
+      <entry>
+	The detected metadata
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	content
+      </entry>
+      <entry>
+	The searchable content
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+    <row>
+      <entry>
+	classification
+      </entry>
+      <entry>
+	The classification result of the item
+      </entry>
+      <entry>
+	Yes
+      </entry>
+    </row>
+  </tbody>
+  </tgroup>
+</table>
+</chapter>
+<chapter id="solrlucene">
+  <title>
+    Solr/Lucene search
+  </title>
+  <para>
+    Don't forget Elasticsearch...
+    This chapter covers Solr and Lucene search.
+    <table> <title> Lucene search </title> <tgroup cols="2"> <colspec
+colnum="1" colname="col1" colwidth="1*"/> <colspec colnum="2"
+colname="col2" colwidth="1*"/> <thead> <row> <entry> Query type
+</entry> <entry> Description </entry> </row> </thead> <tbody> <row>
+<entry> <ulink
+url="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser">Standard</ulink>
+</entry> <entry> </entry> </row> <row> <entry> <ulink
+url="">Analyzing</ulink> </entry> <entry> </entry> </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-ComplexPhraseQueryParser">Complexphrase</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/The+Extended+DisMax+Query+Parser">Extendable</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://lucene.apache.org/core/6_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html">Multi</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="">Surround</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://lucene.apache.org/core/6_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html">Classic</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://lucene.apache.org/core/6_0_0/queryparser/org/apache/lucene/queryparser/simple/package-summary.html">Simple</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+    <table>
+      <title>
+	Solr search
+      </title>
+      <tgroup cols="2">
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="1*"/>
+	<thead>
+	  <row>
+	    <entry>
+	      Query type
+	    </entry>
+	    <entry>
+	      Description
+	    </entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-LuceneQueryParser">Default</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-LuceneQueryParser">Lucene</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-ComplexPhraseQueryParser">Complexphrase</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-SurroundQueryParser">Surround</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>
+	      <ulink url="https://cwiki.apache.org/confluence/display/solr/Other+Parsers#OtherParsers-SimpleQueryParser">Simple</ulink>
+	    </entry>
+	    <entry>
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+</para>
+</chapter>
+<chapter>
+  <title>
+    Database dumps
+  </title>
+  <para>
+    This is how to make database dumps.
+    <programlisting>
+echo "scan 'files',{COLUMNS=>'fi'}" | ./bin/hbase shell > /tmp/hbf
+echo "scan 'index',{COLUMNS=>'if'}" | ./bin/hbase shell > /tmp/hbi
+    </programlisting>
+</para>
+</chapter>
+</book>
