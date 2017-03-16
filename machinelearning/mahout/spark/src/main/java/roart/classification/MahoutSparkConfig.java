@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.mahout.classifier.naivebayes.ComplementaryNBClassifier;
 import org.apache.mahout.classifier.naivebayes.NBModel;
 import org.apache.mahout.classifier.naivebayes.StandardNBClassifier;
+import org.apache.spark.api.java.JavaSparkContext;
 
 public class MahoutSparkConfig implements java.io.Serializable {
 	
@@ -19,4 +20,5 @@ public class MahoutSparkConfig implements java.io.Serializable {
     
     public boolean bayes = true;
     
+    public JavaSparkContext jsc;
 }

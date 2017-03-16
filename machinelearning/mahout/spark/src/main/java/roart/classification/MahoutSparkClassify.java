@@ -106,6 +106,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 				sparkconf.setJars(jars);
 				//SparkContext sc = new SparkContext(sparkconf);
 				JavaSparkContext jsc = new JavaSparkContext(sparkconf);
+				conf.jsc = jsc;
 				SparkDistributedContext sdc = new SparkDistributedContext(jsc.sc());
 				DistributedContext dc = sdc;
 				conf.nbm = NBModel.dfsRead(modelPath, dc);
@@ -169,7 +170,8 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	}
 
 	public MachineLearningConstructorResult destroy(String nodename) {
-		// TODO close context
+		conf.jsc.stop();
+		// TODO propagate
 		return null;
 	}
 
