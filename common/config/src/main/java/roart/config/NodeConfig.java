@@ -48,6 +48,7 @@ public class NodeConfig {
     public String mahoutalgorithm = null;
     public String mahoutsparkmaster = null;
 
+    public String sparkmlbasepath = null;
     public String sparkmlmodelpath = null;
     public String sparkmllabelindexpath = null;
     public String sparkmaster = null;

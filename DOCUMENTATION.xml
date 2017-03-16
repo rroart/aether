@@ -557,7 +557,8 @@ Spark Ml relevant settings:
 For the Spark Ml:
 <programlisting id="sparkmlconf">
   classify=sparkml
- not yet:  sparkmlalgorithm=bayes
+  not yet:  sparkmlalgorithm=bayes
+  sparkmlbasepath=...
  sparkmlmodelpath=.../spark/model
  sparkmllabelindexpath=...path for labelindex
 sparkmaster=spark-master
@@ -574,7 +575,7 @@ For more about Spark, see
 
   <programlisting>
     sbt assembly
-    spark-submit --class roart.NaiveBayesSpark target/scala-2.10/createmodel-assembly-1.0.jar
+    spark-submit --class roart.NaiveBayesSpark target/scala-2.11/createmodel-assembly-1.0.jar
   </programlisting>
   The directory structure for this must have the categories as directories, and in the the documents to be learned.
   Both save a model and labelmap.
@@ -812,6 +813,9 @@ Mahout spark.
 <para>
 0.10:
 Elasticsearch.
+Spark ML.
+Openstack Swift.
+Refactor in microservices.
   </para>
 </chapter>
 <chapter>
@@ -845,7 +849,12 @@ Mahout 0.12.0
       </listitem>
       <listitem>
 	<para>
-Spark 1.6.1
+Spark 1.5.2 (for the Mahout Spark)
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+Spark 2.1.0 (for the Spark ML)
 	</para>
       </listitem>
       <listitem>

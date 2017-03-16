@@ -1,5 +1,6 @@
 import java.io.File
 
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.types.StringType
@@ -28,12 +29,12 @@ StructField("label", DoubleType) ::
 StructField("sentence", StringType) :: Nil)
 
 val labelToNumeric = createLabelMap(traindir)
-val labelDF = sqlContext.createDataFrame(labelToNumeric.toSeq).toDF("cat", "id")
+val labelDF = spark.createDataFrame(labelToNumeric.toSeq).toDF("cat", "id")
 labelDF.write.mode(SaveMode.Overwrite).save("my.label")
 
 val trainfiles = sc.wholeTextFiles(traindir + "/*").map(rawText => Row(rawText._1.split("/").last, labelToNumeric(rawText._1.split("/").init.last), rawText._2))
 
-val traindata = sqlContext.createDataFrame(trainfiles, schema)
+val traindata = spark.createDataFrame(trainfiles, schema)
 
 val tokenizer = new Tokenizer().setInputCol("sentence").setOutputCol("words")
 val hashingTF = new HashingTF().setInputCol("words").setOutputCol("rawFeatures")
@@ -70,7 +71,7 @@ model.write.overwrite.save("my.model")
 val predictiontrain = model.transform(traindata)
 val predictiontest = model.transform(testdata)
 
-val evaluator = new MulticlassClassificationEvaluator().setLabelCol("label").setPredictionCol("prediction").setMetricName("precision")
+val evaluator = new MulticlassClassificationEvaluator().setLabelCol("label").setPredictionCol("prediction").setMetricName("accuracy")
 val accuracytrain = evaluator.evaluate(predictiontrain)
 val accuracytest = evaluator.evaluate(predictiontest)
 println("Accuracy " + accuracytrain + " : " + accuracytest)

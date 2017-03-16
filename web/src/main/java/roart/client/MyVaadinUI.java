@@ -551,6 +551,8 @@ public class MyVaadinUI extends UI
       }
         if (config.classify.equals(ConfigConstants.SPARKML)) {
             classifyConfig.setCaption("Spark ML settings");
+            Label bashpathLabel = new Label(ConfigConstants.SPARKMLBASEPATH + DELIMITER + config.sparkmlbasepath);               
+            classifyConfig.addComponent(bashpathLabel);
             Label modelpathLabel = new Label(ConfigConstants.SPARKMLMODELPATH + DELIMITER + config.sparkmlmodelpath);               
             classifyConfig.addComponent(modelpathLabel);
             Label labelindexpathLabel = new Label(ConfigConstants.SPARKMLLABELINDEXPATH + DELIMITER + config.sparkmllabelindexpath);               

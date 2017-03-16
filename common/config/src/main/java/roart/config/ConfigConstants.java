@@ -30,6 +30,7 @@ public class ConfigConstants {
     public static final String BAYES = "bayes";
     public static final String CBAYES = "cbayes";
     public static final String SPARKML = "sparkml";
+    public static final String SPARKMLBASEPATH = "sparkmlbasepath";
     public static final String SPARKMLMODELPATH = "sparkmlmodelpath";
     public static final String SPARKMLLABELINDEXPATH = "sparkmllabelindexpath";
     public static final String SPARKMASTER = "sparkmaster";

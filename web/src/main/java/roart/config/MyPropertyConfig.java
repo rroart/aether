@@ -193,9 +193,11 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutsparkmaster = mahoutsparkmaster;
         }
         if (classify != null && classify.equals(ConfigConstants.SPARKML)) {
+            String sparkmlbasepath = getString(ConfigConstants.SPARKMLBASEPATH, null, false, false, null);
             String sparkmlmodelPath = getString(ConfigConstants.SPARKMLMODELPATH, null, true, true, null);
             String sparkmllabelindexPath = getString(ConfigConstants.SPARKMLLABELINDEXPATH, null, true, true, null);
             String sparkmaster = getString(ConfigConstants.SPARKMASTER, null, true, true, null);
+            conf.sparkmlbasepath = sparkmlbasepath;
             conf.sparkmlmodelpath = sparkmlmodelPath;
             conf.sparkmllabelindexpath = sparkmllabelindexPath;
             conf.sparkmaster = sparkmaster;
