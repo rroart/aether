@@ -103,6 +103,13 @@
       </includes>
       <outputDirectory/>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/example</directory>
+      <includes>
+	<include>*</include>
+      </includes>
+      <outputDirectory>example</outputDirectory>
+    </fileSet>
   </fileSets>
   <!--files>
     <file>
