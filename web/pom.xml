@@ -82,6 +82,25 @@
 	</configuration>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0-alpha-2</version>
+        <executions>
+           <!-- Associate the read-project-properties goal with the initialize phase, to read the properties file. -->
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>${session.executionRootDirectory}/web/aether.prop</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
 	<groupId>com.vaadin</groupId>
 	<artifactId>vaadin-maven-plugin</artifactId>
 	<version>${vaadin.plugin.version}</version>
