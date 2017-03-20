@@ -10,7 +10,7 @@
         <version>0.10-SNAPSHOT</version>
       </parent>
       
-      <artifactId>distribution</artifactId>
+      <artifactId>aether-distribution</artifactId>
      
       <packaging>pom</packaging>
      
