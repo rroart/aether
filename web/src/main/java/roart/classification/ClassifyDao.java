@@ -10,6 +10,7 @@ import java.util.HashSet;
 
 import roart.config.ConfigConstants;
 import roart.model.ResultItem;
+import roart.util.Constants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,12 @@ public class ClassifyDao {
 	}
 	if (classify != null) {
 		// TODO propagate error
-		classify.destructor();
+		try {
+			classify.destructor();
+        } catch (Exception e) {
+        	// TODO propagate
+            log.error(Constants.EXCEPTION, e); 
+        }
 	}
 	if (true || classify == null) {
 		// TODO make OO of this
