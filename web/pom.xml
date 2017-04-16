@@ -15,7 +15,7 @@
   <!--artifactId>akashic-disk-search-engine</artifactId-->
   <version>0.10-SNAPSHOT</version>
   <packaging>war</packaging>
-  <name>Aether Disk Search Engine</name>
+  <name>Aether Disk Search Engine Web</name>
   <!--name>Vaadin Web Application</name-->
   <build>
     <plugins>
@@ -81,12 +81,11 @@
 	  <failOnMissingWebXml>false</failOnMissingWebXml>
 	</configuration>
       </plugin>
-      <plugin>
+      <!--plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
         <version>1.0-alpha-2</version>
         <executions>
-           <!-- Associate the read-project-properties goal with the initialize phase, to read the properties file. -->
           <execution>
             <phase>initialize</phase>
             <goals>
@@ -99,7 +98,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
       <plugin>
 	<groupId>com.vaadin</groupId>
 	<artifactId>vaadin-maven-plugin</artifactId>
@@ -169,53 +168,6 @@
             </configuration>
           </execution-->
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>1.5.2</version>
-        <executions>
-            <execution>
-                <phase>prepare-package</phase>
-                <goals>
-                    <goal>replace</goal>
-                </goals>
-            </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>target/**/hibernate.cfg.xml</include>
-            <include>target/**/log4j.properties</include>
-	  </includes>
-            <replacements>
-                <replacement>
-                    <token>@h2dir@</token>
-                    <value>${h2dir}</value>
-                </replacement>
-                <replacement>
-                    <token>@logdir@</token>
-                    <value>${logdir}</value>
-                </replacement>
-            </replacements>
-        </configuration>
-      </plugin>
-      <plugin>
-                <groupId>org.datanucleus</groupId>
-                <artifactId>datanucleus-maven-plugin</artifactId>
-                <version>4.0.0-release</version>
-                <configuration>
-                    <api>JDO</api>
-                    <log4jConfiguration>${basedir}/datanucleus/log4j.properties</log4jConfiguration>
-                    <verbose>true</verbose>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>enhance</goal>
-                        </goals>
-                    </execution>
-                </executions>
       </plugin>
       <!-- we need to include ourselves in spark setJars -->
       <plugin>
@@ -349,51 +301,10 @@
       <artifactId>tika-core</artifactId>
       <version>${tika.version}</version>
     </dependency>
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>${hibernate.version}</version>
-      <type>pom</type>
-    </dependency-->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency>
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.5.6-Final</version>
-    </dependency-->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
-      <version>${ehcache.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.jdo</groupId>
-      <artifactId>jdo-api</artifactId>
-      <version>${jdo.version}</version>
-    </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <version>1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>ejb3-persistence</artifactId>
-      <version>3.3.2.Beta1</version>
     </dependency>
     <!--dependency>
       <groupId>org.apache.derby</groupId>
@@ -444,26 +355,6 @@
       <groupId>com.cybozu.labs</groupId>
       <artifactId>langdetect</artifactId>
       <version>1.1-20120112</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-client</artifactId>
-      <version>${hbase.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-hdfs</artifactId>
-      <version>${hadoop.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-      <version>${hadoop.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-client</artifactId>
-      <version>${hadoop.version}</version>
     </dependency>
     <!--dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -539,67 +430,11 @@
       <version>${snappyjava.version}</version>
       <scope>provided</scope>
     </dependency-->
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-core</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency>
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-hbase</artifactId>
-  <version>${datanucleus.version}</version>
-  <exclusions>
-    <exclusion>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase</artifactId>
-    </exclusion>
-  </exclusions>
-</dependency>
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-rdbms</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency>
-<!--dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-api-jpa</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency-->
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-api-jdo</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency>
 <!--dependency>
   <groupId>org.apache.zookeeper</groupId>
   <artifactId>zookeeper</artifactId>
   <version>${zookeeper.version}</version>
 </dependency-->
-<dependency>
-	<groupId>com.hazelcast</groupId>
-	<artifactId>hazelcast</artifactId>
-	<version>${hazelcast.version}</version>
-</dependency>
-<dependency>
-	<groupId>org.apache.curator</groupId>
-	<artifactId>curator-framework</artifactId>
-	<version>${curator.version}</version>
-</dependency>
-<!--dependency>
-	<groupId>org.apache.curator</groupId>
-	<artifactId>curator-recipes</artifactId>
-	<version>${curator.version}</version>
-</dependency-->
-<dependency>
-	<groupId>org.apache.curator</groupId>
-	<artifactId>curator-client</artifactId>
-	<version>${curator.version}</version>
-</dependency>
-<dependency>
-            <groupId>org.javaswift</groupId>
-            <artifactId>joss</artifactId>
-            <version>${joss.version}</version>
-        </dependency>
       <dependency>
   <groupId>com.fasterxml.jackson.core</groupId>
   <artifactId>jackson-databind</artifactId>
@@ -639,33 +474,34 @@
       <version>0.10-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>com.netflix.eureka</groupId>
-      <artifactId>eureka-client</artifactId>
-      <version>1.6.1</version>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-model</artifactId>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>3.2.0.RELEASE</version>
-      </dependency><dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>3.2.0.RELEASE</version>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-filesystem</artifactId>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-netflix-core</artifactId>
-      <version>1.0.0.RELEASE</version>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-database</artifactId>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.3</version>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-synchronization</artifactId>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
-        <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-commons</artifactId>
-      <version>1.1.7.RELEASE</version>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-eureka</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-service</artifactId>
+      <version>0.10-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <!--properties>

@@ -5,6 +5,7 @@ public class ConfigConstants {
     public static final String FS = "fs";
     public static final String LOCAL = "local";
     public static final String HADOOP = "hadoop";
+    public static final String SWIFT = "swift";
     public static final String INDEX = "index";
     public static final String SOLR = "solr";
     public static final String LUCENE = "lucene";
@@ -78,4 +79,7 @@ public class ConfigConstants {
     
     public static final String PROPFILE = "aether.prop";
     public static final String LUCENEPATH = "lucenepath";
+    public static String[] indexvalues = { LUCENE, SOLR, ELASTIC };
+    public static String[] dbvalues = { HIBERNATE, DATANUCLEUS, HBASE };
+    public static String[] classifyvalues = { MAHOUT, MAHOUTSPARK, SPARKML, OPENNLP };
 }

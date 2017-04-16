@@ -1,20 +1,14 @@
 package roart.client;
 
-import roart.lang.LanguageDetect;
 import roart.model.IndexFiles;
 import roart.model.ResultItem;
 import roart.model.FileObject;
 import roart.model.SearchDisplay;
-import roart.thread.ClientRunner;
 import roart.util.Constants;
-import roart.zkutil.ZKMessageUtil;
+import roart.util.FileSystemConstants;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
-import roart.config.MyPropertyConfig;
 import roart.config.NodeConfig;
-import roart.database.IndexFilesAccess;
-import roart.database.IndexFilesDao;
-import roart.filesystem.FileSystemDao;
 import roart.service.SearchService;
 import roart.service.ControlService;
 
@@ -167,12 +161,14 @@ public class MyVaadinUI extends UI
 	    cpTab.setVisible(true);
         cnfTab.setVisible(true);
 	    statLabel.setVisible(true);
-	    ClientRunner.uiset.putIfAbsent(this, "value");
+	    // TODO fix
+	    //ClientRunner.uiset.putIfAbsent(this, "value");
 	} else {
 	    cpTab.setVisible(false);
         cnfTab.setVisible(false);
 	    statLabel.setVisible(false);
-	    ClientRunner.uiset.remove(this, "value");
+	    // TODO fix
+	    //ClientRunner.uiset.remove(this, "value");
 	}
 	VerticalLayout sTab = (VerticalLayout) getSession().getAttribute("search");
 	if (!Constants.NONE.equals(getSession().getAttribute(Constants.USER))) {
@@ -854,7 +850,8 @@ public class MyVaadinUI extends UI
 		    	conf.configMap.put(config, i);
 		    	MyConfig.instance().myput(nodename, conf);
 		    	Notification.show("Value changed");
-		    	ZKMessageUtil.doreconfig();
+		    	// TODO fix
+		    	//ZKMessageUtil.doreconfig();
 		    } catch (NumberFormatException e) {
 		    	Notification.show("Illegal value, unchanged");
 		    	log.error(Constants.EXCEPTION, e);
@@ -1053,7 +1050,9 @@ public class MyVaadinUI extends UI
     	ListSelect ls = new ListSelect("Reindex for language");
     	Set<String> languages = null;
 		try {
-			Set<String> langs = IndexFilesDao.getLanguages();
+	          ControlService maininst = new ControlService();
+
+			Set<String> langs = maininst.getLanguages();
 			langs.remove(null);
 			languages = new TreeSet<String>(langs);
 		} catch (Exception e) {
@@ -1091,7 +1090,8 @@ public class MyVaadinUI extends UI
     	ListSelect ls = new ListSelect("Reindex for configured language");
     	String[] languages = null;
 		try {
-			languages = LanguageDetect.getLanguages();
+		    // TODO fix
+			//languages = LanguageDetect.getLanguages();
 		} catch (Exception e1) {
 		}
     	ls.addItems(languages);
@@ -1119,7 +1119,7 @@ public class MyVaadinUI extends UI
     
     private ListSelect getSearchEngine() {
     	ListSelect ls = new ListSelect("Select search engine");
-    	String[] engines = MyPropertyConfig.indexvalues;
+    	String[] engines = ConfigConstants.indexvalues;
     	ls.addItems(engines);
         ls.setNullSelectionAllowed(false);
         // Show 5 items and a scrollbar if there are more                       
@@ -1145,7 +1145,7 @@ public class MyVaadinUI extends UI
     
     private ListSelect getMachineLearning() {
     	ListSelect ls = new ListSelect("Select search engine");
-    	String[] learning = MyPropertyConfig.classifyvalues;
+    	String[] learning = ConfigConstants.classifyvalues;
     	ls.addItems(learning);
         ls.setNullSelectionAllowed(false);
         // Show 5 items and a scrollbar if there are more                       
@@ -1344,12 +1344,14 @@ public Object generateCell(Table source, Object itemId,
 	return null;
     }
     // TODO make OO of this
-    final FileObject fo = FileSystemDao.get(filename);
-    if (filename.startsWith(FileSystemDao.FILE) || filename.startsWith(FileSystemDao.HDFS)) {
-    	filename = filename.substring(FileSystemDao.FILELEN);
+    // TODO FIX
+    final FileObject fo = null;
+    //final FileObject fo = FileSystemDao.get(filename);
+    if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS)) {
+    	filename = filename.substring(FileSystemConstants.FILELEN);
     }
-    if (filename.startsWith(FileSystemDao.SWIFT)) {
-    	filename = filename.substring(FileSystemDao.SWIFTLEN);
+    if (filename.startsWith(FileSystemConstants.SWIFT)) {
+    	filename = filename.substring(FileSystemConstants.SWIFTLEN);
     }
     int i = filename.lastIndexOf("/");
     String fn = filename.substring(i + 1);
@@ -1357,7 +1359,9 @@ public Object generateCell(Table source, Object itemId,
             @Override
             public InputStream getStream() {
                 try {
-		    return FileSystemDao.getInputStream(fo);
+                    // TODO fix
+                    return null;
+		    //return FileSystemDao.getInputStream(fo);
                 } catch (Exception e) {
 		    log.error(Constants.EXCEPTION, e);
                     return null;

@@ -9,7 +9,7 @@
   <groupId>roart</groupId>
   <artifactId>aether-searchengine-controller</artifactId>
   <packaging>jar</packaging>
-  <name>Aether Search Engine Common</name>
+  <name>Aether Search Engine Abstract Search Engine Controller</name>
   <build>
   <plugins>
           <plugin>

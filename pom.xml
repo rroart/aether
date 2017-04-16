@@ -13,7 +13,10 @@
   <!--name>Vaadin Web Application</name-->
 <modules>
   <module>common</module>
+  <module>core</module>
   <module>eureka</module>
+  <module>database</module>
+  <module>filesystem</module>
   <module>machinelearning</module>
   <module>searchengine</module>
   <module>web</module>

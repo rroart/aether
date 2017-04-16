@@ -11,5 +11,17 @@
   <artifactId>aether-common-config</artifactId>
   <packaging>jar</packaging>
   <name>Aether Disk Search Engine Common Config</name>
+<dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-collections</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+</dependencies>
 </project>
 

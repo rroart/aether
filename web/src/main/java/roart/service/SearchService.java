@@ -1,9 +1,8 @@
 package roart.service;
 
-import roart.queue.ClientQueueElement;
-import roart.queue.ClientQueueElement.Function;
-import roart.queue.Queues;
-import roart.search.SearchDao;
+import roart.service.ServiceParam.Function;
+import roart.util.EurekaConstants;
+import roart.util.EurekaUtil;
 
 import javax.servlet.http.*;
 
@@ -13,10 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
+import roart.common.searchengine.SearchEngineSearchParam;
+import roart.common.searchengine.SearchEngineSearchResult;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
-//import roart.dao.FilesDao;
-import roart.database.IndexFilesDao;
+import roart.config.NodeConfig;
 import roart.model.ResultItem;
 import roart.model.SearchDisplay;
 
@@ -29,63 +29,44 @@ public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void searchme(String str, String type) {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCH, str, type, null, null, false, false, false); // stupid overloading
-	Queues.clientQueue.add(e);
+        SearchEngineSearchParam param = new SearchEngineSearchParam();
+        param.conf = getConfig();
+        param.str = str;
+	// TODO fix
+        //param .type = type;
+        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH);
+        return;           
     }
 
-    public List<List> searchmeDo(ClientQueueElement e) {
-	String str = e.file;
-	String type = e.suffix;
-	List strlist = new ArrayList<String>();
-
-	SearchDisplay display = e.display;
-
-	ResultItem[] strarr = roart.search.Search.searchme(str, type, display);
-	
-	for (ResultItem stri : strarr) {
-	    strlist.add(stri);
-	}
-	List<List> strlistlist = new ArrayList<List>();
-	strlistlist.add(strlist);
-	return strlistlist;
-    }
-
-    public List<List> searchsimilarDo(ClientQueueElement e) {
-	String str = e.file;
-	String type = e.suffix;
-	List strlist = new ArrayList<String>();
-
-	SearchDisplay display = e.display;
-
-	ResultItem[] strarr = roart.search.Search.searchsimilar(str, type, display);
-
-	for (ResultItem stri : strarr) {
-	    strlist.add(stri);
-	}
-	List<List> strlistlist = new ArrayList<List>();
-	strlistlist.add(strlist);
-	return strlistlist;
-    }
-
+    // TODO fix
 	public static SearchDisplay getSearchDisplay(UI ui) {
-		SearchDisplay display = new SearchDisplay();
-		String myclassify = MyConfig.conf.classify;
-		display.classify = myclassify != null && myclassify.length() > 0;
-		// if lost session, it doesn't really matter much whether displaying for admin?
-		if (ui != null && ui.getSession() != null) {
-		display.admindisplay = "admin".equals((String) ui.getSession().getAttribute("user"));
-		}
-		display.highlightmlt = isHighlightMLT();
-		return display;
+	    SearchDisplay d = new SearchDisplay();
+	    d.highlightmlt = true;
+	    d.classify = true;
+	    d.admindisplay = true;
+	    return d;
 	}
 
 	public static boolean isHighlightMLT() {
-		
 		return MyConfig.conf.highlightmlt;
 	}
     
     public void searchsimilar(String md5) {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), Function.SEARCHSIMILAR, md5, null, null, null, false, false, false); // stupid overloading
-	Queues.clientQueue.add(e);
+        SearchEngineSearchParam param = new SearchEngineSearchParam();
+        param.conf = getConfig();
+        param.str = md5;
+        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT);
+        return;           
     }
+
+    private String getAppName() {
+	return "CORE";
+    }
+    
+    private NodeConfig getConfig() {
+        // TODO fix
+        return null;
+    }
+
+
 }
