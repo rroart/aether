@@ -458,6 +458,11 @@
   <artifactId>netty-all</artifactId>
   <version>${netty.version}</version>
 </dependency>
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpcore</artifactId>
+  <version>4.4.6</version>
+</dependency>
     <dependency>
       <groupId>roart</groupId>
       <artifactId>aether-common-searchengine</artifactId>
