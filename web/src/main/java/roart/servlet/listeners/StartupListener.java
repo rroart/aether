@@ -16,18 +16,6 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     public void contextInitialized(ServletContextEvent context)  {
 	    
     	EurekaUtil.initEurekaClient();
-    /*	
-	MyConfig conf = MyPropertyConfig.instance();
-	conf.config();
-	
-    //ControlService.lock = MyLockFactory.create();
-    
-	ControlService maininst = new ControlService();
-	maininst.startThreads();
-
-	System.out.println("config done");
-	log.info("config done");
-	*/
     }
 
     private Integer getInteger(String str) {
