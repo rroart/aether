@@ -13,6 +13,7 @@ import roart.service.SearchService;
 import roart.service.ControlService;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -181,8 +182,14 @@ public class MyVaadinUI extends UI
     private TabSheet tabsheet = null;
     public Label statLabel = null;
 
+    ControlService controlService;
+    
     @Override
     protected void init(VaadinRequest request) {
+        
+        controlService = new ControlService();
+        controlService.getRemoteConfig();
+
         final VerticalLayout layout = new VerticalLayout();
 	VerticalLayout searchTab = null, controlPanelTab = null, configTab = null;
 
@@ -328,7 +335,8 @@ public class MyVaadinUI extends UI
 	horReindex2.setHeight("20%");
 	horReindex2.setWidth("90%");
 	horReindex2.addComponent(getReindexLanguage());
-	horReindex2.addComponent(getReindexConfiguredLanguage());
+	// TODO fix
+	//horReindex2.addComponent(getReindexConfiguredLanguage());
 	HorizontalLayout horClean = new HorizontalLayout();
 	horClean.setHeight("20%");
 	horClean.setWidth("60%");
@@ -402,7 +410,9 @@ public class MyVaadinUI extends UI
     	boolean isProductionMode = VaadinService.getCurrent()
     		    .getDeploymentConfiguration().isProductionMode();
         String DELIMITER = " = ";
-        NodeConfig config = MyConfig.instance().getNode(nodename);
+        NodeConfig config = MyConfig.conf;
+        // TODO fix
+        //MyConfig.instance().getNode(nodename);
         
     VerticalLayout tab = new VerticalLayout();
     nodeTabMap.put(nodename, tab);
@@ -848,7 +858,8 @@ public class MyVaadinUI extends UI
 		    		throw new NumberFormatException();
 		    	}
 		    	conf.configMap.put(config, i);
-		    	MyConfig.instance().myput(nodename, conf);
+		    	// TODO fix
+		    	//MyConfig.instance().myput(nodename, conf);
 		    	Notification.show("Value changed");
 		    	// TODO fix
 		    	//ZKMessageUtil.doreconfig();
@@ -1173,9 +1184,14 @@ public class MyVaadinUI extends UI
         ListSelect ls = new ListSelect("Get config for node");
         Set<String> nodes = null;
         try {
+            // TODO fix
+            /*
             Set<String> mynodes = MyConfig.instance().getNodes();
             mynodes.remove(null);
             nodes = new TreeSet<String>(mynodes);
+            */
+            nodes = new HashSet();
+            nodes.add("localhost");
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return ls;
