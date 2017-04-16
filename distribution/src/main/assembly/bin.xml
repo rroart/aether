@@ -15,6 +15,13 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/../core/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/../eureka/target</directory>
       <includes>
 	<include>aether*.jar</include>
