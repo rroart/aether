@@ -60,12 +60,11 @@ public class SearchService {
     }
 
     private String getAppName() {
-	return "CORE";
+	return EurekaConstants.AETHER;
     }
     
     private NodeConfig getConfig() {
-        // TODO fix
-        return null;
+        return MyConfig.conf;
     }
 
 
