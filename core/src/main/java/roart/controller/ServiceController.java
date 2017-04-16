@@ -82,9 +82,9 @@ public class ServiceController {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-		instance.traverse();
+		getInstance().traverse();
 	    } else {
-		instance.traverse(param.add);
+		getInstance().traverse(param.add);
 	    }
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
@@ -99,7 +99,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-	    instance.overlapping();
+	    getInstance().overlapping();
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -113,7 +113,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.indexsuffix(param.suffix, param.reindex);
+            getInstance().indexsuffix(param.suffix, param.reindex);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -127,7 +127,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.index(param.add, param.reindex);
+            getInstance().index(param.add, param.reindex);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -141,7 +141,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.reindexdatelower(param.lowerdate, param.reindex);
+            getInstance().reindexdatelower(param.lowerdate, param.reindex);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -155,7 +155,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.reindexdatehigher(param.higherdate, param.reindex);
+            getInstance().reindexdatehigher(param.higherdate, param.reindex);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -169,7 +169,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.reindexlanguage(param.lang);
+            getInstance().reindexlanguage(param.lang);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -183,7 +183,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.cleanupfs(param.dirname);
+            getInstance().cleanupfs(param.dirname);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -197,7 +197,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.memoryusage();
+            getInstance().memoryusage();
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -211,7 +211,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.notindexed();
+            getInstance().notindexed();
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -226,9 +226,9 @@ public class ServiceController {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-            instance.filesystemlucenenew();
+            getInstance().filesystemlucenenew();
 	    } else {
-		instance.filesystemlucenenew(param.add, param.md5checknew);
+		getInstance().filesystemlucenenew(param.add, param.md5checknew);
 	    }
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
@@ -244,9 +244,9 @@ public class ServiceController {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-            instance.filesystemlucenenew();
+            getInstance().filesystemlucenenew();
 	    } else {
-		instance.dbindex(param.md5);
+		getInstance().dbindex(param.md5);
 	    }
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
@@ -262,9 +262,9 @@ public class ServiceController {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-            instance.filesystemlucenenew();
+            getInstance().filesystemlucenenew();
 	    } else {
-		instance.dbsearch(param.md5);
+		getInstance().dbsearch(param.md5);
 	    }
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
@@ -279,7 +279,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.consistentclean(param.clean);
+            getInstance().consistentclean(param.clean);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -293,7 +293,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.deletepathdb(param.path);
+            getInstance().deletepathdb(param.path);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -307,7 +307,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.searchengine(param.name);
+            getInstance().searchengine(param.name);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -321,7 +321,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.database(param.name);
+            getInstance().database(param.name);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -335,7 +335,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.filesystem(param.name);
+            getInstance().filesystem(param.name);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -349,7 +349,7 @@ public class ServiceController {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            instance.machinelearning(param.name);
+            getInstance().machinelearning(param.name);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -363,7 +363,7 @@ public class ServiceController {
             throws Exception {
         SearchEngineSearchResult result = new SearchEngineSearchResult();
         try {
-            instance2.searchme(param.str, param.searchtype);
+            getInstance2().searchme(param.str, param.searchtype);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             // TODO fix
@@ -378,7 +378,7 @@ public class ServiceController {
             throws Exception {
         SearchEngineSearchResult result = new SearchEngineSearchResult();
         try {
-            instance2.searchsimilar(param.str);
+            getInstance2().searchsimilar(param.str);
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             // TODO fix
