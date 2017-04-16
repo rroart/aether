@@ -91,7 +91,7 @@
             </goals>
             <configuration>
               <files>
-                <file>${session.executionRootDirectory}/web/aether.prop</file>
+                <file>${session.executionRootDirectory}/core/aether.prop</file>
               </files>
             </configuration>
           </execution>
