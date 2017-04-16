@@ -94,7 +94,7 @@ public abstract class IndexFilesAccess {
     }
 
     public void flush() throws Exception {
-        DatabaseParam param = null;// new DatabaseParam();
+        DatabaseParam param = new DatabaseMd5Param();
         param.conf = MyConfig.conf;
         DatabaseResult result = EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.FLUSH);
         return;
@@ -102,7 +102,7 @@ public abstract class IndexFilesAccess {
     }
 
     public void close() throws Exception {
-        DatabaseParam param = null; //new DatabaseParam();
+        DatabaseParam param = new DatabaseMd5Param();
         param.conf = MyConfig.conf;
         DatabaseResult result = EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.CLOSE);
         return;
@@ -110,7 +110,8 @@ public abstract class IndexFilesAccess {
     }
 
     public void commit() throws Exception {
-        DatabaseParam param = null; //new DatabaseParam();
+        // just any param
+        DatabaseParam param = new DatabaseMd5Param(); 
         param.conf = MyConfig.conf;
         DatabaseResult result = EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.COMMIT);
         return;
