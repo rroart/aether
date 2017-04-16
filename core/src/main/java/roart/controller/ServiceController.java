@@ -387,7 +387,23 @@ public class ServiceController {
         return result;
     }
 
+    // TODO move this
+    private static void doConfig() {
+        MyConfig conf = MyPropertyConfig.instance();
+        conf.config();
+        
+        //ControlService.lock = MyLockFactory.create();
+        
+        ControlService maininst = new ControlService();
+        maininst.startThreads();
+
+        System.out.println("config done");
+        //log.info("config done");
+ 
+    }
+    
         public static void main(String[] args) throws Exception {
+            doConfig();
                 SpringApplication.run(ServiceController.class, args);
         }
 
