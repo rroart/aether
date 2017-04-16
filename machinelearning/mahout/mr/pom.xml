@@ -7,7 +7,7 @@
     <version>0.10-SNAPSHOT</version>
   </parent>
   <groupId>roart</groupId>
-  <artifactId>aether-machinelearning-mahout-mr</artifactId>
+  <artifactId>aether-mahout-mr</artifactId>
   <packaging>jar</packaging>
   <name>Aether Disk Search Engine Machine Learning Mahout MR</name>
   <build>
