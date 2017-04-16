@@ -23,6 +23,7 @@ import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.SearchDisplay;
 import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.config.NodeConfig;
 import roart.database.DatabaseLanguagesResult;
 import roart.util.Constants;
@@ -52,6 +53,7 @@ public class ControlService {
         ServiceParam param = new ServiceParam();
         ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.GETCONFIG);
         conf = result.config;
+        MyConfig.conf = conf;
     }
     
     public void setRemoteConfig() {
