@@ -23,10 +23,8 @@ public class IndexQueueElement {
 	public String dbfilename;
     public Metadata metadata;
     public String convertsw;
-   // public UI ui;
-    public SearchDisplay display;
 	
-    public IndexQueueElement(String type, String md5, InputStream inputStream, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Metadata metadata, SearchDisplay display) {
+    public IndexQueueElement(String type, String md5, InputStream inputStream, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Metadata metadata) {
 	this.type = type;
 	this.md5 = md5;
 	this.inputStream = inputStream;
@@ -35,8 +33,6 @@ public class IndexQueueElement {
 	this.retlistnotid = retlistnotid;
 	this.dbfilename = dbfilename;
 	this.metadata = metadata;
-	this.display = display;
-	//this.ui = ui;
     }
 
 }

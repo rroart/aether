@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Date;
 
 import roart.config.ConfigConstants;
+import roart.config.MyConfig;
 import roart.util.Constants;
 import roart.util.MyLock;
 
@@ -356,8 +357,9 @@ public class IndexFiles {
         this.lockqueue = lockqueue;
     }
 
-	public static ResultItem getHeader(SearchDisplay display) {
-	boolean doclassify = display.classify;
+	public static ResultItem getHeader() {
+    String myclassify = MyConfig.conf.classify;
+    boolean doclassify = myclassify != null && myclassify.length() > 0;
 		
 	ResultItem ri = new ResultItem();
 	ri.add("Indexed");
@@ -383,17 +385,18 @@ public class IndexFiles {
 	return ri;
 	}
 
-	public static ResultItem getHeaderSearch(SearchDisplay display) {
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
-	boolean doshighlightmlt = display.highlightmlt;
+	public static ResultItem getHeaderSearch() {
+        String myclassify = MyConfig.conf.classify;
+        boolean doclassify = myclassify != null && myclassify.length() > 0;
+        boolean admin = MyConfig.conf.admin;
+        boolean dohighlightmlt = MyConfig.conf.highlightmlt;
 	
 	ResultItem ri = new ResultItem();
 	ri.add("Score");
 	ri.add("Md5/Id");
 	ri.add("Node");
 	ri.add("Filename");
-	if (doshighlightmlt) {
+	if (dohighlightmlt) {
 		ri.add("Highlight and similar");
 	}
 	ri.add("Lang");
@@ -418,10 +421,11 @@ public class IndexFiles {
 	return ri;
 	}
 
-	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, String[] highlights, SearchDisplay display, List<String> metadata, String csnodename, FileLocation maybeFl) {
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
-	boolean dohighlightmlt = display.highlightmlt;
+	public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, String[] highlights, List<String> metadata, String csnodename, FileLocation maybeFl) {
+        String myclassify = MyConfig.conf.classify;
+        boolean doclassify = myclassify != null && myclassify.length() > 0;
+	boolean admin = MyConfig.conf.admin;
+	boolean dohighlightmlt = MyConfig.conf.highlightmlt;
 	
 	ResultItem ri = new ResultItem();
 	ri.add("" + score);
@@ -470,10 +474,9 @@ public class IndexFiles {
 	return ri;
 	}
 
-	public static ResultItem getResultItem(IndexFiles index, String lang, SearchDisplay display, String csnodename, FileLocation maybeFl) {
-	boolean doclassify = display.classify;
-	boolean admin = display.admindisplay;
-	boolean dohighlightmlt = display.highlightmlt;
+	public static ResultItem getResultItem(IndexFiles index, String lang, String csnodename, FileLocation maybeFl) {
+        String myclassify = MyConfig.conf.classify;
+        boolean doclassify = myclassify != null && myclassify.length() > 0;
 	
 	if (lang == null || lang.length() == 0) {
 		lang = "n/a";

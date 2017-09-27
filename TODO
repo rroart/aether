@@ -28,3 +28,11 @@ dynamic config
 redo config is microserv
 distrib
 dynamic config and web change
+h2db lucene disk lokasjon rules
+isbn extraction
+cassandra
+move webstat out of core?
+db/zkrunner using clientrunner, must be replaced.
+clientrunner.notify
+clientrunner check alive and restart
+fix webstat

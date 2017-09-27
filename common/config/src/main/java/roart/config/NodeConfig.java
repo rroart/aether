@@ -6,6 +6,9 @@ import java.util.Map;
 public class NodeConfig {
     public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF }
 
+    // TODO fix
+    public boolean admin = true;
+    
     public String[] languages = null;
     
     public String[] dirlist = null;

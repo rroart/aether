@@ -1,7 +1,5 @@
 package roart.content;
 
-import com.vaadin.ui.UI;
-
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -9,8 +7,8 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.searchengine.SearchEngineSearchParam;
 import roart.queue.Queues;
-import roart.queue.ClientQueueElement;
 import roart.service.ControlService;
 import roart.service.ServiceParam;
 import roart.service.ServiceParam.Function;
@@ -22,14 +20,19 @@ public class ClientHandler {
 
     public static final int timeout = 3600;
 	
-    public static Map<UI, List> doClient()  {
-    	ClientQueueElement el = Queues.clientQueue.poll();
+    public static List doClient()  {
+    	ServiceParam el = null;
     	if (el == null) {
 	    log.error("empty queue " + System.currentTimeMillis());
     	    return null;
     	}
     	// vulnerable spot
     	Queues.incClients();
+    	
+    	return doClient(el);
+    }
+    
+        public static List doClient(ServiceParam el)  {
 	ServiceParam.Function function = el.function;
 	List list = null;
 	if (function == ServiceParam.Function.FILESYSTEM || function == ServiceParam.Function.FILESYSTEMLUCENENEW || function == ServiceParam.Function.INDEX || function == ServiceParam.Function.REINDEXDATE || function == ServiceParam.Function.REINDEXSUFFIX || function ==  ServiceParam.Function.REINDEXLANGUAGE) {
@@ -44,12 +47,14 @@ public class ClientHandler {
 	if (function == ServiceParam.Function.MEMORYUSAGE) {
 	    list = memoryusage();
 	}
+	/*
 	if (function == ServiceParam.Function.SEARCH) {
 	    list = search(el);
 	}
 	if (function == ServiceParam.Function.SEARCHSIMILAR) {
 	    list = searchsimilar(el);
 	}
+	*/
 	if (function == ServiceParam.Function.DBINDEX) {
 	    list = dbindex(el);
 	}
@@ -63,12 +68,10 @@ public class ClientHandler {
 	    list = deletepath(el);
 	}
 	Queues.decClients();
-	Map map = new HashMap<String, List>();
-	map.put(el.uiid, list);
-	return map;
+	return list;
     }
 
-    private static List search(ClientQueueElement el) {
+    private static List search(SearchEngineSearchParam el) {
 	roart.service.SearchService maininst = new roart.service.SearchService();
 	try {
 	    return maininst.searchmeDo(el);
@@ -77,7 +80,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List searchsimilar(ClientQueueElement el) {
+    private static List searchsimilar(SearchEngineSearchParam el) {
 	roart.service.SearchService maininst = new roart.service.SearchService();
 	try {
 	    return maininst.searchsimilarDo(el);
@@ -86,7 +89,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List client(ClientQueueElement el) {
+    private static List client(ServiceParam el) {
 	ControlService maininst = new ControlService();
 	try {
 	    return maininst.clientDo(el);
@@ -96,7 +99,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List notindexed(ClientQueueElement el) {
+    private static List notindexed(ServiceParam el) {
 	ControlService maininst = new ControlService();
 	try {
 	    return maininst.notindexedDo(el);
@@ -126,7 +129,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List dbindex(ClientQueueElement el) {
+    private static List dbindex(ServiceParam el) {
 	ControlService maininst = new ControlService();
 	try {
 	    return maininst.dbindexDo(el);
@@ -135,7 +138,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List dbsearch(ClientQueueElement el) {
+    private static List dbsearch(ServiceParam el) {
 	ControlService maininst = new ControlService();
 	try {
 	    return maininst.dbsearchDo(el);
@@ -144,7 +147,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List consistentclean(ClientQueueElement el) {
+    private static List consistentclean(ServiceParam el) {
 	ControlService maininst = new ControlService();
 	try {
 	    return maininst.consistentcleanDo(el);
@@ -153,7 +156,7 @@ public class ClientHandler {
 	}
     }
 
-    private static List deletepath(ClientQueueElement el) {
+    private static List deletepath(ServiceParam el) {
     ControlService maininst = new ControlService();
     try {
         return maininst.deletepathdbDo(el);

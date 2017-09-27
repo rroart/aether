@@ -25,14 +25,10 @@ import roart.queue.Queues;
 import roart.util.Constants;
 import roart.database.IndexFilesDao;
 
-import com.vaadin.ui.UI;
-
 public class DbRunner implements Runnable {
 	
     private static final Logger log = LoggerFactory.getLogger(DbRunner.class);
 
-    public static final Set<UI> uiset = new HashSet<UI>();
-	
     static final int update = 2;
     static long lastupdate = 0;
 
@@ -62,7 +58,7 @@ public class DbRunner implements Runnable {
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 log.error(Constants.EXCEPTION, e);
-                ClientRunner.notify("Db exception");
+                //ClientRunner.notify("Db exception");
             }
         }
     }

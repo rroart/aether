@@ -213,7 +213,7 @@ public class TikaHandler {
                 }
 
                 //size = SearchLucene.indexme("all", md5, inputStream);
-                IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, el.retlistid, el.retlistnotid, dbfilename, metadata, el.display);
+                IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
                 elem.lang = lang;
                 elem.content = content;
                 if (el.convertsw != null) {
@@ -234,9 +234,8 @@ public class TikaHandler {
                     Queues.otherQueue.add(el);
                 } else {
                     log.info("Too small " + dbfilename + " / " + filename + " " + md5 + " " + size);
-                    SearchDisplay display = el.display;
                     FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
-                    ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display, ControlService.nodename, maybeFl);
+                    ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, maybeFl);
                     ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
                     MyList<ResultItem> retlistnot = (MyList<ResultItem>) MyLists.get(el.retlistnotid); 
                     retlistnot.add(ri);

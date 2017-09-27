@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.io.*;
 
 import roart.dir.Traverse;
-import roart.queue.ClientQueueElement;
 import roart.queue.TikaQueueElement;
 import roart.model.FileLocation;
 import roart.model.FileObject;
@@ -35,9 +34,8 @@ import roart.config.ConfigConstants;
 import roart.config.MyConfig;
 import roart.config.MyPropertyConfig;
 import roart.config.NodeConfig;
-import roart.content.OtherHandler;
 import roart.content.ClientHandler;
-import roart.thread.ClientRunner;
+import roart.content.OtherHandler;
 import roart.thread.DbRunner;
 import roart.thread.ZKRunner;
 import roart.util.Constants;
@@ -106,24 +104,24 @@ public class ControlService {
 
     // called from ui
     // returns list: new file
-    public void traverse(String add) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.FILESYSTEM, add, null, null, null, false, false, false);
-	Queues.clientQueue.add(e);
+    public List traverse(ServiceParam e) throws Exception {
+	return ClientHandler.doClient(e);
+	//Queues.clientQueue.add(e);
     }
 
     // called from ui
     // returns list: new file
-    public void traverse() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.FILESYSTEM, null, null, null, null, false, false, false);
-	Queues.clientQueue.add(e);
+    public List traverse2(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //	Queues.clientQueue.add(e);
     }
 
     static public String nodename = "localhost";
     
     // called from ui
-    public void overlapping() {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.OVERLAPPING, null, null, null, null, false, false, false);
-	Queues.clientQueue.add(e);
+    public List overlapping(ServiceParam e) {
+    return ClientHandler.doClient(e);
+    //	Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
@@ -259,9 +257,9 @@ public class ControlService {
     // returns list: tika timeout
     // returns list: not indexed
     // returns list: deleted
-    public void indexsuffix(String suffix, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.REINDEXSUFFIX, null, suffix, null, null, reindex, false, false);
-	Queues.clientQueue.add(e);
+    public List indexsuffix(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //	Queues.clientQueue.add(e);
     }
 
     // called from ui
@@ -269,23 +267,23 @@ public class ControlService {
     // returns list: tika timeout
     // returns list: file does not exist
     // returns list: not indexed
-    public void index(String add, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.INDEX, add, null, null, null, reindex, false, false);
-	Queues.clientQueue.add(e);
+    public List index(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     // called from ui
     // returns list: indexed file list
     // returns list: tika timeout
     // returns list: not indexed
-    public void reindexdatelower(String date, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.REINDEXDATE, null, null, date, null, reindex, false, false);
-	Queues.clientQueue.add(e);
+    public List reindexdatelower(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
-    public void reindexdatehigher(String date, boolean reindex) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.REINDEXDATE, null, null, null, date, reindex, false, false);
-	Queues.clientQueue.add(e);
+    public List reindexdatehigher(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     // called from ui
@@ -293,13 +291,13 @@ public class ControlService {
     // returns list: tika timeout
     // returns list: file does not exist
     // returns list: not indexed
-    public void reindexlanguage(String lang) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.REINDEXLANGUAGE, null, lang, null, null, true, false, false);
-	Queues.clientQueue.add(e);
+    public List reindexlanguage(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
-	public List<List> clientDo(ClientQueueElement el) throws Exception {
+	public List<List> clientDo(ServiceParam el) throws Exception {
 		    synchronized (writelock) {
 			MyLock lock = null;
 			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
@@ -312,15 +310,13 @@ public class ControlService {
 	//boolean newmd5 = el.md5change;
 	log.info("function " + function + " " + filename + " " + el.reindex);
 
-	SearchDisplay display = el.display;
-	
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retList = new ArrayList<ResultItem>();
-	retList.add(IndexFiles.getHeader(display));
+	retList.add(IndexFiles.getHeader());
 	List<ResultItem> retTikaTimeoutList = new ArrayList<ResultItem>();
 	retTikaTimeoutList.add(new ResultItem("Tika timeout"));
 	List<ResultItem> retNotList = new ArrayList<ResultItem>();
-	retNotList.add(IndexFiles.getHeader(display));
+	retNotList.add(IndexFiles.getHeader());
 	List<ResultItem> retNewFilesList = new ArrayList<ResultItem>();
 	retNewFilesList.add(new ResultItem("New file"));
 	List<ResultItem> retDeletedList = new ArrayList<ResultItem>();
@@ -419,14 +415,14 @@ public class ControlService {
 	if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
 	    ZKMessageUtil.dorefresh(nodename);
 	    lock.unlock();
-	    ClientRunner.notify("Sending refresh request");
+	    //ClientRunner.notify("Sending refresh request");
 	}
 	return retlistlist;
 		    }
     }
 
     // old, probably oudated by overlapping?
-    public List<String> cleanupfs(String dirname) {
+    public List cleanupfs(String dirname) {
 	//List<String> retlist = new ArrayList<String>();
 	Set<String> filesetnew = new HashSet<String>();
 	try {
@@ -442,9 +438,9 @@ public class ControlService {
     }
 
     // called from ui
-    public void memoryusage() {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.MEMORYUSAGE, null, null, null, null, false, false, false);
-	Queues.clientQueue.add(e);
+    public List memoryusage(ServiceParam e) {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
@@ -471,13 +467,13 @@ public class ControlService {
     // called from ui
     // returns list: not indexed
     // returns list: another with columns
-    public void notindexed() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.NOTINDEXED, null, null, null, null, false, false, false);
-	Queues.clientQueue.add(e);
+    public List notindexed(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
-	public List<List> notindexedDo(ClientQueueElement el) throws Exception {
+	public List<List> notindexedDo(ServiceParam el) throws Exception {
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> retlist = new ArrayList<ResultItem>();
 	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
@@ -561,32 +557,30 @@ public class ControlService {
     // returns list: new file
     // returns list: file does not exist
     // returns list: not indexed
-    public void filesystemlucenenew() throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.FILESYSTEMLUCENENEW, null, null, null, null, false, false, false);
-	Queues.clientQueue.add(e);
+    public List filesystemlucenenew(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
-    public void filesystemlucenenew(String add, boolean md5checknew) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.FILESYSTEMLUCENENEW, add, null, null, null, false, md5checknew, false);
-	Queues.clientQueue.add(e);
+    public List filesystemlucenenew2(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
-    public void dbindex(String md5) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.DBINDEX, md5, null, null, null, false, false, false); // dumb overload habit
-	Queues.clientQueue.add(e);
+    public List dbindex(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
-	public List<List> dbindexDo(ClientQueueElement el) throws Exception {
+	public List<List> dbindexDo(ServiceParam el) throws Exception {
 	ServiceParam.Function function = el.function;
 	String md5 = el.file;
 	log.info("function " + function + " " + md5);
 
-	SearchDisplay display = el.display;
-
 	List<List> retlistlist = new ArrayList<List>();
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
-	indexList.add(IndexFiles.getHeader(display));
+	indexList.add(IndexFiles.getHeader());
 	List<ResultItem> indexfilesList = new ArrayList<ResultItem>();
 	indexfilesList.add(new ResultItem("Files"));
 	List<ResultItem> filesList = new ArrayList<ResultItem>();
@@ -595,7 +589,7 @@ public class ControlService {
 	IndexFiles index = IndexFilesDao.getByMd5(md5);
 	if (index != null) {
 	    FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-	    indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), display, nodename, maybeFl));
+	    indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), nodename, maybeFl));
 	    Set<FileLocation> files = index.getFilelocations();
 	    if (files != null) {
 		for (FileLocation filename : files) {
@@ -621,13 +615,13 @@ public class ControlService {
 	return retlistlist;
     }
 
-    public void dbsearch(String md5) throws Exception {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.DBSEARCH, md5, null, null, null, false, false, false); // dumb overload habit
-	Queues.clientQueue.add(e);
+    public List dbsearch(ServiceParam e) throws Exception {
+    return ClientHandler.doClient(e);
+    //Queues.clientQueue.add(e);
     }
 
     @SuppressWarnings("rawtypes")
-	public List<List> dbsearchDo(ClientQueueElement el) throws Exception {
+	public List<List> dbsearchDo(ServiceParam el) throws Exception {
 	ServiceParam.Function function = el.function;
 	String searchexpr = el.file;
 	int i = searchexpr.indexOf(":");
@@ -637,11 +631,10 @@ public class ControlService {
 	if (i < 0) {
 	    return retlistlist;
 	}
-	SearchDisplay display = el.display;
 	String field = searchexpr.substring(0, i);
 	String text = searchexpr.substring(i + 1);
 	List<ResultItem> indexList = new ArrayList<ResultItem>();
-	indexList.add(IndexFiles.getHeader(display));
+	indexList.add(IndexFiles.getHeader());
 
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
 	for (IndexFiles index : indexes) {
@@ -695,7 +688,7 @@ public class ControlService {
 	    }
 	    if (match) {
 	        FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-		indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), display, nodename, maybeFl));
+		indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), nodename, maybeFl));
 	    }
 	}
 
@@ -709,8 +702,6 @@ public class ControlService {
     public static Thread indexWorker = null;
     private static OtherRunner otherRunnable = null;
     public static Thread otherWorker = null;
-    private static ClientRunner clientRunnable = null;
-    public static Thread clientWorker = null;
     private static DbRunner dbRunnable = null;
     public static Thread dbWorker = null;
     private static ControlRunner controlRunnable = null;
@@ -730,9 +721,6 @@ public class ControlService {
     	}
     	if (otherRunnable == null) {
 	    startOtherWorker();
-    	}
-    	if (clientRunnable == null) {
-    	startClientWorker();
     	}
     	if (dbRunnable == null) {
     	startDbWorker();
@@ -789,14 +777,6 @@ public class ControlService {
     	log.info("starting other worker");
 	}
 
-	public void startClientWorker() {
-		clientRunnable = new ClientRunner();
-    	clientWorker = new Thread(clientRunnable);
-    	clientWorker.setName("ClientWorker");
-    	clientWorker.start();
-    	log.info("starting client worker");
-	}
-
 	public void startDbWorker() {
 		dbRunnable = new DbRunner();
     	dbWorker = new Thread(dbRunnable);
@@ -836,14 +816,12 @@ public class ControlService {
 	return retlistlist;
     }
 
-	public void consistentclean(boolean clean) {
-		// TODO Auto-generated method stub
-		ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.CONSISTENTCLEAN, null, null, null, null, false, false, clean); // more dumb overload
-		Queues.clientQueue.add(e);
-	    }
+	public List consistentclean(ServiceParam e) {
+	    return consistentcleanDo(e);
+	}
 
 	    @SuppressWarnings("rawtypes")
-		public List<List> consistentcleanDo(ClientQueueElement el) {
+		public List<List> consistentcleanDo(ServiceParam el) {
 	    	boolean clean = el.reindex;
 		List<ResultItem> delList = new ArrayList<ResultItem>();
 		List<ResultItem> nonexistList = new ArrayList<ResultItem>();
@@ -963,12 +941,11 @@ public class ControlService {
 		return retlistlist;
 	    }
 
-        public void deletepathdb(String path) {
-            ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.DELETEPATH, path, null, null, null, true, false, false);
-            Queues.clientQueue.add(e);
+        public List deletepathdb(ServiceParam e) throws Exception {
+            return deletepathdbDo(e);
         }
 
-        public List deletepathdbDo(ClientQueueElement el) throws Exception {
+        public List deletepathdbDo(ServiceParam el) throws Exception {
             synchronized (writelock) {
             MyLock lock = null;
             if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
@@ -1021,7 +998,7 @@ public class ControlService {
             if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
                 ZKMessageUtil.dorefresh(nodename);
                 lock.unlock();
-                ClientRunner.notify("Sending refresh request");
+                //ClientRunner.notify("Sending refresh request");
             }
             retlistlist.add(delList);
             return retlistlist;
@@ -1034,25 +1011,29 @@ public class ControlService {
 	return null;
     }
     
-        public void searchengine(String engine) {
+        public List searchengine(ServiceParam param) {
         	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
-        	property.configIndexing(engine);
+        	property.configIndexing(param.name);
+        	return null;
         }
         
-        public void machinelearning(String learning) {
+        public List machinelearning(String learning) {
         	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
-        	property.configClassify(learning);      	
+        	property.configClassify(learning);   
+        	return null;
         }
 
-        public void database(String db) {
+        public List database(String db) {
         	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
+        	return null;
         	// TODO fix
         	//property.configClassify(db);      	
         }
 
-        public void filesystem(String fs) {
+        public List filesystem(String fs) {
         	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
-            // TODO fix
+        	return null;
+        	// TODO fix
         	//property.configFileSystem(fs);      	
         }
 }

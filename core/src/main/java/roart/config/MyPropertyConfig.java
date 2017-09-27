@@ -77,12 +77,12 @@ public class MyPropertyConfig extends MyConfig {
         
         configDirlist();
         
-        String index = getString(ConfigConstants.INDEX, ConfigConstants.LUCENE, false, false, ConfigConstants.indexvalues);
+        String index = getString(ConfigConstants.INDEX, ConfigConstants.SEARCHENGINELUCENE, false, false, ConfigConstants.indexvalues);
         configIndexing(index);
 
         configDb();
         
-        if (conf.db.equals(ConfigConstants.HIBERNATE) || conf.index.equals(ConfigConstants.LUCENE)) {
+        if (conf.db.equals(ConfigConstants.DATABASEHIBERNATE) || conf.index.equals(ConfigConstants.SEARCHENGINELUCENE)) {
             ControlService.nodename = ConfigConstants.LOCALHOST; // force this
         }
 
@@ -139,10 +139,10 @@ public class MyPropertyConfig extends MyConfig {
     }
 
     private void configMisc() {
-        boolean downloader = getBoolean(ConfigConstants.DOWNLOADER, false, false, false);
+        boolean downloader = getBoolean(ConfigConstants.GUIDOWNLOADER, false, false, false);
         conf.downloader = downloader; 
         
-        boolean authenticate = getBoolean(ConfigConstants.AUTHENTICATE, false, false, false);
+        boolean authenticate = getBoolean(ConfigConstants.GUIAUTHENTICATE, false, false, false);
         conf.authenticate = authenticate;
     }
 
@@ -168,13 +168,13 @@ public class MyPropertyConfig extends MyConfig {
     	try {
         conf.classify = classify;
         if (classify != null && classify.equals(ConfigConstants.MAHOUT)) {
-            String mahoutconffs = getString(ConfigConstants.MAHOUTCONFFS, null, false, false, null);
-            String mahoutbasepath = getString(ConfigConstants.MAHOUTBASEPATH, null, false, false, null);
-            String mahoutmodelPath = getString(ConfigConstants.MAHOUTMODELPATH, null, true, true, null);
-            String mahoutlabelIndexPath = getString(ConfigConstants.MAHOUTLABELINDEXFILEPATH, null, true, true, null);
-            String mahoutdictionaryPath = getString(ConfigConstants.MAHOUTDICTIONARYPATH, null, true, true, null);
-            String mahoutdocumentFrequencyPath = getString(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH, null, true, true, null);
-            String mahoutbayestype = getString(ConfigConstants.MAHOUTALGORITHM, null, true, true, null);
+            String mahoutconffs = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTCONFFS, null, false, false, null);
+            String mahoutbasepath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTBASEPATH, null, false, false, null);
+            String mahoutmodelPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTMODELPATH, null, true, true, null);
+            String mahoutlabelIndexPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTLABELINDEXFILEPATH, null, true, true, null);
+            String mahoutdictionaryPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDICTIONARYPATH, null, true, true, null);
+            String mahoutdocumentFrequencyPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDOCUMENTFREQUENCYPATH, null, true, true, null);
+            String mahoutbayestype = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM, null, true, true, null);
             conf.mahoutconffs = mahoutconffs;
             conf.mahoutbasepath = mahoutbasepath;
             conf.mahoutmodelpath = mahoutmodelPath;
@@ -184,13 +184,13 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutalgorithm = mahoutbayestype;
         }
         if (classify != null && classify.equals(ConfigConstants.MAHOUTSPARK)) {
-            String mahoutconffs = getString(ConfigConstants.MAHOUTCONFFS, null, false, false, null);
-            String mahoutbasepath = getString(ConfigConstants.MAHOUTBASEPATH, null, false, false, null);
-            String mahoutmodelPath = getString(ConfigConstants.MAHOUTMODELPATH, null, true, true, null);
-            String mahoutdictionaryPath = getString(ConfigConstants.MAHOUTDICTIONARYPATH, null, true, true, null);
-            String mahoutdocumentFrequencyPath = getString(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH, null, true, true, null);
-            String mahoutbayestype = getString(ConfigConstants.MAHOUTALGORITHM, null, true, true, null);
-            String mahoutsparkmaster = getString(ConfigConstants.MAHOUTSPARKMASTER, null, true, true, null);
+            String mahoutconffs = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTCONFFS, null, false, false, null);
+            String mahoutbasepath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTBASEPATH, null, false, false, null);
+            String mahoutmodelPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTMODELPATH, null, true, true, null);
+            String mahoutdictionaryPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDICTIONARYPATH, null, true, true, null);
+            String mahoutdocumentFrequencyPath = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDOCUMENTFREQUENCYPATH, null, true, true, null);
+            String mahoutbayestype = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM, null, true, true, null);
+            String mahoutsparkmaster = getString(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTSPARKMASTER, null, true, true, null);
             conf.mahoutconffs = mahoutconffs;
             conf.mahoutbasepath = mahoutbasepath;
             conf.mahoutmodelpath = mahoutmodelPath;
@@ -199,18 +199,18 @@ public class MyPropertyConfig extends MyConfig {
             conf.mahoutalgorithm = mahoutbayestype;
             conf.mahoutsparkmaster = mahoutsparkmaster;
         }
-        if (classify != null && classify.equals(ConfigConstants.SPARKML)) {
-            String sparkmlbasepath = getString(ConfigConstants.SPARKMLBASEPATH, null, false, false, null);
-            String sparkmlmodelPath = getString(ConfigConstants.SPARKMLMODELPATH, null, true, true, null);
-            String sparkmllabelindexPath = getString(ConfigConstants.SPARKMLLABELINDEXPATH, null, true, true, null);
-            String sparkmaster = getString(ConfigConstants.SPARKMASTER, null, true, true, null);
+        if (classify != null && classify.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
+            String sparkmlbasepath = getString(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLBASEPATH, null, false, false, null);
+            String sparkmlmodelPath = getString(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLMODELPATH, null, true, true, null);
+            String sparkmllabelindexPath = getString(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLLABELINDEXPATH, null, true, true, null);
+            String sparkmaster = getString(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMASTER, null, true, true, null);
             conf.sparkmlbasepath = sparkmlbasepath;
             conf.sparkmlmodelpath = sparkmlmodelPath;
             conf.sparkmllabelindexpath = sparkmllabelindexPath;
             conf.sparkmaster = sparkmaster;
         }
-        if (classify != null && classify.equals(ConfigConstants.OPENNLP)) {
-            String opennlpmodelpath = getString(ConfigConstants.OPENNLPMODELPATH, null, true, true, null);
+        if (classify != null && classify.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
+            String opennlpmodelpath = getString(ConfigConstants.MACHINELEARNINGOPENNLPOPENNLPMODELPATH, null, true, true, null);
             conf.opennlpmodelpath = opennlpmodelpath;
         }
         roart.classification.ClassifyDao.instance(classify);
@@ -222,7 +222,7 @@ public class MyPropertyConfig extends MyConfig {
 
     private void configHdfs() {
         new roart.filesystem.LocalFileSystemAccess();
-        String fsdefaultname = getString(ConfigConstants.HDFSCONFFS, null, false, false, null);
+        String fsdefaultname = getString(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS, null, false, false, null);
         if (fsdefaultname != null) {
             conf.hdfsdefaultname = fsdefaultname;
         }
@@ -230,11 +230,11 @@ public class MyPropertyConfig extends MyConfig {
 
     private void configSwift() {
         new roart.filesystem.SwiftAccess();
-        String swifturl = getString(ConfigConstants.SWIFTCONFURL, null, false, false, null);
+        String swifturl = getString(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFURL, null, false, false, null);
         if (swifturl != null) {
-            String swiftuser = getString(ConfigConstants.SWIFTCONFUSER, null, false, false, null);
-            String swiftkey = getString(ConfigConstants.SWIFTCONFKEY, null, false, false, null);
-            String swiftcontainer = getString(ConfigConstants.SWIFTCONFCONTAINER, null, false, false, null);
+            String swiftuser = getString(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFUSER, null, false, false, null);
+            String swiftkey = getString(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFKEY, null, false, false, null);
+            String swiftcontainer = getString(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFCONTAINER, null, false, false, null);
             conf.swifturl = swifturl;
             conf.swiftuser = swiftuser;
             conf.swiftkey = swiftkey;
@@ -243,39 +243,39 @@ public class MyPropertyConfig extends MyConfig {
     }
 
    private void configDb() {
-        String db = getString(ConfigConstants.DB, ConfigConstants.HIBERNATE, false, false, ConfigConstants.dbvalues);
-        if (db.equals(ConfigConstants.HBASE)) {
-            String quorum = getString(ConfigConstants.HBASEQUORUM, null, true, true, null);
-            String port = getString(ConfigConstants.HBASEPORT, null, true, true, null);
-            String master = getString(ConfigConstants.HBASEMASTER, null, true, true, null);
+        String db = getString(ConfigConstants.DB, ConfigConstants.DATABASEHIBERNATE, false, false, ConfigConstants.dbvalues);
+        if (db.equals(ConfigConstants.DATABASEHBASE)) {
+            String quorum = getString(ConfigConstants.DATABASEHBASEHBASEQUORUM, null, true, true, null);
+            String port = getString(ConfigConstants.DATABASEHBASEHBASEPORT, null, true, true, null);
+            String master = getString(ConfigConstants.DATABASEHBASEHBASEMASTER, null, true, true, null);
             conf.hbasequorum = quorum;
             conf.hbaseport = port;
             conf.hbasemaster = master;
-        } else if (db.equals(ConfigConstants.DATANUCLEUS)) {
+        } else if (db.equals(ConfigConstants.DATABASEDATANUCLEUS)) {
         }
         conf.db = db;
         roart.database.IndexFilesDao.instance(db);
-        conf.hasHibernate = db.equals(ConfigConstants.HIBERNATE);
+        conf.hasHibernate = db.equals(ConfigConstants.DATABASEHIBERNATE);
     }
 
     public void configIndexing(String index) {
     	try {
-        if (index.equals(ConfigConstants.SOLR)) {
-            String solrurl = getString(ConfigConstants.SOLRURL, null, true, true, null);
+        if (index.equals(ConfigConstants.SEARCHENGINESOLR)) {
+            String solrurl = getString(ConfigConstants.SEARCHENGINESOLRSOLRURL, null, true, true, null);
             conf.solrurl = solrurl;
         }
-        if (index.equals(ConfigConstants.LUCENE)) {
+        if (index.equals(ConfigConstants.SEARCHENGINELUCENE)) {
             String lucenepath = getString(ConfigConstants.LUCENEPATH, null, true, true, null);
             conf.lucenepath = lucenepath;
         }
-        if (index.equals(ConfigConstants.ELASTIC)) {
-            String elastichost = getString(ConfigConstants.ELASTICHOST, null, true, true, null);
-            String elasticport = getString(ConfigConstants.ELASTICPORT, null, true, true, null);
+        if (index.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
+            String elastichost = getString(ConfigConstants.SEARCHENGINEELASTICELASTICHOST, null, true, true, null);
+            String elasticport = getString(ConfigConstants.SEARCHENGINEELASTICELASTICPORT, null, true, true, null);
             conf.elastichost = elastichost;
             conf.elasticport = elasticport;
         }
         conf.index = index;
-        Boolean storehighlight = getBoolean(ConfigConstants.HIGHLIGHTMLT, false, false, false);
+        Boolean storehighlight = getBoolean(ConfigConstants.GUIHIGHLIGHTMLT, false, false, false);
         if (storehighlight != null && storehighlight.booleanValue() == true) {
             conf.highlightmlt = true;
         }
@@ -294,8 +294,8 @@ public class MyPropertyConfig extends MyConfig {
         String[] dirlistnot = dirlistnotstr.split(",");
         System.out.println("dirliststr " + dirliststr);
         */
-        String[] dirlist = getStringArray(ConfigConstants.DIRLIST, null, true, true);
-        String[] dirlistnot = getStringArray(ConfigConstants.DIRLISTNOT, null, false, false);
+        String[] dirlist = getStringArray(ConfigConstants.FSDIRLIST, null, true, true);
+        String[] dirlistnot = getStringArray(ConfigConstants.FSDIRLISTNOT, null, false, false);
         conf.dirlist = dirlist;
         conf.dirlistnot = dirlistnot;
     }

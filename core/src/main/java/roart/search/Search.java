@@ -10,7 +10,6 @@ import roart.util.MyList;
 import roart.util.MyLists;
 import roart.lang.LanguageDetect;
 import roart.model.ResultItem;
-import roart.model.SearchDisplay;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
@@ -56,8 +55,6 @@ public class Search {
     	MyList<ResultItem> retlist = MyLists.get(el.retlistid);
     	MyList<ResultItem> retlistnot = MyLists.get(el.retlistnotid);
 
-    	SearchDisplay display = el.display;
-
     	int retsize = 0;
 
     try {
@@ -77,7 +74,7 @@ public class Search {
     if (retsize < 0) {
 	//dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
         FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
-	ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), display, ControlService.nodename, maybeFl);
+	ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, maybeFl);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlistnot.add(ri);
     } else {
@@ -93,7 +90,7 @@ public class Search {
 	log.info("timerStop filename " + time);
 
     FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
-	ResultItem ri = IndexFiles.getResultItem(el.index, lang, display, ControlService.nodename, maybeFl);
+	ResultItem ri = IndexFiles.getResultItem(el.index, lang, ControlService.nodename, maybeFl);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlist.add(ri);
 	
@@ -113,13 +110,13 @@ public class Search {
     
 	}
 
-    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-    	return SearchDao.searchme(str, searchtype, display);
+    public static ResultItem[] searchme(String str, String searchtype) {
+    	return SearchDao.searchme(str, searchtype);
 }
 
     // not yet usable, lacking termvector
-    public static ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
-		return SearchDao.searchsimilar(md5i, searchtype, display);
+    public static ResultItem[] searchsimilar(String md5i, String searchtype) {
+		return SearchDao.searchsimilar(md5i, searchtype);
 }
 
     // not yet usable, lacking termvector

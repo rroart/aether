@@ -41,9 +41,6 @@ public class ControlRunner implements Runnable {
     			if (!ControlService.dbWorker.isAlive()) {
     				cs.startDbWorker();
     			}
-    			if (!ControlService.clientWorker.isAlive()) {
-    				cs.startClientWorker();
-    			}
     			if (MyConfig.conf.zookeeper != null && !ControlService.zkWorker.isAlive()) {
     				cs.startZKWorker();
     			}

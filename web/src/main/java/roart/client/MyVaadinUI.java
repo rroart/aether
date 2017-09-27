@@ -117,7 +117,7 @@ public class MyVaadinUI extends UI
 	boolean dodownload = MyConfig.conf.downloader;
 
 	boolean doauthenticate = MyConfig.conf.authenticate;
-	getSession().setAttribute(ConfigConstants.AUTHENTICATE, doauthenticate);
+	getSession().setAttribute(ConfigConstants.GUIAUTHENTICATE, doauthenticate);
 
 	boolean accessAdmin = false;
 	boolean accessUser = false;
@@ -272,7 +272,7 @@ public class MyVaadinUI extends UI
 	tab.setCaption("Search");
 	String myindex = MyConfig.conf.index;
 	// TODO make OO of this
-	if (myindex.equals(ConfigConstants.LUCENE)) {
+	if (myindex.equals(ConfigConstants.SEARCHENGINELUCENE)) {
 	tab.addComponent(getSearch("Search standard", 0));
 	tab.addComponent(getSearch("Search analyzing", 1));
 	tab.addComponent(getSearch("Search complexphrase", 2));
@@ -282,14 +282,14 @@ public class MyVaadinUI extends UI
 	tab.addComponent(getSearch("Search classic", 6));
 	tab.addComponent(getSearch("Search simple", 7));
 	}
-	if (myindex.equals(ConfigConstants.SOLR)) {
+	if (myindex.equals(ConfigConstants.SEARCHENGINESOLR)) {
 	tab.addComponent(getSearch("Search default", 0));
 	tab.addComponent(getSearch("Search lucene", 1));
 	tab.addComponent(getSearch("Search complexphrase", 2));
 	tab.addComponent(getSearch("Search surround", 3));
 	tab.addComponent(getSearch("Search simple", 4));
 	}
-	if (myindex.equals(ConfigConstants.ELASTIC)) {
+	if (myindex.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
 	tab.addComponent(getSearch("Search", 0));
 	}
 	return tab;
@@ -421,10 +421,10 @@ public class MyVaadinUI extends UI
     HorizontalLayout name = new HorizontalLayout();
     Label nameLabel = new Label(ConfigConstants.NODENAME + DELIMITER + nodename);    
     tab.addComponent(nameLabel);
-    Label dirLabel = new Label(ConfigConstants.DIRLIST + DELIMITER + stringify(config.dirlist));    
+    Label dirLabel = new Label(ConfigConstants.FSDIRLIST + DELIMITER + stringify(config.dirlist));    
     tab.addComponent(dirLabel);
     if (config.dirlistnot != null) {
-    Label dirnotLabel = new Label(ConfigConstants.DIRLISTNOT + DELIMITER + stringify(config.dirlistnot));    
+    Label dirnotLabel = new Label(ConfigConstants.FSDIRLISTNOT + DELIMITER + stringify(config.dirlistnot));    
     tab.addComponent(dirnotLabel);
     }
     
@@ -437,15 +437,15 @@ public class MyVaadinUI extends UI
     	ListSelect ls = getSearchEngine();
     	indexConfig.addComponent(ls);
     }
-    if (config.index.equals(ConfigConstants.LUCENE)) {
+    if (config.index.equals(ConfigConstants.SEARCHENGINELUCENE)) {
         Label pathLabel = new Label("Lucene path " + config.lucenepath);
         indexConfig.addComponent(pathLabel);
     }
-    if (config.index.equals(ConfigConstants.SOLR)) {
+    if (config.index.equals(ConfigConstants.SEARCHENGINESOLR)) {
         Label solrLabel = new Label("Solr URL " + config.solrurl); 
         indexConfig.addComponent(solrLabel);
     }
-    Label mltLabel = new Label(ConfigConstants.HIGHLIGHTMLT + DELIMITER + config.highlightmlt);
+    Label mltLabel = new Label(ConfigConstants.GUIHIGHLIGHTMLT + DELIMITER + config.highlightmlt);
     tab.addComponent(indexConfig);    
     
     HorizontalLayout horConfig = new HorizontalLayout();
@@ -474,14 +474,14 @@ public class MyVaadinUI extends UI
     Label dbLabel = new Label("Db type " + config.db);
     dbConfig.addComponent(dbLabel);
     
-    if (config.db.equals(ConfigConstants.HBASE)) {
+    if (config.db.equals(ConfigConstants.DATABASEHBASE)) {
         VerticalLayout hbaseConfig = new VerticalLayout();
         hbaseConfig.setCaption("Hbase settings");
         hbaseConfig.setHeight("20%");
         hbaseConfig.setWidth("60%");
-        Label quorumLabel = new Label(ConfigConstants.HBASEQUORUM + DELIMITER + config.hbasequorum);
-        Label portLabel = new Label(ConfigConstants.HBASEPORT + DELIMITER + config.hbaseport);
-        Label masterLabel = new Label(ConfigConstants.HBASEMASTER + DELIMITER + config.hbasemaster);
+        Label quorumLabel = new Label(ConfigConstants.DATABASEHBASEHBASEQUORUM + DELIMITER + config.hbasequorum);
+        Label portLabel = new Label(ConfigConstants.DATABASEHBASEHBASEPORT + DELIMITER + config.hbaseport);
+        Label masterLabel = new Label(ConfigConstants.DATABASEHBASEHBASEMASTER + DELIMITER + config.hbasemaster);
         hbaseConfig.addComponent(quorumLabel);
         hbaseConfig.addComponent(portLabel);
         hbaseConfig.addComponent(masterLabel);
@@ -492,12 +492,12 @@ public class MyVaadinUI extends UI
     cloudConfig.setCaption("Misc cloud or distributed settings");
     if (config.hdfsdefaultname != null) {
     	if (config.hdfsdefaultname.contains("hdfs")) {
-    Label hdfsLabel = new Label(ConfigConstants.HDFSCONFFS + DELIMITER + config.hdfsdefaultname);
+    Label hdfsLabel = new Label(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS + DELIMITER + config.hdfsdefaultname);
     cloudConfig.addComponent(hdfsLabel);
     	} else {
-    		   Label swiftUrlLabel = new Label(ConfigConstants.SWIFTCONFURL + DELIMITER + config.swifturl);
-    		   Label swiftUserLabel = new Label(ConfigConstants.SWIFTCONFUSER + DELIMITER + config.swiftuser);
-    		   Label swiftKeyLabel = new Label(ConfigConstants.SWIFTCONFKEY + DELIMITER + config.swiftkey);
+    		   Label swiftUrlLabel = new Label(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFURL + DELIMITER + config.swifturl);
+    		   Label swiftUserLabel = new Label(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFUSER + DELIMITER + config.swiftuser);
+    		   Label swiftKeyLabel = new Label(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFKEY + DELIMITER + config.swiftkey);
     		   cloudConfig.addComponent(swiftUrlLabel);
     		   cloudConfig.addComponent(swiftUserLabel);
     		   cloudConfig.addComponent(swiftKeyLabel);
@@ -525,45 +525,45 @@ public class MyVaadinUI extends UI
         	ListSelect ls = getMachineLearning();
         	indexConfig.addComponent(ls);
         }
-        if (config.classify.equals(ConfigConstants.OPENNLP)) {
-            Label pathLabel = new Label(ConfigConstants.OPENNLPMODELPATH + DELIMITER + config.opennlpmodelpath);
+        if (config.classify.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
+            Label pathLabel = new Label(ConfigConstants.MACHINELEARNINGOPENNLPOPENNLPMODELPATH + DELIMITER + config.opennlpmodelpath);
             classifyConfig.addComponent(pathLabel);
         }
         if (config.classify.equals(ConfigConstants.MAHOUT) || config.classify.equals(ConfigConstants.MAHOUTSPARK)) {
             classifyConfig.setCaption("Mahout settings");
-            Label algorithmLabel = new Label(ConfigConstants.MAHOUTALGORITHM + DELIMITER + config.mahoutalgorithm);
+            Label algorithmLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM + DELIMITER + config.mahoutalgorithm);
             classifyConfig.addComponent(algorithmLabel);
             if (config.mahoutbasepath != null) {
-            Label basepathLabel = new Label(ConfigConstants.MAHOUTBASEPATH + DELIMITER + config.mahoutbasepath);
+            Label basepathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTBASEPATH + DELIMITER + config.mahoutbasepath);
             classifyConfig.addComponent(basepathLabel);
             }
             if (config.mahoutconffs != null) {
-            Label conffsLabel = new Label(ConfigConstants.MAHOUTCONFFS + DELIMITER + config.mahoutconffs);
+            Label conffsLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTCONFFS + DELIMITER + config.mahoutconffs);
             classifyConfig.addComponent(conffsLabel);
             }
-            Label dictpathLabel = new Label(ConfigConstants.MAHOUTDICTIONARYPATH + DELIMITER + config.mahoutdictionarypath);
+            Label dictpathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDICTIONARYPATH + DELIMITER + config.mahoutdictionarypath);
             classifyConfig.addComponent(dictpathLabel);
-            Label docfreqpathLabel = new Label(ConfigConstants.MAHOUTDOCUMENTFREQUENCYPATH + DELIMITER + config.mahoutdocumentfrequencypath);
+            Label docfreqpathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDOCUMENTFREQUENCYPATH + DELIMITER + config.mahoutdocumentfrequencypath);
             classifyConfig.addComponent(docfreqpathLabel);
-            Label labelpathLabel = new Label(ConfigConstants.MAHOUTLABELINDEXFILEPATH + DELIMITER + config.mahoutlabelindexpath);
+            Label labelpathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTLABELINDEXFILEPATH + DELIMITER + config.mahoutlabelindexpath);
             classifyConfig.addComponent(labelpathLabel);
             if (config.classify.equals(ConfigConstants.MAHOUT)) {
-                Label modelpathLabel = new Label(ConfigConstants.MAHOUTMODELPATH + DELIMITER + config.mahoutmodelpath);               
+                Label modelpathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTMODELPATH + DELIMITER + config.mahoutmodelpath);               
                 classifyConfig.addComponent(modelpathLabel);
             } else {
-                Label sparkMaster = new Label(ConfigConstants.MAHOUTSPARKMASTER + DELIMITER + config.mahoutsparkmaster);
+                Label sparkMaster = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTSPARKMASTER + DELIMITER + config.mahoutsparkmaster);
                 classifyConfig.addComponent(sparkMaster);
             }
       }
-        if (config.classify.equals(ConfigConstants.SPARKML)) {
+        if (config.classify.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
             classifyConfig.setCaption("Spark ML settings");
-            Label bashpathLabel = new Label(ConfigConstants.SPARKMLBASEPATH + DELIMITER + config.sparkmlbasepath);               
+            Label bashpathLabel = new Label(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLBASEPATH + DELIMITER + config.sparkmlbasepath);               
             classifyConfig.addComponent(bashpathLabel);
-            Label modelpathLabel = new Label(ConfigConstants.SPARKMLMODELPATH + DELIMITER + config.sparkmlmodelpath);               
+            Label modelpathLabel = new Label(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLMODELPATH + DELIMITER + config.sparkmlmodelpath);               
             classifyConfig.addComponent(modelpathLabel);
-            Label labelindexpathLabel = new Label(ConfigConstants.SPARKMLLABELINDEXPATH + DELIMITER + config.sparkmllabelindexpath);               
+            Label labelindexpathLabel = new Label(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLLABELINDEXPATH + DELIMITER + config.sparkmllabelindexpath);               
             classifyConfig.addComponent(labelindexpathLabel);
-               Label sparkMaster = new Label(ConfigConstants.SPARKMASTER + DELIMITER + config.sparkmaster);
+               Label sparkMaster = new Label(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMASTER + DELIMITER + config.sparkmaster);
                 classifyConfig.addComponent(sparkMaster);
             }
         tab.addComponent(classifyConfig);
@@ -571,9 +571,9 @@ public class MyVaadinUI extends UI
     
     VerticalLayout miscConfig = new VerticalLayout();
     miscConfig.setCaption("Misc settings");
-    Label downloadLabel = new Label(ConfigConstants.DOWNLOADER + DELIMITER + config.downloader);
+    Label downloadLabel = new Label(ConfigConstants.GUIDOWNLOADER + DELIMITER + config.downloader);
     miscConfig.addComponent(downloadLabel);
-    Label authLabel = new Label(ConfigConstants.AUTHENTICATE + DELIMITER + config.authenticate);
+    Label authLabel = new Label(ConfigConstants.GUIAUTHENTICATE + DELIMITER + config.authenticate);
     miscConfig.addComponent(authLabel);
     tab.addComponent(miscConfig);
     

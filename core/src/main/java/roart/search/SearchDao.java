@@ -14,7 +14,6 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
 import roart.model.ResultItem;
-import roart.model.SearchDisplay;
 import roart.model.IndexFiles;
 
 import org.apache.tika.metadata.Metadata;
@@ -35,13 +34,13 @@ public class SearchDao {
 	}
 	if (true || search == null) {
 		// TODO make OO of this?
-	    if (type.equals(ConfigConstants.LUCENE)) {
+	    if (type.equals(ConfigConstants.SEARCHENGINELUCENE)) {
 		search = new LuceneSearchAccess();
 	    }
-	    if (type.equals(ConfigConstants.SOLR)) {
+	    if (type.equals(ConfigConstants.SEARCHENGINESOLR)) {
 		search = new SolrSearchAccess();
 	    }
-	    if (type.equals(ConfigConstants.ELASTIC)) {
+	    if (type.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
 		search = new ElasticSearchAccess();
 	    }
 	    // TODO propagate
@@ -53,12 +52,12 @@ public class SearchDao {
 	return search.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, index);
     }
 
-    public static ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
-	return search.searchme(str, searchtype, display);
+    public static ResultItem[] searchme(String str, String searchtype) {
+	return search.searchme(str, searchtype);
     }
 
-    public static ResultItem[] searchsimilar(String md5i, String searchtype, SearchDisplay display) {
-	return search.searchsimilar(md5i, searchtype, display);
+    public static ResultItem[] searchsimilar(String md5i, String searchtype) {
+	return search.searchsimilar(md5i, searchtype);
     }
 
     /*

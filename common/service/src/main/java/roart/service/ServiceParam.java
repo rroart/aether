@@ -20,4 +20,5 @@ public NodeConfig config;
     public boolean md5checknew;
     public String dirname;
     public String lang;
+    public String webpath;
 }

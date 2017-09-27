@@ -70,15 +70,15 @@ public abstract class MyConfig {
         configDefaultMap.put(NodeConfig.Config.MLTMINDF, ConfigConstants.DEFAULT_CONFIG_MLTMINDF);
         configDefaultMap.put(NodeConfig.Config.MLTMINTF, ConfigConstants.DEFAULT_CONFIG_MLTMINTF);
         
-        configStrMap.put(NodeConfig.Config.FAILEDLIMIT, ConfigConstants.FAILEDLIMIT);
-        configStrMap.put(NodeConfig.Config.TIKATIMEOUT, ConfigConstants.TIKATIMEOUT);
-        configStrMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.OTHERTIMEOUT);
-        configStrMap.put(NodeConfig.Config.INDEXLIMIT, ConfigConstants.INDEXLIMIT);
-        configStrMap.put(NodeConfig.Config.REINDEXLIMIT, ConfigConstants.REINDEXLIMIT);
+        configStrMap.put(NodeConfig.Config.FAILEDLIMIT, ConfigConstants.INDEXFAILEDLIMIT);
+        configStrMap.put(NodeConfig.Config.TIKATIMEOUT, ConfigConstants.CONVERSIONTIKATIMEOUT);
+        configStrMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.CONVERSTIONOTHERTIMEOUT);
+        configStrMap.put(NodeConfig.Config.INDEXLIMIT, ConfigConstants.INDEXINDEXLIMIT);
+        configStrMap.put(NodeConfig.Config.REINDEXLIMIT, ConfigConstants.INDEXREINDEXLIMIT);
     
-        configStrMap.put(NodeConfig.Config.MLTCOUNT, ConfigConstants.MLTCOUNT);
-        configStrMap.put(NodeConfig.Config.MLTMINDF, ConfigConstants.MLTMINDF);
-        configStrMap.put(NodeConfig.Config.MLTMINTF, ConfigConstants.MLTMINTF);
+        configStrMap.put(NodeConfig.Config.MLTCOUNT, ConfigConstants.SEARCHENGINEMLTMLTCOUNT);
+        configStrMap.put(NodeConfig.Config.MLTMINDF, ConfigConstants.SEARCHENGINEMLTMLTMINDF);
+        configStrMap.put(NodeConfig.Config.MLTMINTF, ConfigConstants.SEARCHENGINEMLTMLTMINTF);
     }
     
 }

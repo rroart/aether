@@ -33,13 +33,13 @@ public class IndexFilesDao {
 
     public synchronized static void instance(String type) {
 	if (indexFiles == null) {
-	    if (type.equals(ConfigConstants.HIBERNATE)) {
+	    if (type.equals(ConfigConstants.DATABASEHIBERNATE)) {
 		indexFiles = new HibernateIndexFilesAccess();
 	    }
-	    if (type.equals(ConfigConstants.HBASE)) {
+	    if (type.equals(ConfigConstants.DATABASEHBASE)) {
 		indexFiles = new HbaseIndexFilesAccess();
 	    }
-	    if (type.equals(ConfigConstants.DATANUCLEUS)) {
+	    if (type.equals(ConfigConstants.DATABASEDATANUCLEUS)) {
 		indexFiles = new DataNucleusIndexFilesAccess();
 	    }
 	}

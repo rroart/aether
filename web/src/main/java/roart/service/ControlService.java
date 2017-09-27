@@ -18,10 +18,12 @@ import java.util.concurrent.TimeUnit;
 import java.io.*;
 
 import roart.service.ServiceParam.Function;
+import roart.thread.ClientRunner;
 import roart.model.FileLocation;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
 import roart.model.SearchDisplay;
+import roart.queue.Queues;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
 import roart.config.NodeConfig;
@@ -43,6 +45,10 @@ public class ControlService {
 
     private static volatile int mycounter = 0;
     
+    public ControlService() {
+        startThreads();
+    }
+    
     private NodeConfig conf;
     
     private NodeConfig getConfig() {
@@ -59,7 +65,8 @@ public class ControlService {
     public void setRemoteConfig() {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.SETCONFIG);
+        param.webpath = EurekaConstants.SETCONFIG;
+        Queues.clientQueue.add(param);
         return;           
     }
     
@@ -77,7 +84,8 @@ public class ControlService {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.add = add;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.TRAVERSE);
+        param.webpath = EurekaConstants.TRAVERSE;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -86,7 +94,8 @@ public class ControlService {
     public void traverse() throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.TRAVERSE);
+        param.webpath = EurekaConstants.TRAVERSE;
+        Queues.clientQueue.add(param);
     }
 
     static public String nodename = "localhost";
@@ -95,7 +104,8 @@ public class ControlService {
     public void overlapping() {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.OVERLAPPING);
+        param.webpath = EurekaConstants.OVERLAPPING;
+        Queues.clientQueue.add(param);
         return;           
    }
 
@@ -110,7 +120,8 @@ public class ControlService {
         param.function = Function.REINDEXSUFFIX;
         param.suffix = suffix;
         param.reindex = reindex;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.INDEXSUFFIX);
+        param.webpath = EurekaConstants.INDEXSUFFIX;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -125,7 +136,8 @@ public class ControlService {
         param.function = Function.INDEX;
         param.add = add;
         param.reindex = reindex;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.INDEX);
+        param.webpath = EurekaConstants.INDEX;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -139,7 +151,8 @@ public class ControlService {
         param.function = Function.REINDEXDATE;
         param.lowerdate = date;
         param.reindex = reindex;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.REINDEXDATELOWER);
+        param.webpath = EurekaConstants.REINDEXDATELOWER;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -149,7 +162,8 @@ public class ControlService {
         param.function = Function.REINDEXDATE;
         param.higherdate = date;
         param.reindex = reindex;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.REINDEXDATEHIGHER);
+        param.webpath = EurekaConstants.REINDEXDATEHIGHER;
+        Queues.clientQueue.add(param);
         return;           
    }
 
@@ -163,7 +177,8 @@ public class ControlService {
         param.config = getConfig();
         param.function = Function.REINDEXLANGUAGE;
         param.lang = lang;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.REINDEXLANGUAGE);
+        param.webpath = EurekaConstants.REINDEXLANGUAGE;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -172,7 +187,8 @@ public class ControlService {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.dirname = dirname;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.CLEANUPFS);
+        param.webpath = EurekaConstants.CLEANUPFS;
+        Queues.clientQueue.add(param);
         return null;           
     }
 
@@ -180,7 +196,8 @@ public class ControlService {
     public void memoryusage() {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.MEMORYUSAGE);
+        param.webpath = EurekaConstants.MEMORYUSAGE;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -190,7 +207,8 @@ public class ControlService {
     public void notindexed() throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.NOTINDEXED);
+        param.webpath = EurekaConstants.NOTINDEXED;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -203,7 +221,8 @@ public class ControlService {
     public void filesystemlucenenew() throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.FILESYSTEMLUCENENEW);
+        param.webpath = EurekaConstants.FILESYSTEMLUCENENEW;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -212,7 +231,8 @@ public class ControlService {
         param.config = getConfig();
         param.add = add;
         param.md5checknew = md5checknew;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.FILESYSTEMLUCENENEW);
+        param.webpath = EurekaConstants.FILESYSTEMLUCENENEW;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -220,7 +240,8 @@ public class ControlService {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.md5 = md5;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.DBINDEX);
+        param.webpath = EurekaConstants.DBINDEX;
+        Queues.clientQueue.add(param);
         return;           
    }
 
@@ -228,7 +249,8 @@ public class ControlService {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.md5 = md5;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.DBSEARCH);
+        param.webpath = EurekaConstants.DBSEARCH;
+        Queues.clientQueue.add(param);
         return;           
     }
 
@@ -243,7 +265,8 @@ public class ControlService {
         param.config = getConfig();
 	param.function = Function.CONSISTENTCLEAN;
 	    param.clean = clean;
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.CONSISTENTCLEAN);
+        param.webpath = EurekaConstants.CONSISTENTCLEAN;
+        Queues.clientQueue.add(param);
         return;           
 	    }
 
@@ -252,7 +275,8 @@ public class ControlService {
             param.config = getConfig();
             //param.function = Function.DELETEPATHDB;
             param.path = path;
-            ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.DELETEPATHDB);
+            param.webpath = EurekaConstants.DELETEPATHDB;
+            Queues.clientQueue.add(param);
             return;           
        }
 
@@ -268,7 +292,8 @@ public class ControlService {
             ServiceParam param = new ServiceParam();
             param.config = getConfig();
             param.name = engine;
-            ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.SEARCHENGINE);
+            param.webpath = EurekaConstants.SEARCHENGINE;
+            Queues.clientQueue.add(param);
             return;           
        }
         
@@ -276,7 +301,8 @@ public class ControlService {
             ServiceParam param = new ServiceParam();
             param.config = getConfig();
             param.name = learning;
-            ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.MACHINELEARNING);
+            param.webpath = EurekaConstants.MACHINELEARNING;
+            Queues.clientQueue.add(param);
             return;           
         }
 
@@ -284,7 +310,8 @@ public class ControlService {
             ServiceParam param = new ServiceParam();
             param.config = getConfig();
             param.name = db;
-            ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.DATABASE);
+            param.webpath = EurekaConstants.DATABASE;
+            Queues.clientQueue.add(param);
             return;           
         }
 
@@ -292,7 +319,8 @@ public class ControlService {
             ServiceParam param = new ServiceParam();
             param.config = getConfig();
             param.name = fs;
-            ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.FILESYSTEM);
+            param.webpath = EurekaConstants.FILESYSTEM;
+            Queues.clientQueue.add(param);
             return;           
         }
         
@@ -300,4 +328,21 @@ public class ControlService {
             return EurekaConstants.AETHER;
         }
         
+        private static ClientRunner clientRunnable = null;
+        public static Thread clientWorker = null;
+
+        public static void startThreads() {
+            if (clientRunnable == null) {
+                startClientWorker();
+            }
+        }
+
+        public static void startClientWorker() {
+            clientRunnable = new ClientRunner();
+            clientWorker = new Thread(clientRunnable);
+            clientWorker.setName("ClientWorker");
+            clientWorker.start();
+            //log.info("starting client worker");
+        }
+
 }

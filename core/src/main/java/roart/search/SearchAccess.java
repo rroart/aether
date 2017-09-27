@@ -1,7 +1,6 @@
 package roart.search;
 
 import roart.model.ResultItem;
-import roart.model.SearchDisplay;
 import roart.service.ControlService;
 import roart.util.EurekaConstants;
 import roart.util.EurekaUtil;
@@ -107,7 +106,7 @@ public abstract class SearchAccess {
         return result.size;
     }
 
-    public ResultItem[] searchme(String str, String searchtype, SearchDisplay display) {
+    public ResultItem[] searchme(String str, String searchtype) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
@@ -115,13 +114,13 @@ public abstract class SearchAccess {
         param.searchtype = searchtype;
         
         SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH);
-    	return getResultItems(display, result);
+    	return getResultItems(result);
     }
 
-	private ResultItem[] getResultItems(SearchDisplay display, SearchEngineSearchResult result) {
+	private ResultItem[] getResultItems(SearchEngineSearchResult result) {
 		SearchResult[] results = result.results;
     	ResultItem[] strarr = new ResultItem[results.length + 1];
-    	strarr[0] = IndexFiles.getHeaderSearch(display);
+    	strarr[0] = IndexFiles.getHeaderSearch();
     	try {
     		int i = 1;
     		for (SearchResult res : results) {
@@ -131,7 +130,7 @@ public abstract class SearchAccess {
     			String filename = indexmd5.getFilelocation();
     			log.info(i + ". " + md5 + " : " + filename + " : " + res.score);
     			FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
-    			strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, display, res.metadata, ControlService.nodename, maybeFl);
+    			strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, maybeFl);
     			i++;
     		}
     	} catch (Exception e) {
@@ -140,7 +139,7 @@ public abstract class SearchAccess {
     	return strarr;
 	}
 
-    public ResultItem[] searchsimilar(String id, String searchtype, SearchDisplay display) {
+    public ResultItem[] searchsimilar(String id, String searchtype) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
@@ -148,7 +147,7 @@ public abstract class SearchAccess {
         param.searchtype = searchtype;
         
         SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT);
-       	return getResultItems(display, result);
+       	return getResultItems(result);
     }
 
     /**

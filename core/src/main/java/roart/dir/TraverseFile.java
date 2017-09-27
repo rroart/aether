@@ -6,13 +6,11 @@ import java.util.Map;
 
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
-import roart.queue.ClientQueueElement;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.service.ServiceParam;
 import roart.service.ServiceParam.Function;
-import roart.thread.ClientRunner;
 import roart.thread.TikaRunner;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
@@ -233,7 +231,7 @@ public class TraverseFile {
         index.setTimeoutreason("");
         index.setFailedreason("");
         index.setNoindexreason("");
-        TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), trav.getClientQueueElement().display);
+        TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata());
         Queues.tikaQueue.add(e);
         //size = doTika(filename, filename, md5, index, retlist);
     }

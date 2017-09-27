@@ -61,12 +61,12 @@ public class ZKRunner implements Runnable {
         if (child.equals(Constants.REFRESH)) {
             IndexFilesDao.getAll();
             log.info(Constants.REFRESH + " " + ControlService.nodename);
-            ClientRunner.notify("Finished refresh");
+            //ClientRunner.notify("Finished refresh");
         } else if (child.equals(Constants.RECONFIG)) {
                 MyConfig.instance().reconfig();
                 log.info(Constants.RECONFIG + " " + ControlService.nodename);
-            ClientRunner.replace();
-                ClientRunner.notify("Finished reconfig");
+            //ClientRunner.replace();
+                //ClientRunner.notify("Finished reconfig");
         } else {
             log.info("unknown command " + child);
         }

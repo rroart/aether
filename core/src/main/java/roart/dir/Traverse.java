@@ -8,13 +8,11 @@ import java.util.Map;
 
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
-import roart.queue.ClientQueueElement;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.service.ServiceParam;
 import roart.service.ServiceParam.Function;
-import roart.thread.ClientRunner;
 import roart.thread.TikaRunner;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
@@ -51,9 +49,6 @@ import roart.util.MySets;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.tika.metadata.Metadata;
-
-import com.vaadin.ui.UI;
-
 
 public class Traverse {
 
@@ -309,11 +304,10 @@ public class Traverse {
         return 1;
     }
 
-    public static List<ResultItem> notindexed(ClientQueueElement el) throws Exception {
+    public static List<ResultItem> notindexed(ServiceParam el) throws Exception {
         List<ResultItem> retlist = new ArrayList<ResultItem>();
         ResultItem ri = new ResultItem();
-        SearchDisplay display = el.display;
-        retlist.add(IndexFiles.getHeader(display));
+        retlist.add(IndexFiles.getHeader());
         List<IndexFiles> indexes = IndexFilesDao.getAll();
         log.info("sizes " + indexes.size());
         for (IndexFiles index : indexes) {
@@ -322,16 +316,15 @@ public class Traverse {
                 continue;
             }
             FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-            ri = IndexFiles.getResultItem(index, index.getLanguage(), display, ControlService.nodename, maybeFl);
+            ri = IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, maybeFl);
             retlist.add(ri);
         }
         return retlist;
     }
 
-    public static List<ResultItem> indexed(ClientQueueElement el) throws Exception {
+    public static List<ResultItem> indexed(ServiceParam el) throws Exception {
         List<ResultItem> retlist = new ArrayList<ResultItem>();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
-        SearchDisplay display = el.display;
         log.info("sizes " + indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
@@ -339,7 +332,7 @@ public class Traverse {
                 if (indexed != null) {
                     if (indexed.booleanValue()) {
                         FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), display, ControlService.nodename, maybeFl));
+                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, maybeFl));
                     }
                 }
             }
@@ -488,7 +481,7 @@ public class Traverse {
         return null;
     }
 
-    static boolean isMaxed(String myid, ClientQueueElement element) {
+    static boolean isMaxed(String myid, ServiceParam element) {
         int max = MyConfig.conf.configMap.get(NodeConfig.Config.REINDEXLIMIT);
         int maxindex = MyConfig.conf.configMap.get(NodeConfig.Config.INDEXLIMIT);
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
@@ -526,7 +519,7 @@ public class Traverse {
     //int indexcount = 0;
 
     String myid;
-    ClientQueueElement element;
+    ServiceParam element;
     String retlistid = null;
     String retnotlistid = null;
     //List<ResultItem> retList = null;
@@ -546,7 +539,7 @@ public class Traverse {
 
     //Set<String> md5sdone = new HashSet<String>();
 
-    public Traverse(String myid, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
+    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
 
         this.myid = myid;
         this.element = element;

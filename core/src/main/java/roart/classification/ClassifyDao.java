@@ -43,10 +43,10 @@ public class ClassifyDao {
         if (type.equals(ConfigConstants.MAHOUTSPARK)) {
         classify = new MahoutSparkClassifyAccess();
         }
-        if (type.equals(ConfigConstants.SPARKML)) {
+        if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
         classify = new SparkMLClassifyAccess();
         }
-	    if (type.equals(ConfigConstants.OPENNLP)) {
+	    if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
 		classify = new OpennlpClassifyAccess();
 	    }
 	    // TODO propagate

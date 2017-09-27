@@ -2,12 +2,13 @@ package roart.queue;
 
 import roart.model.FileObject;
 import roart.model.SearchDisplay;
+import roart.service.ServiceParam;
 
 public class TraverseQueueElement {
 
 	private String myid;
 	private String filename;
-    private ClientQueueElement clientQueueElement;
+    private ServiceParam clientQueueElement;
         private String retlistid = null;
 	private String retnotlistid = null;
         private String newsetid = null; 
@@ -18,7 +19,7 @@ public class TraverseQueueElement {
     public TraverseQueueElement() {
 	}
 	
-	public TraverseQueueElement(String myid, String filename, ClientQueueElement element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
+	public TraverseQueueElement(String myid, String filename, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
 
 	    this.setMyid(myid);
 	    this.filename = filename;
@@ -80,11 +81,11 @@ public class TraverseQueueElement {
         this.notfoundsetid = notfoundsetid;
     }
 
-    public ClientQueueElement getClientQueueElement() {
+    public ServiceParam getClientQueueElement() {
         return clientQueueElement;
     }
     
-    public void setClientQueueElement(ClientQueueElement element) {
+    public void setClientQueueElement(ServiceParam element) {
         this.clientQueueElement = element;
     }
 

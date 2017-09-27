@@ -31,7 +31,6 @@ public class Queues {
     public static volatile Deque<TikaQueueElement> tikaQueue = new ConcurrentLinkedDeque<TikaQueueElement>();
     public static volatile Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
-    public static volatile Queue<ClientQueueElement> clientQueue = new ConcurrentLinkedQueue<ClientQueueElement>();
     public static volatile Queue<TraverseQueueElement> traverseQueue = new ConcurrentLinkedQueue<TraverseQueueElement>();
 
     public static Set<MySet> workQueues = new HashSet();

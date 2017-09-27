@@ -1,6 +1,5 @@
 package roart.service;
 
-import roart.queue.ClientQueueElement;
 import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.service.ServiceParam.Function;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
+import roart.common.searchengine.SearchEngineSearchParam;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
 //import roart.dao.FilesDao;
@@ -23,24 +23,19 @@ import roart.model.SearchDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.UI;
-
 public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void searchme(String str, String type) {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.SEARCH, str, type, null, null, false, false, false); // stupid overloading
-	Queues.clientQueue.add(e);
+    public List searchme(SearchEngineSearchParam e) {
+        return searchmeDo(e);
     }
 
-    public List<List> searchmeDo(ClientQueueElement e) {
-	String str = e.file;
-	String type = e.suffix;
+    public List<List> searchmeDo(SearchEngineSearchParam e) {
+	String str = e.str;
+	String type = e.searchtype;
 	List strlist = new ArrayList<String>();
 
-	SearchDisplay display = e.display;
-
-	ResultItem[] strarr = roart.search.Search.searchme(str, type, display);
+	ResultItem[] strarr = roart.search.Search.searchme(str, type);
 	
 	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
@@ -50,14 +45,12 @@ public class SearchService {
 	return strlistlist;
     }
 
-    public List<List> searchsimilarDo(ClientQueueElement e) {
-	String str = e.file;
-	String type = e.suffix;
+    public List<List> searchsimilarDo(SearchEngineSearchParam e) {
+	String str = e.str;
+	String type = e.searchtype;
 	List strlist = new ArrayList<String>();
 
-	SearchDisplay display = e.display;
-
-	ResultItem[] strarr = roart.search.Search.searchsimilar(str, type, display);
+	ResultItem[] strarr = roart.search.Search.searchsimilar(str, type);
 
 	for (ResultItem stri : strarr) {
 	    strlist.add(stri);
@@ -67,25 +60,12 @@ public class SearchService {
 	return strlistlist;
     }
 
-	public static SearchDisplay getSearchDisplay(UI ui) {
-		SearchDisplay display = new SearchDisplay();
-		String myclassify = MyConfig.conf.classify;
-		display.classify = myclassify != null && myclassify.length() > 0;
-		// if lost session, it doesn't really matter much whether displaying for admin?
-		if (ui != null && ui.getSession() != null) {
-		display.admindisplay = "admin".equals((String) ui.getSession().getAttribute("user"));
-		}
-		display.highlightmlt = isHighlightMLT();
-		return display;
-	}
-
 	public static boolean isHighlightMLT() {
 		
 		return MyConfig.conf.highlightmlt;
 	}
     
-    public void searchsimilar(String md5) {
-	ClientQueueElement e = new ClientQueueElement(com.vaadin.ui.UI.getCurrent(), ServiceParam.Function.SEARCHSIMILAR, md5, null, null, null, false, false, false); // stupid overloading
-	Queues.clientQueue.add(e);
-    }
+    public List searchsimilar(SearchEngineSearchParam e) {
+            return searchsimilarDo(e);
+	    }
 }
