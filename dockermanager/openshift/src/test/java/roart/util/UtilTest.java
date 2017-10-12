@@ -7,10 +7,13 @@ import org.junit.Test;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.BuildConfigBuilder;
+import io.fabric8.openshift.api.model.BuildRequestBuilder;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import io.fabric8.openshift.api.model.ImageStream;
@@ -23,11 +26,16 @@ public class UtilTest {
     KubernetesClient client;
     OpenShiftClient osClient;
     KubernetesClient kubernetes = new DefaultKubernetesClient();
-
+    String project = "myproject";
+    
     @Test
     public void t1() {
-        client = new DefaultKubernetesClient();
-        osClient = new DefaultOpenShiftClient();
+        Config conf2 = new ConfigBuilder()
+                .withUsername("developer")
+                .withPassword("developer")
+                .build();
+        client = new DefaultKubernetesClient(conf2);
+        osClient = new DefaultOpenShiftClient(conf2);
         String name = "tensorflow-predict";
         String debian = "debian";
         String debianstretch = "debian:stretch";
@@ -65,6 +73,7 @@ public class UtilTest {
                 .build();
         BuildConfig bc = new BuildConfigBuilder()
                 .withNewMetadata()
+                .withName(name)
                 .addToLabels("build", name)
                 .endMetadata()
                 .withNewSpec()
@@ -114,10 +123,34 @@ public class UtilTest {
                 .endTemplate()
                 .withTest(false)
                 .addNewTrigger()
+                .withType("imagechange")
+                .withNewImageChangeParams()
+                //.withNewImageChange()
+                .withNewFrom()
+                .withKind("ImageStreamTag")
+                .withName(debianstretch)
+                .endFrom()
+                .endImageChangeParams()
+                .endTrigger()
+                .endSpec()
+                .build();
+                 
+                /*
+                .with
+                .withNewGeneric()
+                .withSecret("secret101")
+                .endGeneric()
+                .build();
+                /*
+                .endImageChange()
+                */
+                /*
+                .addNewTrigger()
                 .withType("ConfigChange")
                 .endTrigger()
                 .endSpec()
                 .build();
+                */
         Service srv = new ServiceBuilder()
                 .withNewMetadata()
                 .addToLabels("app", name)
@@ -138,5 +171,10 @@ public class UtilTest {
                 .build();
          osClient.imageStreams().createOrReplace(isDebian);
         osClient.imageStreams().createOrReplace(isTFPredict);
+        System.out.println("del " + osClient.buildConfigs().inNamespace(project).withName(bc.getMetadata().getName()).delete());
+        osClient.buildConfigs().inNamespace(project).createOrReplace(bc);
+        osClient.buildConfigs().inNamespace(project).withName(bc.getMetadata().getName()).instantiate(new BuildRequestBuilder()
+                .withNewMetadata().withName(bc.getMetadata().getName()).endMetadata()
+                .build());
     }
 }
