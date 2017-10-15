@@ -5,8 +5,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -43,14 +47,34 @@ public class UtilTest {
         Map<String, String> selector = new HashMap<>();
         selector.put("app", name);
         selector.put("deploymentconfig", name);
-        Map<String, String> labels = new HashMap<>();
-        labels.put("build", name);
+        Map<String, String> labelsBuild = new HashMap<>();
+        labelsBuild.put("build", name);
+        Map<String, String> labelsApp = new HashMap<>();
+        labelsApp.put("build", name);
+        
+        Map<String, String> debianLabels = new HashMap<>();
+        debianLabels.put("build", debian);
+
+        ObjectMeta metaDeb = new ObjectMeta();
+        metaDeb.setName(debian);
+        metaDeb.setLabels(labelsBuild);
+        
+        ObjectMeta metaBuild = new ObjectMeta();
+        metaBuild.setName(name);
+        metaBuild.setLabels(labelsBuild);
+        
+        ObjectMeta metaApp = new ObjectMeta();
+        metaApp.setName(name);
+        metaApp.setLabels(labelsApp);
+        
+        /*
+        Map<String, String> selectorMap = new HashMap<>();
+        selectorMap.put("app", name);
+        selectorMap.put("deploymentconfig", name);
+       */
+        System.out.println("here0");
         ImageStream isDebian = new ImageStreamBuilder()
-                .withNewMetadata()
-                .withName(debian)
-                .addToLabels("build", debian)
-                .withLabels(labels)
-                .endMetadata()
+                .withMetadata(metaDeb)
                 .withNewSpec()
                 .addNewTag()
                 .addToAnnotations("openshift.io/imported-from", debianstretch)
@@ -62,20 +86,15 @@ public class UtilTest {
                 .endTag()
                 .endSpec()
                 .build();
+        System.out.println("here1");
         ImageStream isTFPredict = new ImageStreamBuilder()
-                .withNewMetadata()
-                .withName(name)
-                .addToLabels("build", debian)
-                .withLabels(labels)
-                .endMetadata()
+                .withMetadata(metaBuild)
                 .withNewSpec()
                 .endSpec()
                 .build();
+        System.out.println("here2");
         BuildConfig bc = new BuildConfigBuilder()
-                .withNewMetadata()
-                .withName(name)
-                .addToLabels("build", name)
-                .endMetadata()
+                .withMetadata(metaBuild)
                 .withNewSpec()
                 .withNewOutput()
                 .withNewTo()
@@ -85,6 +104,13 @@ public class UtilTest {
                 .endOutput()
                 .withNewSource()
                 .withType("Binary")
+                .withNewBinary()
+                .withAsFile(null)
+                .endBinary()
+                /*
+                .withType("Dockerfile")
+                .withDockerfile("/tmp/Dockerfile")
+                */
                 .endSource()
                 .withNewStrategy()
                 .withNewDockerStrategy()
@@ -97,14 +123,12 @@ public class UtilTest {
                 .endStrategy()
                 .endSpec()
                 .build();
+        ContainerPort containerPort = getContainerPort("TCP", 8001);
+        System.out.println("here3");
         DeploymentConfig dc = new DeploymentConfigBuilder()
-                .withNewMetadata()
-                .addToLabels("app", name)
-                .withName(name)
-                .endMetadata()
+                .withMetadata(metaApp)
                 .withNewSpec()
-                .addToSelector("app", name)
-                .addToSelector("deploymentconfig", name)
+                .withSelector(selector)
                 .withNewTemplate()
                 .withNewMetadata()
                 .addToLabels("app", name)
@@ -114,10 +138,7 @@ public class UtilTest {
                 .addNewContainer()
                 .withImage("172.30.1.1:5000/" + name + ":latest")
                 .withName(name)
-                .addNewPort()
-                .withContainerPort(8001)
-                .withProtocol("TCP")
-                .endPort()
+                .withPorts(containerPort)
                 .endContainer()
                 .endSpec()
                 .endTemplate()
@@ -151,30 +172,51 @@ public class UtilTest {
                 .endSpec()
                 .build();
                 */
+        
+        
+        ServicePort servicePort = getServicePort("TCP", 8001, 8001);
+        System.out.println("here4");
         Service srv = new ServiceBuilder()
-                .withNewMetadata()
-                .addToLabels("app", name)
-                .withName(name)
-                .endMetadata()
+                .withMetadata(metaApp)
                 .withNewSpec()
-                .addNewPort()
-                .withName("8001-tcp")
-                .withPort(8001)
-                .withProtocol("TCP")
-                .withNewTargetPort()
-                .withIntVal(8001)
-                .endTargetPort()
-                .endPort()
-                .addToSelector("app", name)
-                .addToSelector("deploymentconfig", name)
+                .withPorts(servicePort)
+                .withSelector(selector)
                 .endSpec()
                 .build();
+        System.out.println("here5");
          osClient.imageStreams().createOrReplace(isDebian);
+         System.out.println("here6");
         osClient.imageStreams().createOrReplace(isTFPredict);
+        System.out.println("her7");
         System.out.println("del " + osClient.buildConfigs().inNamespace(project).withName(bc.getMetadata().getName()).delete());
+        System.out.println("here8");
         osClient.buildConfigs().inNamespace(project).createOrReplace(bc);
-        osClient.buildConfigs().inNamespace(project).withName(bc.getMetadata().getName()).instantiate(new BuildRequestBuilder()
-                .withNewMetadata().withName(bc.getMetadata().getName()).endMetadata()
+        System.out.println("here9");
+        osClient.buildConfigs()
+        .inNamespace(project)
+        .withName(bc.getMetadata().getName())
+        .instantiate(new BuildRequestBuilder()
+                .withNewMetadata()
+                .withName(bc.getMetadata().getName())
+                .endMetadata()
                 .build());
+        System.out.println("here10");
+    }
+    
+    private ServicePort getServicePort(String protocol, Integer port, Integer targetPort) {
+        ServicePort servicePort = new ServicePort();
+        servicePort.setName(protocol.toLowerCase() + "-" + port);
+        servicePort.setPort(port);
+        servicePort.setProtocol(protocol);
+        servicePort.setTargetPort(new IntOrString(targetPort));
+        return servicePort;
+    }
+    
+    private ContainerPort getContainerPort(String protocol, Integer port) {
+        ContainerPort containerPort = new ContainerPort();
+        //containerPort.setName(protocol + "-" + port);
+        containerPort.setContainerPort(port);
+        containerPort.setProtocol(protocol);
+        return containerPort;
     }
 }
