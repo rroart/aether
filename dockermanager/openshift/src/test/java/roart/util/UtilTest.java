@@ -6,7 +6,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
-import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
@@ -55,17 +54,11 @@ public class UtilTest {
         Map<String, String> debianLabels = new HashMap<>();
         debianLabels.put("build", debian);
 
-        ObjectMeta metaDeb = new ObjectMeta();
-        metaDeb.setName(debian);
-        metaDeb.setLabels(labelsBuild);
+        ObjectMeta metaDeb = Fabric8Util.createObjectMeta(debian, labelsBuild);
         
-        ObjectMeta metaBuild = new ObjectMeta();
-        metaBuild.setName(name);
-        metaBuild.setLabels(labelsBuild);
+        ObjectMeta metaBuild = Fabric8Util.createObjectMeta(name, labelsBuild);
         
-        ObjectMeta metaApp = new ObjectMeta();
-        metaApp.setName(name);
-        metaApp.setLabels(labelsApp);
+        ObjectMeta metaApp = Fabric8Util.createObjectMeta(name, labelsApp);
         
         /*
         Map<String, String> selectorMap = new HashMap<>();
@@ -123,7 +116,7 @@ public class UtilTest {
                 .endStrategy()
                 .endSpec()
                 .build();
-        ContainerPort containerPort = getContainerPort("TCP", 8001);
+        ContainerPort containerPort = Fabric8Util.createContainerPort("TCP", 8001);
         System.out.println("here3");
         DeploymentConfig dc = new DeploymentConfigBuilder()
                 .withMetadata(metaApp)
@@ -174,7 +167,7 @@ public class UtilTest {
                 */
         
         
-        ServicePort servicePort = getServicePort("TCP", 8001, 8001);
+        ServicePort servicePort = Fabric8Util.createServicePort("TCP", 8001, 8001);
         System.out.println("here4");
         Service srv = new ServiceBuilder()
                 .withMetadata(metaApp)
@@ -203,20 +196,8 @@ public class UtilTest {
         System.out.println("here10");
     }
     
-    private ServicePort getServicePort(String protocol, Integer port, Integer targetPort) {
-        ServicePort servicePort = new ServicePort();
-        servicePort.setName(protocol.toLowerCase() + "-" + port);
-        servicePort.setPort(port);
-        servicePort.setProtocol(protocol);
-        servicePort.setTargetPort(new IntOrString(targetPort));
-        return servicePort;
-    }
-    
-    private ContainerPort getContainerPort(String protocol, Integer port) {
-        ContainerPort containerPort = new ContainerPort();
-        //containerPort.setName(protocol + "-" + port);
-        containerPort.setContainerPort(port);
-        containerPort.setProtocol(protocol);
-        return containerPort;
-    }
+    @Test
+public void t3() {
+    DockerUtil.method();
+}
 }
