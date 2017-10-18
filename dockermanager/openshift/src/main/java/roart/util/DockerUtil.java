@@ -14,18 +14,19 @@ public class DockerUtil {
 
     public static void method() {
         Config config4 = new ConfigBuilder()
-                //.withDockerUrl("tcp://192.168.42.56:2376")
-                .withDockerUrl("tcp://docker.io")
+                .withDockerUrl("https://192.168.42.56:2376")
+                //.withCaCertData("/home/roart/.minishift/certs/)
+                //.withDockerUrl("tcp://docker.io")
                 .build();
 
         DockerClient dClient = new DefaultDockerClient(config4);
-        /*
+        
         LimitSinceBeforeSizeFiltersAllRunningInterface<List<Container>> conts = dClient.container().list();
         for (Container i : conts.all()) {
-            System.out.println("id " + i.getId());
+            System.out.println("id " + i.getId() + " " + i.getImage() + " " + i.getNames());
         }
-        */
-        ContainerInspect inspect = dClient.container().withName("mysql").inspect();
+        
+        ContainerInspect inspect = dClient.container().withName("/registry").inspect();
         System.out.println(inspect);
         //inspect.getHostConfig().
         
