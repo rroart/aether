@@ -34,9 +34,9 @@ public class Swift extends FileSystemOperations {
 	
 	public Swift(String nodename, NodeConfig nodeConf) {
 	    conf = new SwiftConfig();
-		String url = nodeConf.swifturl;
-		String username = nodeConf.swiftuser;
-		String password = nodeConf.swiftkey;
+		String url = nodeConf.getSwiftUrl();
+		String username = nodeConf.getSwiftUser();
+		String password = nodeConf.getSwiftKey();
 		if (url != null) {
 		    AccountConfig config;
 			config = new AccountConfig();
@@ -55,7 +55,7 @@ public class Swift extends FileSystemOperations {
 		List<FileObject> foList = new ArrayList<FileObject>();
 		DirectoryOrObject mydir = (DirectoryOrObject) f.object;
 		try {
-			String containerName = param.conf.swiftcontainer;
+			String containerName = param.conf.getSwiftContainer();
 			Container container = conf.account.getContainer(containerName);
 			if (mydir.isObject()) {
 				foList.add(f);
@@ -84,7 +84,7 @@ public class Swift extends FileSystemOperations {
 		try {
 			DirectoryOrObject mydir = (DirectoryOrObject) f.object;
 			String dirName = mydir.getName();
-			String containerName = param.conf.swiftcontainer;
+			String containerName = param.conf.getSwiftContainer();
 			Container container = conf.account.getContainer(containerName);
 			StoredObject so = container.getObject(dirName);
 			// note that a directory does not exist, only files
@@ -169,7 +169,7 @@ public class Swift extends FileSystemOperations {
 	    if (string.startsWith("/")) {
 	    	string = string.substring(1);
 	    }
-		String containerName = param.conf.swiftcontainer;
+		String containerName = param.conf.getSwiftContainer();
 		Container container = conf.account.getContainer(containerName);
 		StoredObject so = container.getObject(string);
 		FileObject fo;

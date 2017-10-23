@@ -55,8 +55,8 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
 	public SearchElastic(String nodename, NodeConfig nodeConf) {
 		conf = new ElasticConfig();
-		String host = nodeConf.elastichost; 
-		String port = nodeConf.elasticport; 
+		String host = nodeConf.getElasticHost(); 
+		String port = nodeConf.getElasticPort(); 
 
 		try {
 			conf.client = new PreBuiltTransportClient(Settings.EMPTY).
@@ -127,7 +127,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 					.setFrom(0)
 					.setSize(100)
 					.setExplain(true);
-			if (search.conf.highlightmlt) {
+			if (search.conf.getHighlightmlt()) {
 				q = q.highlighter(new HighlightBuilder().field(Constants.CONTENT));
 			}
 			SearchResponse response = q.execute().actionGet();//get();
@@ -158,7 +158,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 				// TODO fix metadata
 				List<String> metadata = null; //new ArrayList(map.get(Constants.METADATA));
 				String[] highlights = null;
-				if (dohighlight && search.conf.highlightmlt) {
+				if (dohighlight && search.conf.getHighlightmlt()) {
 					Map<String, HighlightField> m = d.getHighlightFields();
 					HighlightField hlf = m.get(Constants.CONTENT);
 					highlights = new String[1];
@@ -195,9 +195,9 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		Item item = new Item(myindex, mytype, id);
 		Item likeItems[] = new Item[1];
 		likeItems[0] = item;
-		int count = nodeConf.configMap.get(NodeConfig.Config.MLTCOUNT);
-		int mintf = nodeConf.configMap.get(NodeConfig.Config.MLTMINTF);
-		int mindf = nodeConf.configMap.get(NodeConfig.Config.MLTMINDF);
+		int count = nodeConf.getMLTCount();
+		int mintf = nodeConf.getMLTMinTF();
+		int mindf = nodeConf.getMLTMinDF();
 		MoreLikeThisQueryBuilder queryBuilder = QueryBuilders.moreLikeThisQuery(items)
 				.minDocFreq(mindf)
 				.minTermFreq(mintf);

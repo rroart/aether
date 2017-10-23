@@ -33,7 +33,7 @@ public class HDFS extends FileSystemOperations {
 	    conf = new HDFSConfig();
 	    Configuration configuration = new Configuration();
 		conf.configuration = configuration;
-		String fsdefaultname = nodeConf.hdfsdefaultname;
+		String fsdefaultname = nodeConf.getHDFSDefaultName();
 		if (fsdefaultname != null) {
 		    configuration.set("fs.default.name", fsdefaultname);
 		    log.info("Setting hadoop fs.default.name " + fsdefaultname);

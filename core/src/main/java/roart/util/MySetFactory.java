@@ -9,7 +9,7 @@ import roart.config.MyConfig;
 public class MySetFactory extends MyFactory {
     
     public MySet create(String setid) {
-        if (MyConfig.conf.distributedtraverse) {
+        if (MyConfig.conf.wantDistributedTraverse()) {
             return new MyHazelcastSet(setid);
         } else {
             return new MyJavaSet();

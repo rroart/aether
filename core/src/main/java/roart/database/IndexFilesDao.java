@@ -51,7 +51,7 @@ public class IndexFilesDao {
 	if (md5 == null) {
 	    return null;
 	}
-	if (false && !MyConfig.conf.zookeepersmall) {
+	if (false && !MyConfig.conf.wantZookeeperSmall()) {
 	if (all.containsKey(md5)) {
 	    return all.get(md5);
 	}

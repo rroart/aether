@@ -23,7 +23,7 @@ public class ZKRunner implements Runnable {
 
     	List<String> children = null;
 
-    	ZKInitialize.initZK(MyConfig.conf.zookeeper, new DummyWatcher(), ControlService.nodename);
+    	ZKInitialize.initZK(MyConfig.conf.getZookeeper(), new DummyWatcher(), ControlService.nodename);
     	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename;
 
     	while (true) {
@@ -63,7 +63,8 @@ public class ZKRunner implements Runnable {
             log.info(Constants.REFRESH + " " + ControlService.nodename);
             //ClientRunner.notify("Finished refresh");
         } else if (child.equals(Constants.RECONFIG)) {
-                MyConfig.instance().reconfig();
+            // TODO fix
+                //MyConfig.instance().reconfig();
                 log.info(Constants.RECONFIG + " " + ControlService.nodename);
             //ClientRunner.replace();
                 //ClientRunner.notify("Finished reconfig");

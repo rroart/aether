@@ -7,6 +7,7 @@ import roart.model.SearchDisplay;
 import roart.util.Constants;
 import roart.util.FileSystemConstants;
 import roart.config.ConfigConstants;
+import roart.config.ConfigTreeMap;
 import roart.config.MyConfig;
 import roart.config.NodeConfig;
 import roart.service.SearchService;
@@ -38,6 +39,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
@@ -114,9 +116,9 @@ public class MyVaadinUI extends UI
     } 
 
     private void initVars() {
-	boolean dodownload = MyConfig.conf.downloader;
+	boolean dodownload = MyConfig.conf.getDownloader();
 
-	boolean doauthenticate = MyConfig.conf.authenticate;
+	boolean doauthenticate = MyConfig.conf.getAuthenticate();
 	getSession().setAttribute(ConfigConstants.GUIAUTHENTICATE, doauthenticate);
 
 	boolean accessAdmin = false;
@@ -252,10 +254,10 @@ public class MyVaadinUI extends UI
 	bottomLine.setWidth("90%");
 	Label nodeLabel = new Label("Node " + ControlService.nodename);
 	bottomLine.addComponent(nodeLabel);
-	Label dbLabel = new Label("Db type " + MyConfig.conf.db);
+	Label dbLabel = new Label("Db type " + controlService.db);
 	//dbLabel.setWidth("30%");
 	bottomLine.addComponent(dbLabel);
-	Label idxLabel = new Label("Index type " + MyConfig.conf.index);
+	Label idxLabel = new Label("Index type " + controlService.index);
 	//idxLabel.setWidth("30%");
 	bottomLine.addComponent(idxLabel);
 	Label licenseLabel = new Label("Affero GPL");
@@ -270,7 +272,7 @@ public class MyVaadinUI extends UI
 	VerticalLayout tab = new VerticalLayout();
 	//tab.addComponent(tf);
 	tab.setCaption("Search");
-	String myindex = MyConfig.conf.index;
+	String myindex = controlService.index;
 	// TODO make OO of this
 	if (myindex.equals(ConfigConstants.SEARCHENGINELUCENE)) {
 	tab.addComponent(getSearch("Search standard", 0));
@@ -375,7 +377,172 @@ public class MyVaadinUI extends UI
 	tab.addComponent(horStat);
 	tab.addComponent(horDb);
 	tab.addComponent(horConf);
+    HorizontalLayout horTree = new HorizontalLayout();
+    ConfigTreeMap map2 = controlService.getConfig().configTreeMap;
+    componentMap = new HashMap<>();
+    print(map2, horTree);
+    tab.addComponent(horTree);
 	return tab;
+    }
+
+    Map<String, Component> componentMap ;
+    private void print(ConfigTreeMap map2, HorizontalLayout tab) {
+        Map<String, Object> map = controlService.getConfig().configValueMap;
+        String name = map2.name;
+        System.out.println("name " + name);
+        Object object = map.get(name);
+        Component o = null;
+        String text = controlService.getConfig().text.get(name);
+        if (object == null) {
+            //System.out.println("null for " + name);
+            String labelname = name;
+            int last = name.lastIndexOf(".");
+            if (last >=0) {
+                labelname = name.substring(last + 1);
+            }
+            o = new Label(labelname + "    ");
+            tab.addComponent(o);
+            componentMap.put(name, o);
+        } else {
+            switch (object.getClass().getName()) {
+            case "java.lang.String":
+                o = getStringField(text, name);
+                break;
+            case "java.lang.Double":
+                o = getDoubleField(text, name);
+                break;
+            case "java.lang.Integer":
+                o = getIntegerField(text, name);
+                break;
+            case "java.lang.Boolean":
+                o = getCheckbox(text, name);
+                break;
+            default:
+                System.out.println("unknown " + object.getClass().getName());
+                log.info("unknown " + object.getClass().getName());
+
+            }
+            tab.addComponent(o);
+            componentMap.put(name, o);
+        }
+        //System.out.print(space.substring(0, indent));
+        //System.out.println("map2 " + map2.name + " " + map2.enabled);
+        Map<String, ConfigTreeMap> map3 = map2.configTreeMap;
+        if (!map3.keySet().isEmpty()) {
+            VerticalLayout h = new VerticalLayout();
+            tab.addComponent(h);
+            h.addComponent(new Label(">"));
+            HorizontalLayout n1 = new HorizontalLayout();
+            h.addComponent(n1);
+
+            n1.addComponent(new Label(">"));
+            VerticalLayout h1 = new VerticalLayout();
+            n1.addComponent(h1);
+
+            for (String key : map3.keySet()) {
+                System.out.println("key " + key);
+                HorizontalLayout n = new HorizontalLayout();
+                h1.addComponent(n);
+                print(map3.get(key), n);
+                //Object value = map.get(key);
+                //System.out.println("k " + key + " " + value + " " + value.getClass().getName());
+            }
+        }
+    }
+
+    private CheckBox getCheckbox(String text, String configKey) {
+        CheckBox cb = new CheckBox(text);
+        Boolean origValue = (Boolean) controlService.getConfig().configValueMap.get(configKey);
+        cb.setValue(origValue);
+
+        // Handle changes in the value
+        cb.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String
+                boolean value = (Boolean) event.getProperty().getValue();
+                // Do something with the value
+                try {
+                    controlService.getConfig().configValueMap.put(configKey, value );
+                    // TODO handle hiding
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
+        });
+        // Fire value changes immediately when the field loses focus
+        cb.setImmediate(true);
+        return cb;
+    }
+
+    private TextField getStringField(String text, String configKey) {
+        TextField tf = new TextField(text);
+        String origValue = (String) controlService.getConfig().configValueMap.get(configKey);
+
+        tf.setValue(origValue);
+
+        // Handle changes in the value
+        tf.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value
+                try {
+                    controlService.getConfig().configValueMap.put(configKey, value );
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
+        });
+        // Fire value changes immediately when the field loses focus
+        tf.setImmediate(true);
+        return tf;
+    }
+
+    private TextField getIntegerField(String text, String configKey) {
+        TextField tf = new TextField(text);
+        Integer origValue = (Integer) controlService.getConfig().configValueMap.get(configKey);
+
+        tf.setValue("" + origValue);
+
+        // Handle changes in the value
+        tf.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value
+                try {
+                    controlService.getConfig().configValueMap.put(configKey, new Integer(value) );
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
+        });
+        // Fire value changes immediately when the field loses focus
+        tf.setImmediate(true);
+        return tf;
+    }
+    private TextField getDoubleField(String text, String configKey) {
+        TextField tf = new TextField(text);
+        Double origValue = (Double) controlService.getConfig().configValueMap.get(configKey);
+
+        tf.setValue("" + origValue);
+
+        // Handle changes in the value
+        tf.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+                // Assuming that the value type is a String
+                String value = (String) event.getProperty().getValue();
+                // Do something with the value
+                try {
+                    controlService.getConfig().configValueMap.put(configKey, new Double(value) );
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
+        });
+        // Fire value changes immediately when the field loses focus
+        tf.setImmediate(true);
+        return tf;
     }
 
     private String stringify(String[] strs) {
@@ -417,9 +584,9 @@ public class MyVaadinUI extends UI
     VerticalLayout tab = new VerticalLayout();
     nodeTabMap.put(nodename, tab);
     tab.setCaption("Configuration");
-
+/*
     HorizontalLayout name = new HorizontalLayout();
-    Label nameLabel = new Label(ConfigConstants.NODENAME + DELIMITER + nodename);    
+    Label nameLabel = new Label(ConfigConstants.NODENODENAME + DELIMITER + nodename);    
     tab.addComponent(nameLabel);
     Label dirLabel = new Label(ConfigConstants.FSDIRLIST + DELIMITER + stringify(config.dirlist));    
     tab.addComponent(dirLabel);
@@ -427,7 +594,8 @@ public class MyVaadinUI extends UI
     Label dirnotLabel = new Label(ConfigConstants.FSDIRLISTNOT + DELIMITER + stringify(config.dirlistnot));    
     tab.addComponent(dirnotLabel);
     }
-    
+    */
+    /*
     VerticalLayout indexConfig = new VerticalLayout();
     indexConfig.setCaption("Indexing");
     if (isProductionMode) {
@@ -452,14 +620,17 @@ public class MyVaadinUI extends UI
     horConfig.setCaption("Indexing parameters");
     horConfig.setHeight("20%");
     horConfig.setWidth("60%");
+    */
+    /*
     horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.FAILEDLIMIT));
     horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.INDEXLIMIT));
     horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.REINDEXLIMIT));
     horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.TIKATIMEOUT));
     horConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.OTHERTIMEOUT));
-
     tab.addComponent(horConfig);
-    if (config.highlightmlt) {
+    */
+    /*
+    if (config.getHighlightmlt()) {
         HorizontalLayout mltConfig = new HorizontalLayout();
         mltConfig.setCaption("Searching for MoreLikeThis");
         mltConfig.setHeight("20%");
@@ -469,7 +640,8 @@ public class MyVaadinUI extends UI
         mltConfig.addComponent(getConfigValue(nodename, config, NodeConfig.Config.MLTMINDF));
         tab.addComponent(mltConfig);
     }
-
+*/
+    /*
     HorizontalLayout dbConfig = new HorizontalLayout();
     Label dbLabel = new Label("Db type " + config.db);
     dbConfig.addComponent(dbLabel);
@@ -503,23 +675,27 @@ public class MyVaadinUI extends UI
     		   cloudConfig.addComponent(swiftKeyLabel);
     	}
     }
+    */
+    /*
     if (config.zookeeper != null) {
-    Label zooLabel = new Label(ConfigConstants.ZOOKEEPER + DELIMITER + config.zookeeper);
+    Label zooLabel = new Label(ConfigConstants.SYNCHRONIZATIONZOOKEEPER + DELIMITER + config.zookeeper);
     cloudConfig.addComponent(zooLabel);
     }
-    Label lockmodeLabel = new Label(ConfigConstants.DISTRIBUTEDLOCKMODE + DELIMITER + config.zookeepersmall);
+    Label lockmodeLabel = new Label(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG + DELIMITER + config.zookeepersmall);
     cloudConfig.addComponent(lockmodeLabel);
-    Label distprocLabel = new Label(ConfigConstants.DISTRIBUTEDPROCESS + DELIMITER + config.distributedtraverse);
+    Label distprocLabel = new Label(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS + DELIMITER + config.distributedtraverse);
     cloudConfig.addComponent(distprocLabel);
     if (config.locker != null) {
     Label lockerLabel = new Label("locker" + DELIMITER + config.locker);
     cloudConfig.addComponent(lockerLabel);
     }
     tab.addComponent(cloudConfig);
+    */
     
+    /*
     if (config.classify != null) {
         VerticalLayout classifyConfig = new VerticalLayout();
-        Label classifyLabel = new Label(ConfigConstants.CLASSIFY + DELIMITER + config.classify);
+        Label classifyLabel = new Label(ConfigConstants.NODECLASSIFY + DELIMITER + config.classify);
         classifyConfig.addComponent(classifyLabel);
         if (!isProductionMode) {
         	ListSelect ls = getMachineLearning();
@@ -529,7 +705,7 @@ public class MyVaadinUI extends UI
             Label pathLabel = new Label(ConfigConstants.MACHINELEARNINGOPENNLPOPENNLPMODELPATH + DELIMITER + config.opennlpmodelpath);
             classifyConfig.addComponent(pathLabel);
         }
-        if (config.classify.equals(ConfigConstants.MAHOUT) || config.classify.equals(ConfigConstants.MAHOUTSPARK)) {
+        if (config.classify.equals(ConfigConstants.MACHINELEARNINGMAHOUT) || config.classify.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
             classifyConfig.setCaption("Mahout settings");
             Label algorithmLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM + DELIMITER + config.mahoutalgorithm);
             classifyConfig.addComponent(algorithmLabel);
@@ -547,7 +723,7 @@ public class MyVaadinUI extends UI
             classifyConfig.addComponent(docfreqpathLabel);
             Label labelpathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTLABELINDEXFILEPATH + DELIMITER + config.mahoutlabelindexpath);
             classifyConfig.addComponent(labelpathLabel);
-            if (config.classify.equals(ConfigConstants.MAHOUT)) {
+            if (config.classify.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
                 Label modelpathLabel = new Label(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTMODELPATH + DELIMITER + config.mahoutmodelpath);               
                 classifyConfig.addComponent(modelpathLabel);
             } else {
@@ -568,7 +744,9 @@ public class MyVaadinUI extends UI
             }
         tab.addComponent(classifyConfig);
     }
+    */
     
+    /*
     VerticalLayout miscConfig = new VerticalLayout();
     miscConfig.setCaption("Misc settings");
     Label downloadLabel = new Label(ConfigConstants.GUIDOWNLOADER + DELIMITER + config.downloader);
@@ -576,6 +754,7 @@ public class MyVaadinUI extends UI
     Label authLabel = new Label(ConfigConstants.GUIAUTHENTICATE + DELIMITER + config.authenticate);
     miscConfig.addComponent(authLabel);
     tab.addComponent(miscConfig);
+    */
     
     return tab;
     }
@@ -842,6 +1021,7 @@ public class MyVaadinUI extends UI
 	return tf;
     }
 
+    /*
     private TextField getConfigValue(String nodename, NodeConfig conf, final NodeConfig.Config config) {
 	TextField tf = new TextField("Set " + MyConfig.configStrMap.get(config));
 	tf.setValue("" + conf.configMap.get(config));
@@ -875,6 +1055,7 @@ public class MyVaadinUI extends UI
 	tf.setImmediate(true);
 	return tf;
     }
+    */
 
     private TextField getCleanup() {
 	TextField tf = new TextField("Cleanup");

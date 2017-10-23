@@ -9,7 +9,7 @@ import roart.config.MyConfig;
 public class MyListFactory extends MyFactory {
     
     public MyList create(String listid) {
-        if (MyConfig.conf.distributedtraverse) {
+        if (MyConfig.conf.wantDistributedTraverse()) {
             return new MyHazelcastList(listid);
         } else {
             return new MyJavaList();

@@ -13,19 +13,20 @@ import java.util.Set;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.config.MyConfig;
-import roart.config.MyPropertyConfig;
+import roart.config.MyXMLConfig;
 import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.service.ServiceParam;
 import roart.service.ServiceResult;
 import roart.util.EurekaConstants;
+import roart.util.EurekaUtil;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @RestController
 @SpringBootApplication
 @EnableDiscoveryClient
-public class ServiceController {
+public class ServiceController implements CommandLineRunner {
 
         private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -389,7 +390,7 @@ public class ServiceController {
 
     // TODO move this
     private static void doConfig() {
-        MyConfig conf = MyPropertyConfig.instance();
+        MyXMLConfig conf = MyXMLConfig.instance();
         conf.config();
         
         //ControlService.lock = MyLockFactory.create();
@@ -403,8 +404,12 @@ public class ServiceController {
     }
     
         public static void main(String[] args) throws Exception {
-            doConfig();
                 SpringApplication.run(ServiceController.class, args);
         }
 
+        @Override
+        public void run(String... args) throws InterruptedException {
+            EurekaUtil.initEurekaClient();
+            doConfig();
+        }
 }

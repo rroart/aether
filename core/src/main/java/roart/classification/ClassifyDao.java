@@ -37,10 +37,10 @@ public class ClassifyDao {
 	}
 	if (true || classify == null) {
 		// TODO make OO of this
-	    if (type.equals(ConfigConstants.MAHOUT)) {
+	    if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
 		classify = new MahoutClassifyAccess();
 	    }
-        if (type.equals(ConfigConstants.MAHOUTSPARK)) {
+        if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
         classify = new MahoutSparkClassifyAccess();
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {

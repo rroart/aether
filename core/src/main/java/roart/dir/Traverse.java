@@ -419,7 +419,7 @@ public class Traverse {
         // and a failed limit it set
         // and the file has come to that limit
 
-        int maxfailed = MyConfig.conf.configMap.get(NodeConfig.Config.FAILEDLIMIT);
+        int maxfailed = MyConfig.conf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
             return false;
         }
@@ -482,8 +482,8 @@ public class Traverse {
     }
 
     static boolean isMaxed(String myid, ServiceParam element) {
-        int max = MyConfig.conf.configMap.get(NodeConfig.Config.REINDEXLIMIT);
-        int maxindex = MyConfig.conf.configMap.get(NodeConfig.Config.INDEXLIMIT);
+        int max = MyConfig.conf.getReindexLimit();
+        int maxindex = MyConfig.conf.getIndexLimit();
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
@@ -505,8 +505,9 @@ public class Traverse {
                 return doList(add);    
             } else {
                 Set<String> retList = new HashSet<String>();
-                for (int i = 0; i < MyConfig.conf.dirlist.length; i ++) {
-                    retList.addAll(doList(MyConfig.conf.dirlist[i]));
+                String[] dirlist = MyConfig.conf.getDirList();
+                for (int i = 0; i < dirlist.length; i ++) {
+                    retList.addAll(doList(dirlist[i]));
                 }
             }
         } catch (Exception e) {
@@ -553,7 +554,7 @@ public class Traverse {
         this.traversecountid = traversecountid;
         this.nomd5 = nomd5;
 
-        this.dirlistnot = MyConfig.conf.dirlistnot;
+        this.dirlistnot = MyConfig.conf.getDirListNot();
         //UI ui = element.ui;
         //this.display = SearchService.getSearchDisplay(ui);
     }

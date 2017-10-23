@@ -36,17 +36,17 @@ public class EurekaUtil {
 				.getEurekaClient();
 
 		if (eurekaClient != null) {
-			System.out.println("euClient " + eurekaClient.getAllKnownRegions());
+			log.info("euClient " + eurekaClient.getAllKnownRegions());
 			List<Application> apps = eurekaClient.getApplications().getRegisteredApplications();
 			for (Application app : apps) {
-				System.out.println("currently available app " + app.getName()); 
+				log.info("currently available app " + app.getName()); 
 			}
 		}
 		discoveryClient = DiscoveryManager.getInstance().getDiscoveryClient();		
 		if (discoveryClient != null) {
 			List<Application> apps = discoveryClient.getApplications().getRegisteredApplications();
 			for (Application app : apps) {
-				System.out.println("currently available app2 " + app.getName()); 
+				log.info("currently available app2 " + app.getName()); 
 			}
 		}
 		try {
@@ -56,15 +56,15 @@ public class EurekaUtil {
 			InstanceInfo nextServerInfo = DiscoveryManager.getInstance()
 					.getEurekaClient()
 					.getNextServerFromEureka(vipAddress, false);
-			System.out.println("Found an instance of example service to talk to from eureka: "
+			log.info("Found an instance of example service to talk to from eureka: "
 					+ nextServerInfo.getVIPAddress() + ":" + nextServerInfo.getPort());
 
-			System.out.println("healthCheckUrl: " + nextServerInfo.getHealthCheckUrl());
-			System.out.println("override: " + nextServerInfo.getOverriddenStatus());
+			log.info("healthCheckUrl: " + nextServerInfo.getHealthCheckUrl());
+			log.info("override: " + nextServerInfo.getOverriddenStatus());
 
-			System.out.println("Server Host Name "+ nextServerInfo.getHostName() + " at port " + nextServerInfo.getPort() );		
+			log.info("Server Host Name "+ nextServerInfo.getHostName() + " at port " + nextServerInfo.getPort() );		
 
-			System.out.println("conf " + discoveryClient.getEurekaClientConfig().getEurekaServerPort());
+			log.info("conf " + discoveryClient.getEurekaClientConfig().getEurekaServerPort());
 			*/
 	} catch (Exception e) {
 			log.error("Cannot get an instance of example service to talk to from eureka");
@@ -76,6 +76,7 @@ public class EurekaUtil {
 
 		String homePageUrl = null;
 		log.info("homePagePre " + appName + " " + path);
+		log.info("clis" + eurekaClient + " " + discoveryClient);
 		if (discoveryClient != null) {
 			List<InstanceInfo> li = discoveryClient.getApplication(appName).getInstances();
 			for (InstanceInfo ii : li) {
@@ -100,9 +101,9 @@ public class EurekaUtil {
 		RestTemplate rt = new RestTemplate();
 		/*
 		for (HttpMessageConverter<?> converter : rt.getMessageConverters()) {
-			System.out.println(converter.getClass().getName());
+			log.info(converter.getClass().getName());
 		}
-		System.out.println(rt.getMessageConverters().size());
+		log.info(rt.getMessageConverters().size());
 		 */
 		ResponseEntity<T> regr = new RestTemplate().postForEntity(url + path, request, myclass);
 		T result = regr.getBody();

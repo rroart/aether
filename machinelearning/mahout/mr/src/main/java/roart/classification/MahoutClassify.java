@@ -60,23 +60,23 @@ public class MahoutClassify extends MachineLearningAbstractClassifier {
 		conf.classifierMap = new HashMap<String, StandardNaiveBayesClassifier>();
 	    conf.labelsMap = new HashMap<String, Map<Integer, String>>();
 	    conf.documentCountMap = new HashMap<String, Integer>();
-        String[] languages = nodeConf.languages;
+        String[] languages = nodeConf.getLanguages();
         
         
-	    String basepath = nodeConf.mahoutbasepath;
+	    String basepath = nodeConf.getMahoutBasePath();
 	    if (basepath == null) {
 	    	basepath = "";
 	    }
-        String modelPath = nodeConf.mahoutmodelpath;
-        String labelIndexPath = nodeConf.mahoutlabelindexpath;
-        String dictionaryPath = nodeConf.mahoutdictionarypath;
-        String documentFrequencyPath = nodeConf.mahoutdocumentfrequencypath;
-        String bayestype = nodeConf.mahoutalgorithm;
+        String modelPath = nodeConf.getMahoutModelPath();
+        String labelIndexPath = nodeConf.getMahoutLabelIndexPath();
+        String dictionaryPath = nodeConf.getMahoutDictionaryPath();
+        String documentFrequencyPath = nodeConf.getMahoutDocumentFrequencyPath();
+        String bayestype = nodeConf.getMahoutAlgorithm();
 	    // not waterproof on purpose, won't check if var correctly set	    
 	    conf.bayes = "bayes".equals(bayestype);
 
 	    Configuration configuration = new Configuration();
-	    String fsdefaultname = nodeConf.mahoutconffs;
+	    String fsdefaultname = nodeConf.getMahoutConfFs();
 	    if (fsdefaultname != null) {
 		configuration.set("fs.default.name", fsdefaultname);
 	    }

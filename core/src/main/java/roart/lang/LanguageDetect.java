@@ -41,7 +41,7 @@ public class LanguageDetect {
     
     public static void init(String profileDirectory) throws LangDetectException {
 	DetectorFactory.loadProfile(profileDirectory);
-    String[] mylang = MyConfig.conf.languages;
+    String[] mylang = MyConfig.conf.getLanguages();
     if (mylang != null) {
     	languages = mylang;
     }

@@ -36,16 +36,16 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 			conf.labelsMap = new HashMap<>();
 
-			String basepath = nodeConf.sparkmlbasepath;
+			String basepath = nodeConf.getSparkMLBasePath();
 			if (basepath == null) {
 				basepath = "";
 			}
 
-			String modelPath = basepath + nodeConf.sparkmlmodelpath;
-			String labelIndexPath = basepath + nodeConf.sparkmllabelindexpath;
+			String modelPath = basepath + nodeConf.getSparkMLModelPath();
+			String labelIndexPath = basepath + nodeConf.getSparkMLLabelIndexPath();
 
 			SparkConf sparkconf = new SparkConf();
-			String sparkmaster = nodeConf.sparkmaster;
+			String sparkmaster = nodeConf.getSparkMLSparkMaster();
 			log.info("sparkmaster " + sparkmaster);
 			String master = sparkmaster;
 			sparkconf.setMaster(master);
@@ -66,7 +66,7 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 			conf.spark = spark;
 
-			String[] languages = nodeConf.languages;
+			String[] languages = nodeConf.getLanguages();
 			for (String lang : languages) {
 				conf.nbm = PipelineModel.load(modelPath.replaceAll("LANG", lang));
 				Dataset<Row> label = spark.read().load(labelIndexPath.replaceAll("LANG", lang));

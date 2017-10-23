@@ -9,7 +9,7 @@ import roart.config.MyConfig;
 public class MyMapFactory extends MyFactory {
     
     public MyMap create(String mapid) {
-        if (MyConfig.conf.distributedtraverse) {
+        if (MyConfig.conf.wantDistributedTraverse()) {
             return new MyHazelcastMap(mapid);
         } else {
             return new MyJavaMap();

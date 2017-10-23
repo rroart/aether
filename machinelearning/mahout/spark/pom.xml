@@ -173,11 +173,6 @@
 	   <artifactId>guava</artifactId>
 	   <version>${guava.version}</version>
 	 </dependency>
-	 <dependency>
-	   <groupId>commons-configuration</groupId>
-	   <artifactId>commons-configuration</artifactId>
-	   <version>${commons.version}</version>
-	 </dependency>
 	 <!-- dependent package for sparkconf setjars -->
 	 <dependency>
 	   <groupId>it.unimi.dsi</groupId>

@@ -36,3 +36,9 @@ db/zkrunner using clientrunner, must be replaced.
 clientrunner.notify
 clientrunner check alive and restart
 fix webstat
+move node classify, as root of ml
+handle reconfig live
+controlservice static
+mesos api use
+some service only allow one running
+external services in docker

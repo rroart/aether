@@ -51,7 +51,7 @@ public class ControlService {
     
     private NodeConfig conf;
     
-    private NodeConfig getConfig() {
+    public NodeConfig getConfig() {
         return conf;
     }
     
@@ -70,6 +70,24 @@ public class ControlService {
         return;           
     }
     
+    public void configIndexing() {
+        try {
+            String index = null;
+            if (conf.wantLucene()) {
+                index = ConfigConstants.SEARCHENGINELUCENE;
+            } else if (conf.wantSolr()) {
+                index = ConfigConstants.SEARCHENGINESOLR;
+            } else if (conf.wantElastic()) {
+                index = ConfigConstants.SEARCHENGINEELASTIC;
+            }
+            if (index != null) {
+                this.index = index;
+            }
+        } catch (Exception e) {
+            // TODO propagate
+            log.error(Constants.EXCEPTION, e); 
+        }
+    }
     /*
     public static int getMyCounter() {
     }
@@ -99,6 +117,8 @@ public class ControlService {
     }
 
     static public String nodename = "localhost";
+    public String index = null;
+    public String db = null;
     
     // called from ui
     public void overlapping() {

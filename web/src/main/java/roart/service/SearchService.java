@@ -48,7 +48,7 @@ public class SearchService {
 	}
 
 	public static boolean isHighlightMLT() {
-		return MyConfig.conf.highlightmlt;
+		return MyConfig.conf.getHighlightmlt();
 	}
     
     public void searchsimilar(String md5) {

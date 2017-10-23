@@ -79,9 +79,9 @@ public class HbaseIndexFiles {
         config = new HbaseConfig();
 	try {
 	Configuration conf = HBaseConfiguration.create();
-	String quorum = nodeConf.hbasequorum; 
-	String port = nodeConf.hbaseport;
-	String master = nodeConf.hbasemaster;
+	String quorum = nodeConf.getHbasequorum(); 
+	String port = nodeConf.getHbaseport();
+	String master = nodeConf.getHbasemaster();
 	conf.set("hbase.zookeeper.quorum", quorum);
 	conf.set("hbase.zookeeper.property.clientPort", port);
 	conf.set("hbase.master", master);

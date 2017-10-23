@@ -32,7 +32,7 @@ import roart.thread.OtherRunner;
 import roart.thread.TikaRunner;
 import roart.config.ConfigConstants;
 import roart.config.MyConfig;
-import roart.config.MyPropertyConfig;
+import roart.config.MyXMLConfig;
 import roart.config.NodeConfig;
 import roart.content.ClientHandler;
 import roart.content.OtherHandler;
@@ -300,7 +300,7 @@ public class ControlService {
 	public List<List> clientDo(ServiceParam el) throws Exception {
 		    synchronized (writelock) {
 			MyLock lock = null;
-			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
+			if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
 			    lock = MyLockFactory.create();
 			    lock.lock(Constants.GLOBALLOCK);
 			}
@@ -349,7 +349,7 @@ public class ControlService {
     //MyLists.put(retnotlistid, retnotlist);
     Queues.workQueues.add(filestodoset);
     
-	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, MyConfig.conf.dirlistnot, notfoundsetid, filestodosetid, traversecountid, false);
+	Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, MyConfig.conf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false);
 	
 	// filesystem
 	// reindexsuffix
@@ -412,7 +412,7 @@ public class ControlService {
 	retlistlist.add(retDeletedList);
 	retlistlist.add(retTikaTimeoutList);
 	retlistlist.add(retNotExistList);
-	if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
+	if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
 	    ZKMessageUtil.dorefresh(nodename);
 	    lock.unlock();
 	    //ClientRunner.notify("Sending refresh request");
@@ -728,10 +728,10 @@ public class ControlService {
     	if (controlRunnable == null) {
     	startControlWorker();
     	}
-    	if (MyConfig.conf.zookeeper != null && zkRunnable == null) {
+    	if (MyConfig.conf.getZookeeper() != null && zkRunnable == null) {
     	startZKWorker();
     	}
-        if (MyConfig.conf.zookeeper != null && MyConfig.conf.zookeepersmall && traverseQueueRunnable == null) {
+        if (MyConfig.conf.getZookeeper() != null && MyConfig.conf.wantZookeeperSmall() && traverseQueueRunnable == null) {
         startTraversequeueWorker();
         }
         if (traverseQueueRunnable == null) {
@@ -748,7 +748,7 @@ public class ControlService {
 	}
 
 	public void startTikaWorker() {
-	    int timeout = MyConfig.conf.configMap.get(NodeConfig.Config.TIKATIMEOUT);
+	    int timeout = MyConfig.conf.getTikaTimeout();
 	    TikaRunner.timeout = timeout;
 
     	tikaRunnable = new TikaRunner();
@@ -767,7 +767,7 @@ public class ControlService {
 	}
 
 	public void startOtherWorker() {
-	    int timeout = MyConfig.conf.configMap.get(NodeConfig.Config.OTHERTIMEOUT);
+	    int timeout = MyConfig.conf.getOtherTimeout();
 	    OtherHandler.timeout = timeout;
 
     	otherRunnable = new OtherRunner();
@@ -850,7 +850,7 @@ public class ControlService {
         String md5sdoneid = "md5sdoneid"+myid;
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 	    
-	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, MyConfig.conf.dirlistnot, notfoundsetid, null, null, true);
+	    Traverse traverse = new Traverse(myid, el, null, null, newsetid, MyConfig.conf.getDirListNot(), notfoundsetid, null, null, true);
 			    
 		List<IndexFiles> indexes;
 		try {
@@ -881,7 +881,7 @@ public class ControlService {
 		if (clean) {
 		    synchronized (writelock) {
 			MyLock lock = null;
-			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
+			if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
 	             lock = MyLockFactory.create();
 	                lock.lock(Constants.GLOBALLOCK);
 			}
@@ -923,7 +923,7 @@ public class ControlService {
 
 			}
 			
-			if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
+			if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
 				ZKMessageUtil.dorefresh(nodename);
 			    lock.unlock();
 			}
@@ -948,7 +948,7 @@ public class ControlService {
         public List deletepathdbDo(ServiceParam el) throws Exception {
             synchronized (writelock) {
             MyLock lock = null;
-            if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
+            if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                 lock = MyLockFactory.create();
                 lock.lock(Constants.GLOBALLOCK);
             }
@@ -995,7 +995,7 @@ public class ControlService {
                 i.setLock(null);
             }
 
-            if (MyConfig.conf.zookeeper != null && !MyConfig.conf.zookeepersmall) {
+            if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                 ZKMessageUtil.dorefresh(nodename);
                 lock.unlock();
                 //ClientRunner.notify("Sending refresh request");
@@ -1012,26 +1012,26 @@ public class ControlService {
     }
     
         public List searchengine(ServiceParam param) {
-        	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
-        	property.configIndexing(param.name);
+        	//MyXMLConfig property = (MyXMLConfig) MyXMLConfig.getConfigInstance();
+        	//property.configIndexing();
         	return null;
         }
         
         public List machinelearning(String learning) {
-        	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
-        	property.configClassify(learning);   
+        	//MyXMLConfig property = (MyXMLConfig) MyXMLConfig.getConfigInstance();
+        	//property.configClassify();   
         	return null;
         }
 
         public List database(String db) {
-        	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
+        	//MyXMLConfig property = (MyXMLConfig) MyXMLConfig.getConfigInstance();
         	return null;
         	// TODO fix
         	//property.configClassify(db);      	
         }
 
         public List filesystem(String fs) {
-        	MyPropertyConfig property = (MyPropertyConfig) MyPropertyConfig.instance();
+        	//MyXMLConfig property = (MyXMLConfig) MyXMLConfig.getConfigInstance();
         	return null;
         	// TODO fix
         	//property.configFileSystem(fs);      	

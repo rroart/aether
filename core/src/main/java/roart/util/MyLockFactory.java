@@ -4,10 +4,10 @@ import roart.config.MyConfig;
 
 public class MyLockFactory {
     public static MyLock create() {
-        if (MyConfig.conf.locker == null) {
+        if (MyConfig.conf.getLocker() == null) {
             return new MyDummyLock();
         }
-        switch (MyConfig.conf.locker) {
+        switch (MyConfig.conf.getLocker()) {
         case Constants.HAZELCAST:
             return new MyHazelcastLock();
         case Constants.CURATOR:

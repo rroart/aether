@@ -58,26 +58,26 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 			conf.documentCountMap = new HashMap<String, Integer>();
 
 
-			String basepath = nodeConf.mahoutbasepath;
+			String basepath = nodeConf.getMahoutBasePath();
 			if (basepath == null) {
 				basepath = "";
 			}
 			boolean testComplementary = false;
-			String modelPath = basepath + nodeConf.mahoutmodelpath;
+			String modelPath = basepath + nodeConf.getMahoutModelPath();
 			//String labelIndexPath = conf.mahoutlabelindexpath;
-			String dictionaryPath = basepath + nodeConf.mahoutdictionarypath;
-			String documentFrequencyPath = basepath + nodeConf.mahoutdocumentfrequencypath;
-			String bayestype = basepath + nodeConf.mahoutalgorithm;
-			String sparkmaster = basepath + nodeConf.mahoutsparkmaster;
+			String dictionaryPath = basepath + nodeConf.getMahoutDictionaryPath();
+			String documentFrequencyPath = basepath + nodeConf.getMahoutDocumentFrequencyPath();
+			String bayestype = basepath + nodeConf.getMahoutAlgorithm();
+			String sparkmaster = basepath + nodeConf.getMahoutSparkMaster();
 			// not waterproof on purpose, won't check if var correctly set	    
 			conf.bayes = "bayes".equals(bayestype);
 
 			Configuration configuration = new Configuration();
-			String fsdefaultname = nodeConf.mahoutconffs;
+			String fsdefaultname = nodeConf.getMahoutConfFs();
 			if (fsdefaultname != null) {
 				configuration.set("fs.default.name", fsdefaultname);
 			}
-			String[] languages = nodeConf.languages;
+			String[] languages = nodeConf.getLanguages();
 			for (String lang : languages) {
 				ComplementaryNBClassifier classifier2 = null;
 				StandardNBClassifier classifier = null;

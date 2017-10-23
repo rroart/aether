@@ -21,8 +21,10 @@
   <module>searchengine</module>
   <module>web</module>
   <module>distribution</module>
+  <module>servicemanager</module>
 </modules>
-  <build>
+<build>
+  <pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -34,6 +36,9 @@
 	  <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
+    </plugins>
+  </pluginManagement>
+  <plugins>
       <plugin>
 	<groupId>org.codehaus.mojo</groupId>
 	<artifactId>tomcat-maven-plugin</artifactId>
@@ -189,69 +194,6 @@
 	</executions>
 	</plugin-->
     </plugins>
-    <pluginManagement>
-      <plugins>
-	<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-	<!--plugin>
-	  <groupId>org.eclipse.m2e</groupId>
-	  <artifactId>lifecycle-mapping</artifactId>
-	  <version>1.0.0</version>
-	  <configuration>
-	    <lifecycleMappingMetadata>
-	      <pluginExecutions>
-		<pluginExecution>
-		  <pluginExecutionFilter>
-		    <groupId>com.vaadin</groupId>
-		    <artifactId>
-		      vaadin-maven-plugin
-		    </artifactId>
-		    <versionRange>
-		      [7.3.1,)
-		    </versionRange>
-		    <goals>
-		      <goal>resources</goal>
-		      <goal>update-widgetset</goal>
-		      <goal>compile</goal>
-		      <goal>update-theme</goal>
-		      <goal>compile-theme</goal>
-		    </goals>
-		  </pluginExecutionFilter>
-		  <action>
-		    <ignore></ignore>
-		  </action>
-		</pluginExecution>
-		<pluginExecution>
-			<pluginExecutionFilter>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<versionRange>[1.0-alpha-2,)</versionRange>
-				<goals>
-					<goal>read-project-properties</goal>
-				</goals>
-			</pluginExecutionFilter>
-			<action>
-				<ignore></ignore>
-			</action>
-		</pluginExecution>
-	      </pluginExecutions>
-	    </lifecycleMappingMetadata>
-	  </configuration>
-	</plugin-->
-	<plugin>
-	  <artifactId>maven-eclipse-plugin</artifactId>
-	  <configuration>
-	    <wtpversion>2.0</wtpversion>
-	    <additionalProjectnatures>
-	      <projectnature>com.vaadin.integration.eclipse.widgetsetNature</projectnature>
-	    </additionalProjectnatures>
-	    <additionalBuildcommands>
-	      <buildcommand>com.vaadin.integration.eclipse.widgetsetBuilder</buildcommand>
-	      <buildcommand>com.vaadin.integration.eclipse.addonStylesBuilder</buildcommand>
-	    </additionalBuildcommands>
-	  </configuration>
-	</plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   <dependencies>
     <!--dependency>
@@ -628,7 +570,7 @@
 </dependency>
 <dependency>
   <groupId>commons-configuration</groupId>
-  <artifactId>commons-configuration</artifactId>
+  <artifactId>commons-configuration2</artifactId>
   <version>${commons.version}</version>
 </dependency-->
 <!-- dependent package for sparkconf setjars -->
@@ -723,7 +665,7 @@
     <servlet.version>3.1.0</servlet.version>
     <!-- must keep at old version for some time -->
     <guava.version>16.0.1</guava.version>
-    <commons.version>1.10</commons.version>
+    <commons.version>2.1.1</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
     <joss.version>0.9.14</joss.version>
     <elasticsearch.version>5.0.2</elasticsearch.version>

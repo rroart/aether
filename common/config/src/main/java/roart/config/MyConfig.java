@@ -24,13 +24,20 @@ public abstract class MyConfig {
     public static NodeConfig conf = null;
     
     public MyConfig() {
-        conf = new NodeConfig();
-        createMaps();
+        //conf = new NodeConfig();
+        //createMaps();
     }
     
+    public ConfigTreeMap configTreeMap;
+    
+    public Map<String, Object> configValueMap;
+    public Map<String, String> text = new HashMap();
+    public Map<String, Object> deflt = new HashMap();
+    public Map<String, Class> type = new HashMap();
+
     MyMap nodemap = null;
     
-    public abstract NodeConfig mynode();
+    //public abstract NodeConfig mynode();
     
     public NodeConfig getNode(String nodename) {
         Map<String, NodeConfig> set = nodemap.getAll();
@@ -38,15 +45,15 @@ public abstract class MyConfig {
     }
     
     public Set<String> getNodes() {
-        Set<String> set = nodemap.getAll().keySet();
-        return set;
+        //Set<String> set = nodemap.getAll().keySet();
+        return null; //set;
     }
     
-    public abstract void myput(String nodename, NodeConfig config);
+    //public abstract void myput(String nodename, NodeConfig config);
     
-    public void reconfig() {
-        conf = mynode();
-    }
+    //public void reconfig() {
+    //    conf = mynode();
+    //}
     
     public static Map<NodeConfig.Config, Integer> configDefaultMap = new HashMap<NodeConfig.Config, Integer>();
     public static Map<NodeConfig.Config, String> configStrMap = new HashMap<NodeConfig.Config, String>();
@@ -56,9 +63,9 @@ public abstract class MyConfig {
     //public static String locker = null; // null, curator, zk, hz
     //public static MyLock lock;
     
-    public abstract void config();
+    //public abstract void config();
 
-    public static void createMaps() {
+    public static void createMapsNot() {
         configDefaultMap.put(NodeConfig.Config.FAILEDLIMIT, ConfigConstants.DEFAULT_CONFIG_FAILEDLIMIT);
         configDefaultMap.put(NodeConfig.Config.TIKATIMEOUT, ConfigConstants.DEFAULT_CONFIG_TIKATIMEOUT);
         configDefaultMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.DEFAULT_CONFIG_OTHERTIMEOUT);

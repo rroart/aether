@@ -20,6 +20,8 @@ public class EurekaConstants {
 	public static final String SWIFT = "SWIFT";
 	public static final String HDFS = "HDFS";
 
+    public static final String AETHERSERVICEMANAGER = "AETHERSERVICEMANAGER";
+
     public static final String GETCONFIG = "GETCONFIG";
     public static final String SETCONFIG = "SETCONFIG";
     

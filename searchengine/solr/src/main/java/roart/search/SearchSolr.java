@@ -43,7 +43,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
 	public SearchSolr(String nodename, NodeConfig nodeConf) {
 		conf = new SolrConfig();
-		String url = nodeConf.solrurl; 
+		String url = nodeConf.getSolrurl(); 
 		HttpSolrClient server = new HttpSolrClient( url );
 		conf.server = server;
 		log.info("server " + server);
@@ -173,7 +173,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			}
 			//query.addSortField( "price", SolrQuery.ORDER.asc );
 
-			if (nodeConf.highlightmlt) {
+			if (nodeConf.getHighlightmlt()) {
 				query.add("hl", "true");
 				query.add("hl.fl", Constants.CONTENT);
 				query.add("hl.useFastVectorHighlighter", "true");
@@ -208,7 +208,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			String lang = (String) d.getFieldValue(Constants.LANG);
 			List<String> metadata = (List<String>) d.getFieldValue(Constants.METADATA);
 			String[] highlights = null;
-			if (dohighlight && param.conf.highlightmlt) {
+			if (dohighlight && param.conf.getHighlightmlt()) {
 				Map<String,Map<String,List<String>>> map = rsp.getHighlighting();
 				Map<String,List<String>> map2 = map.get(md5);
 				List<String> list = map2.get(Constants.CONTENT);
@@ -235,9 +235,9 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		String id = search.str;
 		String searchtype = search.searchtype;
 		try {
-			int count = nodeConf.configMap.get(NodeConfig.Config.MLTCOUNT);
-			int mintf = nodeConf.configMap.get(NodeConfig.Config.MLTMINTF);
-			int mindf = nodeConf.configMap.get(NodeConfig.Config.MLTMINDF);
+			int count = nodeConf.getMLTCount();
+			int mintf = nodeConf.getMLTMinTF();
+			int mindf = nodeConf.getMLTMinDF();
 			//Construct a SolrQuery 
 			SolrQuery query = new SolrQuery();
 			query.setQuery( Constants.ID + ":" + id);

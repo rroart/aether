@@ -132,11 +132,39 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/../servicemanager/openshift/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../servicemanager/simple/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../servicemanager/docker/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/../bin</directory>
       <includes>
 	<include>*</include>
       </includes>
       <outputDirectory>bin</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../docker</directory>
+      <includes>
+	<include>**</include>
+      </includes>
+      <outputDirectory>docker</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}</directory>

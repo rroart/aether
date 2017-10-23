@@ -124,7 +124,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 				doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
 			}
 			Field.Store store = Field.Store.NO;
-			if (conf.highlightmlt) {
+			if (conf.getHighlightmlt()) {
 				FieldType fieldtype = new FieldType(TextField.TYPE_STORED);
 				fieldtype.setStoreTermVectors(true);
 				fieldtype.setStoreTermVectorOffsets(true);
@@ -272,7 +272,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		result.results = new SearchResult[hits.length];
 
 		FastVectorHighlighter highlighter = null;
-		if (search.conf.highlightmlt) {
+		if (search.conf.getHighlightmlt()) {
 			highlighter = new FastVectorHighlighter();
 		}    
 		// output results
@@ -290,7 +290,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			}
 
 			String[] highlights = { "none" };
-			if (dohighlight && search.conf.highlightmlt) {
+			if (dohighlight && search.conf.getHighlightmlt()) {
 				FieldQuery fieldQuery  = highlighter.getFieldQuery( q, ind );
 				String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, Constants.CONTENT, 100, 1);
 				highlights = bestFragments;
@@ -316,9 +316,9 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			Directory index = FSDirectory.open(getLucenePath(conf, type));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
 
-			int count = conf.configMap.get(NodeConfig.Config.MLTCOUNT);
-			int mintf = conf.configMap.get(NodeConfig.Config.MLTMINTF);
-			int mindf = conf.configMap.get(NodeConfig.Config.MLTMINDF);
+			int count = conf.getMLTCount();
+			int mintf = conf.getMLTMinTF();
+			int mindf = conf.getMLTMinDF();
 
 			// searching ...
 			int hitsPerPage = count;
@@ -420,7 +420,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	}
 
 	private static String getLucenePath(NodeConfig conf) {
-		return conf.lucenepath;
+		return conf.getLucenepath();
 	}
 
 }

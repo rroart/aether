@@ -29,8 +29,8 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
 	try {
 	    conf = new OpenNLPConfig();
 		conf.categorizerMap = new HashMap<String, DocumentCategorizerME>();
-		String[] languages = nodeConf.languages;
-	    String modelFilePath = nodeConf.opennlpmodelpath; 
+		String[] languages = nodeConf.getLanguages();
+	    String modelFilePath = nodeConf.getOpenNLPModelPath(); 
 	    for (String lang : languages) {
 	    	String path = new String(modelFilePath);
 	    	path = path.replaceFirst("LANG", lang);

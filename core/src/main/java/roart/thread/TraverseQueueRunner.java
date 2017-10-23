@@ -30,10 +30,12 @@ public class TraverseQueueRunner implements Runnable {
     public void run() {
 
         int nThreads = 20;
+        /*
 	if (MyConfig.conf.hasHibernate) {
 	    nThreads = 100;
 	    log.info("more threads with hibernate");
 	}
+	*/
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
         String queueid = Constants.TRAVERSEQUEUE;
