@@ -1,7 +1,6 @@
 package roart.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,35 +10,22 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.command.InspectImageResponse;
-import com.github.dockerjava.api.exception.NotFoundException;
-import com.github.dockerjava.api.model.ContainerConfig;
-import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.api.model.Image;
-import com.github.dockerjava.api.model.Network;
-import com.github.dockerjava.api.model.SearchItem;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
-
+import io.fabric8.kubernetes.api.Controller;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePort;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.ServiceStatus;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.openshift.api.model.BuildRequestBuilder;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigStatus;
+import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
 
@@ -67,50 +53,23 @@ public class OpenshiftThread {
         log.info("setup done");
     }
 
-    public String start(String name, String imageName, String addr) {
-        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost("tcp://192.168.42.56:2376")
-                
-                .withDockerTlsVerify(true)
-                .withDockerCertPath("/home/roart/.minishift/certs")
-                //.withDockerConfig("/home/roart/.docker")
-                //.withApiVersion("1.23")
-                
-                .withRegistryUrl("http://192.168.42.56:5000/v1/")
-                /*
-                .withRegistryUsername("dockeruser")
-                .withRegistryPassword("ilovedocker")
-                .withRegistryEmail("dockeruser@github.com")
-                */
-                .build();
-        config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-        log.info("h0");
-            DockerClient docker = DockerClientBuilder.getInstance(config).build();
-               log.info("h1");
-        //docker.pingCmd().exec();
-        log.info("h2");
-        /*
-            for (Network n : docker.listNetworksCmd().exec()) {
-                log.info("net " + n.getName());
-            }
-            for (Image n : docker.listImagesCmd().exec()) {
-                log.info("id " + n.getId() +  " " + Arrays.asList(n.getRepoTags()));
-                InspectImageResponse insp = docker.inspectImageCmd(n.getId()).exec();
-                log.info("" + insp);
-                //insp.get
-            }
-            for (Container n : docker.listContainersCmd().exec()) {
-                log.info("c " + n.getId());
-            }
-            */
-        createDC(name, imageName);
+    public String start(String name, String imageName, String addr, String repo) {
+        DockerHubUtil.dockermethod();
+        createDC(name, imageName, repo);
             log.info("end");
             return null;
    }
-    
-    public void createDC(String name, String image) {
+
+    public void createDC(String name, String image, String repo) {
         Map<String, String> labelsApp = new HashMap<>();
         labelsApp.put("app", name);
+        labelsApp.put("deploymentconfig", name);
+        /*
+        Map<String, String> labelsApp2 = new HashMap<>();
+        labelsApp2.put(name, project);
+        Map<String, String> selector2 = new HashMap<>();
+        selector2.put(name, project);
+        */
         
         ObjectMeta metaApp = Fabric8Util.createObjectMeta(name, labelsApp);
       
@@ -123,15 +82,22 @@ public class OpenshiftThread {
         //ports.add(containerPort);
         List<String> names = new ArrayList<>();
         names.add(name);
-        Container container = Fabric8Util.createContainer(name, image, ports);
+        Container container = Fabric8Util.createContainer(name, image, ports, repo);
         List<Container> containers = new ArrayList<>();
         containers.add(container);
+
+        ImageStream is = Fabric8Util.createImageStream(name, image, metaApp, repo);
         
         DeploymentConfig dc = new DeploymentConfigBuilder()
                 .withMetadata(metaApp)
                 .withNewSpec()
+                .withReplicas(1)
                 .withSelector(selector)
-                .withNewTemplate()
+                .withNewStrategy()
+                .withNewResources()
+               .endResources()
+               .endStrategy()
+            .withNewTemplate()
                 .withNewMetadata()
                 .addToLabels("app", name)
                 .addToLabels("deploymentconfig", name)
@@ -142,7 +108,7 @@ public class OpenshiftThread {
                 .endTemplate()
                 .withTest(false)
                 .addNewTrigger()
-                .withType("configchange")
+                .withType("ConfigChange")
                 /*
                 .withNewImageChangeParams()
                 //.withNewImageChange()
@@ -153,6 +119,18 @@ public class OpenshiftThread {
                 .endImageChangeParams()
                 */
                 .endTrigger()
+                /*
+                .addNewTrigger()
+                .withType("ImageChange")
+                .withNewImageChangeParams()
+                .withAutomatic(true)
+                .withContainerNames(name)
+                .withNewFrom()
+                .withName(image  + ":latest")
+                .endFrom()
+                .endImageChangeParams()
+                .endTrigger()
+                */
                 .endSpec()
                 .build();
                  
@@ -183,17 +161,22 @@ public class OpenshiftThread {
                 .endSpec()
                 .build();
         
-        osClient
+        DeploymentConfigStatus s = osClient
             .deploymentConfigs()
             .inNamespace(project)
-            .createOrReplace(dc);
+            .createOrReplace(dc).getStatus();
         
-        osClient
+        ServiceStatus s2 = osClient
         .services()
         .inNamespace(project)
-        .createOrReplace(srv);
+        .createOrReplace(srv) .getStatus();
         
         //Deployment dep = new Deployment(); //DeploymentBuilder().build;
+        System.out.println(s.toString());
+        System.out.println(s2.toString());
+        
+        
+        Controller cont = new Controller(osClient);
         
         System.out.println("here10");
 

@@ -16,6 +16,8 @@ import org.junit.Test;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.ContainerConfig;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.Network;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
@@ -73,7 +75,13 @@ public class DockerTest {
     		for (Image n : docker.listImagesCmd().exec()) {
     			System.out.println("id " + n.getId() +  " " + Arrays.asList(n.getRepoTags()));
     			InspectImageResponse insp = docker.inspectImageCmd(n.getId()).exec();
+    			ContainerConfig contConf = insp.getContainerConfig();
     			System.out.println(insp);
+    			ExposedPort[] exposedPorts = contConf.getExposedPorts();
+    			String[] portSpecs = contConf.getPortSpecs();
+    			String hostName = contConf.getHostName();
+    			Map<String, String> labels = contConf.getLabels();
+    			Map<String, ?> volumes = contConf.getVolumes();
     			//insp.get
     		}
     		for (Container n : docker.listContainersCmd().exec()) {

@@ -1,5 +1,6 @@
 package roart.util;
 
+import java.io.IOException;
 import java.util.List;
 
 import io.fabric8.docker.api.model.Container;
@@ -15,7 +16,7 @@ import io.fabric8.docker.dsl.image.FilterFiltersAllImagesEndInterface;
 
 public class DockerUtil {
 
-    public static void method() {
+    public static void method(String name, String repo) throws IOException {
         System.setProperty(Config.DOCKER_CERT_PATH_SYSTEM_PROPERTY, "/home/roart/.minishift/certs");
         //System.set
         Config config4 = new ConfigBuilder()
@@ -29,7 +30,7 @@ public class DockerUtil {
         FilterFiltersAllImagesEndInterface<List<Image>> ims = dClient.image().list();
         for (Image i : ims.allImages()) {
             System.out.println(i.getId() + " " + i.getLabels() + i.getRepoTags());
-            System.out.println("I " + i.getAdditionalProperties());
+            System.out.println("I " + i + " " + i.getAdditionalProperties());
         }
         LimitSinceBeforeSizeFiltersAllRunningInterface<List<Container>> conts = dClient.container().list();
         for (Container i : conts.all()) {
@@ -40,6 +41,8 @@ public class DockerUtil {
         System.out.println(ii);
         ContainerInspect inspect = dClient.container().withName("/registry").inspect();
         System.out.println(inspect);
+        Fabric8Util.dockerTag(dClient, name, repo, name);
+        Fabric8Util.dockerPush(dClient, name, repo, name);
         //inspect.getHostConfig().
         
     }

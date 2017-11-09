@@ -69,13 +69,14 @@ public class MyXMLConfig {
          //map.put(ConfigConstants., "");
          //map.put(ConfigConstants., "");
          String addr = System.getenv("EUREKA_SERVER_URI");
+         String repo = "172.30.1.1:5000/myproject/";
          for (String key : map.keySet()) {
              Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
              if (bool) {
                  String jar = map.get(key);
                  log.info("Starting " + jar);
                  OpenshiftThread local = new OpenshiftThread();
-                 local.start(key, jar, addr);
+                 local.start(key, jar, addr, repo);
                           //Runnable local = new DockerThread(jar);
                  //new Thread(local).start();
              }
