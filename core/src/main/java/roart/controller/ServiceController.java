@@ -14,6 +14,7 @@ import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.config.MyConfig;
 import roart.config.MyXMLConfig;
+import roart.database.DatabaseLanguagesResult;
 import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.service.ServiceParam;
@@ -72,6 +73,20 @@ public class ServiceController implements CommandLineRunner {
         } catch (Exception e) {
             log.error(roart.util.Constants.EXCEPTION, e);
             result.error = e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.GETLANGUAGES,
+            method = RequestMethod.POST)
+    public DatabaseLanguagesResult getLanguages(@RequestBody ServiceParam param)
+            throws Exception {
+        DatabaseLanguagesResult result = new DatabaseLanguagesResult();
+        try {
+            result.languages = getInstance().getLanguages();
+        } catch (Exception e) {
+            log.error(roart.util.Constants.EXCEPTION, e);
+            //result.error = e.getMessage();
         }
         return result;
     }
