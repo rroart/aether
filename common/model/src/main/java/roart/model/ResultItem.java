@@ -1,6 +1,9 @@
 package roart.model;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 
 public class ResultItem {
@@ -17,6 +20,7 @@ public class ResultItem {
     public List<Object> get() {
 	return items;
     }
+    @JsonIgnore
     public Object[] getarr() {
 	Object[] strarr = new Object[items.size()];
 	for(int i = 0; i < items.size(); i++) {
