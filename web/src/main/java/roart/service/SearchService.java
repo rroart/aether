@@ -28,14 +28,14 @@ import com.vaadin.ui.UI;
 public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void searchme(String str, String type) {
+    public List searchme(String str, String type) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
         param.conf = getConfig();
         param.str = str;
-	// TODO fix
-        //param .type = type;
+        param.searchtype = type;
         SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH);
-        return;           
+        List lists = result.list;        
+        return lists;           
     }
 
     // TODO fix
