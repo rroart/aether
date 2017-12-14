@@ -86,7 +86,7 @@ public class Search {
 	dbindex.setConvertsw(el.convertsw);
 	//dbindex.save();
 	long time = System.currentTimeMillis() - now;
-	dbindex.setTimeindex(time);
+	dbindex.setTimeindex("" + time);
 	log.info("timerStop filename " + time);
 
     FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
