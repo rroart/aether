@@ -112,7 +112,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
         deflt.put(ConfigConstants.DATABASEHIBERNATEH2DIR, "");
         deflt.put(ConfigConstants.NODECLASSIFY, Boolean.FALSE);
-        deflt.put(ConfigConstants.MACHINELEARNINGMAHOUT, null);
+        deflt.put(ConfigConstants.MACHINELEARNINGMAHOUT, Boolean.FALSE);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, Boolean.FALSE);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTSPARKMASTER, "spark://127.0.0.1:7077"); 
         deflt.put(ConfigConstants.MACHINELEARNINGOPENNLP, Boolean.FALSE);
