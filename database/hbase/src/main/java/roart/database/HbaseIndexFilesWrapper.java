@@ -55,7 +55,7 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
         Set<FileLocation> fileLocationSet = hbaseIndexFiles.getFilelocationsByMd5(md5);
         DatabaseFileLocationResult result = new DatabaseFileLocationResult();
         FileLocation[] fileLocations = new FileLocation[1];
-        result.fileLocation = (FileLocation[]) fileLocationSet.toArray();
+        result.fileLocation = fileLocationSet.stream().toArray(FileLocation[]::new);
         return result;
     }
 
@@ -92,7 +92,7 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 	@Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
 	       DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-	        result.indexFiles = (IndexFiles[]) hbaseIndexFiles.getAll().toArray();
+	        result.indexFiles = hbaseIndexFiles.getAll().stream().toArray(IndexFiles[]::new);
 	        return result;
     }
 
@@ -124,14 +124,14 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 	@Override
 	public DatabaseMd5Result getAllMd5(DatabaseParam param) throws Exception {
         DatabaseMd5Result result = new DatabaseMd5Result();
-        result.md5 = (String[]) hbaseIndexFiles.getAllMd5().toArray();
+        result.md5 = hbaseIndexFiles.getAllMd5().stream().toArray(String[]::new);
         return result;
 	}
 
 	@Override
 	public DatabaseLanguagesResult getLanguages(DatabaseParam param) throws Exception {
 	       DatabaseLanguagesResult result = new DatabaseLanguagesResult();
-	       	result.languages = (String[]) hbaseIndexFiles.getLanguages().toArray();
+	       	result.languages = hbaseIndexFiles.getLanguages().stream().toArray(String[]::new);
 	       	return result;
 	}
 

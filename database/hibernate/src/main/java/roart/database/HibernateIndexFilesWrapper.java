@@ -41,7 +41,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         Set<FileLocation> fileLocationSet = hibernateIndexFiles.getFilelocationsByMd5(md5);
         DatabaseFileLocationResult result = new DatabaseFileLocationResult();
         FileLocation[] fileLocations = new FileLocation[1];
-        result.fileLocation = (FileLocation[]) fileLocationSet.toArray();
+        result.fileLocation = fileLocationSet.stream().toArray(FileLocation[]::new);
         return result;
     }
 
@@ -80,7 +80,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 	    retlist.add(ifile);
 	}
     DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-    result.indexFiles = (IndexFiles[]) retlist.toArray();
+    result.indexFiles = retlist.stream().toArray(IndexFiles[]::new);
     return result;
     }
 
@@ -160,14 +160,14 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 	@Override
 	public DatabaseMd5Result getAllMd5(DatabaseParam param) throws Exception {
         DatabaseMd5Result result = new DatabaseMd5Result();
-        result.md5 = (String[]) hibernateIndexFiles.getAllMd5().toArray();
+        result.md5 = (String[]) hibernateIndexFiles.getAllMd5().stream().toArray(String[]::new);
         return result;
 	}
 
 	@Override
 	public DatabaseLanguagesResult getLanguages(DatabaseParam param) throws Exception {
 	       DatabaseLanguagesResult result = new DatabaseLanguagesResult();
-	       	result.languages = (String[]) hibernateIndexFiles.getLanguages().toArray();
+	       	result.languages = hibernateIndexFiles.getLanguages().stream().toArray(String[]::new);
 	       	return result;
 	}
 

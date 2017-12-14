@@ -46,7 +46,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         Set<FileLocation> fileLocationSet = dataNucleusIndexFiles.getFilelocationsByMd5(md5);
         DatabaseFileLocationResult result = new DatabaseFileLocationResult();
         FileLocation[] fileLocations = new FileLocation[1];
-        result.fileLocation = (FileLocation[]) fileLocationSet.toArray();
+        result.fileLocation = fileLocationSet.stream().toArray(FileLocation[]::new);
         return result;
     }
 
@@ -83,7 +83,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
             retlist.add(ifile);
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.indexFiles = (IndexFiles[]) retlist.toArray();
+        result.indexFiles = retlist.stream().toArray(IndexFiles[]::new);
         return result;
     }
 
@@ -188,14 +188,14 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseMd5Result getAllMd5(DatabaseParam param) throws Exception {
         DatabaseMd5Result result = new DatabaseMd5Result();
-        result.md5 = (String[]) dataNucleusIndexFiles.getAllMd5().toArray();
+        result.md5 = (String[]) dataNucleusIndexFiles.getAllMd5().stream().toArray(String[]::new);
         return result;
     }
 
     @Override
     public DatabaseLanguagesResult getLanguages(DatabaseParam param) throws Exception {
         DatabaseLanguagesResult result = new DatabaseLanguagesResult();
-        result.languages = (String[]) dataNucleusIndexFiles.getLanguages().toArray();
+        result.languages = dataNucleusIndexFiles.getLanguages().stream().toArray(String[]::new);
         return result;
     }
 
