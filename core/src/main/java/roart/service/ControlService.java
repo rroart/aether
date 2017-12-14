@@ -1005,10 +1005,8 @@ public class ControlService {
             }
        }
 
-    public static List getLanguages() {
-        // TODO fix
-	//return FileSystemDao.getLanguages();
-	return null;
+    public static String[] getLanguages() throws Exception {
+    return IndexFilesDao.getLanguages().stream().toArray(String[]::new);
     }
     
         public List searchengine(ServiceParam param) {
