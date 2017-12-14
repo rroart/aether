@@ -28,7 +28,7 @@ public class LocalFileSystem extends FileSystemOperations {
 	public FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
 		List<FileObject> foList = new ArrayList<FileObject>();
-		File dir = (File) f.object;
+		File dir = objectToFile(f);
 		File listDir[] = dir.listFiles();
 		if (listDir != null) {
 		for (File file : listDir) {
@@ -45,7 +45,7 @@ public class LocalFileSystem extends FileSystemOperations {
 	public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
 	    FileSystemBooleanResult result = new FileSystemBooleanResult();
-		result.bool = ((File) f.object).exists();
+		result.bool = objectToFile(f).exists();
 		return result;
 	}
 
@@ -53,7 +53,7 @@ public class LocalFileSystem extends FileSystemOperations {
 	public FileSystemPathResult getAbsolutePath(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
 	    FileSystemPathResult result = new FileSystemPathResult();
-		result.path = FileSystemConstants.FILE + ((File) f.object).getAbsolutePath();
+		result.path = FileSystemConstants.FILE + objectToFile(f).getAbsolutePath();
 		return result;
 	}
 
@@ -61,7 +61,7 @@ public class LocalFileSystem extends FileSystemOperations {
 	public FileSystemBooleanResult isDirectory(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
         FileSystemBooleanResult result = new FileSystemBooleanResult();
-		result.bool = ((File) f.object).isDirectory();
+		result.bool = objectToFile(f).isDirectory();
 		return result;
 	}
 
@@ -95,7 +95,7 @@ public class LocalFileSystem extends FileSystemOperations {
     @Override
 	public FileSystemFileObjectResult getParent(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
-		String parent = ((File) f.object).getParent();
+		String parent = objectToFile(f).getParent();
 		File file = new File(parent);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
@@ -109,4 +109,15 @@ public class LocalFileSystem extends FileSystemOperations {
         return null;
     }
 
+    private File objectToFile(FileObject fo) {
+        File result = null;
+        if (fo.object instanceof File) {
+            result = (File) fo.object;
+        }
+        if (fo.object instanceof String) {
+            result = new File((String) fo.object);
+        }
+        return result;
+    }
+    
 }
