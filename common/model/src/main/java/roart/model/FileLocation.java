@@ -13,7 +13,10 @@ public class FileLocation {
 
 	private String node;
 	private String filename;
-
+	
+	public FileLocation() {
+	}
+	
     public FileLocation(String mynode, String filename) {
 	if (mynode == null || mynode.length() == 0) {
 	    log.error("No nodename, no correcting");
