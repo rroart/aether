@@ -81,12 +81,30 @@ public abstract class DatabaseAbstractController {
 		return ret;
 	}
 
-	@RequestMapping(value = "/" + EurekaConstants.GETBYFILELOCATION,
+    @RequestMapping(value = "/" + EurekaConstants.GETBYFILELOCATION,
+            method = RequestMethod.POST)
+    public DatabaseIndexFilesResult processGetByFilelocation(@RequestBody DatabaseFileLocationParam param)
+            throws Exception {
+        DatabaseOperations operation = getOperation(param.nodename, param.conf);
+        DatabaseIndexFilesResult ret = operation.getByFilelocation(param);
+        return ret;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.GETBYMD5,
+            method = RequestMethod.POST)
+    public DatabaseIndexFilesResult processGetByMd5(@RequestBody DatabaseMd5Param param)
+            throws Exception {
+        DatabaseOperations operation = getOperation(param.nodename, param.conf);
+        DatabaseIndexFilesResult ret = operation.getByMd5(param);
+        return ret;
+    }
+
+	@RequestMapping(value = "/" + EurekaConstants.GETMD5BYFILELOCATION,
 			method = RequestMethod.POST)
-	public DatabaseIndexFilesResult processGetByFilelocation(@RequestBody DatabaseFileLocationParam param)
+	public DatabaseMd5Result processGetMd5ByFilelocation(@RequestBody DatabaseFileLocationParam param)
 			throws Exception {
 		DatabaseOperations operation = getOperation(param.nodename, param.conf);
-		DatabaseIndexFilesResult ret = operation.getByFilelocation(param);
+		DatabaseMd5Result ret = operation.getMd5ByFilelocation(param);
 		return ret;
 	}
 
