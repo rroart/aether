@@ -42,3 +42,4 @@ controlservice static
 mesos api use
 some service only allow one running
 external services in docker
+aether med ready microserv app gui
