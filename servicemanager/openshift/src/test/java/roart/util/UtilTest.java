@@ -199,13 +199,18 @@ public class UtilTest {
     
     @Test
 public void t3() throws IOException {
-        String repo = "172.30.1.1:5000/myproject/";
-    DockerUtil.method("aether-local", repo);
+        String repo = "172.30.1.1:5000/";
+        String namespace = "myproject";
+        Object[] os = new Object[4];
+    DockerUtil.method("aether-local", repo, namespace, os);
 }
     @Test
-    public void t4() {
-        String repo = "172.30.1.1:5000/myproject/";
+    public void t4() throws IOException {
+        String repo = "172.30.1.1:5000/";
+        String namespace = "myproject";
         OpenshiftThread o = new OpenshiftThread();
-        o.start("local", "aether-local", null, repo);
+        o.start("mariadb", "centos/mariadb", null, repo, namespace);
+        //o.start("mysql", "mysql", null, repo, namespace);
+        //o.start("aether-local", "aether-local", null, repo, namespace);
     }
 }

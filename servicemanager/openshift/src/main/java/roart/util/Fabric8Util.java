@@ -15,6 +15,8 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServicePort;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeMount;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.ImageStream;
@@ -61,20 +63,37 @@ public class Fabric8Util {
         return meta;
     }
 
-    public static ImageStream createImageStream(String name, String image, ObjectMeta metadata, String repo) {
+    public static ImageStream createImageStream(String name, String image, ObjectMeta metadata, String repo, String namespace) {
         ImageStreamStatus status = new ImageStreamStatus();
-        status.setDockerImageRepository(repo + image);
+        status.setDockerImageRepository(repo + namespace + "/" + image);
         ImageStream is = new ImageStream();
         is.setMetadata(metadata);
         is.setStatus(status);
         return is;
     }
 
-    public static Container createContainer(String name, String image, List<ContainerPort> ports, String repo) {
+    public static VolumeMount createMount(String name, String mountPath) {
+        VolumeMount mount = new VolumeMount();
+        mount.setName(name);
+        mount.setMountPath(mountPath);
+        //mount.set
+        return mount;
+    }
+    
+    public static Volume createVolume(String name) {
+        Volume volume = new Volume();
+        volume.setName(name);
+        //volume.set
+        //volume.set
+        return volume;
+    }
+    
+    public static Container createContainer(String name, String image, List<ContainerPort> ports, String repo, String namespace) {
         Container container = new Container();
         container.setName(name);
-        container.setImage(repo + image);
+        container.setImage(repo + namespace + "/" + image);
         container.setPorts(ports);
+        //container.
         /*
         ResourceRequirements resources = new ResourceRequirements();
         container.setResources(resources);
@@ -82,12 +101,12 @@ public class Fabric8Util {
         return container;
     }
 
-    public static boolean dockerTag(DockerClient client, String name, String repo, String tag) {
+    public static boolean dockerTag(DockerClient client, String name, String repo, String namespace, String tag) {
         boolean bool = client
                 .image()
                 .withName(name)
                 .tag()
-                .inRepository(repo + name)
+                .inRepository(repo + namespace + "/" + name)
                 .force()
                 .withTagName("latest")
 //                .withTagName("default")
@@ -95,7 +114,7 @@ public class Fabric8Util {
         return bool;
     }
 
-    public static boolean dockerPush(DockerClient client, String name, String repo, String tag) throws IOException {
+    public static boolean dockerPush(DockerClient client, String name, String repo, String namespace, String tag) throws IOException {
         client
         .image()
         .withName(name)

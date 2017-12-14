@@ -49,6 +49,7 @@ public class DockerHubUtil {
                 System.out.println("id " + n.getId() +  " " + Arrays.asList(n.getRepoTags()));
                 InspectImageResponse insp = docker.inspectImageCmd(n.getId()).exec();
                 System.out.println("" + insp);
+                ///insp.getContainerConfig().ge
                 //insp.get
             }
             /*
@@ -56,6 +57,7 @@ public class DockerHubUtil {
                 log.info("c " + n.getId());
             }
             */
+            //docker.tag
     }
     
 }

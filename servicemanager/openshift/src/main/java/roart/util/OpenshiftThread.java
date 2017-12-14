@@ -1,5 +1,6 @@
 package roart.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.docker.api.model.MountPoint;
 import io.fabric8.kubernetes.api.Controller;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
@@ -18,6 +20,7 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.api.model.ServiceStatus;
+import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -53,14 +56,21 @@ public class OpenshiftThread {
         log.info("setup done");
     }
 
-    public String start(String name, String imageName, String addr, String repo) {
-        DockerHubUtil.dockermethod();
-        createDC(name, imageName, repo);
+    public String start(String name, String imageName, String addr, String repo, String namespace) throws IOException {
+        //DockerHubUtil.dockermethod();
+        Object[] os = new Object[4];
+     DockerUtil.method(imageName, repo, namespace, os);
+
+        createDC(name, imageName, repo, namespace, os);
             log.info("end");
             return null;
    }
 
-    public void createDC(String name, String image, String repo) {
+    public void createDC(String name, String image, String repo, String namespace, Object[] os) {
+        Map<String, String> labels = (Map<String, String>) os[0];
+        Map<String, Object> volumes = (Map<String, Object>) os[1];
+        Map<String, Object> ports = (Map<String, Object>) os[2];
+        List<MountPoint> mounts = (List<MountPoint>) os[3];
         Map<String, String> labelsApp = new HashMap<>();
         labelsApp.put("app", name);
         labelsApp.put("deploymentconfig", name);
@@ -78,15 +88,24 @@ public class OpenshiftThread {
         selector.put("deploymentconfig", name);
 
         ContainerPort containerPort = Fabric8Util.createContainerPort("TCP", 8001);
-        List<ContainerPort> ports = new ArrayList<>();
+        List<ContainerPort> cports = new ArrayList<>();
+        for(String key : ports.keySet()) {
+            String[] spl = key.split("/");
+            String proto = spl[1].toUpperCase();
+            Integer port = new Integer(spl[0]);
+            ContainerPort cport = Fabric8Util.createContainerPort(proto, port);
+            cports.add(cport);
+        }
         //ports.add(containerPort);
         List<String> names = new ArrayList<>();
         names.add(name);
-        Container container = Fabric8Util.createContainer(name, image, ports, repo);
+        Container container = Fabric8Util.createContainer(name, image, cports, repo, namespace);
         List<Container> containers = new ArrayList<>();
         containers.add(container);
 
-        ImageStream is = Fabric8Util.createImageStream(name, image, metaApp, repo);
+        Volume volume = null; //Fabric8Util.createVolume(name);
+        
+        ImageStream is = Fabric8Util.createImageStream(name, image, metaApp, repo, namespace);
         
         DeploymentConfig dc = new DeploymentConfigBuilder()
                 .withMetadata(metaApp)
@@ -104,6 +123,7 @@ public class OpenshiftThread {
                 .endMetadata()
                 .withNewSpec()
                 .withContainers(containers)
+                //.withVolumes(volume)
                 .endSpec()
                 .endTemplate()
                 .withTest(false)

@@ -2,6 +2,7 @@ package roart.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ public class MyXMLConfig {
         return null; //getNode(ControlService.nodename);
     }
 
-     public void config() {
+     public void config() throws IOException {
          String version = "-0.10-SNAPSHOT.jar";
          version = "";
          Map<String, String> map = new HashMap<>();
@@ -69,14 +70,15 @@ public class MyXMLConfig {
          //map.put(ConfigConstants., "");
          //map.put(ConfigConstants., "");
          String addr = System.getenv("EUREKA_SERVER_URI");
-         String repo = "172.30.1.1:5000/myproject/";
+         String repo = "172.30.1.1:5000/";
+         String namespace = "myproject";
          for (String key : map.keySet()) {
              Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
              if (bool) {
                  String jar = map.get(key);
                  log.info("Starting " + jar);
                  OpenshiftThread local = new OpenshiftThread();
-                 local.start(key, jar, addr, repo);
+                 local.start(key, jar, addr, repo, namespace);
                           //Runnable local = new DockerThread(jar);
                  //new Thread(local).start();
              }
