@@ -16,7 +16,7 @@ public class EurekaConstants {
 	public static final String HIBERNATE = "HIBERNATE";
 	public static final String HBASE = "HBASE";
 	public static final String DATANUCLEUS = "DATANUCLEUS";
-	public static final String LOCALFILESYSTEM = "LOCALFILESYSTEM";
+	public static final String LOCAL = "LOCAL";
 	public static final String SWIFT = "SWIFT";
 	public static final String HDFS = "HDFS";
 
