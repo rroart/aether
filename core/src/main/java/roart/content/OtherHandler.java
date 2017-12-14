@@ -86,7 +86,7 @@ public class OtherHandler {
 	    if (output != null) {
 		el.convertsw = "calibre";
 		long time = execstart - System.currentTimeMillis();
-		el.index.setConverttime(time);
+		el.index.setConverttime("" + time);
         } else {
             log.info("ebook-convert no output");
         }
@@ -105,7 +105,7 @@ public class OtherHandler {
 	    if (output != null && !output.isEmpty()) {
 		el.convertsw = "djvutxt";
 		long time = execstart - System.currentTimeMillis();
-		el.index.setConverttime(time);
+		el.index.setConverttime("" + time);
         } else {
             log.info("djvutxt no output");
         }
@@ -120,7 +120,7 @@ public class OtherHandler {
 	    if (output != null && !output.isEmpty()) {
 		el.convertsw = "pdftotext";
 		long time = execstart - System.currentTimeMillis();
-		el.index.setConverttime(time);
+		el.index.setConverttime("" + time);
     } else {
         log.info("pdftotext no output");
     }
@@ -135,7 +135,7 @@ public class OtherHandler {
         if (output != null && !output.isEmpty()) {
         el.convertsw = "wvtext";
         long time = execstart - System.currentTimeMillis();
-        el.index.setConverttime(time);
+        el.index.setConverttime("" + time);
         } else {
             log.info("wvtext no output");
         }

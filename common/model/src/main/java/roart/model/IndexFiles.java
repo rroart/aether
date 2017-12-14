@@ -137,11 +137,13 @@ public class IndexFiles {
 	    this.timeindex = timeindex;
 	}
 
+	/*
 	public void setTimeindex(long millis) {
 	    changed |= true;
 	    this.timeindex = "" + millis;
 	}
-
+*/
+	
         public String getConvertsw() {
 	    return convertsw;
 	}
@@ -172,10 +174,12 @@ public class IndexFiles {
 	    this.converttime = converttime;
 	}
 
+	/*
 	public void setConverttime(long millis) {
 	    changed |= true;
 	    this.converttime = "" + millis;
 	}
+	*/
 
 	public String getClassification() {
 	    return classification;
@@ -191,11 +195,13 @@ public class IndexFiles {
 	    this.timeclass = timeclass;
 	}
 
+	/*
 	public void setTimeclass(long millis) {
 	    changed |= true;
 	    this.timeclass = "" + millis;
 	}
-
+*/
+	
         public String getTimeclass() {
 	    return timeclass;
 	}

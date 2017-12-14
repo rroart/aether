@@ -140,7 +140,7 @@ public class TikaHandler {
         try {
             OutputStream outputStream = process(filename, metadata, index);
             long time = System.currentTimeMillis() - now;
-            el.index.setConverttime(time);
+            el.index.setConverttime("" + time);
             InputStream inputStream = null;
             if (outputStream != null) {
                 inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
@@ -205,7 +205,7 @@ public class TikaHandler {
                     time = System.currentTimeMillis() - now;
                     log.info("classtime " + dbfilename + " " + time);
                     //System.out.println("classtime " + time);
-                    el.index.setTimeclass(time);
+                    el.index.setTimeclass("" + time);
                     el.index.setClassification(classification);
                 }
                 if (lang != null) {
