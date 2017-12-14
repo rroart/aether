@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class NodeConfig extends MyConfig {
     public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF }
 
@@ -20,6 +22,7 @@ public class NodeConfig extends MyConfig {
         
     }
     
+    @JsonIgnore
     public String[] getLanguages() {
         String languages = (String) getValueOrDefault(ConfigConstants.NODELANGUAGES);
         return languages.split(",");
@@ -81,10 +84,12 @@ public class NodeConfig extends MyConfig {
         return !((Boolean) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG));
     }
     
+    @JsonIgnore
     public String getZookeeper() {
         return (String) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONZOOKEEPER);
     }
     
+    @JsonIgnore
     public String getLocker() {
         if (wantDistributedTraverse()) {
             return roart.util.Constants.HAZELCAST;
@@ -95,10 +100,12 @@ public class NodeConfig extends MyConfig {
         return null;
     }
     
+    @JsonIgnore
     public boolean isLocalhost() {
         return ConfigConstants.LOCALHOST.equals(getNodename());
     }
     
+    @JsonIgnore
     public String getNodename() {
         return (String) getValueOrDefault(ConfigConstants.NODENODENAME);       
     }
@@ -107,164 +114,204 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS);
     }
     
+    @JsonIgnore
     public String[] getDirListNot() {
         String dirList = (String) getValueOrDefault(ConfigConstants.FSDIRLISTNOT);
         return dirList.split(",");
     }
     
+    @JsonIgnore
     public String[] getDirList() {
         String dirList = (String) getValueOrDefault(ConfigConstants.FSDIRLIST);
         return dirList.split(",");
     }
     
+    @JsonIgnore
     public String getLanguagesUnsplit() {
         return (String) getValueOrDefault(ConfigConstants.NODELANGUAGES);
     }
     
+    @JsonIgnore
     public String getElasticPort() {
         return (String) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICELASTICPORT);
     }
     
+    @JsonIgnore
     public String getElasticHost() {
         return (String) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICELASTICHOST);
     }
     
+    @JsonIgnore
     public String getHDFSDefaultName() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS);
     }
     
+    @JsonIgnore
     public String getMahoutBasePath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTBASEPATH);
     }
     
+    @JsonIgnore
     public String getMahoutModelPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTMODELPATH);
     }
     
+    @JsonIgnore
     public String getMahoutLabelIndexPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTLABELINDEXFILEPATH);
     }
     
+    @JsonIgnore
     public String getMahoutDictionaryPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDICTIONARYPATH);
     }
     
+    @JsonIgnore
     public String getMahoutDocumentFrequencyPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDOCUMENTFREQUENCYPATH);
     }
     
+    @JsonIgnore
     public String getMahoutAlgorithm() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM);
     }
     
+    @JsonIgnore
     public String getMahoutConfFs() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTCONFFS);
     }
     
+    @JsonIgnore
     public String getMahoutSparkMaster() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTSPARKMASTER);
     }
     
+    @JsonIgnore
     public String getOpenNLPModelPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGOPENNLPOPENNLPMODELPATH);
     }
     
+    @JsonIgnore
     public String getSparkMLBasePath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLBASEPATH);
     }
     
+    @JsonIgnore
     public String getSparkMLModelPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLMODELPATH);
     }
     
+    @JsonIgnore
     public String getSparkMLLabelIndexPath() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMLLABELINDEXPATH);
     }
     
+    @JsonIgnore
     public String getSparkMLSparkMaster() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGSPARKMLSPARKMASTER);
     }
     
+    @JsonIgnore
     public String getSwiftUser() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFUSER);
     }
    
+    @JsonIgnore
     public String getSwiftKey() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFKEY);
     }
    
+    @JsonIgnore
     public String getSwiftUrl() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFURL);
     }
    
+    @JsonIgnore
     public String getSwiftContainer() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFCONTAINER);
     }
    
+    @JsonIgnore
     public String getSolrurl() {
         return (String) getValueOrDefault(ConfigConstants.SEARCHENGINESOLRSOLRURL);
     }
    
+    @JsonIgnore
     public Integer getMLTMinTF() {
         return (Integer) getValueOrDefault(ConfigConstants.SEARCHENGINEMLTMLTMINTF);
     }
     
+    @JsonIgnore
     public Integer getMLTMinDF() {
         return (Integer) getValueOrDefault(ConfigConstants.SEARCHENGINEMLTMLTMINDF);
     }
     
+    @JsonIgnore
     public Integer getMLTCount() {
         return (Integer) getValueOrDefault(ConfigConstants.SEARCHENGINEMLTMLTCOUNT);
     }
     
+    @JsonIgnore
     public String getLucenepath() {
         return (String) getValueOrDefault(ConfigConstants.SEARCHENGINELUCENELUCENEPATH);
     }
     
+    @JsonIgnore
     public Boolean getHighlightmlt() {
         return (Boolean) getValueOrDefault(ConfigConstants.GUIHIGHLIGHTMLT);
     }
     
+    @JsonIgnore
     public Boolean getDownloader() {
         return (Boolean) getValueOrDefault(ConfigConstants.GUIDOWNLOADER);
     }
     
+    @JsonIgnore
     public Boolean getAuthenticate() {
         return (Boolean) getValueOrDefault(ConfigConstants.GUIAUTHENTICATE);
     }
     
+    @JsonIgnore
     public String getHbasequorum() {
         return (String) getValueOrDefault(ConfigConstants.DATABASEHBASEHBASEQUORUM);
     }
     
+    @JsonIgnore
     public String getHbaseport() {
         return (String) getValueOrDefault(ConfigConstants.DATABASEHBASEHBASEPORT);
     }
     
+    @JsonIgnore
     public String getHbasemaster() {
         return (String) getValueOrDefault(ConfigConstants.DATABASEHBASEHBASEMASTER);
     }
     
+    @JsonIgnore
     public Integer getTikaTimeout() {
         return (Integer) getValueOrDefault(ConfigConstants.CONVERSIONTIKATIMEOUT);        
     }
     
+    @JsonIgnore
     public Integer getOtherTimeout() {
         return (Integer) getValueOrDefault(ConfigConstants.CONVERSTIONOTHERTIMEOUT);        
     }
     
+    @JsonIgnore
     public Integer getIndexLimit() {
         return (Integer) getValueOrDefault(ConfigConstants.INDEXINDEXLIMIT);        
     }
     
+    @JsonIgnore
     public Integer getReindexLimit() {
         return (Integer) getValueOrDefault(ConfigConstants.INDEXREINDEXLIMIT);        
     }
     
+    @JsonIgnore
     public Integer getFailedLimit() {
         return (Integer) getValueOrDefault(ConfigConstants.INDEXFAILEDLIMIT);        
     }
     
+    @JsonIgnore
    public Object getValueOrDefault(String key) {
         Object retVal = configValueMap.get(key);
         //System.out.println("r " + retVal + " " + deflt.get(key));
