@@ -155,7 +155,9 @@
     <fileSet>
       <directory>${project.basedir}/../bin</directory>
       <includes>
-	<include>*</include>
+	<include>service-simple.sh</include>
+	<include>service-docker.sh</include>
+	<include>service-openshift.sh</include>
       </includes>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
@@ -186,6 +188,13 @@
 	<include>*</include>
       </includes>
       <outputDirectory>example</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>/tmp/jetty-runner</directory>
+      <includes>
+        <include>jetty-runner-9.4.2.v20170220.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
     </fileSet>
   </fileSets>
   <!--files>
