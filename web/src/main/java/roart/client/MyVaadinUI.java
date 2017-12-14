@@ -15,6 +15,7 @@ import roart.service.ControlService;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -70,6 +71,8 @@ import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.Window;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.annotations.Push;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Notification;
@@ -119,7 +122,7 @@ public class MyVaadinUI extends UI
 	boolean dodownload = MyConfig.conf.getDownloader();
 
 	boolean doauthenticate = MyConfig.conf.getAuthenticate();
-	getSession().setAttribute(ConfigConstants.GUIAUTHENTICATE, doauthenticate);
+	getSession().setAttribute("authenticate", doauthenticate);
 
 	boolean accessAdmin = false;
 	boolean accessUser = false;
@@ -274,7 +277,7 @@ public class MyVaadinUI extends UI
 	tab.setCaption("Search");
 	String myindex = controlService.index;
 	// TODO make OO of this
-	if (myindex.equals(ConfigConstants.SEARCHENGINELUCENE)) {
+	if (MyConfig.conf.wantLucene()) {
 	tab.addComponent(getSearch("Search standard", 0));
 	tab.addComponent(getSearch("Search analyzing", 1));
 	tab.addComponent(getSearch("Search complexphrase", 2));
@@ -284,14 +287,14 @@ public class MyVaadinUI extends UI
 	tab.addComponent(getSearch("Search classic", 6));
 	tab.addComponent(getSearch("Search simple", 7));
 	}
-	if (myindex.equals(ConfigConstants.SEARCHENGINESOLR)) {
+	if (MyConfig.conf.wantSolr()) {
 	tab.addComponent(getSearch("Search default", 0));
 	tab.addComponent(getSearch("Search lucene", 1));
 	tab.addComponent(getSearch("Search complexphrase", 2));
 	tab.addComponent(getSearch("Search surround", 3));
 	tab.addComponent(getSearch("Search simple", 4));
 	}
-	if (myindex.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
+	if (MyConfig.conf.wantElastic()) {
 	tab.addComponent(getSearch("Search", 0));
 	}
 	return tab;
@@ -1484,7 +1487,9 @@ public class MyVaadinUI extends UI
 		    String value = (String) event.getProperty().getValue();
 		    // Do something with the value
 		    SearchService maininst = new SearchService();
-		    maininst.searchme(value, "" + type);
+		    List lists;
+		    lists = maininst.searchme(value, "" + type);
+		    displayResultListsTab(lists);
 		    Notification.show("Request sent");
 		}
 	    });
@@ -1648,12 +1653,18 @@ public Object generateCell(Table source, Object itemId,
 
     @SuppressWarnings("rawtypes")
 	public void displayResultListsTab(List<List> lists) {
+        
 	VerticalLayout tab = new VerticalLayout();
         tab.setCaption("Results");
 
 	VerticalLayout result = getResultTemplate();
 	if (lists != null) {
 	    for (List<ResultItem> list : lists) {
+	        LinkedHashMap list0 =   (LinkedHashMap) (lists.get(0).get(0));
+            //System.out.println(list0.keySet());
+            //System.out.println(list0.getClass().getName());
+	        //System.out.println(list.get(0));
+	        list = new ObjectMapper().convertValue(list, new TypeReference<List<ResultItem>>() { });
 		addListTable(result, list);
 	    }
 	}
