@@ -206,7 +206,7 @@ public class MyXMLConfig {
 
      public void config() {
         try {
-            LanguageDetect.init("./profiles/");
+            //LanguageDetect.init("./profiles/");
         } catch (Exception e) {
             log.error("Exception", e);
         }

@@ -330,7 +330,12 @@
       <groupId>com.cybozu.labs</groupId>
       <artifactId>langdetect</artifactId>
       <version>1.1-20120112</version>
-    </dependency>
+      </dependency>
+    <dependency>
+    <groupId>com.optimaize.languagedetector</groupId>
+    <artifactId>language-detector</artifactId>
+    <version>0.6</version>
+</dependency>
     <!--dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jsp-2.1</artifactId>

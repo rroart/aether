@@ -2,6 +2,7 @@ package roart.content;
 
 import roart.classification.ClassifyDao;
 import roart.lang.LanguageDetect;
+import roart.lang.LanguageDetectFactory;
 import roart.model.FileLocation;
 import roart.model.FileObject;
 import roart.model.IndexFiles;
@@ -198,8 +199,9 @@ public class TikaHandler {
 
                 String content = getString(inputStream);
 
-                String lang = LanguageDetect.detect(content);
-                if (lang != null && LanguageDetect.isSupportedLanguage(lang)) {
+                LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
+                String lang = languageDetect.detect(content);
+                if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                     now = System.currentTimeMillis();
                     String classification = ClassifyDao.classify(content, lang);
                     time = System.currentTimeMillis() - now;
