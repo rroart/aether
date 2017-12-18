@@ -1660,11 +1660,13 @@ public Object generateCell(Table source, Object itemId,
 	VerticalLayout result = getResultTemplate();
 	if (lists != null) {
 	    for (List<ResultItem> list : lists) {
+	        if (!(list.get(0) instanceof ResultItem)) {
 	        LinkedHashMap list0 =   (LinkedHashMap) (lists.get(0).get(0));
             //System.out.println(list0.keySet());
             //System.out.println(list0.getClass().getName());
 	        //System.out.println(list.get(0));
 	        list = new ObjectMapper().convertValue(list, new TypeReference<List<ResultItem>>() { });
+	        }
 		addListTable(result, list);
 	    }
 	}
