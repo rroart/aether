@@ -71,12 +71,17 @@ import roart.util.Constants;
 	private String language;
 	
 	private String nodename;
+	private NodeConfig nodeconf;
 	
 	public HibernateIndexFiles(String nodename, NodeConfig nodeConf) {
         this.nodename = nodename;
+        this.nodeconf = nodeConf;
     }
 
-    @Column(name = "md5")
+	public HibernateIndexFiles() {
+	}
+	       
+	@Column(name = "md5")
 	@Id
         public String getMd5() {
 	    return md5;
@@ -243,19 +248,21 @@ import roart.util.Constants;
 	    if (fi == null) {
 		fi = new HibernateIndexFiles(nodename, null);
 		fi.setMd5(md5);
-		HibernateUtil.currentSession().save(fi);
+		HibernateUtil.currentSession(getH2Dir()).save(fi);
 	    }
 	    return fi;
 	}
 
+    @Transient
 	public HibernateIndexFiles getByMd5(String md5) throws Exception {
-	    return (HibernateIndexFiles) HibernateUtil.getHibernateSession().createQuery("from HibernateIndexFiles where md5 = :md5").setParameter("md5", md5).uniqueResult();
+	    return (HibernateIndexFiles) HibernateUtil.getHibernateSession(getH2Dir()).createQuery("from HibernateIndexFiles where md5 = :md5").setParameter("md5", md5).uniqueResult();
 	    // this is slower:
 	    // return (HibernateIndexFiles) HibernateUtil.getHibernateSession().get(HibernateIndexFiles.class, md5);
 	}
 
+	@Transient
 	public List<HibernateIndexFiles> getAll() throws Exception {
-	    return HibernateUtil.convert(HibernateUtil.currentSession().createQuery("from HibernateIndexFiles").list(), HibernateIndexFiles.class);
+	    return HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createQuery("from HibernateIndexFiles").list(), HibernateIndexFiles.class);
 	}
 
 	@Column(name = "timeoutreason")
@@ -307,6 +314,7 @@ import roart.util.Constants;
 	    this.filenames = files;
 	}
 
+    @Transient
 	public HibernateIndexFiles getByFilename(String filename) {
 	    try {
 		String md5 = getMd5ByFilename(filename);
@@ -321,9 +329,10 @@ import roart.util.Constants;
 	}
 
 	// this is hql, but slow?
+    @Transient
 	public String getMd5ByFilenameNot(String filename) {
 	    try {
-			HibernateIndexFiles hif = (HibernateIndexFiles) HibernateUtil.getHibernateSession().getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
+			HibernateIndexFiles hif = (HibernateIndexFiles) HibernateUtil.getHibernateSession(getH2Dir()).getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
 			if (hif == null) {
 				return null;
 			}
@@ -335,9 +344,10 @@ import roart.util.Constants;
 	}
 
 	// using sql is ideally incorrect, but faster
+    @Transient
 	public String getMd5ByFilename(String filename) {
 	    try {
-		String md5 = (String) HibernateUtil.getHibernateSession().createSQLQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
+		String md5 = (String) HibernateUtil.getHibernateSession(getH2Dir()).createSQLQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
 		return md5;
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
@@ -345,6 +355,7 @@ import roart.util.Constants;
 	    return null;
 	}
 
+    @Transient
 	public Set<FileLocation> getFilelocationsByMd5(String md5) {
 	    try {
 	    	HibernateIndexFiles ifile = getByMd5(md5);
@@ -359,7 +370,7 @@ import roart.util.Constants;
 	}
 
 	public void flush() throws Exception {
-                roart.database.HibernateUtil.currentSession().flush();
+                roart.database.HibernateUtil.currentSession(getH2Dir()).flush();
 	}
 
 	public void commit() throws Exception {
@@ -370,21 +381,28 @@ import roart.util.Constants;
                 roart.database.HibernateUtil.close();
 	}
 
+    @Transient
 	public Set<String> getAllMd5() throws Exception {
-		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select md5 from HibernateIndexFiles").list(), String.class);
+		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createQuery("select md5 from HibernateIndexFiles").list(), String.class);
 	}
 
+    @Transient
 	public Set<String> getLanguages() throws Exception {
-		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession().createQuery("select distinct language from HibernateIndexFiles").list(), String.class));
+		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createQuery("select distinct language from HibernateIndexFiles").list(), String.class));
 	}
 
     public void delete(IndexFiles index) throws Exception {
         HibernateIndexFiles hif = getByMd5(index.getMd5());
-        roart.database.HibernateUtil.currentSession().delete(hif);
+        roart.database.HibernateUtil.currentSession(getH2Dir()).delete(hif);
     }
 
     public void destroy() throws Exception {
        HibernateUtil.close();
     }
 
+    @Transient
+    public String getH2Dir() {
+        return nodeconf.getH2dir();
+    }
+    
     }

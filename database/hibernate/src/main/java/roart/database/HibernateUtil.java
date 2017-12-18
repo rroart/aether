@@ -7,6 +7,10 @@ import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Configuration;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +25,15 @@ public class HibernateUtil {
     private static Session session = null;
     private static Transaction transaction = null;
 
-    public static Session getCurrentSession() throws /*MappingException,*/ HibernateException, Exception {
-	return getHibernateSession();
+    public static Session getCurrentSession(String h2dir) throws /*MappingException,*/ HibernateException, Exception {
+	return getHibernateSession(h2dir);
     }
 
-    public static Session currentSession() throws /*MappingException,*/ HibernateException, Exception {
-	return getHibernateSession();
+    public static Session currentSession(String h2dir) throws /*MappingException,*/ HibernateException, Exception {
+	return getHibernateSession(h2dir);
     }
 
-    public static Session getHibernateSession() throws /*MappingException,*/ HibernateException, Exception {
+    public static Session getHibernateSession(String h2dir) throws /*MappingException,*/ HibernateException, Exception {
 	if (factory == null) {
 		/*
 	    AnnotationConfiguration configuration = new AnnotationConfiguration();
@@ -40,7 +44,7 @@ public class HibernateUtil {
 				applySettings(configuration.getProperties());
 		factory = configuration.buildSessionFactory(builder.build());
 		*/
-		factory = new Configuration().configure().buildSessionFactory();
+		factory = new Configuration().configure().setProperty("hibernate.connection.url", getUrl(h2dir)) .buildSessionFactory();
 	    //Object o = new net.sf.ehcache.hibernate.EhCacheRegionFactory();
 	}
 
@@ -87,4 +91,13 @@ public class HibernateUtil {
         return (List<T>)l;
     }
 
+    private static String getUrl(String h2dir) throws SQLException {
+        return "jdbc:h2:" + h2dir;
+    }
+    
+    private Connection getConnection(String h2dir) throws SQLException {
+        String url = "jdbc:h2:" + h2dir;
+        return DriverManager.getConnection(url);
+    }
+    
 }
