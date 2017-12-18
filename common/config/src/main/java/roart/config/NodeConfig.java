@@ -312,6 +312,11 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public String getH2dir() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASEHIBERNATEH2DIR);        
+    }
+    
+    @JsonIgnore
    public Object getValueOrDefault(String key) {
         Object retVal = configValueMap.get(key);
         //System.out.println("r " + retVal + " " + deflt.get(key));
