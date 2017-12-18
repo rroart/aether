@@ -36,35 +36,6 @@
 	  <skip>true</skip>
 	</configuration>
       </plugin>
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>1.5.2</version>
-        <executions>
-            <execution>
-                <phase>prepare-package</phase>
-                <goals>
-                    <goal>replace</goal>
-                </goals>
-            </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>target/**/hibernate.cfg.xml</include>
-            <include>target/**/log4j.properties</include>
-	  </includes>
-            <replacements>
-                <replacement>
-                    <token>@h2dir@</token>
-                    <value>${h2dir}</value>
-                </replacement>
-                <replacement>
-                    <token>@logdir@</token>
-                    <value>${logdir}</value>
-                </replacement>
-            </replacements>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <dependencyManagement>
@@ -184,6 +155,11 @@
       <groupId>org.hibernate</groupId>
       <artifactId>ejb3-persistence</artifactId>
       <version>3.3.2.Beta1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
     </dependency>
   </dependencies>
 </project>
