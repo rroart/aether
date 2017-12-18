@@ -101,6 +101,7 @@ public class ControlService {
     public void traverse(String add) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.FILESYSTEM;
         param.add = add;
         param.webpath = EurekaConstants.TRAVERSE;
         Queues.clientQueue.add(param);
@@ -112,6 +113,7 @@ public class ControlService {
     public void traverse() throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.FILESYSTEM;
         param.webpath = EurekaConstants.TRAVERSE;
         Queues.clientQueue.add(param);
     }
@@ -124,6 +126,7 @@ public class ControlService {
     public void overlapping() {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.OVERLAPPING;
         param.webpath = EurekaConstants.OVERLAPPING;
         Queues.clientQueue.add(param);
         return;           
@@ -206,6 +209,7 @@ public class ControlService {
     public List<String> cleanupfs(String dirname) {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.CONSISTENTCLEAN;
         param.dirname = dirname;
         param.webpath = EurekaConstants.CLEANUPFS;
         Queues.clientQueue.add(param);
@@ -216,6 +220,7 @@ public class ControlService {
     public void memoryusage() {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.MEMORYUSAGE;
         param.webpath = EurekaConstants.MEMORYUSAGE;
         Queues.clientQueue.add(param);
         return;           
@@ -227,6 +232,7 @@ public class ControlService {
     public void notindexed() throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.NOTINDEXED;
         param.webpath = EurekaConstants.NOTINDEXED;
         Queues.clientQueue.add(param);
         return;           
@@ -241,6 +247,7 @@ public class ControlService {
     public void filesystemlucenenew() throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.FILESYSTEMLUCENENEW;
         param.webpath = EurekaConstants.FILESYSTEMLUCENENEW;
         Queues.clientQueue.add(param);
         return;           
@@ -249,6 +256,7 @@ public class ControlService {
     public void filesystemlucenenew(String add, boolean md5checknew) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.FILESYSTEMLUCENENEW;
         param.add = add;
         param.md5checknew = md5checknew;
         param.webpath = EurekaConstants.FILESYSTEMLUCENENEW;
@@ -259,6 +267,7 @@ public class ControlService {
     public void dbindex(String md5) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.DBINDEX;
         param.md5 = md5;
         param.webpath = EurekaConstants.DBINDEX;
         Queues.clientQueue.add(param);
@@ -268,6 +277,7 @@ public class ControlService {
     public void dbsearch(String md5) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
+        param.function = Function.DBSEARCH;
         param.md5 = md5;
         param.webpath = EurekaConstants.DBSEARCH;
         Queues.clientQueue.add(param);
@@ -283,7 +293,7 @@ public class ControlService {
 	public void consistentclean(boolean clean) {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
-	param.function = Function.CONSISTENTCLEAN;
+        param.function = Function.CONSISTENTCLEAN;
 	    param.clean = clean;
         param.webpath = EurekaConstants.CONSISTENTCLEAN;
         Queues.clientQueue.add(param);
