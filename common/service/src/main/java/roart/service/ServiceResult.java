@@ -8,7 +8,7 @@ import roart.model.ResultItem;
 
 public class ServiceResult {
 public NodeConfig config;
-public List<ResultItem> list;
+public List<List<ResultItem>> list;
 public String error;
 }
 
