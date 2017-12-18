@@ -70,7 +70,7 @@ public class LocalFileSystem extends FileSystemOperations {
 	    FileObject f = param.fo;
 		try {
 		    FileSystemByteResult result = new FileSystemByteResult();
-		    InputStream is = new FileInputStream( (File) f.object /*new File(getAbsolutePath(f))*/);
+		    InputStream is = new FileInputStream( objectToFile(f) /*new File(getAbsolutePath(f))*/);
 		    result.bytes = IOUtils.toByteArray(is);
 		    return result;
 		} catch (FileNotFoundException e) {
