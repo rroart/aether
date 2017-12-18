@@ -99,7 +99,7 @@ public class ClientRunner implements Runnable {
                         finally {
                             //log.info("myend");
                         }
-                        return result; //myMethod();
+                        return result.list; //myMethod();
                     }	
                 };	
 
