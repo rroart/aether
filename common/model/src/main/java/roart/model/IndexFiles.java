@@ -348,7 +348,7 @@ public class IndexFiles {
     }
 
     public void setLock(MyLock lock) {
-        this.lock = lock;
+        // TODO disabled this.lock = lock;
     }
 
     public MyLock getLock() {
