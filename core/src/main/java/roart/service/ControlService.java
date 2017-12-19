@@ -918,9 +918,10 @@ public class ControlService {
 			}
 			for (IndexFiles i : ifs) {
 			    MyLock filelock = i.getLock();
-	            filelock.unlock();
-	            i.setLock(null);
-
+			    if (filelock != null) {
+			        filelock.unlock();
+			        i.setLock(null);
+			    }
 			}
 			
 			if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
@@ -991,8 +992,10 @@ public class ControlService {
 
             for (IndexFiles i : ifs) {
                 MyLock filelock = i.getLock();
-                filelock.unlock();
-                i.setLock(null);
+                if (filelock != null) {
+                    filelock.unlock();
+                    i.setLock(null);
+                }
             }
 
             if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
