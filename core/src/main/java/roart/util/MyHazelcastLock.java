@@ -22,4 +22,13 @@ public class MyHazelcastLock extends MyLock {
     public void unlock() {
         lock.unlock();
     }
+
+    public ILock getLock() {
+        return lock;
+    }
+
+    public void setLock(ILock lock) {
+        this.lock = lock;
+    }
+
 }
