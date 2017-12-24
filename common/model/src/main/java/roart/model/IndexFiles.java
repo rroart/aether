@@ -360,7 +360,7 @@ public class IndexFiles {
     }
 
     public void setLockqueue(Object lockqueue) {
-        this.lockqueue = lockqueue;
+     // TODO disabled this.lockqueue = lockqueue;
     }
 
 	public static ResultItem getHeader() {
