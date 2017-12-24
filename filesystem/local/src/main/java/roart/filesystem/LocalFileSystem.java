@@ -37,7 +37,7 @@ public class LocalFileSystem extends FileSystemOperations {
 		}
 		}     
 		FileSystemFileObjectResult result = new FileSystemFileObjectResult();
-		result.fileObject = (FileObject[]) foList.toArray();
+		result.fileObject = foList.stream().toArray(FileObject[]::new);
 		return result;
 	}
 
