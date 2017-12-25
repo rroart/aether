@@ -77,7 +77,7 @@ public class MahoutClassify extends MachineLearningAbstractClassifier {
 
 	    Configuration configuration = new Configuration();
 	    String fsdefaultname = nodeConf.getMahoutConfFs();
-	    if (fsdefaultname != null) {
+	    if (fsdefaultname != null && !fsdefaultname.isEmpty()) {
 		configuration.set("fs.default.name", fsdefaultname);
 	    }
         for (String lang : languages) {
