@@ -281,7 +281,7 @@ machinelearning.mahout.mahoutalgorithm
 	      The Mahout algorithm, bayes or cbayes.
 	    </entry>
 	    <entry>
-	      ""
+	      bayes
 	    </entry>
 		  </row>
 		  <row>
@@ -322,7 +322,7 @@ machinelearning.mahoutspark.mahoutsparkmaster
 machinelearning.mahoutspark.mahoutbasepath
 	    </entry>
 	    <entry>
-	      The base path for the other then relatively based Mahout model paths.
+	      The base path for the other then relatively based Mahout Spark model paths.
 	    </entry>
 	    <entry>
 	      ""
@@ -333,7 +333,7 @@ machinelearning.mahoutspark.mahoutbasepath
 machinelearning.mahoutspark.mahoutmodelpath
 	    </entry>
 	    <entry>
-	      The path to the Mahout model.
+	      The path to the Mahout Spark model.
 	    </entry>
 	    <entry>
 	      ""
@@ -344,7 +344,7 @@ machinelearning.mahoutspark.mahoutmodelpath
 machinelearning.mahoutspark.mahoutlabelindexfilepath
 	    </entry>
 	    <entry>
-	      The path to the Mahout label index file.
+	      The path to the Mahout Spark label index file.
 	    </entry>
 	    <entry>
 	      ""
@@ -367,6 +367,28 @@ machinelearning.mahoutspark.mahoutdocumentfrequencypath
 	    </entry>
 	    <entry>
 	      The path to the Mahout document frequency.
+	    </entry>
+	    <entry>
+	      ""
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+machinelearning.mahoutspark.mahoutalgorithm
+	    </entry>
+	    <entry>
+	      The Mahout Spark algorithm, bayes or cbayes.
+	    </entry>
+	    <entry>
+	      bayes
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+machinelearning.mahout.mahoutconffs
+	    </entry>
+	    <entry>
+	      The Mahout Spark HDFS path.
 	    </entry>
 	    <entry>
 	      ""

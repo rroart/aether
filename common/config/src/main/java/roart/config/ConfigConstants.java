@@ -41,6 +41,8 @@ public class ConfigConstants {
     public static final String MACHINELEARNINGMAHOUTSPARKMAHOUTLABELINDEXFILEPATH = "machinelearning.mahoutspark.mahoutlabelindexfilepath";
     public static final String MACHINELEARNINGMAHOUTSPARKMAHOUTDICTIONARYPATH = "machinelearning.mahoutspark.mahoutdictionarypath";
     public static final String MACHINELEARNINGMAHOUTSPARKMAHOUTDOCUMENTFREQUENCYPATH = "machinelearning.mahoutspark.mahoutdocumentfrequencypath";
+    public static final String MACHINELEARNINGMAHOUTSPARKMAHOUTCONFFS = "machinelearning.mahoutspark.mahoutconffs";
+    public static final String MACHINELEARNINGMAHOUTSPARKMAHOUTALGORITHM = "machinelearning.mahoutspark.mahoutalgorithm";
     public static final String BAYES = "bayes";
     public static final String CBAYES = "cbayes";
     public static final String MACHINELEARNINGSPARKML = "machinelearning.sparkml[@enable]";

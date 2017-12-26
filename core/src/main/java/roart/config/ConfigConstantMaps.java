@@ -44,6 +44,8 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDICTIONARYPATH, String.class);
         map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDOCUMENTFREQUENCYPATH, String.class);
         map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTBASEPATH, String.class);
+        map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTALGORITHM, String.class);
+        map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTCONFFS, String.class);
         map.put(ConfigConstants.BAYES, String.class);
         map.put(ConfigConstants.CBAYES, String.class);
         map.put(ConfigConstants.MACHINELEARNINGSPARKML, Boolean.class);
@@ -124,13 +126,15 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTLABELINDEXFILEPATH, "");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDICTIONARYPATH, "");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTDOCUMENTFREQUENCYPATH, "");
-        deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM, "");
+        deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTALGORITHM, "bayes");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTMAHOUTCONFFS, "");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTBASEPATH, null);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTMODELPATH, "");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTLABELINDEXFILEPATH, "");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDICTIONARYPATH, "");
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDOCUMENTFREQUENCYPATH, "");
+        deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTALGORITHM, "bayes");
+        deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTCONFFS, "");
         deflt.put(ConfigConstants.BAYES, "");
         deflt.put(ConfigConstants.CBAYES, "");
         deflt.put(ConfigConstants.MACHINELEARNINGSPARKML, Boolean.FALSE);
@@ -219,6 +223,8 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTLABELINDEXFILEPATH, "Mahout spark labelindex filepath");
         text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDICTIONARYPATH, "Mahout spark dictionary path");
         text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDOCUMENTFREQUENCYPATH, "Mahout spark document frequency path");
+        text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTALGORITHM, "Mahout spark algorithm");
+        text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTCONFFS, "Mahout spark conf fs");
         text.put(ConfigConstants.BAYES, "");
         text.put(ConfigConstants.CBAYES, "");
         text.put(ConfigConstants.MACHINELEARNINGSPARKML, "Spark ML");

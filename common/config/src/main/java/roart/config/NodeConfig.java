@@ -182,6 +182,41 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public String getMahoutSparkBasePath() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTBASEPATH);
+    }
+    
+    @JsonIgnore
+    public String getMahoutSparkModelPath() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTMODELPATH);
+    }
+    
+    @JsonIgnore
+    public String getMahoutSparkLabelIndexPath() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTLABELINDEXFILEPATH);
+    }
+    
+    @JsonIgnore
+    public String getMahoutSparkDictionaryPath() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDICTIONARYPATH);
+    }
+    
+    @JsonIgnore
+    public String getMahoutSparkDocumentFrequencyPath() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTDOCUMENTFREQUENCYPATH);
+    }
+    
+    @JsonIgnore
+    public String getMahoutSparkConfFs() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTCONFFS);
+    }
+    
+    @JsonIgnore
+    public String getMahoutSparkAlgorithm() {
+        return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTALGORITHM);
+    }
+    
+    @JsonIgnore
     public String getMahoutSparkMaster() {
         return (String) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUTSPARKMAHOUTSPARKMASTER);
     }

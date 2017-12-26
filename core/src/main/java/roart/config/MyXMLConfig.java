@@ -213,6 +213,7 @@ public class MyXMLConfig {
 
         String nodename  = configInstance.getNodename();
         ControlService.nodename = nodename;
+        log.info("nodename0" + nodename);
 
         //String languages = getLanguages();
         //configInstance.languages = languages.split(",");

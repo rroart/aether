@@ -58,23 +58,23 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 			conf.documentCountMap = new HashMap<String, Integer>();
 
 
-			String basepath = nodeConf.getMahoutBasePath();
+			String basepath = nodeConf.getMahoutSparkBasePath();
 			if (basepath == null) {
 				basepath = "";
 			}
 			boolean testComplementary = false;
-			String modelPath = basepath + nodeConf.getMahoutModelPath();
+			String modelPath = basepath + nodeConf.getMahoutSparkModelPath();
 			//String labelIndexPath = conf.mahoutlabelindexpath;
-			String dictionaryPath = basepath + nodeConf.getMahoutDictionaryPath();
-			String documentFrequencyPath = basepath + nodeConf.getMahoutDocumentFrequencyPath();
-			String bayestype = basepath + nodeConf.getMahoutAlgorithm();
+			String dictionaryPath = basepath + nodeConf.getMahoutSparkDictionaryPath();
+			String documentFrequencyPath = basepath + nodeConf.getMahoutSparkDocumentFrequencyPath();
+			String bayestype = basepath + nodeConf.getMahoutSparkAlgorithm();
 			String sparkmaster = basepath + nodeConf.getMahoutSparkMaster();
 			// not waterproof on purpose, won't check if var correctly set	    
 			conf.bayes = "bayes".equals(bayestype);
 
 			Configuration configuration = new Configuration();
-			String fsdefaultname = nodeConf.getMahoutConfFs();
-			if (fsdefaultname != null) {
+			String fsdefaultname = nodeConf.getMahoutSparkConfFs();
+			if (fsdefaultname != null && !fsdefaultname.isEmpty()) {
 				configuration.set("fs.default.name", fsdefaultname);
 			}
 			String[] languages = nodeConf.getLanguages();
@@ -99,7 +99,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 						"file:" + userDir + "/deps/mahout-math-scala_2.10-0.12.0.jar", 
 						"file:" + userDir + "/deps/guava-16.0.1.jar", 
 						"file:" + userDir + "/deps/fastutil-7.0.11.jar", 
-						"file:" + userDir + "/aether-machinelearning-mahout-spark-0.10-SNAPSHOT.jar", 
+						"file:" + userDir + "/aether-mahout-spark-0.10-SNAPSHOT.jar", 
 				};
 				sparkconf.setJars(jars);
 				JavaSparkContext jsc = new JavaSparkContext(sparkconf);
