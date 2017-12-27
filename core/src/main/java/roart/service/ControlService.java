@@ -305,7 +305,7 @@ public class ControlService {
 			    lock.lock(Constants.GLOBALLOCK);
 			}
 	ServiceParam.Function function = el.function;
-	String filename = el.file;
+	String filename = el.add;
 	//boolean reindex = el.reindex;
 	//boolean newmd5 = el.md5change;
 	log.info("function " + function + " " + filename + " " + el.reindex);
@@ -362,7 +362,7 @@ public class ControlService {
 	TimeUnit.SECONDS.sleep(5);
 	
 	while ((traversecount.get() + Queues.queueSize() + Queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
-		TimeUnit.SECONDS.sleep(5);
+	    TimeUnit.SECONDS.sleep(5);
 		Queues.queueStat();
 	}
 
