@@ -43,11 +43,14 @@ public class FileLocation {
     	    this.node = file.substring(0, split);
     		}
 	    if (this.node == null || this.node.length() == 0) {
-		log.error("No nodename ");
+		log.error("No nodename " + filename + " , " + file);
 	    }
     	    this.filename = prefix + file.substring(split);
     	} else {
 	    this.node = csNodename;
+        if (this.node == null || this.node.length() == 0) {
+        log.error("No nodename " + filename + " , " + file);
+        }
 	    this.filename = filename;
 	}
     }
