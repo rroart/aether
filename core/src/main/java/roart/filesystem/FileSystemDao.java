@@ -3,14 +3,15 @@ package roart.filesystem;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.hadoop.fs.Path;
-import org.javaswift.joss.client.impl.StoredObjectImpl;
-import org.javaswift.joss.model.Directory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roart.model.FileObject;
 import roart.util.FileSystemConstants;
 
 public class FileSystemDao {
+
+    private static Logger log = LoggerFactory.getLogger(FileSystemDao.class);
 
 	private static FileSystemAccess filesystemJpa = null;
 
@@ -46,9 +47,17 @@ public class FileSystemDao {
 	
 	// TODO make this OO
     private static FileSystemAccess getFileSystemAccess(FileObject f) {
-    	if (f.object.getClass().isAssignableFrom(Path.class)) {
+        if (f == null) {
+            log.error("f null");
+            return new LocalFileSystemAccess();
+        }
+        if (f.fs == null) {
+            log.error("f.fs null " + f.object);
+            return new LocalFileSystemAccess();
+        }
+    	if (f.fs.equals("HDFS")) {
     		return new HDFSAccess();
-    	} else if (f.object.getClass().isAssignableFrom(Directory.class) || f.object.getClass().isAssignableFrom(StoredObjectImpl.class)) {
+    	} else if (f.fs.equals("Swift")) {
      		return new SwiftAccess();
     	} else {
     		return new LocalFileSystemAccess();

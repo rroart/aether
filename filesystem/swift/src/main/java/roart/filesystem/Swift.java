@@ -32,9 +32,12 @@ public class Swift extends FileSystemOperations {
 
 	private static final Logger log = LoggerFactory.getLogger(Swift.class);
 	
-	private SwiftConfig conf;
+	/*private*/ SwiftConfig conf;
 	
 	private Map<String, DirectoryOrObject> dooMap = new HashMap<>();
+	
+	public Swift() {
+	}
 	
 	public Swift(String nodename, NodeConfig nodeConf) {
 	    try {
@@ -52,7 +55,6 @@ public class Swift extends FileSystemOperations {
 		    config.setAuthenticationMethod(AuthenticationMethod.BASIC);
 		    Account account = new AccountFactory(config).createAccount();
 		    conf.account = account;
-		    log.info("here");
 		}
     } catch (Exception e) {
         log.error("Exception", e);
@@ -74,13 +76,13 @@ public class Swift extends FileSystemOperations {
 				Directory dir = mydir.getAsDirectory();
 				Collection<DirectoryOrObject> list = container.listDirectory(dir);
 				for (DirectoryOrObject doo : list) {
-		            log.info("name" + doo.getBareName()  + " " + doo.getName());
-					FileObject fo = new FileObject(doo.getName());
+					FileObject fo = new FileObject(doo.getName(), this.getClass().getSimpleName());
 					foList.add(fo);
+					dooMap.put(doo.getName(), doo);
 				}
 			}
 	        FileSystemFileObjectResult result = new FileSystemFileObjectResult();
-	        result.fileObject = (FileObject[]) foList.toArray();
+	        result.fileObject = foList.toArray(new FileObject[0]);
 	        return result;
 		} catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);
@@ -120,7 +122,7 @@ public class Swift extends FileSystemOperations {
 	    FileObject f = param.fo;
 		DirectoryOrObject path = dooMap.get(f.object);
 		String p = path.getName();
-        FileSystemPathResult result = new FileSystemPathResult();
+       FileSystemPathResult result = new FileSystemPathResult();
         result.path = FileSystemConstants.SWIFT + p;
         return result;
 	}
@@ -166,16 +168,15 @@ public class Swift extends FileSystemOperations {
 		DirectoryOrObject pardoo = new Directory(parent, '/');
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        log.info("name" + pardoo.getBareName());
-        fo[0] = new FileObject(pardoo.getName());
+        fo[0] = new FileObject(pardoo.getName(), this.getClass().getSimpleName());
         result.fileObject = fo;
+        dooMap.put(pardoo.getName(), pardoo);
         return result;
 	}
 
     @Override
 	public FileSystemFileObjectResult get(FileSystemPathParam param) {
         try {
-            log.info("here");
 	    String string = param.path;
 	    if (string.startsWith(FileSystemConstants.SWIFT)) {
 	    	string = string.substring(FileSystemConstants.SWIFTLEN);
@@ -184,28 +185,24 @@ public class Swift extends FileSystemOperations {
 	    if (string.startsWith("/")) {
 	    	string = string.substring(1);
 	    }
-        log.info("here");
 		String containerName = param.conf.getSwiftContainer();
 		Container container = conf.account.getContainer(containerName);
 		StoredObject so = container.getObject(string);
 		FileObject fo;
 		// if it exists, it is a file and not a dir
 		if (so.exists()) {
-		    log.info("name" + so.getBareName() + " " + so.getPath() + " " + so.getName());
-			fo = new FileObject(so.getName());
+			fo = new FileObject(so.getName(), this.getClass().getSimpleName());
+			dooMap.put(string, so);
 		} else {
-            log.info("name" + string);
-			fo = new FileObject(string);
+			fo = new FileObject(string, this.getClass().getSimpleName());
+			dooMap.put(string, new Directory(string, '/'));
 		}
-        log.info("here");
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fos = new FileObject[1];
         fos[0] = fo;
         result.fileObject = fos;
-        log.info("here");
         return result;
         } catch (Exception e) {
-            log.info("here");
             log.error("Exception", e);
             return null;
         }

@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -29,6 +31,11 @@ public class HDFS extends FileSystemOperations {
 	
 	private HDFSConfig conf;
 	
+    private Map<String, Path> pathMap = new HashMap<>();
+    
+    public HDFS() {        
+    }
+    
 	public HDFS(String nodename, NodeConfig nodeConf) {
 	    conf = new HDFSConfig();
 	    Configuration configuration = new Configuration();
@@ -55,14 +62,15 @@ public class HDFS extends FileSystemOperations {
 		FileSystem fs;
 		try {
 			fs = FileSystem.get(conf.configuration);
-		Path dir = (Path) f.object;
+		Path dir = pathMap.get(f.object);
 		FileStatus[] status = fs.listStatus(dir);
 		Path[] listedPaths = FileUtil.stat2Paths(status);
 		for (Path path : listedPaths) {
-			FileObject fo = new FileObject(path);
+			FileObject fo = new FileObject(path.getName(), this.getClass().getSimpleName());
 			foList.add(fo);
+			pathMap.put(path.getName(), path);
 		}
-		result.fileObject = (FileObject[]) foList.toArray();
+		result.fileObject = foList.toArray(new FileObject[0]);
 		return result;
 		} catch (IOException e) {
 			log.error(Constants.EXCEPTION, e);
@@ -73,7 +81,7 @@ public class HDFS extends FileSystemOperations {
     @Override
 	public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
-		Path path = (Path) f.object;
+		Path path = pathMap.get(f.object);
 		boolean exist;
 		try {
 			FileSystem fs = FileSystem.get(conf.configuration);
@@ -90,7 +98,7 @@ public class HDFS extends FileSystemOperations {
     @Override
 	public FileSystemPathResult getAbsolutePath(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
-		Path path = (Path) f.object;
+		Path path = pathMap.get(f.object);
 		//log.info("mypath " + path.getName() + " " + path.getParent().getName() + " " + path.toString());
 		// this is hdfs://server/path
 		String p = path.toString();
@@ -116,7 +124,7 @@ public class HDFS extends FileSystemOperations {
     @Override
 	public FileSystemBooleanResult isDirectory(FileSystemFileObjectParam param) {
 	    FileObject f = param.fo;
-		Path path = (Path) f.object;
+		Path path = pathMap.get(f.object);
 		boolean isDirectory;
 		try {
 			FileSystem fs = FileSystem.get(conf.configuration);
@@ -136,7 +144,7 @@ public class HDFS extends FileSystemOperations {
 		FileSystem fs;
 		try {
 			fs = FileSystem.get(conf.configuration);
-			InputStream is = fs.open((Path) f.object);
+			InputStream is = fs.open(pathMap.get(f.object));
 			FileSystemByteResult result = new FileSystemByteResult();
 			result.bytes = IOUtils.toByteArray(is);
 			return result;
@@ -152,8 +160,10 @@ public class HDFS extends FileSystemOperations {
 	    FileObject f = param.fo;
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(((Path) f.object).getParent());
+        Path parent = pathMap.get(f.object).getParent();
+        fo[0] = new FileObject(parent.getName(), this.getClass().getSimpleName());
         result.fileObject = fo;
+        pathMap.put(parent.getName(), parent);
         return result;
 	}
 
@@ -165,8 +175,9 @@ public class HDFS extends FileSystemOperations {
 	    }
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-		fo[0] = new FileObject(new Path(string));
+		fo[0] = new FileObject(string, this.getClass().getSimpleName());
 		result.fileObject = fo;
+        pathMap.put(string, new Path(string));
 		return result;
 	}
 

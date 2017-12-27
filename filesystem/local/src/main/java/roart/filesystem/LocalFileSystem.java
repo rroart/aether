@@ -32,7 +32,7 @@ public class LocalFileSystem extends FileSystemOperations {
 		File listDir[] = dir.listFiles();
 		if (listDir != null) {
 		for (File file : listDir) {
-			FileObject fo = new FileObject(file);
+			FileObject fo = new FileObject(file, this.getClass().getSimpleName());
 			foList.add(fo);
 		}
 		}     
@@ -87,7 +87,7 @@ public class LocalFileSystem extends FileSystemOperations {
 	    }
 	    FileSystemFileObjectResult result = new FileSystemFileObjectResult();
 	    FileObject[] fo = new FileObject[1];
-		fo[0] = new FileObject(new File(string));
+        fo[0] = new FileObject(string, this.getClass().getSimpleName());
 		result.fileObject = fo;
 		return result;
 	}
@@ -99,7 +99,7 @@ public class LocalFileSystem extends FileSystemOperations {
 		File file = new File(parent);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-		fo[0] = new FileObject(file);
+		fo[0] = new FileObject(file, this.getClass().getSimpleName());
         result.fileObject = fo;
         return result;
 	}
