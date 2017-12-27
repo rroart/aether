@@ -43,3 +43,6 @@ mesos api use
 some service only allow one running
 external services in docker
 aether med ready microserv app gui
+change lock strategy, hazelcast etc
+use swift with non-exist dir
+get tool to find unneeded deps
