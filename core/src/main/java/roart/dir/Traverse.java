@@ -359,6 +359,10 @@ public class Traverse {
             String filename = filelocation.getFilename();
             if (node == null || node.equals(ControlService.nodename)) {
                 FileObject file = FileSystemDao.get(filename);
+                if (file == null) {
+                log.error("try file " + filename);
+                continue;
+                }
                 if (FileSystemDao.exists(file)) {
                     return filelocation;			
                 }
