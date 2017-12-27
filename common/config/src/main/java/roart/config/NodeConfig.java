@@ -45,7 +45,7 @@ public class NodeConfig extends MyConfig {
     }
     
     public boolean wantOpenNLP() {
-        return (Boolean) getValueOrDefault(ConfigConstants.MACHINELEARNINGMAHOUT);
+        return (Boolean) getValueOrDefault(ConfigConstants.MACHINELEARNINGOPENNLP);
     }
     
     public Boolean wantLucene() {
