@@ -20,8 +20,8 @@
   <module>machinelearning</module>
   <module>searchengine</module>
   <module>web</module>
-  <module>distribution</module>
   <module>servicemanager</module>
+  <module>distribution</module>
 </modules>
 <build>
   <pluginManagement>
