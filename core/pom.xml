@@ -71,25 +71,6 @@
 	</configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
-        <executions>
-           <!-- Associate the read-project-properties goal with the initialize phase, to read the properties file. -->
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>read-project-properties</goal>
-            </goals>
-            <configuration>
-              <files>
-                <file>${session.executionRootDirectory}/core/aether.prop</file>
-              </files>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
 	<groupId>org.mortbay.jetty</groupId>
 	<artifactId>jetty-maven-plugin</artifactId>
 	<!--version>${jetty.version}</version-->
@@ -98,20 +79,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
         <version>1.0-alpha-2</version>
-        <executions>
-           <!-- Associate the read-project-properties goal with the initialize phase, to read the properties file. -->
-          <!--execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>read-project-properties</goal>
-            </goals>
-            <configuration>
-              <files>
-                <file>aether.prop</file>
-              </files>
-            </configuration>
-          </execution-->
-        </executions>
       </plugin>
       <!-- we need to include ourselves in spark setJars -->
       <plugin>

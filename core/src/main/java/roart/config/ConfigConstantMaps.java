@@ -90,7 +90,6 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.BIG, Boolean.class);
         map.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, Boolean.class);
         map.put(ConfigConstants.CONFIG, String.class);
-        map.put(ConfigConstants.PROPFILE, String.class);
         map.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, String.class);
     }
 
@@ -179,7 +178,6 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.BIG, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, Boolean.FALSE);
         deflt.put(ConfigConstants.CONFIG, "");
-        deflt.put(ConfigConstants.PROPFILE, "aether.prop");
         deflt.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, "/tmp");
     }
 
@@ -269,7 +267,6 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.BIG, "Big lock mode");
         text.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, "Distributed processing");
         text.put(ConfigConstants.CONFIG, "");
-        text.put(ConfigConstants.PROPFILE, "");
         text.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, "Lucene path");
     }
 }

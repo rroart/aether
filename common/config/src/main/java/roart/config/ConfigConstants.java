@@ -99,7 +99,6 @@ public class ConfigConstants {
     public static final int DEFAULT_CONFIG_MLTMINDF = 5;
     public static final int DEFAULT_CONFIG_MLTMINTF = 2;
     
-    public static final String PROPFILE = "aether.prop";
     public static final String CONFIGFILE = "aether.xml";
     public static final String SEARCHENGINELUCENELUCENEPATH = "searchengine.lucene.lucenepath";
     public static String[] indexvalues = { SEARCHENGINELUCENE, SEARCHENGINESOLR, SEARCHENGINEELASTIC };

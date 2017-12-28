@@ -77,7 +77,6 @@ public class MyXMLConfig {
     public MyXMLConfig() {
         try {
             getConfigInstance();
-            //config = new PropertiesConfiguration(ConfigConstants.PROPFILE);
             configxml = new XMLConfiguration();
             Parameters params = new Parameters();
             FileBasedConfigurationBuilder<XMLConfiguration> fileBuilder =
