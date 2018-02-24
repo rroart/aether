@@ -81,8 +81,8 @@ public class MyXMLConfig {
             Parameters params = new Parameters();
             FileBasedConfigurationBuilder<XMLConfiguration> fileBuilder =
                     new FileBasedConfigurationBuilder<>(XMLConfiguration.class)
-                    .configure(params.fileBased().setFileName(ConfigConstants.CONFIGFILE));
-            InputStream stream = new FileInputStream(new File(ConfigConstants.CONFIGFILE));         
+                    .configure(params.fileBased().setFileName("../conf/" + ConfigConstants.CONFIGFILE));
+            InputStream stream = new FileInputStream(new File("../conf/" + ConfigConstants.CONFIGFILE));         
             configxml = fileBuilder.getConfiguration();
             configxml.read(stream);
             String root = configxml.getRootElementName();
