@@ -153,11 +153,20 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/../servicemanager/mesos/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/../bin</directory>
       <includes>
+	<include>service-simple-debug.sh</include>
 	<include>service-simple.sh</include>
 	<include>service-docker.sh</include>
 	<include>service-openshift.sh</include>
+	<include>service-mesos.sh</include>
       </includes>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
