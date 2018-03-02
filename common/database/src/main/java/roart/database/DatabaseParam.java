@@ -16,6 +16,28 @@ import roart.config.NodeConfig;
     @Type(value = DatabaseIndexFilesParam.class, name = "roart.model.DatabaseIndexFilesParam"),  
     @Type(value = DatabaseMd5Param.class, name = "roart.model.DatabaseMd5Param") })  
 public abstract class DatabaseParam {
-    public String nodename;
-    public NodeConfig conf;
+    private String nodename;
+    
+    private NodeConfig conf;
+
+    public DatabaseParam() {
+        super();
+    }
+
+    public String getNodename() {
+        return nodename;
+    }
+
+    public void setNodename(String nodename) {
+        this.nodename = nodename;
+    }
+
+    public NodeConfig getConf() {
+        return conf;
+    }
+
+    public void setConf(NodeConfig conf) {
+        this.conf = conf;
+    }
+        
 }

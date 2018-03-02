@@ -25,6 +25,7 @@
   <module>searchengine</module>
   <module>service</module>
   <module>synchronization</module>
+  <module>util</module>
   <module>zookeeper</module>
 </modules>
 </project>

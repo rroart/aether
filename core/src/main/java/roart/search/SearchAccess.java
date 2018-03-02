@@ -22,8 +22,11 @@ import roart.model.FileLocation;
 import roart.model.IndexFiles;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.io.InputStream;
 
 import org.apache.tika.metadata.Metadata;
@@ -123,12 +126,17 @@ public abstract class SearchAccess {
     	strarr[0] = IndexFiles.getHeaderSearch();
     	try {
     		int i = 1;
+    		Set<String> md5s = new HashSet<>();
+                for (SearchResult res : results) {
+                    md5s.add(res.md5);
+                }
+                Map<String, IndexFiles> indexmd5s = IndexFilesDao.getByMd5(md5s);
     		for (SearchResult res : results) {
     			String md5 = res.md5;
-    			IndexFiles indexmd5 = IndexFilesDao.getByMd5(md5);
+    			IndexFiles indexmd5 = indexmd5s.get(md5);
 
     			String filename = indexmd5.getFilelocation();
-    			log.info(i + ". " + md5 + " : " + filename + " : " + res.score);
+    			log.info("Hit {}.{} : {} {}",i ,md5, filename, res.score);
     			FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
     			strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, maybeFl);
     			i++;

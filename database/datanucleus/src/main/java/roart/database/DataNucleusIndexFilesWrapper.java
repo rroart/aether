@@ -22,7 +22,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
     private DataNucleusIndexFiles dataNucleusIndexFiles;
     private DataNucleusFiles dataNucleusFiles;
     private String nodename;
-    
+
     public DataNucleusIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
         dataNucleusFiles = new DataNucleusFiles();
         dataNucleusIndexFiles = new DataNucleusIndexFiles(dataNucleusFiles, nodename);
@@ -31,18 +31,19 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
-        String md5 = param.md5;
+        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        for (String md5 : param.getMd5s()) {
+            DataNucleusIndexFiles index = dataNucleusIndexFiles.getByMd5(md5);
+            indexFilesMap.put(md5, convert(index));
+        }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        IndexFiles[] indexFiles = new IndexFiles[1];
-        DataNucleusIndexFiles index = dataNucleusIndexFiles.getByMd5(md5);
-        indexFiles[0] = convert(index);
-        result.indexFiles = indexFiles;
+        result.setIndexFilesMap(indexFilesMap);
         return result;
     }
 
     @Override
     public DatabaseFileLocationResult getFilelocationsByMd5(DatabaseMd5Param param) throws Exception {
-        String md5 = param.md5;
+        String md5 = param.getMd5();
         Set<FileLocation> fileLocationSet = dataNucleusIndexFiles.getFilelocationsByMd5(md5);
         DatabaseFileLocationResult result = new DatabaseFileLocationResult();
         FileLocation[] fileLocations = new FileLocation[1];
@@ -52,7 +53,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception {
-        FileLocation fl = param.fileLocation;
+        FileLocation fl = param.getFileLocation();
         DataNucleusIndexFiles files = dataNucleusIndexFiles.getByFilelocation(fl);
         if (files == null) {
             return null;
@@ -60,13 +61,13 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
         IndexFiles[] indexFiles = new IndexFiles[1];
         indexFiles[0] = convert(files);
-        result.indexFiles = indexFiles;
+        result.setIndexFiles(indexFiles);
         return result;
     }
 
     @Override
     public DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception {
-        FileLocation fl = param.fileLocation;
+        FileLocation fl = param.getFileLocation();
         DatabaseMd5Result result = new DatabaseMd5Result();
         String[] md5 = new String[1];
         md5[0] = dataNucleusIndexFiles.getMd5ByFilelocation(fl);
@@ -76,65 +77,65 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
-        List<IndexFiles> retlist = new ArrayList<IndexFiles>();
+        List<IndexFiles> retlist = new ArrayList<>();
         List<DataNucleusIndexFiles> indexes = dataNucleusIndexFiles.getAll();
         for (DataNucleusIndexFiles index : indexes) {
             IndexFiles ifile = convert(index);
             retlist.add(ifile);
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.indexFiles = retlist.stream().toArray(IndexFiles[]::new);
+        result.setIndexFiles(retlist.stream().toArray(IndexFiles[]::new));
         return result;
     }
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) { 
-        IndexFiles i = param.indexFiles;
-	try {
-	    DataNucleusIndexFiles hif = dataNucleusIndexFiles.ensureExistence(i.getMd5());
-	    hif.setIndexed(i.getIndexed());
-	    hif.setTimeindex(i.getTimeindex());
-	    hif.setTimestamp(i.getTimestamp());
-	    hif.setTimeclass(i.getTimeclass());
-	    hif.setClassification(i.getClassification());
-	    hif.setConvertsw(i.getConvertsw());
-	    hif.setConverttime(i.getConverttime());
-	    hif.setFailed(i.getFailed());
-	    String fr = i.getFailedreason();
-	    if (fr != null && fr.length() > 250) {
-		fr = fr.substring(0,250);
-	    }
-	    hif.setFailedreason(fr); // temp fix substr
-	    hif.setTimeoutreason(i.getTimeoutreason());
-	    hif.setNoindexreason(i.getNoindexreason());
-	    hif.setFilelocations(i.getFilelocations());
-	    hif.setLanguage(i.getLanguage());
+        IndexFiles i = param.getIndexFiles();
+        try {
+            DataNucleusIndexFiles hif = dataNucleusIndexFiles.ensureExistence(i.getMd5());
+            hif.setIndexed(i.getIndexed());
+            hif.setTimeindex(i.getTimeindex());
+            hif.setTimestamp(i.getTimestamp());
+            hif.setTimeclass(i.getTimeclass());
+            hif.setClassification(i.getClassification());
+            hif.setConvertsw(i.getConvertsw());
+            hif.setConverttime(i.getConverttime());
+            hif.setFailed(i.getFailed());
+            String fr = i.getFailedreason();
+            if (fr != null && fr.length() > 250) {
+                fr = fr.substring(0,250);
+            }
+            hif.setFailedreason(fr); // temp fix substr
+            hif.setTimeoutreason(i.getTimeoutreason());
+            hif.setNoindexreason(i.getNoindexreason());
+            hif.setFilelocations(i.getFilelocations());
+            hif.setLanguage(i.getLanguage());
 
-	    // check timing of this
-	    List<DataNucleusFiles> curFiles = dataNucleusFiles.getByMd5(i.getMd5());
-	    Map<String, DataNucleusFiles> curMap = new HashMap<String, DataNucleusFiles>();
-	    for (DataNucleusFiles f : curFiles) {
-		curMap.put(f.getFilelocation(), f);
-	    }
+            // check timing of this
+            List<DataNucleusFiles> curFiles = dataNucleusFiles.getByMd5(i.getMd5());
+            Map<String, DataNucleusFiles> curMap = new HashMap<String, DataNucleusFiles>();
+            for (DataNucleusFiles f : curFiles) {
+                curMap.put(f.getFilelocation(), f);
+            }
 
-	    List<DataNucleusFiles> newFiles = new ArrayList<DataNucleusFiles>();
-	    
-	    Set<FileLocation> fls = i.getFilelocations();
-	    for (FileLocation fl : fls) {
-	        DataNucleusFiles hf = dataNucleusFiles.ensureExistence(fl);
-	        hf.setMd5(i.getMd5());
-	        newFiles.add(hf);
-		curMap.remove(fl.toString());
-	    }
-	    for (String key : curMap.keySet()) {
-		DataNucleusFiles f = curMap.get(key);
-	        log.info("deleting " + f.getFilelocation());
-	        f.delete();
-	    }
-	} catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
-	}
-	return null;
+            List<DataNucleusFiles> newFiles = new ArrayList<DataNucleusFiles>();
+
+            Set<FileLocation> fls = i.getFilelocations();
+            for (FileLocation fl : fls) {
+                DataNucleusFiles hf = dataNucleusFiles.ensureExistence(fl);
+                hf.setMd5(i.getMd5());
+                newFiles.add(hf);
+                curMap.remove(fl.toString());
+            }
+            for (String key : curMap.keySet()) {
+                DataNucleusFiles f = curMap.get(key);
+                log.info("deleting " + f.getFilelocation());
+                f.delete();
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return null;
     }
 
     private IndexFiles convert(DataNucleusIndexFiles hif) {
@@ -158,9 +159,9 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         ifile.setLanguage(hif.getLanguage());
         Set<String> files = hif.getFilelocations();
         if (files != null) {
-        for (String file : files) {
-            ifile.addFile(new FileLocation(file, nodename, null));
-        }
+            for (String file : files) {
+                ifile.addFile(new FileLocation(file, nodename, null));
+            }
         }
         ifile.setUnchanged();
         return ifile;
@@ -201,7 +202,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception { 
-        IndexFiles index = param.indexFiles;
+        IndexFiles index = param.getIndexFiles();
         dataNucleusIndexFiles.delete(index);
         dataNucleusFiles.delete(index);
         //DatabaseResult result = new DatabaseResult();

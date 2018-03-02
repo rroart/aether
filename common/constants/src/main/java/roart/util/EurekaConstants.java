@@ -1,30 +1,30 @@
 package roart.util;
 
 public class EurekaConstants {
-    
+
     // app names
     public static final String AETHER = "AETHER";
-	public static final String LUCENE = "LUCENE";
-	public static final String SOLR = "SOLR";
-	public static final String ELASTIC = "ELASTIC";
-	public static final String SPARKML = "SPARKML";
-	public static final String MAHOUTMR = "MAHOUTMR";
-	public static final String MAHOUTSPARK = "MAHOUTSPARK";
-	public static final String OPENNLP = "OPENNLP";
-	public static final String DATABASE = "DATABASE";
-	public static final String FILESYSTEM = "FILESYSTEM";
-	public static final String HIBERNATE = "HIBERNATE";
-	public static final String HBASE = "HBASE";
-	public static final String DATANUCLEUS = "DATANUCLEUS";
-	public static final String LOCAL = "LOCAL";
-	public static final String SWIFT = "SWIFT";
-	public static final String HDFS = "HDFS";
+    public static final String LUCENE = "LUCENE";
+    public static final String SOLR = "SOLR";
+    public static final String ELASTIC = "ELASTIC";
+    public static final String SPARKML = "SPARKML";
+    public static final String MAHOUTMR = "MAHOUTMR";
+    public static final String MAHOUTSPARK = "MAHOUTSPARK";
+    public static final String OPENNLP = "OPENNLP";
+    public static final String DATABASE = "DATABASE";
+    public static final String FILESYSTEM = "FILESYSTEM";
+    public static final String HIBERNATE = "HIBERNATE";
+    public static final String HBASE = "HBASE";
+    public static final String DATANUCLEUS = "DATANUCLEUS";
+    public static final String LOCAL = "LOCAL";
+    public static final String SWIFT = "SWIFT";
+    public static final String HDFS = "HDFS";
 
     public static final String AETHERSERVICEMANAGER = "AETHERSERVICEMANAGER";
 
     public static final String GETCONFIG = "GETCONFIG";
     public static final String SETCONFIG = "SETCONFIG";
-    
+
     // web
     public static final String TRAVERSE = "traverse";
     //public static final String INDEX = "index";
@@ -43,29 +43,29 @@ public class EurekaConstants {
     public static final String SEARCHENGINE = "searchengine";
     public static final String MACHINELEARNING = "machinelearning";
     public static final String OVERLAPPING = "overlapping";
-    
-	// common ops
-	public static final String CONSTRUCTOR = "constructor";
-	public static final String DESTRUCTOR = "destructor";
-	
-	// search engine ops
-	public static final String DELETE = "delete";
-	public static final String INDEX = "index";
-	public static final String SEARCH = "search";
-	public static final String SEARCHMLT = "searchmlt";
-	
-	// classifier ops
-	public static final String CLASSIFY = "classify";
-	
-	// file system ops
-	public static final String LISTFILES = "listfiles";
+
+    // common ops
+    public static final String CONSTRUCTOR = "constructor";
+    public static final String DESTRUCTOR = "destructor";
+
+    // search engine ops
+    public static final String DELETE = "delete";
+    public static final String INDEX = "index";
+    public static final String SEARCH = "search";
+    public static final String SEARCHMLT = "searchmlt";
+
+    // classifier ops
+    public static final String CLASSIFY = "classify";
+
+    // file system ops
+    public static final String LISTFILES = "listfiles";
     public static final String EXIST = "exist";
     public static final String GETABSOLUTEPATH = "getabsolutepath";
     public static final String ISDIRECTORY = "isdirectory";
     public static final String GETINPUTSTREAM = "getinputstream";
     public static final String GETPARENT = "getparent";
     public static final String GET = "get";
-    
+
     // database ops
     public static final String GETFILELOCATIONSBYMD5 = "getfilelocationsbymd5";
     public static final String GETBYFILELOCATION = "getbyfilelocation";

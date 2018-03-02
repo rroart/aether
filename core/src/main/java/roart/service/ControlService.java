@@ -126,8 +126,8 @@ public class ControlService {
 
     @SuppressWarnings("rawtypes")
 	public List<List> overlappingDo() {
-	List<ResultItem> retList = new ArrayList<ResultItem>();
-	List<ResultItem> retList2 = new ArrayList<ResultItem>();
+	List<ResultItem> retList = new ArrayList<>();
+	List<ResultItem> retList2 = new ArrayList<>();
 	ResultItem ri = new ResultItem();
 	ri.add("Percent");
 	ri.add("Count");
@@ -246,7 +246,7 @@ public class ControlService {
 		retList2.add(ri2);
 	    }
 	}
-	List<List> retlistlist = new ArrayList<List>();
+	List<List> retlistlist = new ArrayList<>();
 	retlistlist.add(retList);
 	retlistlist.add(retList2);
 	return retlistlist;
@@ -310,18 +310,18 @@ public class ControlService {
 	//boolean newmd5 = el.md5change;
 	log.info("function " + function + " " + filename + " " + el.reindex);
 
-	List<List> retlistlist = new ArrayList<List>();
-	List<ResultItem> retList = new ArrayList<ResultItem>();
+	List<List> retlistlist = new ArrayList<>();
+	List<ResultItem> retList = new ArrayList<>();
 	retList.add(IndexFiles.getHeader());
-	List<ResultItem> retTikaTimeoutList = new ArrayList<ResultItem>();
+	List<ResultItem> retTikaTimeoutList = new ArrayList<>();
 	retTikaTimeoutList.add(new ResultItem("Tika timeout"));
-	List<ResultItem> retNotList = new ArrayList<ResultItem>();
+	List<ResultItem> retNotList = new ArrayList<>();
 	retNotList.add(IndexFiles.getHeader());
-	List<ResultItem> retNewFilesList = new ArrayList<ResultItem>();
+	List<ResultItem> retNewFilesList = new ArrayList<>();
 	retNewFilesList.add(new ResultItem("New file"));
-	List<ResultItem> retDeletedList = new ArrayList<ResultItem>();
+	List<ResultItem> retDeletedList = new ArrayList<>();
 	retDeletedList.add(new ResultItem("Deleted"));
-	List<ResultItem> retNotExistList = new ArrayList<ResultItem>();
+	List<ResultItem> retNotExistList = new ArrayList<>();
 	retNotExistList.add(new ResultItem("File does not exist"));
 
 	String myid = getMyId();
@@ -445,7 +445,7 @@ public class ControlService {
 
     @SuppressWarnings("rawtypes")
 	public List<List> memoryusageDo() {
-	List<ResultItem> retlist = new ArrayList<ResultItem>();
+	List<ResultItem> retlist = new ArrayList<>();
 	try {
 	    Runtime runtime = Runtime.getRuntime();
 	    long maxMemory = runtime.maxMemory();
@@ -459,7 +459,7 @@ public class ControlService {
 	} catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
 	}
-	List<List> retlistlist = new ArrayList<List>();
+	List<List> retlistlist = new ArrayList<>();
 	retlistlist.add(retlist);
 	return retlistlist;
     }
@@ -474,9 +474,9 @@ public class ControlService {
 
     @SuppressWarnings("rawtypes")
 	public List<List> notindexedDo(ServiceParam el) throws Exception {
-	List<List> retlistlist = new ArrayList<List>();
-	List<ResultItem> retlist = new ArrayList<ResultItem>();
-	List<ResultItem> retlist2 = new ArrayList<ResultItem>();
+	List<List> retlistlist = new ArrayList<>();
+	List<ResultItem> retlist = new ArrayList<>();
+	List<ResultItem> retlist2 = new ArrayList<>();
 	ResultItem ri3 = new ResultItem();
 	ri3.add("Column 1");
 	ri3.add("Column 2");
@@ -578,12 +578,12 @@ public class ControlService {
 	String md5 = el.file;
 	log.info("function " + function + " " + md5);
 
-	List<List> retlistlist = new ArrayList<List>();
-	List<ResultItem> indexList = new ArrayList<ResultItem>();
+	List<List> retlistlist = new ArrayList<>();
+	List<ResultItem> indexList = new ArrayList<>();
 	indexList.add(IndexFiles.getHeader());
-	List<ResultItem> indexfilesList = new ArrayList<ResultItem>();
+	List<ResultItem> indexfilesList = new ArrayList<>();
 	indexfilesList.add(new ResultItem("Files"));
-	List<ResultItem> filesList = new ArrayList<ResultItem>();
+	List<ResultItem> filesList = new ArrayList<>();
 	filesList.add(new ResultItem("Files"));
 
 	IndexFiles index = IndexFilesDao.getByMd5(md5);
@@ -627,13 +627,13 @@ public class ControlService {
 	int i = searchexpr.indexOf(":");
 	log.info("function " + function + " " + searchexpr);
 
-	List<List> retlistlist = new ArrayList<List>();
+	List<List> retlistlist = new ArrayList<>();
 	if (i < 0) {
 	    return retlistlist;
 	}
 	String field = searchexpr.substring(0, i);
 	String text = searchexpr.substring(i + 1);
-	List<ResultItem> indexList = new ArrayList<ResultItem>();
+	List<ResultItem> indexList = new ArrayList<>();
 	indexList.add(IndexFiles.getHeader());
 
 	List<IndexFiles> indexes = IndexFilesDao.getAll();
@@ -803,9 +803,9 @@ public class ControlService {
 
     @SuppressWarnings("rawtypes")
 	private List<List> mergeListSet(Set<List> listSet, int size) {
-	List<List> retlistlist = new ArrayList<List>();
+	List<List> retlistlist = new ArrayList<>();
 	for (int i = 0 ; i < size ; i++ ) {
-	    List<ResultItem> retlist = new ArrayList<ResultItem>();
+	    List<ResultItem> retlist = new ArrayList<>();
 	    retlistlist.add(retlist);
 	}
 	for (List<List> listArray : listSet) {
@@ -823,9 +823,9 @@ public class ControlService {
 	    @SuppressWarnings("rawtypes")
 		public List<List> consistentcleanDo(ServiceParam el) {
 	    	boolean clean = el.reindex;
-		List<ResultItem> delList = new ArrayList<ResultItem>();
-		List<ResultItem> nonexistList = new ArrayList<ResultItem>();
-		List<ResultItem> newList = new ArrayList<ResultItem>();
+		List<ResultItem> delList = new ArrayList<>();
+		List<ResultItem> nonexistList = new ArrayList<>();
+		List<ResultItem> newList = new ArrayList<>();
 		ResultItem ri = new ResultItem("Filename delete");
 		delList.add(ri);
 		ri = new ResultItem("Filename nonexist");
@@ -885,7 +885,7 @@ public class ControlService {
 	             lock = MyLockFactory.create();
 	                lock.lock(Constants.GLOBALLOCK);
 			}
-			Set<IndexFiles> ifs = new HashSet<IndexFiles>();
+			Set<IndexFiles> ifs = new HashSet<>();
 		    //DbRunner.doupdate = false;
 			for (String filename : delfileset) {
 				String md5 = IndexFilesDao.getMd5ByFilename(filename);
@@ -935,7 +935,7 @@ public class ControlService {
 			log.error(Constants.EXCEPTION, e);
 		}
 
-		List<List> retlistlist = new ArrayList<List>();
+		List<List> retlistlist = new ArrayList<>();
 		retlistlist.add(delList);
 		retlistlist.add(nonexistList);
 		retlistlist.add(newList);
@@ -953,10 +953,10 @@ public class ControlService {
                 lock = MyLockFactory.create();
                 lock.lock(Constants.GLOBALLOCK);
             }
-            List<List> retlistlist = new ArrayList<List>();
-            List<ResultItem> delList = new ArrayList<ResultItem>();
+            List<List> retlistlist = new ArrayList<>();
+            List<ResultItem> delList = new ArrayList<>();
             delList.add(new ResultItem("Deleted"));
-            Set<IndexFiles> ifs = new HashSet<IndexFiles>();
+            Set<IndexFiles> ifs = new HashSet<>();
             String path = el.file;
             if (path.isEmpty()) {
                 log.info("skipping empty path");

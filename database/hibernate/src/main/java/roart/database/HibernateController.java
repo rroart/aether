@@ -13,12 +13,12 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class HibernateController extends DatabaseAbstractController {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(HibernateController.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(HibernateController.class, args);
+    }
 
-	@Override
-	protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new HibernateIndexFilesWrapper(nodename, nodeConf);
-	}
+    @Override
+    protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
+        return new HibernateIndexFilesWrapper(nodename, nodeConf);
+    }
 }

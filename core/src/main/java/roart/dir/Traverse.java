@@ -106,7 +106,7 @@ public class Traverse {
     // then index if new
 
     public Set<String> doList(String dirname) throws Exception {
-        Set<String> retset = new HashSet<String>();
+        Set<String> retset = new HashSet<>();
         if (isMaxed(myid, element)) {
             return retset;
         }
@@ -132,12 +132,12 @@ public class Traverse {
                 //throw new FileNotFoundException("File does not exist " + filename);
             }
             if (filename.length() > MAXFILE) {
-                log.info("Too large filesize " + filename);
+                log.info("Too large filesize {}", filename);
                 continue;
             }
             //log.info("file " + filename);
             if (FileSystemDao.isDirectory(fo)) {
-                log.debug("isdir " + filename);
+                log.debug("isdir {}", filename);
                 retset.addAll(doList(filename));
             } else {
                 retset.add(filename);
@@ -167,10 +167,10 @@ public class Traverse {
     // dirset will contain a map of directories, and the md5 files is contains
     // fileset will contain a map of md5 and the directories it has files in
     public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
-        Set<String> retset = new HashSet<String>();
+        Set<String> retset = new HashSet<>();
 
         List<IndexFiles> files = IndexFilesDao.getAll();
-        log.info("size " + files.size());
+        log.info("size {}", files.size());
         for (IndexFiles file : files) {
             String md5 = file.getMd5();
             for (FileLocation filename : file.getFilelocations()) {
@@ -179,14 +179,14 @@ public class Traverse {
                 String dirname = FileSystemDao.getAbsolutePath(dir);
                 HashSet<String> md5set = dirset.get(dirname);
                 if (md5set == null) {
-                    md5set = new HashSet<String>();
+                    md5set = new HashSet<>();
                     dirset.put(dirname, md5set);
                 }
                 md5set.add(md5);
 
                 HashSet<String> dir5set = fileset.get(md5);
                 if (dir5set == null) {
-                    dir5set = new HashSet<String>();
+                    dir5set = new HashSet<>();
                     fileset.put(md5, dir5set);
                 }
                 dir5set.add(dirname);
@@ -201,14 +201,14 @@ public class Traverse {
         boolean error = false;
         int count = 0;
         long size = 0;
-        Set<String> retset = new HashSet<String>();
-        HashSet<String> md5set = new HashSet<String>();
+        Set<String> retset = new HashSet<>();
+        HashSet<String> md5set = new HashSet<>();
         FileObject dir = FileSystemDao.get(dirname);
         List<FileObject> listDir = FileSystemDao.listFiles(dir);
         for (FileObject fo : listDir) {
             String filename = FileSystemDao.getAbsolutePath(fo);
             if (filename.length() > MAXFILE) {
-                log.info("Too large filesize " + filename);
+                log.info("Too large filesize {}", filename);
                 error = true;
                 continue;
             }
@@ -245,7 +245,7 @@ public class Traverse {
         String md5 = index.getMd5();
         String filename = getExistingLocalFile(index);
         if (filename == null) {
-            log.error("filename should not be null " + md5);
+            log.error("filename should not be null {}", md5);
             return 0;
         }
         if (filename != null) {
@@ -297,7 +297,7 @@ public class Traverse {
         String filename = getExistingLocalFile(index);
 
         if (filename == null) {
-            log.error("md5 filename null " + md5);
+            log.error("md5 filename null {}", md5);
             return 0;
         }
 
@@ -305,11 +305,11 @@ public class Traverse {
     }
 
     public static List<ResultItem> notindexed(ServiceParam el) throws Exception {
-        List<ResultItem> retlist = new ArrayList<ResultItem>();
+        List<ResultItem> retlist = new ArrayList<>();
         ResultItem ri = new ResultItem();
         retlist.add(IndexFiles.getHeader());
         List<IndexFiles> indexes = IndexFilesDao.getAll();
-        log.info("sizes " + indexes.size());
+        log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
             if (indexed != null && indexed.booleanValue() == true) {
@@ -325,7 +325,7 @@ public class Traverse {
     public static List<ResultItem> indexed(ServiceParam el) throws Exception {
         List<ResultItem> retlist = new ArrayList<ResultItem>();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
-        log.info("sizes " + indexes.size());
+        log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
             for (FileLocation filename : index.getFilelocations()) {
@@ -360,7 +360,7 @@ public class Traverse {
             if (node == null || node.equals(ControlService.nodename)) {
                 FileObject file = FileSystemDao.get(filename);
                 if (file == null) {
-                log.error("try file " + filename);
+                log.error("try file {}", filename);
                 continue;
                 }
                 if (FileSystemDao.exists(file)) {
@@ -394,7 +394,7 @@ public class Traverse {
             String filename = getExistingLocalFile(index);
 
             if (filename == null) {
-                log.error("md5 filename null " + md5);
+                log.error("md5 filename null {}", md5);
                 return 0;
             }
 
@@ -465,7 +465,7 @@ public class Traverse {
             String md5 = index.getMd5();
             String name = getExistingLocalFile(index);
             if (name == null) {
-                log.error("filename should not be null " + md5);
+                log.error("filename should not be null {}", md5);
                 continue;
             }
             // TODO check if fo needed
@@ -501,14 +501,14 @@ public class Traverse {
 
     public Set<String> traverse(String add) throws Exception {
         try {
-            log.info("function: " + element.function);
+            log.info("function: {}", element.function);
             if (element.function == ServiceParam.Function.REINDEXDATE || element.function == ServiceParam.Function.REINDEXLANGUAGE || element.function == ServiceParam.Function.REINDEXSUFFIX || (element.function == ServiceParam.Function.INDEX && add == null)) {
                 return traversedb();
             }
             if (add != null) {
                 return doList(add);    
             } else {
-                Set<String> retList = new HashSet<String>();
+                Set<String> retList = new HashSet<>();
                 String[] dirlist = MyConfig.conf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
                     retList.addAll(doList(dirlist[i]));

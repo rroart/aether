@@ -2,7 +2,9 @@ package roart.database;
 
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.io.IOException;
 
@@ -283,9 +285,19 @@ public class HbaseIndexFiles {
 	return fl;
     }
 
+    public Map<String, IndexFiles> get(Set<String> md5s) {
+        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        for (String md5 : md5s) {
+            IndexFiles indexFile = get(md5);
+            if (indexFile != null) {
+                indexFilesMap.put(md5, indexFile);
+            }
+        }
+        return indexFilesMap;
+    }
+    
     public IndexFiles get(String md5) {
 	try {
-	    //HTable /*Interface*/ filesTable = new HTable(conf, "index");
 	    Get get = new Get(Bytes.toBytes(md5));
 	    get.addFamily(indexcf);
 	    get.addFamily(flcf);
@@ -293,8 +305,7 @@ public class HbaseIndexFiles {
 	    if (index.isEmpty()) {
 		return null;
 	    }
-	    IndexFiles ifile = get(index);
-	    return ifile;
+	    return get(index);
 	} catch (IOException e) {
 	    log.error(Constants.EXCEPTION, e);
 	}
