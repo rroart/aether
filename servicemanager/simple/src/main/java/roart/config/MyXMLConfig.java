@@ -1,32 +1,21 @@
 package roart.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.util.Constants;
 import roart.util.JarThread;
-import roart.util.MyMap;
 
 public class MyXMLConfig {
 
     protected static Logger log = LoggerFactory.getLogger(MyConfig.class);
-    
+
     protected static MyXMLConfig instance = null;
-    
+
     public static MyXMLConfig instance(NodeConfig config) {
         if (instance == null) {
             configInstance = config;
@@ -36,7 +25,7 @@ public class MyXMLConfig {
     }
 
     protected static NodeConfig configInstance = null;
-    
+
     public MyXMLConfig() {
         try {
             config();
@@ -46,35 +35,33 @@ public class MyXMLConfig {
     }
 
     public NodeConfig mynode() {
-        // TODO fix
-        return null; //getNode(ControlService.nodename);
+        return null;
     }
 
-     public void config() {
-         String version = "-0.10-SNAPSHOT.jar";
-         Map<String, String> map = new HashMap<>();
-         map.put(ConfigConstants.DATABASEHBASE, "aether-hbase" + version);
-         map.put(ConfigConstants.DATABASEHIBERNATE, "aether-hibernate" + version);
-         map.put(ConfigConstants.DATABASEDATANUCLEUS, "aether-datanucleus" + version);
-         map.put(ConfigConstants.MACHINELEARNINGMAHOUT, "aether-mahout-mr" + version);
-         map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, "aether-mahout-spark" + version);
-         map.put(ConfigConstants.MACHINELEARNINGSPARKML, "aether-spark-ml" + version);
-         map.put(ConfigConstants.MACHINELEARNINGOPENNLP, "aether-opennlp" + version);
-         map.put(ConfigConstants.SEARCHENGINESOLR, "aether-solr" + version);
-         map.put(ConfigConstants.SEARCHENGINELUCENE, "aether-lucene" + version);
-         map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
-         map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
-         map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
-         //map.put(ConfigConstants., "");
-         //map.put(ConfigConstants., "");
-         for (String key : map.keySet()) {
-             Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
-             if (bool) {
-                 String jar = map.get(key);
-                 log.info("Starting " + jar);
+    public void config() {
+        String version = "-0.10-SNAPSHOT.jar";
+        Map<String, String> map = new HashMap<>();
+        map.put(ConfigConstants.DATABASEHBASE, "aether-hbase" + version);
+        map.put(ConfigConstants.DATABASEHIBERNATE, "aether-hibernate" + version);
+        map.put(ConfigConstants.DATABASEDATANUCLEUS, "aether-datanucleus" + version);
+        map.put(ConfigConstants.MACHINELEARNINGMAHOUT, "aether-mahout-mr" + version);
+        map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, "aether-mahout-spark" + version);
+        map.put(ConfigConstants.MACHINELEARNINGSPARKML, "aether-spark-ml" + version);
+        map.put(ConfigConstants.MACHINELEARNINGOPENNLP, "aether-opennlp" + version);
+        map.put(ConfigConstants.SEARCHENGINESOLR, "aether-solr" + version);
+        map.put(ConfigConstants.SEARCHENGINELUCENE, "aether-lucene" + version);
+        map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
+        map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
+        map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
+        for (Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
+            if (bool) {
+                String jar = entry.getValue();
+                log.info("Starting {}", jar);
                 Runnable local = new JarThread(jar);
-                 new Thread(local).start();
-             }
-         }
-     }
+                new Thread(local).start();
+            }
+        }
+    }
 }
