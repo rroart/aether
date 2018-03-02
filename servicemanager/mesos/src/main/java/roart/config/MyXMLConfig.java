@@ -1,25 +1,16 @@
 package roart.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import roart.util.Constants;
-import roart.util.DockerThread;
-import roart.util.MyMap;
+import roart.util.MesosUtil;
 
 public class MyXMLConfig {
 
@@ -46,12 +37,11 @@ public class MyXMLConfig {
     }
 
     public NodeConfig mynode() {
-        // TODO fix
-        return null; //getNode(ControlService.nodename);
+        return null;
     }
 
-     public void config() {
-         String version = "-0.10-SNAPSHOT.jar";
+     public void config() throws JsonProcessingException {
+         String version;
          version = "";
          Map<String, String> map = new HashMap<>();
          map.put(ConfigConstants.DATABASEHBASE, "aether-hbase" + version);
@@ -66,18 +56,15 @@ public class MyXMLConfig {
          map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
          map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
          map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
-         //map.put(ConfigConstants., "");
-         //map.put(ConfigConstants., "");
-         String addr = System.getenv("EUREKA_SERVER_URI");
-         for (String key : map.keySet()) {
+         String eurekaURI = System.getenv("EUREKA_SERVER_URI");
+         for (Entry<String, String> entry : map.entrySet()) {
+             String key = entry.getKey();
              Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
              if (bool) {
-                 String jar = map.get(key);
-                 log.info("Starting " + jar);
-                 DockerThread local = new DockerThread();
-                 local.start(jar, addr);
-                          //Runnable local = new DockerThread(jar);
-                 //new Thread(local).start();
+                 String jar = entry.getValue();
+                 log.info("Starting {}", jar);
+                 MesosUtil local = new MesosUtil();
+                 local.start(jar, eurekaURI);
              }
          }
      }
