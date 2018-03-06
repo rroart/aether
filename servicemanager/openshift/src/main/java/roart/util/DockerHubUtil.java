@@ -13,18 +13,18 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 
 public class DockerHubUtil {
-    private static Logger log = LoggerFactory.getLogger(OpenshiftThread.class);
+    private static Logger log = LoggerFactory.getLogger(OpenshiftUtil.class);
 
     static void dockermethod() {
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost("tcp://192.168.42.56:2376")
+                .withDockerHost("tcp://192.168.42.80:2376")
                 
                 .withDockerTlsVerify(true)
                 .withDockerCertPath("/home/roart/.minishift/certs")
                 //.withDockerConfig("/home/roart/.docker")
                 //.withApiVersion("1.23")
                 
-                //.withRegistryUrl("http://192.168.42.56:5000/v1/")
+                //.withRegistryUrl("http://192.168.42.80:5000/v1/")
                 .withRegistryUrl("http://172.30.1.1:5000/myproject/")
                 /*
                 .withRegistryUsername("dockeruser")

@@ -32,7 +32,7 @@ public class UtilTest {
     KubernetesClient kubernetes = new DefaultKubernetesClient();
     String project = "myproject";
     
-    @Test
+    //@Test
     public void t1() {
         Config conf2 = new ConfigBuilder()
                 .withUsername("developer")
@@ -199,18 +199,20 @@ public class UtilTest {
     
     @Test
 public void t3() throws IOException {
-        String repo = "172.30.1.1:5000/";
+        String openshift = "192.168.42.80";
+        String repo = "172.30.1.1:5000";
         String namespace = "myproject";
         Object[] os = new Object[4];
-    DockerUtil.method("aether-local", repo, namespace, os);
+    //DockerUtil.method("aether-local", repo, namespace, os, openshift, "/home/roart/.minishift/certs");
 }
     @Test
-    public void t4() throws IOException {
-        String repo = "172.30.1.1:5000/";
+    public void t4() throws IOException, InterruptedException {
+        String openshift = "192.168.42.80";
+        String repo = "172.30.1.1:5000";
         String namespace = "myproject";
-        OpenshiftThread o = new OpenshiftThread();
-        o.start("mariadb", "centos/mariadb", null, repo, namespace);
+        OpenshiftUtil o = new OpenshiftUtil();
+        //o.start("mariadb", "centos/mariadb", null, repo, namespace, openshift);
         //o.start("mysql", "mysql", null, repo, namespace);
-        //o.start("aether-local", "aether-local", null, repo, namespace);
+        o.start("aether-local", "aether-local", "http://192.168.0.100:8761/eureka", repo, namespace, openshift, "/home/roart/.minishift/certs");
     }
 }

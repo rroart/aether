@@ -50,14 +50,14 @@ public class DockerTest {
     @Test
     public void t5() {
     	DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-    		    .withDockerHost("tcp://192.168.42.56:2376")
+    		    .withDockerHost("tcp://192.168.42.80:2376")
     		    
     		    .withDockerTlsVerify(true)
     		    .withDockerCertPath("/home/roart/.minishift/certs")
     		    //.withDockerConfig("/home/roart/.docker")
     		    //.withApiVersion("1.23")
      		    
-     		    .withRegistryUrl("http://192.168.42.56:5000/v1/")
+     		    .withRegistryUrl("http://192.168.42.80:5000/v1/")
     		    /*
     		    .withRegistryUsername("dockeruser")
     		    .withRegistryPassword("ilovedocker")
