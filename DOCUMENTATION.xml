@@ -1406,6 +1406,9 @@ by the Files class, in cases not supported by Tika.
   <title>
     GUI
   </title>
+  <para>
+        Default listening port is 8280.
+  </para>
   <sect1>
     <title>
       Search
@@ -1649,6 +1652,7 @@ Curator 2.9.1
     </title>
     <para>
       No special needs, in conf/hbase-site.xml, just set the basic hbase.rootdir and hbase.zookeeper.property.dataDir.
+      Also hbase.cluster.distributed true...
       For more heavy usage, increase the number of open files with
       <programlisting>
 	ulimit -n
@@ -2129,5 +2133,52 @@ echo "scan 'files',{COLUMNS=>'fi'}" | ./bin/hbase shell > /tmp/hbf
 echo "scan 'index',{COLUMNS=>'if'}" | ./bin/hbase shell > /tmp/hbi
     </programlisting>
 </para>
+</chapter>
+<chapter>
+  <title>
+    Containerization
+  </title>
+  <section>
+    <title>
+      Simple jars
+    </title>
+    <para>
+    </para>
+  </section>
+  <section>
+    <title>
+      Docker
+    </title>
+    <para>
+      Go to docker and do make.
+      Need to set environemnt variables EUREKA_SERVER_URI and
+      //EUREKA_PREFER_IPADDRESS.
+    </para>
+  </section>
+  <section>
+    <title>
+      Mesos
+    </title>
+    <para>
+      Go to docker and do make.
+      Need to set environemnt variables EUREKA_SERVER_URI and MARATHON_URL (like http://localhost:18082/v2/apps)
+    </para>
+  </section>
+  <section>
+    <title>
+      Openshift (minishift)
+    </title>
+    <para>
+      Need to set environemnt variables OPENSHIFT_SERVER (ip only) and DOCKER_REPO (ip:port), DOCKER_CERT_PATH
+      Use minishift openshift registry for setting DOCKER_REPO.
+      Do eval $(minishift docker-env) in docker directory and do make.
+      Tried
+      #oc --as system:admin adm policy add-scc-to-user privileged developer
+      #oc --as system:admin adm policy add-scc-to-user hostnetwork developer
+      #oc --as system:admin adm policy add-scc-to-user privileged system:serviceaccount:myproject:developer
+      oc --as system:admin adm policy add-scc-to-user privileged -n myproject -z default
+    </para>
+  </section>
+  
 </chapter>
 </book>
