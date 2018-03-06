@@ -426,7 +426,7 @@ public class ServiceController implements CommandLineRunner {
         public void run(String... args) throws InterruptedException {
             EurekaUtil.initEurekaClient();
             String configFile = null;
-            if (args != null) {
+            if (args != null && args.length > 0) {
                 configFile = args[0];
             }
             doConfig(configFile);
