@@ -48,11 +48,11 @@ public class MyXMLConfig {
     
     MyMap nodemap = null;
     
-   public static MyXMLConfig instance() {
+   public static MyXMLConfig instance(String configFile) {
         if (instance == null) {
-            instance = new MyXMLConfig();
+            instance = new MyXMLConfig(configFile);
             if (configInstance == null) {
-                getConfigInstance();
+                getConfigInstance(configFile);
             }
         }
         return instance;
@@ -60,12 +60,12 @@ public class MyXMLConfig {
 
     protected static NodeConfig configInstance = null;
     
-    public static NodeConfig getConfigInstance() {
+    public static NodeConfig getConfigInstance(String configFile) {
         if (configInstance == null) {
             configInstance = new NodeConfig();
             MyConfig.conf = configInstance;
             if (instance == null) {
-                instance();
+                instance(configFile);
             }
         }
         return configInstance;
@@ -74,15 +74,19 @@ public class MyXMLConfig {
     private static Configuration config = null;
     private static XMLConfiguration configxml = null;
 
-    public MyXMLConfig() {
+    public MyXMLConfig(String configFile) {
         try {
-            getConfigInstance();
+            String myConfigFile = configFile;
+            if (myConfigFile == null) {
+                myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
+            }
+            getConfigInstance(configFile);
             configxml = new XMLConfiguration();
             Parameters params = new Parameters();
             FileBasedConfigurationBuilder<XMLConfiguration> fileBuilder =
                     new FileBasedConfigurationBuilder<>(XMLConfiguration.class)
-                    .configure(params.fileBased().setFileName("../conf/" + ConfigConstants.CONFIGFILE));
-            InputStream stream = new FileInputStream(new File("../conf/" + ConfigConstants.CONFIGFILE));         
+                    .configure(params.fileBased().setFileName(myConfigFile));
+            InputStream stream = new FileInputStream(new File(myConfigFile));         
             configxml = fileBuilder.getConfiguration();
             configxml.read(stream);
             String root = configxml.getRootElementName();

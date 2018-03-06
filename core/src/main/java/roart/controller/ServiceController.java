@@ -404,8 +404,8 @@ public class ServiceController implements CommandLineRunner {
     }
 
     // TODO move this
-    private static void doConfig() {
-        MyXMLConfig conf = MyXMLConfig.instance();
+    private static void doConfig(String configFile) {
+        MyXMLConfig conf = MyXMLConfig.instance(configFile);
         conf.config();
         
         //ControlService.lock = MyLockFactory.create();
@@ -425,6 +425,10 @@ public class ServiceController implements CommandLineRunner {
         @Override
         public void run(String... args) throws InterruptedException {
             EurekaUtil.initEurekaClient();
-            doConfig();
+            String configFile = null;
+            if (args != null) {
+                configFile = args[0];
+            }
+            doConfig(configFile);
         }
 }
