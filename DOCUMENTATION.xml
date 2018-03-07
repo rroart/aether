@@ -2172,6 +2172,7 @@ echo "scan 'index',{COLUMNS=>'if'}" | ./bin/hbase shell > /tmp/hbi
       Need to set environemnt variables OPENSHIFT_SERVER (ip only) and DOCKER_REPO (ip:port), DOCKER_CERT_PATH
       Use minishift openshift registry for setting DOCKER_REPO.
       Do eval $(minishift docker-env) in docker directory and do make.
+      export DOCKER_AUTH_DOCKERCFG_ENABLED=false
       Tried
       #oc --as system:admin adm policy add-scc-to-user privileged developer
       #oc --as system:admin adm policy add-scc-to-user hostnetwork developer
