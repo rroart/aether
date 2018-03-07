@@ -50,6 +50,7 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <!-- Put this up here due to jax rs-api version -->
 <dependency>
     <groupId>com.github.docker-java</groupId>
     <artifactId>docker-java</artifactId>
