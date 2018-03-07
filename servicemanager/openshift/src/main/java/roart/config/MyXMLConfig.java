@@ -64,10 +64,10 @@ public class MyXMLConfig {
              String key = entry.getKey();
              Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
              if (bool) {
-                 String jar = entry.getValue();
-                 log.info("Starting {}", jar);
+                 String imageName = entry.getValue();
+                 log.info("Starting {}", imageName);
                  OpenshiftUtil local = new OpenshiftUtil();
-                 local.start(key, jar, eureka, repo, namespace, openshift, dockerCertPath);
+                 local.start(imageName, imageName, eureka, repo, namespace, openshift, dockerCertPath);
              }
          }
      }
