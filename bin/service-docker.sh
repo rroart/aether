@@ -1,3 +1,5 @@
 #!/bin/bash                                                                     
 cd ../lib
-java -jar aether-servicemanager-docker-0.10-SNAPSHOT.jar
+xterm -e "java -jar aether-servicemanager-docker-0.10-SNAPSHOT.jar $1" &
+xterm -e "java -jar jetty-runner-9.4.10.RC1.jar --port 8280 aether-web-0.10-SNAPSHOT.war" &
+
