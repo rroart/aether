@@ -9,7 +9,7 @@ public class ConfigConstants {
     @Deprecated
     public static final String HADOOP = "hadoop";
     @Deprecated
-   public static final String SWIFT = "swift";
+    public static final String SWIFT = "swift";
     @Deprecated
     public static final String INDEX = "index";
     public static final String SEARCHENGINESOLR = "searchengine.solr[@enable]";
@@ -77,9 +77,9 @@ public class ConfigConstants {
     public static final String CONVERSTIONOTHERTIMEOUT = "conversion.othertimeout";
     public static final String DATABASEDATANUCLEUS = "database.datanucleus[@enable]";
     public static final String SYNCHRONIZATIONZOOKEEPER = "synchronization.zookeeper";
-	public static final String GUIHIGHLIGHTMLT = "gui.highlightmlt[@enable]";
-	public static final String NODELANGUAGES = "node.languages";
-	public static final String SEARCHENGINEMLTMLTCOUNT = "searchengine.mlt.mltcount";
+    public static final String GUIHIGHLIGHTMLT = "gui.highlightmlt[@enable]";
+    public static final String NODELANGUAGES = "node.languages";
+    public static final String SEARCHENGINEMLTMLTCOUNT = "searchengine.mlt.mltcount";
     public static final String SEARCHENGINEMLTMLTMINDF = "searchengine.mlt.mltmindf";
     public static final String SEARCHENGINEMLTMLTMINTF = "searchengine.mlt.mltmintf";	
     public static final String SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG = "synchronization.distributedlockmodebig[@enable]";
@@ -89,7 +89,7 @@ public class ConfigConstants {
     public static final String BIG = "big";
     public static final String SYNCHRONIZATIONDISTRIBUTEDPROCESS = "synchronization.distributedprocess[@enable]";
     public static final String CONFIG = "config";
-    
+
     public static final int DEFAULT_CONFIG_FAILEDLIMIT = 0;
     public static final int DEFAULT_CONFIG_TIKATIMEOUT = 600;
     public static final int DEFAULT_CONFIG_OTHERTIMEOUT = 600;
@@ -98,7 +98,7 @@ public class ConfigConstants {
     public static final int DEFAULT_CONFIG_MLTCOUNT = 10;
     public static final int DEFAULT_CONFIG_MLTMINDF = 5;
     public static final int DEFAULT_CONFIG_MLTMINTF = 2;
-    
+
     public static final String CONFIGFILE = "aether.xml";
     public static final String SEARCHENGINELUCENELUCENEPATH = "searchengine.lucene.lucenepath";
     public static String[] indexvalues = { SEARCHENGINELUCENE, SEARCHENGINESOLR, SEARCHENGINEELASTIC };
