@@ -1,0 +1,15 @@
+<config>
+  <fs>
+    <dirlist>/usr/share/man</dirlist>
+  </fs>
+  <database>
+    <hibernate enable='true'>
+      <h2dir>/tmp/stuff</h2dir>
+    </hibernate>
+  </database>
+  <searchengine>
+    <lucene enable="true">
+      <lucenepath>/tmp/lucene/</lucenepath>
+    </lucene>
+  </searchengine>
+</config>
