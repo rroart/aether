@@ -59,7 +59,7 @@ public class MyXMLConfig {
             if (bool) {
                 String jar = entry.getValue();
                 log.info("Starting {}", jar);
-                Runnable local = new JarThread(jar);
+                Runnable local = new JarThread(jar, null);
                 new Thread(local).start();
             }
         }

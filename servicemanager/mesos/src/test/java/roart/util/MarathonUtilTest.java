@@ -45,7 +45,7 @@ public class MarathonUtilTest {
 
     @Test
     public void t5() throws JsonProcessingException {
-        Runnable eureka = new JarThread("/home/roart/src/aethermicro/eureka/target/aether-eureka-0.10-SNAPSHOT.jar");
+        Runnable eureka = new JarThread("/home/roart/src/aethermicro/eureka/target/aether-eureka-0.10-SNAPSHOT.jar", null);
         new Thread(eureka).start();
         MarathonUtil mu = new MarathonUtil("http://localhost:18082/v2/apps");
          String image = "aether-elastic";

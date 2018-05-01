@@ -22,11 +22,11 @@ public class SimpleController implements CommandLineRunner {
     public void run(String... args) throws InterruptedException {
         //MyXMLConfig instance = MyXMLConfig.instance();
         //instance.config();
-        Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar");
+        Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar", null);
         new Thread(eureka).start();
-        Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar");
+        Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", args);
         new Thread(core).start();
-        Runnable local = new JarThread("aether-local-0.10-SNAPSHOT.jar");
+        Runnable local = new JarThread("aether-local-0.10-SNAPSHOT.jar", null);
         new Thread(local).start();
     }
 }

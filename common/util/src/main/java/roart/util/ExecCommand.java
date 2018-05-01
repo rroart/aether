@@ -121,10 +121,11 @@ public class ExecCommand {
         String res = null;
         Process proc = null;
         try {
-            String[] cmdarray = new String[3];
+            String[] cmdarray = new String[arg.length + 1];
             cmdarray[0] = filename;
-            cmdarray[1] = arg[0];
-            cmdarray[2] = arg[1];
+            for (int i = 0; i < arg.length; i++) {
+                cmdarray[i + 1] = arg[i];
+            }
             String[] envarray = new String[2];
             envarray[0] = "CALIBRE_WORKER_TEMP_DIR=/tmp";
             envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
