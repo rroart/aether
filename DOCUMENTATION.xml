@@ -1404,6 +1404,21 @@ by the Files class, in cases not supported by Tika.
 </chapter>
 <chapter>
   <title>
+    Starting up
+  </title>
+  <para>
+    The following in the bin directory works:
+    bin/service-docker.sh for starting up with docker locally.
+bin/service-mesos.sh for deploying most microservices into mesos.
+bin/service-openshift.sh for deploying most microservices into mini/openshift.
+bin/service-simple.sh for starting jars only.
+The microservices except eureka, core and local are deployed in mesos or openshift.
+If running a demo, add the demo config so it will run as ./service-openshift.sh ../conf/aetherdemo.xml
+
+  </para>
+</chapter>
+<chapter>
+  <title>
     GUI
   </title>
   <para>

@@ -48,3 +48,7 @@ use swift with non-exist dir
 get tool to find unneeded deps
 refactor into more batch/collection processing
 make demo version with docker
+deprecated logdir etc?
+split off tika etc into microservice
+Thread/multitask change
+Vaadin threads
