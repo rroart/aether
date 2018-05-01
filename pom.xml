@@ -130,7 +130,7 @@
       <plugin>
 	<groupId>org.mortbay.jetty</groupId>
 	<artifactId>jetty-maven-plugin</artifactId>
-	<!--version>${jetty.version}</version-->
+	<version>${jetty.version}</version>
       </plugin>
       <!--plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -619,7 +619,7 @@
 </dependency-->
   </dependencies>
   <properties>
-    <jetty.version>9.2.2.v20140723</jetty.version>
+    <jetty.version>9.4.10.RC1</jetty.version>
     <jdk.version>1.8</jdk.version>
     <junit.version>4.12</junit.version>
     <lucene.version>6.2.1</lucene.version>
@@ -629,7 +629,7 @@
     <mahout.version>0.12.0</mahout.version>
     <!-- must keep at old version for some time -->
     <mahout.spark.version>1.5.2</mahout.spark.version>
-    <spark.version>2.1.0</spark.version>
+    <spark.version>2.3.0</spark.version>
     <scala.version>2.11</scala.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
