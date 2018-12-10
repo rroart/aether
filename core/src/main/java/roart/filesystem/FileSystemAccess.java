@@ -16,19 +16,20 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.discovery.DiscoveryClient;
 
-public abstract class FileSystemAccess {
+public class FileSystemAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DiscoveryClient discoveryClient;
 
-    public abstract String getAppName();
+    public String getAppName() { return null; }
     
-    public String constructor() {
+    public String constructor(String url) {
         FileSystemConstructorParam param = new FileSystemConstructorParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
-        FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
+        //FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
+        FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.CONSTRUCTOR);
         return result.error;
     }
     

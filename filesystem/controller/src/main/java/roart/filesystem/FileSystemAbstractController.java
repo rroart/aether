@@ -1,8 +1,11 @@
 package roart.filesystem;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +14,11 @@ import roart.config.NodeConfig;
 import roart.util.EurekaConstants;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +26,7 @@ import org.slf4j.LoggerFactory;
 //@EnableAutoConfiguration
 @SpringBootApplication
 @EnableDiscoveryClient
-public abstract class FileSystemAbstractController {
+public abstract class FileSystemAbstractController implements CommandLineRunner {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -138,4 +146,43 @@ public abstract class FileSystemAbstractController {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(FileSystemAbstractController.class, args);
 	}
+	
+	@Autowired(required=true)
+	MyListener aListener;
+	
+	    @Override
+	    public void run(String... args) throws Exception {
+	        /*
+	        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+                //context.scan("com.journaldev.spring");
+                context.refresh();
+
+                MyListener listener = (MyListener) context.getBean("listener");
+                context.close();
+                */
+                //Thread.sleep(10000);
+	            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
+	            
+	            String zookeeperConnectionString = System.getProperty("ZOO");
+	            CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+	            curatorClient.start();
+	            String fs = System.getProperty("FS");
+	            String path = System.getProperty("PATH");
+	            log.info("Using {} {}", fs, path);
+                    //int port = new MyListener().getPort();
+                    int port = aListener.getPort();
+	            String whereami = InetAddress.getLocalHost().getHostAddress() + ":" + port;
+                    System.out.println("Whereami " + whereami);
+	            log.info("Whereami {}", whereami);
+	            byte[] bytes = whereami.getBytes();
+	            if (curatorClient.checkExists().forPath("/fs/" + fs + path) != null) {
+	                curatorClient.delete().forPath("/fs/" + fs + path);
+	            }
+	            curatorClient.create().creatingParentsIfNeeded().forPath("/fs/" + fs + path, bytes);
+	            while (true) {
+	                Thread.sleep(10000);
+                        curatorClient.setData().forPath("/fs/" + fs + path, bytes);
+	            }
+	    }
+
 }

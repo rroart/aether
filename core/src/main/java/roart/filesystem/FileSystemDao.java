@@ -1,12 +1,18 @@
 package roart.filesystem;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.model.FileObject;
+import roart.service.ControlService;
+import roart.util.Constants;
 import roart.util.FileSystemConstants;
 
 public class FileSystemDao {
@@ -15,6 +21,8 @@ public class FileSystemDao {
 
 	private static FileSystemAccess filesystemJpa = null;
 
+	//private static Map<String, MyServer> myservers = new HashMap<>();
+	
     public static void instance(String type) {
     }
 
@@ -51,6 +59,7 @@ public class FileSystemDao {
             log.error("f null");
             return new LocalFileSystemAccess();
         }
+        /*
         if (f.fs == null) {
             log.error("f.fs null " + f.object);
             return new LocalFileSystemAccess();
@@ -61,10 +70,56 @@ public class FileSystemDao {
      		return new SwiftAccess();
     	} else {
     		return new LocalFileSystemAccess();
-    	}   	
+    	}
+    	*/
+        String url = getUrl(ControlService.curatorClient, f, "");
+        FileSystemAccess access = new FileSystemAccess();
+        access.constructor(url);
+        return access;
 	}
 
-	// TODO make this OO
+	static String getUrl(CuratorFramework curatorClient, FileObject f, String s) {
+	        // //fstype/path
+	        // node and openshift?
+	        // zk nodename type path
+	        //ControlServer.z
+	        String url = null;
+	        String fs = f.fs;
+	        String path = (String) f.object;
+	        try {
+	            System.out.println("here");
+	            String zPath = "/fs/" + fs + s;
+	            List<String> children = curatorClient.getChildren().forPath(zPath);
+	            System.out.println("ch " + children.size());
+	            if (children.isEmpty()) {
+	                Stat stat = curatorClient.checkExists().forPath(zPath);
+                        System.out.println("m " + System.currentTimeMillis() + " " + stat.getMtime());;
+	                long time = System.currentTimeMillis() - stat.getMtime();
+	                System.out.println("time " + time);
+	                if (time < 10000) {
+	                return new String(curatorClient.getData().forPath(zPath));
+	                } else {
+	                    System.out.println("timeout");
+	                    log.info("timeout");
+	                    return null;
+	                }
+	            }
+	            for (String child : children) {
+	                System.out.println("child " + child);
+	                String newPath = s + "/" + child;
+	                System.out.println("cmp " + path + " " + newPath);
+	                if (path.startsWith(newPath)) {
+	                    return getUrl(curatorClient, f, newPath);
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            log.error(Constants.EXCEPTION, e);
+	        }
+                return url;
+    }
+
+    // TODO make this OO
    private static FileSystemAccess getFileSystemAccess(String s) {
     	if (s.startsWith(FileSystemConstants.HDFS)) {
     		return new HDFSAccess();
@@ -75,4 +130,9 @@ public class FileSystemDao {
     	}
 	}
 
+   class MyServer {
+       String host;
+       String port;
+       String path;
+   }
 }
