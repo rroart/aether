@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.*;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+import roart.util.EurekaUtil;
+
 @SpringBootApplication
 @EnableDiscoveryClient
 public class WebApplication implements CommandLineRunner {
