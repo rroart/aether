@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>roart</groupId>
@@ -11,7 +11,7 @@
   <artifactId>aether-common-zookeeper</artifactId>
   <packaging>jar</packaging>
   <name>Aether Disk Search Engine Common Zookeeper</name>
-<dependencies>
+  <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -20,13 +20,13 @@
     <dependency>
       <groupId>roart</groupId>
       <artifactId>aether-common-constants</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>${aether.version}</version>
     </dependency>
-<dependency>
-  <groupId>org.apache.zookeeper</groupId>
-  <artifactId>zookeeper</artifactId>
-  <version>${zookeeper.version}</version>
-</dependency>
-</dependencies>
+    <dependency>
+      <groupId>org.apache.zookeeper</groupId>
+      <artifactId>zookeeper</artifactId>
+      <version>${zookeeper.version}</version>
+    </dependency>
+  </dependencies>
 </project>
 

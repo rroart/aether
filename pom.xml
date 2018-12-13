@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>roart</groupId>
   <!--artifactId>myweb</artifactId-->
@@ -11,34 +11,34 @@
   <packaging>pom</packaging>
   <name>Aether Disk Search Engine Parent</name>
   <!--name>Vaadin Web Application</name-->
-<modules>
-  <module>common</module>
-  <module>core</module>
-  <module>eureka</module>
-  <module>database</module>
-  <module>filesystem</module>
-  <module>machinelearning</module>
-  <module>searchengine</module>
-  <module>web</module>
-  <module>servicemanager</module>
-  <module>distribution</module>
-</modules>
-<build>
-  <pluginManagement>
+  <modules>
+    <module>common</module>
+    <module>core</module>
+    <module>eureka</module>
+    <module>database</module>
+    <module>filesystem</module>
+    <module>machinelearning</module>
+    <module>searchengine</module>
+    <module>web</module>
+    <module>servicemanager</module>
+    <module>distribution</module>
+  </modules>
+  <build>
+    <pluginManagement>
+      <plugins>
+	<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+	  <version>${mavencompiler.version}</version>
+          <configuration>
+            <source>${jdk.version}</source>
+            <target>${jdk.version}</target>
+	    <encoding>UTF-8</encoding>
+          </configuration>
+	</plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-	<version>2.3.2</version>
-        <configuration>
-          <source>${jdk.version}</source>
-          <target>${jdk.version}</target>
-	  <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-    </plugins>
-  </pluginManagement>
-  <plugins>
       <plugin>
 	<groupId>org.codehaus.mojo</groupId>
 	<artifactId>tomcat-maven-plugin</artifactId>
@@ -49,40 +49,6 @@
 	  <!--path>/mywebapp</path-->
 	</configuration>
       </plugin>
-      <!--plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-	<version>7.0.0.pre5</version>
-	<configuration>
-	  <systemproperties>
-	    <systemproperty>
-	      <name>org.apache.commons.logging.Log</name>
-	      <value>
-		org.apache.commons.logging.impl.Log4JLogger
-	      </value>
-	    </systemproperty>
-	    <systemproperty>
-	      <name>slf4j</name>
-	      <value>false</value>
-	    </systemproperty>
-	    <systemproperty>
-	      <name>log4j.configuration</name>
-	      <value>file:./src/main/resources/log4j.properties</value>
-	    </systemproperty>
-	  </systemproperties>
-	</configuration>
-      </plugin-->
-      <!--plugin>
-	<artifactId>maven-clean-plugin</artifactId>
-	<version>2.4.1</version>
-	<configuration>
-	  <filesets>
-	    <fileset>
-	      <directory>src/main/webapp/VAADIN/widgetsets</directory>
-	    </fileset>
-	  </filesets>
-	</configuration>
-      </plugin-->
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-war-plugin</artifactId>
@@ -91,540 +57,33 @@
 	  <failOnMissingWebXml>false</failOnMissingWebXml>
 	</configuration>
       </plugin>
-      <!--plugin>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-maven-plugin</artifactId>
-	<version>${vaadin.plugin.version}</version>
-	<configuration>
-	  <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-	  <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
-	  </webappDirectory>
-	  <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
-	  </hostedWebapp>
-	  <persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
-	  <deploy>${project.build.directory}/gwt-deploy</deploy>
-	  <compileReport>false</compileReport>
-	  <noServer>true</noServer>
-	  <draftCompile>false</draftCompile>
-	  
-	  <style>OBF</style>
-	  <strict>true</strict>
-	  <runTarget>http://localhost:8080/</runTarget>
-	  <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-	</configuration>
-	<executions>
-	  <execution>
-	    <configuration>
-	    </configuration>
-	    <goals>
-	      <goal>clean</goal>
-	      <goal>resources</goal>
-	      <goal>update-theme</goal>
-	      <goal>update-widgetset</goal>
-	      <goal>compile-theme</goal>
-	      <goal>compile</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin-->
       <plugin>
 	<groupId>org.mortbay.jetty</groupId>
 	<artifactId>jetty-maven-plugin</artifactId>
 	<version>${jetty.version}</version>
       </plugin>
-      <!--plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>1.5.2</version>
-        <executions>
-            <execution>
-                <phase>prepare-package</phase>
-                <goals>
-                    <goal>replace</goal>
-                </goals>
-            </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>target/**/hibernate.cfg.xml</include>
-            <include>target/**/log4j.properties</include>
-	  </includes>
-            <replacements>
-                <replacement>
-                    <token>@h2dir@</token>
-                    <value>${h2dir}</value>
-                </replacement>
-                <replacement>
-                    <token>@logdir@</token>
-                    <value>${logdir}</value>
-                </replacement>
-            </replacements>
-        </configuration>
-      </plugin-->
-      <!--plugin>
-                <groupId>org.datanucleus</groupId>
-                <artifactId>datanucleus-maven-plugin</artifactId>
-                <version>4.0.0-release</version>
-                <configuration>
-                    <api>JDO</api>
-                    <log4jConfiguration>${basedir}/datanucleus/log4j.properties</log4jConfiguration>
-                    <verbose>true</verbose>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>enhance</goal>
-                        </goals>
-                    </execution>
-                </executions>
-      </plugin-->
-      <!-- we need to include ourselves in spark setJars -->
-      <!--plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-jar-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <id>make-a-jar</id>
-	    <phase>compile</phase>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-	</plugin-->
     </plugins>
   </build>
   <dependencies>
-    <!--dependency>
-        <groupId>jdk.tools</groupId>
-        <artifactId>jdk.tools</artifactId>
-	<version>1.8</version>
-        <scope>system</scope>
-        <systemPath>${java.home}/../lib/tools.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency-->
-    <!--dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>6.0</version>
-      <scope>provided</scope>
-    </dependency-->
-
-    <!-- standard.jar --> 
-    <!--dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>
-    </dependency-->
- 
-    <!-- JSTL --> 
-    <!--dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.1.2</version>
-    </dependency-->
-
-    <!--dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>${lucene.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <version>${lucene.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-      <version>${lucene.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-demo</artifactId>
-      <version>${lucene.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-highlighter</artifactId>
-      <version>${lucene.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>lucene</groupId>
-      <artifactId>lucene</artifactId>
-      <version>1.4.3</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-parsers</artifactId>
-      <version>${tika.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-core</artifactId>
-      <version>${tika.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>${hibernate.version}</version>
-      <type>pom</type>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.5.6-Final</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
-      <version>${ehcache.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.jdo</groupId>
-      <artifactId>jdo-api</artifactId>
-      <version>${jdo.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <version>1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>ejb3-persistence</artifactId>
-      <version>3.3.2.Beta1</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <version>10.7.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyclient</artifactId>
-      <version>10.7.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbynet</artifactId>
-      <version>10.7.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbytools</artifactId>
-      <version>10.7.1.1</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>	   
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.apache.solr</groupId>
-      <artifactId>solr-langdetect</artifactId>
-      <version>3.5.0</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>com.cybozu.labs</groupId>
-      <artifactId>langdetect</artifactId>
-      <version>1.1-20120112</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.solr</groupId>
-      <artifactId>solr-solrj</artifactId>
-      <version>${solr.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.solr</groupId>
-      <artifactId>solr-core</artifactId>
-      <version>${solr.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-client</artifactId>
-      <version>${hbase.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-hdfs</artifactId>
-      <version>${hadoop.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-      <version>${hadoop.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-client</artifactId>
-      <version>${hadoop.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-2.1</artifactId>
-      <version>6.1.5</version>
-      <scope>test</scope>
-    </dependency-->
-    <!--dependency>
-      <groupId>com.google.code.maven-play-plugin.org.apache.thrift</groupId>
-      <artifactId>thrift</artifactId>
-      <version>0.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.thrift</groupId>
-      <artifactId>thrift</artifactId>
-      <version>0.2.0</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-server</artifactId>
-      <version>${vaadin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-client-compiled</artifactId>
-      <version>${vaadin.version}</version>
-    </dependency-->
-		<!--
-		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
-		  
-		  For widgetset compilation, vaadin-client-compiler is automatically added on the
-		  compilation classpath by vaadin-maven-plugin so normally there is no need for an
-		  explicit dependency.
-		-->
-		<!--
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiler</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-    <!--dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-client</artifactId>
-      <version>${vaadin.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-push</artifactId>
-      <version>${vaadin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-themes</artifactId>
-      <version>${vaadin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${servlet.version}</version>
-      <scope>provided</scope>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-maven-plugin</artifactId>
-      <version>${jetty.version}</version>
-    </dependency-->
-    <!--dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-mr</artifactId>
-      <version>${mahout.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-spark_2.10</artifactId>
-      <version>${mahout.version}</version-->
-      <!--scope>provided</scope-->
-    <!--/dependency>
-    <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-math-scala_2.10</artifactId>
-      <version>${mahout.version}</version-->
-      <!--scope>provided</scope-->
-    <!--/dependency>
-    <dependency>
-      <groupId>com.esotericsoftware.kryo</groupId>
-      <artifactId>kryo</artifactId>
-      <version>${kryo.version}</version>
-    </dependency>
-     <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-mllib_2.10</artifactId>
-      <version>${spark.version}</version>
-      </dependency>
-     <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.10</artifactId>
-      <version>${spark.version}</version>
-      </dependency-->
-    <!--dependency>
-      <groupId>org.xerial.snappy</groupId>
-      <artifactId>snappy-java</artifactId>
-      <version>${snappyjava.version}</version>
-      <scope>provided</scope>
-    </dependency-->
-<!--dependency>
- <groupId>org.apache.opennlp</groupId>
- <artifactId>opennlp-tools</artifactId>
- <version>${opennlp.version}</version>
-</dependency>
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-core</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency>
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-hbase</artifactId>
-  <version>${datanucleus.version}</version>
-  <exclusions>
-    <exclusion>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase</artifactId>
-    </exclusion>
-  </exclusions>
-</dependency>
-<dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-rdbms</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency-->
-<!--dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-api-jpa</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency-->
-<!--dependency>
-  <groupId>org.datanucleus</groupId>
-  <artifactId>datanucleus-api-jdo</artifactId>
-  <version>${datanucleus.version}</version>
-</dependency-->
-<!--dependency>
-  <groupId>org.apache.zookeeper</groupId>
-  <artifactId>zookeeper</artifactId>
-  <version>${zookeeper.version}</version>
-</dependency-->
-<!--dependency>
-	<groupId>com.hazelcast</groupId>
-	<artifactId>hazelcast</artifactId>
-	<version>${hazelcast.version}</version>
-</dependency>
-<dependency>
-	<groupId>org.apache.curator</groupId>
-	<artifactId>curator-framework</artifactId>
-	<version>${curator.version}</version>
-</dependency-->
-<!--dependency>
-	<groupId>org.apache.curator</groupId>
-	<artifactId>curator-recipes</artifactId>
-	<version>${curator.version}</version>
-</dependency-->
-<!--dependency>
-	<groupId>org.apache.curator</groupId>
-	<artifactId>curator-client</artifactId>
-	<version>${curator.version}</version>
-</dependency>
-<dependency>
-  <groupId>com.google.guava</groupId>
-  <artifactId>guava</artifactId>
-  <version>${guava.version}</version>
-</dependency>
-<dependency>
-  <groupId>commons-configuration</groupId>
-  <artifactId>commons-configuration2</artifactId>
-  <version>${commons.version}</version>
-</dependency-->
-<!-- dependent package for sparkconf setjars -->
-<!--dependency>
-  <groupId>it.unimi.dsi</groupId>
-  <artifactId>fastutil</artifactId>
-  <version>${fastutil.version}</version>
-</dependency>
-<dependency>
-            <groupId>org.javaswift</groupId>
-            <artifactId>joss</artifactId>
-            <version>${joss.version}</version>
-        </dependency>
-      <dependency>
-  <groupId>com.fasterxml.jackson.core</groupId>
-  <artifactId>jackson-databind</artifactId>
-  <version>${jackson.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.elasticsearch</groupId>
-    <artifactId>elasticsearch</artifactId>
-    <version>${elasticsearch.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.elasticsearch.client</groupId>
-    <artifactId>transport</artifactId>
-    <version>${elasticsearch.version}</version>
-</dependency>
-<dependency>
-  <groupId>org.apache.logging.log4j</groupId>
-  <artifactId>log4j-api</artifactId>
-  <version>${apachelog.version}</version-->
-  <!--scope>test</scope-->
-<!--/dependency>
-<dependency>
-  <groupId>org.apache.logging.log4j</groupId>
-  <artifactId>log4j-core</artifactId>
-  <version>${apachelog.version}</version-->
-  <!--scope>test</scope-->
-<!--/dependency-->
-<!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
-<!--dependency>
-  <groupId>io.netty</groupId>
-  <artifactId>netty-all</artifactId>
-  <version>${netty.version}</version>
-</dependency-->
   </dependencies>
   <properties>
+    <aether.version>0.10-SNAPSHOT</aether.version>
+    <mavencompiler.version>3.8.0</mavencompiler.version>
+    <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>9.4.10.RC1</jetty.version>
+    <springboot.version>2.1.1.RELEASE</springboot.version>
+    <springcloud.version>2.0.2.RELEASE</springcloud.version>
+    <springcloudstarter.version>Finchley.SR2</springcloudstarter.version>
+    <springcore.version>5.1.3.RELEASE</springcore.version>
+    <eurekaclient.version>1.9.8</eurekaclient.version>
     <jdk.version>1.8</jdk.version>
     <junit.version>4.12</junit.version>
     <lucene.version>6.2.1</lucene.version>
     <solr.version>6.2.1</solr.version>
     <hbase.version>1.2.1</hbase.version>
+    <cassandra.version>3.6.0</cassandra.version>
+    <aws.version>1.11.460</aws.version>
+    <dynamodblocal.version>1.11.0.1</dynamodblocal.version>
     <tika.version>1.13</tika.version>
     <mahout.version>0.12.0</mahout.version>
     <!-- must keep at old version for some time -->
@@ -635,93 +94,71 @@
     <kryo.version>2.21</kryo.version>
     <opennlp.version>1.5.3</opennlp.version>
     <hadoop.version>2.7.1</hadoop.version>
-	    <datanucleus.version>5.1.0-release</datanucleus.version>
-	    <jdo.version>3.0.1</jdo.version>
-	    <zookeeper.version>3.4.6</zookeeper.version>
-	    <!-- must keep at old version for some time -->
-	    <curator.version>2.9.1</curator.version>
-	    <!-- must keep at old version for some time -->
-	    <hazelcast.version>3.5.4</hazelcast.version>
-	    <snappyjava.version>1.0.4.1</snappyjava.version>
-	    <jackson.version>2.4.4</jackson.version>
-	    <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-	    <hibernate.version>5.1.0.Final</hibernate.version>
-	    <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
-	    <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
-	    <h2.version>1.4.190</h2.version>
-	    <jdbc.groupId>com.h2database</jdbc.groupId>
-	    <jdbc.artifactId>h2</jdbc.artifactId>
-	    <jdbc.version>1.3.160</jdbc.version>
-	    <jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
-	    <jdbc.url><![CDATA[jdbc:h2:${h2dir}]]>
-	    </jdbc.url>
-	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	    <vaadin.version>7.6.0</vaadin.version>
-	    <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-	    <gwt.version>2.3.0</gwt.version>
-	    <gwt.plugin.version>2.2.0</gwt.plugin.version>
-	    <slf4j.version>1.7.13</slf4j.version>
-	    <ehcache.version>2.6.11</ehcache.version>
-	    <servlet.version>3.1.0</servlet.version>
-	    <!-- must keep at old version for some time -->
-	    <guava.version>16.0.1</guava.version>
-	    <commons.version>2.1.1</commons.version>
-	    <fastutil.version>7.0.11</fastutil.version>
-	    <joss.version>0.9.14</joss.version>
-	    <elasticsearch.version>5.0.2</elasticsearch.version>
-	    <apachelog.version>2.7</apachelog.version>
-	    <netty.version>4.1.7.Final</netty.version>
-	  </properties>
-		<repositories>
-			<repository>
-				<id>vaadin-addons</id>
-				<url>http://maven.vaadin.com/vaadin-addons</url>
-			</repository>
-			<repository>
-				<id>vaadin-snapshots</id>
-				<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-				<releases>
-					<enabled>false</enabled>
-				</releases>
-				<snapshots>
-					<enabled>true</enabled>
-				</snapshots>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>vaadin-snapshots</id>
-				<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-				<releases>
-					<enabled>false</enabled>
-				</releases>
-				<snapshots>
-					<enabled>true</enabled>
-				</snapshots>
-			</pluginRepository>
-		</pluginRepositories>
-
-	  <profiles>
-	    <profile>
-	      <id>secret</id>
-	      <properties>
-		<user.showsecret>1</user.showsecret>
-	      </properties>
-	      <build>
-		<plugins>
-		  <plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-surefire-plugin</artifactId>
-		    <version>2.5</version>
-		    <configuration>
-		      <systemPropertyVariables>
-			<user.showsecret>1</user.showsecret>
-		      </systemPropertyVariables>
-		    </configuration>
-		  </plugin>
-		</plugins>
-	      </build>
-	    </profile>
-	  </profiles>
-	</project>
-
+    <datanucleus.version>5.1.0-release</datanucleus.version>
+    <jdo.version>3.0.1</jdo.version>
+    <zookeeper.version>3.4.6</zookeeper.version>
+    <!-- must keep at old version for some time -->
+    <curator.version>2.12.0</curator.version>
+    <!-- must keep at old version for some time -->
+    <hazelcast.version>3.5.4</hazelcast.version>
+    <snappyjava.version>1.0.4.1</snappyjava.version>
+    <jackson.version>2.9.7</jackson.version>
+    <camel.version>2.22.2</camel.version>
+    <httpclient.version>4.5.6</httpclient.version>
+    <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
+    <hibernate.version>5.1.0.Final</hibernate.version>
+    <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
+    <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
+    <h2.version>1.4.190</h2.version>
+    <jdbc.groupId>com.h2database</jdbc.groupId>
+    <jdbc.artifactId>h2</jdbc.artifactId>
+    <jdbc.version>1.3.160</jdbc.version>
+    <jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
+    <jdbc.url><![CDATA[jdbc:h2:${h2dir}]]>
+    </jdbc.url>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <vaadin.version>7.6.0</vaadin.version>
+    <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+    <gwt.version>2.3.0</gwt.version>
+    <gwt.plugin.version>2.2.0</gwt.plugin.version>
+    <slf4j.version>1.7.13</slf4j.version>
+    <ehcache.version>2.6.11</ehcache.version>
+    <servlet.version>3.1.0</servlet.version>
+    <!-- must keep at old version for some time -->
+    <guava.version>16.0.1</guava.version>
+    <commons.version>2.1.1</commons.version>
+    <fastutil.version>7.0.11</fastutil.version>
+    <joss.version>0.9.14</joss.version>
+    <elasticsearch.version>5.0.2</elasticsearch.version>
+    <apachelog.version>2.7</apachelog.version>
+    <netty.version>4.1.7.Final</netty.version>
+  </properties>
+  <repositories>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+    <repository>
+      <id>vaadin-snapshots</id>
+      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <releases>
+	<enabled>false</enabled>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>vaadin-snapshots</id>
+      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <releases>
+	<enabled>false</enabled>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+</project>
