@@ -111,6 +111,20 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/../database/cassandra/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../database/dynamodb/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/../filesystem/local/target</directory>
       <includes>
 	<include>aether*.jar</include>
