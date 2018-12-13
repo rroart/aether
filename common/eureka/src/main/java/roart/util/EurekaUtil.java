@@ -110,5 +110,18 @@ public class EurekaUtil {
 		return result;
 	}
 
+        public static <T> T sendMe(Class<T> myclass, String url, Object param, String path) {
+            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            Map map = new HashMap<String, String>();
+            map.put("Content-Type", "application/json");
+
+            headers.setAll(map);
+
+            HttpEntity<?> request = new HttpEntity<>(param, headers);
+            RestTemplate rt = new RestTemplate();
+        ResponseEntity<T> regr = new RestTemplate().postForEntity(url + path, request, myclass);
+        T result = regr.getBody();
+        return result;
+}
 
 }
