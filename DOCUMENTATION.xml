@@ -133,6 +133,28 @@ database.hbase
 		  </row>
 		  <row>
 		    <entry>
+database.cassandra
+	    </entry>
+	    <entry>
+	      Enable Cassandra
+	    </entry>
+	    <entry>
+	      false
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.dynamodb
+	    </entry>
+	    <entry>
+	      Enable DynamoDB
+	    </entry>
+	    <entry>
+	      false
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
 database.hibernate
 	    </entry>
 	    <entry>
@@ -601,6 +623,83 @@ database.hbase.hbasemaster
 	    </entry>
 	    <entry>
 	      localhost:2181
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.cassandra.host
+	    </entry>
+	    <entry>
+	      Cassandra host
+	    </entry>
+	    <entry>
+	      ""
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.cassandra.tls
+	    </entry>
+	    <entry>
+	      Cassandra TLS enable
+	    </entry>
+	    <entry>
+	      false
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.cassandra.port
+	    </entry>
+	    <entry>
+	      Cassandra client port
+	    </entry>
+	    <entry>
+	      9042
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.cassandra.thriftport
+	    </entry>
+	    <entry>
+	      Cassandra thrift client port
+	    </entry>
+	    <entry>
+	      9160
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.cassandra.tlsport
+	    </entry>
+	    <entry>
+	      Cassandra TLS port
+	    </entry>
+	    <entry>
+	      9142
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.dynamodb.host
+	    </entry>
+	    <entry>
+	      Dynamodb host
+	    </entry>
+	    <entry>
+	      ""
+	    </entry>
+		  </row>
+		  <row>
+		    <entry>
+database.dynamodb.port
+	    </entry>
+	    <entry>
+	      Dynamodb port
+	    </entry>
+	    <entry>
+	      8000
 	    </entry>
 		  </row>
 		  <row>
@@ -1780,6 +1879,14 @@ Curator 2.9.1
       <programlisting>
 	hue/build/env/bin/supervisor
       </programlisting>
+    </para>
+  </sect1>
+  <sect1>
+    <title>
+      AMQP
+    </title>
+    <para>
+      Like RabbitMQ. Use rabbitmq-plugins enable rabbitmq_amqp1_0
     </para>
   </sect1>
 </chapter>

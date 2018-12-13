@@ -1,54 +1,65 @@
-update dependent software
-synonyms
-indexing exception instead of -1
-list vs [], need only one
-handle delete move
-detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
-display diff docs and number indexed
-db persistence, more db handling
-distributed locking and node loss
-deleted/missing files and distributed system
-request end criteria, ending and displaying too early
+B: Bug
+F: Feature
+T: Tech debt
+D: Done
+W: Work
+C: Change
+
+T: pom versioning
+C: Cassandra allow filtering and "You fool! You doomed us all!"
+F: zk timed announcement of directories
+T: update dependent software
+F: synonyms
+T: indexing exception instead of -1
+F: list vs [], need only one
+F: handle delete move
+T: detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
+F: display diff docs and number indexed
+F: db persistence, more db handling
+F: distributed locking and node loss
+F: deleted/missing files and distributed system
+B: request end criteria, ending and displaying too early
 #package lang profiles
-get metadata if too small?
-hbase delete from db incomplete
-better handling of thrown errors
-tesseract (through) tika is running english only
-consistent clean with filename only, or md5 without any files
-exceeding (re)indexing limits
-work indexcount problem
-tab refreshing
-config property file , delimiter handling (language, other lists)
-config file save.
-full gui config.
-join a master config.
-client request ends too early, still has work, recheck criteria.
-mllib
-dynamic config
-redo config is microserv
-distrib
-dynamic config and web change
-h2db lucene disk lokasjon rules
-isbn extraction
-cassandra
-move webstat out of core?
-db/zkrunner using clientrunner, must be replaced.
-clientrunner.notify
-clientrunner check alive and restart
-fix webstat
-move node classify, as root of ml
-handle reconfig live
-controlservice static
-mesos api use
-some service only allow one running
-external services in docker
-aether med ready microserv app gui
-change lock strategy, hazelcast etc
-use swift with non-exist dir
-get tool to find unneeded deps
-refactor into more batch/collection processing
-make demo version with docker
-deprecated logdir etc?
-split off tika etc into microservice
-Thread/multitask change
-Vaadin threads
+F: get metadata if too small?
+B: hbase delete from db incomplete
+T: better handling of thrown errors
+B: tesseract (through) tika is running english only
+F: consistent clean with filename only, or md5 without any files
+B: exceeding (re)indexing limits
+B: work indexcount problem
+F: tab refreshing
+F: config property file , delimiter handling (language, other lists)
+F: config file save.
+WF: full gui config.
+F: join a master config.
+B: client request ends too early, still has work, recheck criteria.
+F: mllib
+F: dynamic config
+F: redo config is microserv
+F: distrib
+F: dynamic config and web change
+F: h2db lucene disk lokasjon rules
+WF: isbn extraction
+F: cassandra
+C: move webstat out of core?
+C: db/zkrunner using clientrunner, must be replaced.
+C: clientrunner.notify
+F: clientrunner check alive and restart
+C: fix webstat
+C: move node classify, as root of ml
+F: handle reconfig live
+T: controlservice static
+WF: mesos api use
+F: some service only allow one running
+F: external services in docker
+F: aether med ready microserv app gui
+T: change lock strategy, hazelcast etc
+B?: use swift with non-exist dir
+F: get tool to find unneeded deps
+WF: refactor into more batch/collection processing
+WF: make demo version with docker
+F: deprecated logdir etc?
+F: split off tika etc into microservice
+F: Thread/multitask change
+F: Vaadin threads
+T: space/tabs
