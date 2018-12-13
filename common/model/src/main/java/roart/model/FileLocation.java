@@ -71,24 +71,43 @@ public class FileLocation {
 	    this.filename = filename;
 	}
 
-    @Override
-    public String toString() {
+    public String toStringNot() {
 	if (node == null || node.length() == 0) {
 	    log.error("No nodename");
-	    return filename;
+	    return "'" + filename + "'";
 	}
 	// TODO make OO version
 	if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
 		if (filename.startsWith(FileSystemConstants.SWIFT)) {
 			String prefix = filename.substring(0, FileSystemConstants.SWIFTLEN);
-			return prefix + "//" + node + filename.substring(FileSystemConstants.SWIFTLEN);				
+			return "'" + prefix + "//" + node + filename.substring(FileSystemConstants.SWIFTLEN) + "'";				
 		} else {
 		String prefix = filename.substring(0, FileSystemConstants.FILELEN);
-		return prefix + "//" + node + filename.substring(FileSystemConstants.FILELEN);
+		return "'" + prefix + "//" + node + filename.substring(FileSystemConstants.FILELEN) + "'";
 		}
 	} else {
-		return FileSystemConstants.FILESLASH + node + filename;
+		return "'" + FileSystemConstants.FILESLASH + node + filename + "'";
 	}
+    }
+
+    @Override
+    public String toString() {
+        if (node == null || node.length() == 0) {
+            log.error("No nodename");
+            return filename;
+        }
+        // TODO make OO version
+        if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
+                if (filename.startsWith(FileSystemConstants.SWIFT)) {
+                        String prefix = filename.substring(0, FileSystemConstants.SWIFTLEN);
+                        return prefix + "//" + node + filename.substring(FileSystemConstants.SWIFTLEN);                             
+                } else {
+                String prefix = filename.substring(0, FileSystemConstants.FILELEN);
+                return prefix + "//" + node + filename.substring(FileSystemConstants.FILELEN);
+                }
+        } else {
+                return FileSystemConstants.FILESLASH + node + filename;
+        }
     }
 
     public String toPrintString() {
