@@ -48,12 +48,12 @@ public class IndexFiles {
     private Object lockqueue;
     
     private IndexFiles() {
-	    filelocations = new HashSet<FileLocation>();
+	    filelocations = new HashSet<>();
 	    maxfilelocations = 0;
 	}
 
 	public IndexFiles(String md5) {
-	    filelocations = new HashSet<FileLocation>();
+	    filelocations = new HashSet<>();
 	    maxfilelocations = 0;
 	    this.setMd5(md5);
 	}
