@@ -296,6 +296,10 @@ public class MyXMLConfig {
         String db = null;
         if (configInstance.wantHBase()) {
             db = ConfigConstants.DATABASEHBASE;
+        } else if (configInstance.wantCassandra()) {
+            db = ConfigConstants.DATABASECASSANDRA;
+        } else if (configInstance.wantDynamodb()) {
+            db = ConfigConstants.DATABASEDYNAMODB;
         } else if (configInstance.wantDataNucleus()) {
             db = ConfigConstants.DATABASEDATANUCLEUS;
         } else if (configInstance.wantHibernate()) {

@@ -68,6 +68,14 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.DATABASEHBASE);
     }
     
+    public Boolean wantCassandra() {
+        return (Boolean) getValueOrDefault(ConfigConstants.DATABASECASSANDRA);
+    }
+    
+    public Boolean wantDynamodb() {
+        return (Boolean) getValueOrDefault(ConfigConstants.DATABASEDYNAMODB);
+    }
+    
     public Boolean wantDataNucleus() {
         return (Boolean) getValueOrDefault(ConfigConstants.DATABASEDATANUCLEUS);
     }
@@ -319,6 +327,41 @@ public class NodeConfig extends MyConfig {
     @JsonIgnore
     public String getHbasemaster() {
         return (String) getValueOrDefault(ConfigConstants.DATABASEHBASEHBASEMASTER);
+    }
+    
+    @JsonIgnore
+    public String getCassandraHost() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRAHOST);
+    }
+    
+    @JsonIgnore
+    public Boolean getCassandraTLS() {
+        return (Boolean) getValueOrDefault(ConfigConstants.DATABASECASSANDRATLS);
+    }
+    
+    @JsonIgnore
+    public String getCassandraPort() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRAPORT);
+    }
+    
+    @JsonIgnore
+    public String getCassandraThriftPort() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRATHRIFTPORT);
+    }
+    
+    @JsonIgnore
+    public String getCassandraTLSPort() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRATLSPORT);
+    }
+    
+    @JsonIgnore
+    public String getDynamodbHost() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASEDYNAMODBHOST);
+    }
+    
+    @JsonIgnore
+    public String getDynamodbPort() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASEDYNAMODBPORT);
     }
     
     @JsonIgnore

@@ -45,6 +45,8 @@ public class MyXMLConfig {
          version = "";
          Map<String, String> map = new HashMap<>();
          map.put(ConfigConstants.DATABASEHBASE, "aether-hbase" + version);
+         map.put(ConfigConstants.DATABASECASSANDRA, "aether-cassandra" + version);
+         map.put(ConfigConstants.DATABASEDYNAMODB, "aether-dynamodb" + version);
          map.put(ConfigConstants.DATABASEHIBERNATE, "aether-hibernate" + version);
          map.put(ConfigConstants.DATABASEDATANUCLEUS, "aether-datanucleus" + version);
          map.put(ConfigConstants.MACHINELEARNINGMAHOUT, "aether-mahout-mr" + version);

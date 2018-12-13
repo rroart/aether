@@ -15,6 +15,8 @@ public class EurekaConstants {
     public static final String FILESYSTEM = "FILESYSTEM";
     public static final String HIBERNATE = "HIBERNATE";
     public static final String HBASE = "HBASE";
+    public static final String CASSANDRA = "CASSANDRA";
+    public static final String DYNAMODB = "DYNAMODB";
     public static final String DATANUCLEUS = "DATANUCLEUS";
     public static final String LOCAL = "LOCAL";
     public static final String SWIFT = "SWIFT";

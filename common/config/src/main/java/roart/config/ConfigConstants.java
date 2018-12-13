@@ -19,6 +19,8 @@ public class ConfigConstants {
     public static final String DB = "db";
     public static final String LOCALHOST = "localhost";
     public static final String DATABASEHBASE = "database.hbase[@enable]";
+    public static final String DATABASECASSANDRA = "database.cassandra[@enable]";
+    public static final String DATABASEDYNAMODB = "database.dynamodb[@enable]";
     public static final String DATABASEHIBERNATE = "database.hibernate[@enable]";
     public static final String DATABASEHIBERNATEH2DIR = "database.hibernate.h2dir";
     public static final String NODECLASSIFY = "node.classify[@enable]";
@@ -64,6 +66,13 @@ public class ConfigConstants {
     public static final String DATABASEHBASEHBASEQUORUM = "database.hbase.hbasequorum";
     public static final String DATABASEHBASEHBASEPORT = "database.hbase.hbaseport";
     public static final String DATABASEHBASEHBASEMASTER = "database.hbase.hbasemaster";
+    public static final String DATABASECASSANDRAHOST = "database.cassandra.host";
+    public static final String DATABASECASSANDRATLS = "database.cassandra.tls[@enable]";
+    public static final String DATABASECASSANDRAPORT = "database.cassandra.port";
+    public static final String DATABASECASSANDRATHRIFTPORT = "database.cassandra.thriftport";
+    public static final String DATABASECASSANDRATLSPORT = "database.cassandra.tlsport";
+    public static final String DATABASEDYNAMODBHOST = "database.dynamodb.host";
+    public static final String DATABASEDYNAMODBPORT = "database.dynamodb.port";
     public static final String NODE = "node";
     public static final String NODENODENAME = "node.nodename";
     public static final String FSDATADIR = "fs.datadir";
