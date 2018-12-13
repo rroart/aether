@@ -41,6 +41,12 @@ public class IndexFilesDao {
             if (type.equals(ConfigConstants.DATABASEHBASE)) {
                 indexFiles = new HbaseIndexFilesAccess();
             }
+            if (type.equals(ConfigConstants.DATABASECASSANDRA)) {
+                indexFiles = new CassandraIndexFilesAccess();
+            }
+            if (type.equals(ConfigConstants.DATABASEDYNAMODB)) {
+                indexFiles = new DynamodbIndexFilesAccess();
+            }
             if (type.equals(ConfigConstants.DATABASEDATANUCLEUS)) {
                 indexFiles = new DataNucleusIndexFilesAccess();
             }
