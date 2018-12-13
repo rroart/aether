@@ -8,6 +8,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.data.Stat;
 
 import roart.util.Constants;
 
@@ -20,6 +21,7 @@ public class ZKMessageUtil {
 
     public static List<String> getChildren(String dir, Watcher watcher) throws KeeperException, InterruptedException {
 	    try {
+	        Stat i = ZKInitialize.zk.exists(null, false);
 	        return ZKInitialize.zk.getChildren(dir, watcher);
 	    } catch (KeeperException.NoNodeException e){
 	        throw e;
