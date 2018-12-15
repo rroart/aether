@@ -5,6 +5,7 @@ import roart.model.ResultItem;
 import roart.model.FileObject;
 import roart.model.SearchDisplay;
 import roart.util.Constants;
+import roart.util.EurekaUtil;
 import roart.util.FileSystemConstants;
 import roart.config.ConfigConstants;
 import roart.config.ConfigTreeMap;
@@ -191,7 +192,7 @@ public class MyVaadinUI extends UI
     
     @Override
     protected void init(VaadinRequest request) {
-        
+        EurekaUtil.initEurekaClient();
         controlService = new ControlService();
         controlService.getRemoteConfig();
 
