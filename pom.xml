@@ -70,7 +70,7 @@
     <aether.version>0.10-SNAPSHOT</aether.version>
     <mavencompiler.version>3.8.0</mavencompiler.version>
     <maveninstall.version>2.5.2</maveninstall.version>
-    <jetty.version>9.4.10.RC1</jetty.version>
+    <jetty.version>9.4.12.v20180830</jetty.version>
     <springboot.version>2.1.1.RELEASE</springboot.version>
     <springcloud.version>2.0.2.RELEASE</springcloud.version>
     <springcloudstarter.version>Finchley.SR2</springcloudstarter.version>
@@ -132,6 +132,7 @@
     <elasticsearch.version>5.0.2</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
+    <jaxb.version>2.3.0</jaxb.version>
   </properties>
   <repositories>
     <repository>
