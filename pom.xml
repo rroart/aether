@@ -133,6 +133,7 @@
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
     <jaxb.version>2.3.0</jaxb.version>
+    <javaxinject.version>1</javaxinject.version>
   </properties>
   <repositories>
     <repository>
