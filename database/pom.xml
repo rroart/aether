@@ -16,7 +16,7 @@
   <modules>
     <module>controller</module>
     <module>cassandra</module>
-    <module>datanucleus</module>
+    <!--module>datanucleus</module-->
     <module>dynamodb</module>
     <module>hbase</module>
     <module>hibernate</module>
