@@ -1,0 +1,5 @@
+<config>
+  <fs>
+    <dirlist>/usr/share/man,swift:/local</dirlist>
+  </fs>
+</config>
