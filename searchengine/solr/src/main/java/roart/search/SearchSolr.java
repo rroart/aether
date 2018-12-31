@@ -43,12 +43,14 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
 	public SearchSolr(String nodename, NodeConfig nodeConf) {
 		conf = new SolrConfig();
-		String url = nodeConf.getSolrurl(); 
-		HttpSolrClient server = new HttpSolrClient( url );
+		String url = nodeConf.getSolrurl();
+		HttpSolrClient server = new HttpSolrClient.Builder(url)
+		        .withSocketTimeout(60000)
+		        .withConnectionTimeout(5000)
+		        .build();
 		conf.server = server;
 		log.info("server " + server);
 		System.out.println("server " + server);
-		server.setConnectionTimeout(5000); // 5 seconds to establish TCP
 		// Setting the XML response parser is only required for cross
 		// version compatibility and only when one side is 1.4.1 or
 		// earlier and the other side is 3.1 or later.
@@ -57,13 +59,12 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		// The following settings are provided here for completeness.
 		// They will not normally be required, and should only be used 
 		// after consulting javadocs to know whether they are truly required.
-		server.setSoTimeout(60000);  // socket read timeout
-		server.setDefaultMaxConnectionsPerHost(100);
-		server.setMaxTotalConnections(100);
+		// server.setDefaultMaxConnectionsPerHost(100);
+		// server.setMaxTotalConnections(100);
 		server.setFollowRedirects(false);  // defaults to false
 		// allowCompression defaults to false.
 		// Server side must support gzip or deflate for this to have any effect.
-		server.setAllowCompression(true);
+		// server.setAllowCompression(true);
 	}
 
 	public SearchEngineConstructorResult destroy() throws IOException {
@@ -252,14 +253,16 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
 			log.info("query " + query);
 
-			HttpSolrClient mltserver = new HttpSolrClient(conf.server.getBaseURL());
-			mltserver.setSoTimeout(600000); // bigger timeout, only diff
-			mltserver.setDefaultMaxConnectionsPerHost(100);
-			mltserver.setMaxTotalConnections(100);
+			HttpSolrClient mltserver = new HttpSolrClient.Builder(conf.server.getBaseURL())
+	                        .withSocketTimeout(600000) // bigger timeout, only diff
+	                        .withConnectionTimeout(5000)
+			        .build();
+			// mltserver.setDefaultMaxConnectionsPerHost(100);
+			// mltserver.setMaxTotalConnections(100);
 			mltserver.setFollowRedirects(false);  // defaults to false
 			// allowCompression defaults to false.
 			// Server side must support gzip or deflate for this to have any effect.
-			mltserver.setAllowCompression(true);
+			// mltserver.setAllowCompression(true);
 
 			QueryResponse rsp = mltserver.query( query );
 			NamedList<Object> mlt = (NamedList<Object>) rsp.getResponse().get("moreLikeThis");
