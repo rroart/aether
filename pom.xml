@@ -76,24 +76,24 @@
     <springcloudstarter.version>Finchley.SR2</springcloudstarter.version>
     <springcore.version>5.1.3.RELEASE</springcore.version>
     <eurekaclient.version>1.9.8</eurekaclient.version>
-    <jdk.version>1.8</jdk.version>
+    <jdk.version>11</jdk.version>
     <junit.version>4.12</junit.version>
-    <lucene.version>6.2.1</lucene.version>
-    <solr.version>6.2.1</solr.version>
-    <hbase.version>1.2.1</hbase.version>
+    <lucene.version>7.6.0</lucene.version>
+    <solr.version>7.6.0</solr.version>
+    <hbase.version>2.1.0</hbase.version>
     <cassandra.version>3.6.0</cassandra.version>
     <aws.version>1.11.460</aws.version>
     <dynamodblocal.version>1.11.0.1</dynamodblocal.version>
-    <tika.version>1.13</tika.version>
+    <tika.version>1.20</tika.version>
     <mahout.version>0.12.0</mahout.version>
     <!-- must keep at old version for some time -->
     <mahout.spark.version>1.5.2</mahout.spark.version>
-    <spark.version>2.3.0</spark.version>
+    <spark.version>2.4.0</spark.version>
     <scala.version>2.11</scala.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
     <opennlp.version>1.5.3</opennlp.version>
-    <hadoop.version>2.7.1</hadoop.version>
+    <hadoop.version>3.1.1</hadoop.version>
     <datanucleus.version>5.1.0-release</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
@@ -106,10 +106,10 @@
     <camel.version>2.22.2</camel.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-    <hibernate.version>5.1.0.Final</hibernate.version>
+    <hibernate.version>5.4.0.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
     <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
-    <h2.version>1.4.190</h2.version>
+    <h2.version>1.4.197</h2.version>
     <jdbc.groupId>com.h2database</jdbc.groupId>
     <jdbc.artifactId>h2</jdbc.artifactId>
     <jdbc.version>1.3.160</jdbc.version>
@@ -129,7 +129,7 @@
     <commons.version>2.1.1</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
     <joss.version>0.9.14</joss.version>
-    <elasticsearch.version>5.0.2</elasticsearch.version>
+    <elasticsearch.version>6.5.4</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
     <jaxb.version>2.3.0</jaxb.version>

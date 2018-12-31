@@ -21,10 +21,7 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Table;
@@ -428,8 +425,8 @@ public class HbaseIndexFiles {
     }
 
     public void flush() throws Exception {
-	    ((HTable) filesTable).flushCommits();
-	    ((HTable) indexTable).flushCommits();
+	 //   ((HTable) filesTable).flushCommits();
+	 //   ((HTable) indexTable).flushCommits();
     }
 
     public void commit() throws Exception {        

@@ -1090,6 +1090,9 @@ Standalone will use no global locker.
 The directory list may be ordinary, local filesystem, or it may be HDFS or Swift.
 (More about HDFS and Swift later)
 The exceptions are to be listedd in dirlistnot.
+
+The filesystems are configured with for instance -DFS=hdfs -DPATH=/tmp -DZOO=localhost:2181.
+The filesystems with communicate with Zookeeper, not Eureka, to post the filesystems they serve.
   </para>
   <para>
     The indexed filenames and metadata are stored in a database.
@@ -1705,17 +1708,17 @@ Refactor in microservices.
       </title>
       <listitem>
 	<para>
-	  Solr 6.2.1
+	  Solr 7.6.0
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  Elasticsearch 5.0.2
+	  Elasticsearch 6.5.4
 	</para>
       </listitem>
       <listitem>
 	<para>
-Hbase 1.2.1
+Hbase 2.1.0
 	</para>
       </listitem>
       <listitem>
@@ -1730,7 +1733,7 @@ Spark 1.5.2 (for the Mahout Spark)
       </listitem>
       <listitem>
 	<para>
-Spark 2.1.0 (for the Spark ML)
+Spark 2.4.0 (for the Spark ML)
 	</para>
       </listitem>
       <listitem>
@@ -1740,7 +1743,7 @@ OpenNLP 1.5.3
       </listitem>
       <listitem>
 	<para>
-Curator 2.9.1
+Curator 2.12
 	</para>
       </listitem>
       <listitem>
@@ -1750,7 +1753,7 @@ Curator 2.9.1
       </listitem>
       <listitem>
 	<para>
-	  Hadoop (2.7.1)
+	  Hadoop (3.1.1)
 	  </para>
       </listitem>
     </itemizedlist>
