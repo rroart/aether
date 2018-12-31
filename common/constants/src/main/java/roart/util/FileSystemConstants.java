@@ -2,6 +2,9 @@ package roart.util;
 
 public class FileSystemConstants {
 
+    public enum FileSystemType { LOCAL, SWIFT, HDFS };
+    
+    public static final String LOCAL = "local:";
     public static final String FILE = "file:";
     public static final int FILELEN = 5;
     public static final String HDFS = "hdfs:";

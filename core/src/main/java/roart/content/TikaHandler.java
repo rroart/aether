@@ -15,9 +15,13 @@ import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.util.Constants;
 import roart.util.FileSystemConstants;
+import roart.util.FsUtil;
 import roart.util.MyList;
 import roart.util.MyLists;
+import roart.filesystem.FileSystemAccess;
 import roart.filesystem.FileSystemDao;
+import roart.filesystem.FileSystemFactory;
+import roart.filesystem.RemoteFileSystemAccess;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 
@@ -159,8 +163,12 @@ public class TikaHandler {
                     String fn = null;
                     String tmpfn = null;
                     // TODO make OO version of this
-                    if (filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
-                        tmpfn = copyFileToTmp(filename);
+                    FileSystemAccess fsAccess = FileSystemFactory.getFileSystem(filename);
+                    fn = fsAccess.getLocalFilesystemFile(filename);
+                    el.filename = fn;
+                    /*
+                    if (FsUtil.isRemote(filename)) {
+                        tmpfn = RemoteFileSystemAccess.copyFileToTmp(filename);
                         fn = tmpfn;
                     } else {
                         FileObject file = FileSystemDao.get(filename);  
@@ -169,6 +177,7 @@ public class TikaHandler {
                             fn = fn.substring(5);
                         }
                     }
+                    */
                     log.info("for mime type " + fn);
                     Path path = new File(fn).toPath();
                     String mimetype = Files.probeContentType(path);
@@ -228,10 +237,15 @@ public class TikaHandler {
                 //log.info("filenames " + dbfilename + " " + filename);
                 if (dbfilename.equals(filename)) {
                     // TODO make OO version of this
-                    if (filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
-                        String fn = copyFileToTmp(filename);
+                    FileSystemAccess fsAccess = FileSystemFactory.getFileSystem(filename);
+                    String fn = fsAccess.getLocalFilesystemFile(filename);
+                    el.filename = fn;
+                    /*
+                    if (FsUtil.isRemote(filename)) {
+                        String fn = RemoteFileSystemAccess.copyFileToTmp(filename);
                         el.filename = fn;
                     }
+                    */
                     el.size = size;
                     Queues.otherQueue.add(el);
                 } else {
@@ -274,20 +288,6 @@ public class TikaHandler {
             log.error("queue not having " + dbfilename);
         }
         log.info("ending " + el.md5 + " " + el.dbfilename);
-    }
-
-    private String copyFileToTmp(String filename) throws FileNotFoundException,
-            IOException {
-        int i = filename.lastIndexOf("/");
-        String fn = "/tmp/hdfs" + filename.substring(i + 1);
-        log.info("copy to local filenames " + filename + " " + fn);
-        FileObject file = FileSystemDao.get(filename);
-        InputStream in = FileSystemDao.getInputStream(file);
-        OutputStream out = new FileOutputStream(new File(fn));
-        IOUtils.copy(in, out);
-        in.close();
-        out.close();
-        return fn;
     }
 
 	public int mylimit(String filename) {
