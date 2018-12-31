@@ -5,61 +5,89 @@ D: Done
 W: Work
 C: Change
 
+Build
+T: pom auto tidy
 T: pom versioning
-C: Cassandra allow filtering and "You fool! You doomed us all!"
-F: zk timed announcement of directories
 T: update dependent software
-F: synonyms
-T: indexing exception instead of -1
-F: list vs [], need only one
-F: handle delete move
-T: detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
-F: display diff docs and number indexed
-F: db persistence, more db handling
-F: distributed locking and node loss
-F: deleted/missing files and distributed system
-B: request end criteria, ending and displaying too early
-#package lang profiles
-F: get metadata if too small?
+T: space/tabs
+F: get tool to find unneeded deps
+F: deprecated logdir etc?
+
+Database
+C: Cassandra allow filtering and "You fool! You doomed us all!"
+F: cassandra
 B: hbase delete from db incomplete
-T: better handling of thrown errors
-B: tesseract (through) tika is running english only
-F: consistent clean with filename only, or md5 without any files
+F: h2db lucene disk lokasjon rules
+F: db persistence, more db handling
+
+Core
+F: split off tika etc into microservice
+F: Thread/multitask change
 B: exceeding (re)indexing limits
 B: work indexcount problem
-F: tab refreshing
-F: config property file , delimiter handling (language, other lists)
-F: config file save.
-WF: full gui config.
-F: join a master config.
 B: client request ends too early, still has work, recheck criteria.
-F: mllib
-F: dynamic config
-F: redo config is microserv
-F: distrib
-F: dynamic config and web change
-F: h2db lucene disk lokasjon rules
+B: request end criteria, ending and displaying too early
+F: consistent clean with filename only, or md5 without any files
+
+Core/Tika
+T: detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
+B: tesseract (through) tika is running english only
 WF: isbn extraction
-F: cassandra
+F: get metadata if too small?
+F: handle delete move
+F: display diff docs and number indexed
+F: deleted/missing files and distributed system
+
+Front
+F: Vaadin threads
+F: tab refreshing
+C: fix webstat
 C: move webstat out of core?
 C: db/zkrunner using clientrunner, must be replaced.
 C: clientrunner.notify
 F: clientrunner check alive and restart
-C: fix webstat
-C: move node classify, as root of ml
-F: handle reconfig live
-T: controlservice static
-WF: mesos api use
-F: some service only allow one running
-F: external services in docker
 F: aether med ready microserv app gui
-T: change lock strategy, hazelcast etc
-B?: use swift with non-exist dir
-F: get tool to find unneeded deps
-WF: refactor into more batch/collection processing
+WF: full gui config.
+
+CD
 WF: make demo version with docker
-F: deprecated logdir etc?
-F: split off tika etc into microservice
-F: Thread/multitask change
-F: Vaadin threads
-T: space/tabs
+WF: mesos api use
+F: external services in docker
+
+MS
+WF: refactor into more batch/collection processing
+F: redo config is microserv
+
+ML
+F: mllib
+F: stanford
+
+Filesystems
+B?: use swift with non-exist dir
+WF: some service only allow one running
+F: zk timed announcement of directories
+
+Design
+T: indexing exception instead of -1
+T: better handling of thrown errors
+F: list vs [], need only one
+T: controlservice static
+
+Config
+F: dynamic config
+F: dynamic config and web change
+F: handle reconfig live
+F: config property file , delimiter handling (language, other lists)
+F: config file save.
+C: move node classify, as root of ml
+
+Search
+F: synonyms
+
+Outdated
+F: join a master config.
+F: distributed locking and node los
+T: change lock strategy, hazelcast etc
+F: distrib
+
+#package lang profiles
