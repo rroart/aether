@@ -1,8 +1,8 @@
-diff -ru ../../configsets/basic_configs/conf/schema.xml ./schema.xml
---- ../../configsets/basic_configs/conf/managed-schema	2015-02-15 20:38:59.000000000 +0100
-+++ ./managed-schema	2015-02-27 11:05:37.164665113 +0100
-@@ -121,6 +121,15 @@
-     <field name="_version_" type="long" indexed="true" stored="false"/>
+diff -ru ../../configsets/_default/conf/managed-schema ./managed-schema
+--- ../../configsets/_default/conf/managed-schema	2018-11-29 17:52:52.000000000 +0100
++++ ./managed-schema	2018-12-31 18:31:43.407232939 +0100
+@@ -115,6 +115,15 @@
+     <field name="_version_" type="plong" indexed="false" stored="false"/>
      <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
      <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 +    <field name="lang" type="text_general" indexed="true" stored="true"/>
@@ -15,21 +15,22 @@ diff -ru ../../configsets/basic_configs/conf/schema.xml ./schema.xml
 +    <!--copyField source="metadata" dest="text"/>
 +    <copyField source="content" dest="text"/-->
  
-     <!-- Only enabled in the "schemaless" data-driven example (assuming the client
-          does not know what fields may be searched) because it's very expensive to index everything twice. -->
-diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
---- ../../configsets/basic_configs/conf/solrconfig.xml	2015-02-15 20:38:59.000000000 +0100
-+++ ./solrconfig.xml	2015-02-27 09:55:24.896108652 +0100
-@@ -403,7 +403,7 @@
-          be based on the last SolrCore to be initialized.
-          
+     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
+          because it's very expensive to index everything twice. -->
+Only in .: managed-schema.orig
+diff -ru ../../configsets/_default/conf/solrconfig.xml ./solrconfig.xml
+--- ../../configsets/_default/conf/solrconfig.xml	2018-11-29 17:52:52.000000000 +0100
++++ ./solrconfig.xml	2018-12-31 18:31:43.407232939 +0100
+@@ -372,7 +372,7 @@
+          since it is purely an arbitrary limit to try and catch user errors where
+          large boolean queries may not be the best implementation choice.
        -->
 -    <maxBooleanClauses>1024</maxBooleanClauses>
 +    <maxBooleanClauses>16384</maxBooleanClauses>
  
- 
      <!-- Solr Internal Query Caches
-@@ -817,6 +817,7 @@
+ 
+@@ -760,6 +760,7 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
@@ -37,7 +38,7 @@ diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
      </lst>
    </requestHandler>
  
-@@ -838,7 +839,7 @@
+@@ -781,7 +782,7 @@
  
    <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,/browse">
      <lst name="defaults">
@@ -46,3 +47,4 @@ diff -ru ../../configsets/basic_configs/conf/solrconfig.xml ./solrconfig.xml
      </lst>
    </initParams>
  
+Only in .: solrconfig.xml.orig
