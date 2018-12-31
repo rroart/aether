@@ -2,7 +2,7 @@ package roart.filesystem;
 
 import roart.util.EurekaConstants;
 
-public class HDFSAccess extends FileSystemAccess {
+public class HDFSAccess extends RemoteFileSystemAccess {
 
     @Override
     public String getAppName() {
