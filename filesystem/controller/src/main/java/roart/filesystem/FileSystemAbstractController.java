@@ -28,75 +28,75 @@ import org.slf4j.LoggerFactory;
 @EnableDiscoveryClient
 public abstract class FileSystemAbstractController implements CommandLineRunner {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private static Map<String, FileSystemOperations> operationMap = new HashMap();
+    private static Map<String, FileSystemOperations> operationMap = new HashMap();
 
-	protected abstract FileSystemOperations createOperations(String nodename, NodeConfig nodeConf);
+    protected abstract FileSystemOperations createOperations(String nodename, NodeConfig nodeConf);
 
-	private FileSystemOperations getOperations(String nodename, NodeConfig nodeConf) {
-		FileSystemOperations operations = operationMap.get(nodename);
-		if (operations == null) {
-			operations = createOperations(nodename, nodeConf);
-			operationMap.put(nodename, operations);
-		}
-		return operations;
-	}
+    private FileSystemOperations getOperations(String nodename, NodeConfig nodeConf) {
+        FileSystemOperations operations = operationMap.get(nodename);
+        if (operations == null) {
+            operations = createOperations(nodename, nodeConf);
+            operationMap.put(nodename, operations);
+        }
+        return operations;
+    }
 
-	@RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
-			method = RequestMethod.POST)
-	public FileSystemConstructorResult processConstructor(@RequestBody FileSystemConstructorParam param)
-			throws Exception {
-		String error = null;
-		try {
-			FileSystemOperations operations = getOperations(param.nodename, param.conf);
-		} catch (Exception e) {
-			log.error(roart.util.Constants.EXCEPTION, e);
-			error = e.getMessage();
-		}
-		FileSystemConstructorResult result = new FileSystemConstructorResult();
-		result.error = error;
-		return result;
-	}
+    @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
+            method = RequestMethod.POST)
+    public FileSystemConstructorResult processConstructor(@RequestBody FileSystemConstructorParam param)
+            throws Exception {
+        String error = null;
+        try {
+            FileSystemOperations operations = getOperations(param.nodename, param.conf);
+        } catch (Exception e) {
+            log.error(roart.util.Constants.EXCEPTION, e);
+            error = e.getMessage();
+        }
+        FileSystemConstructorResult result = new FileSystemConstructorResult();
+        result.error = error;
+        return result;
+    }
 
-	@RequestMapping(value = "/" + EurekaConstants.DESTRUCTOR,
-			method = RequestMethod.POST)
-	public FileSystemConstructorResult processDestructor(@RequestBody FileSystemConstructorParam param)
-			throws Exception {
-		FileSystemOperations operations = operationMap.remove(param.nodename);
-		String error = null;
-		if (operations != null) {
-			try {
-				operations.destroy();
-			} catch (Exception e) {
-				log.error(roart.util.Constants.EXCEPTION, e);
-				error = e.getMessage();
-			}
-		} else {
-			error = "did not exist";
-		}
-		FileSystemConstructorResult result = new FileSystemConstructorResult();
-		result.error = error;
-		return result;
-	}
+    @RequestMapping(value = "/" + EurekaConstants.DESTRUCTOR,
+            method = RequestMethod.POST)
+    public FileSystemConstructorResult processDestructor(@RequestBody FileSystemConstructorParam param)
+            throws Exception {
+        FileSystemOperations operations = operationMap.remove(param.nodename);
+        String error = null;
+        if (operations != null) {
+            try {
+                operations.destroy();
+            } catch (Exception e) {
+                log.error(roart.util.Constants.EXCEPTION, e);
+                error = e.getMessage();
+            }
+        } else {
+            error = "did not exist";
+        }
+        FileSystemConstructorResult result = new FileSystemConstructorResult();
+        result.error = error;
+        return result;
+    }
 
-	@RequestMapping(value = "/" + EurekaConstants.LISTFILES,
-			method = RequestMethod.POST)
-	public FileSystemFileObjectResult processListFiles(@RequestBody FileSystemFileObjectParam param)
-			throws Exception {
-		FileSystemOperations operations = getOperations(param.nodename, param.conf);
-		FileSystemFileObjectResult ret = operations.listFiles(param);
-		return ret;
-	}
+    @RequestMapping(value = "/" + EurekaConstants.LISTFILES,
+            method = RequestMethod.POST)
+    public FileSystemFileObjectResult processListFiles(@RequestBody FileSystemFileObjectParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.conf);
+        FileSystemFileObjectResult ret = operations.listFiles(param);
+        return ret;
+    }
 
-	@RequestMapping(value = "/" + EurekaConstants.EXIST,
-			method = RequestMethod.POST)
-	public FileSystemBooleanResult processExist(@RequestBody FileSystemFileObjectParam param)
-			throws Exception {
-		FileSystemOperations operations = getOperations(param.nodename, param.conf);
-		FileSystemBooleanResult ret = operations.exists(param);
-		return ret;
-	}
+    @RequestMapping(value = "/" + EurekaConstants.EXIST,
+            method = RequestMethod.POST)
+    public FileSystemBooleanResult processExist(@RequestBody FileSystemFileObjectParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.conf);
+        FileSystemBooleanResult ret = operations.exists(param);
+        return ret;
+    }
 
     @RequestMapping(value = "/" + EurekaConstants.GETABSOLUTEPATH,
             method = RequestMethod.POST)
@@ -134,7 +134,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         return ret;
     }
 
-   @RequestMapping(value = "/" + EurekaConstants.GET,
+    @RequestMapping(value = "/" + EurekaConstants.GET,
             method = RequestMethod.POST)
     public FileSystemFileObjectResult processGet(@RequestBody FileSystemPathParam param)
             throws Exception {
@@ -143,46 +143,51 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         return ret;
     }
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(FileSystemAbstractController.class, args);
-	}
-	
-	@Autowired(required=true)
-	MyListener aListener;
-	
-	    @Override
-	    public void run(String... args) throws Exception {
-	        /*
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(FileSystemAbstractController.class, args);
+    }
+
+    @Autowired(required=true)
+    MyListener aListener;
+
+    @Override
+    public void run(String... args) throws Exception {
+        /*
 	        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
                 //context.scan("com.journaldev.spring");
                 context.refresh();
 
                 MyListener listener = (MyListener) context.getBean("listener");
                 context.close();
-                */
-                //Thread.sleep(10000);
-	            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
-	            
-	            String zookeeperConnectionString = System.getProperty("ZOO");
-	            CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
-	            curatorClient.start();
-	            String fs = System.getProperty("FS");
-	            String path = System.getProperty("PATH");
-	            log.info("Using {} {}", fs, path);
-                    //int port = new MyListener().getPort();
-                    int port = aListener.getPort();
-	            String whereami = InetAddress.getLocalHost().getHostAddress() + ":" + port;
-                    System.out.println("Whereami " + whereami);
-	            log.info("Whereami {}", whereami);
-	            byte[] bytes = whereami.getBytes();
-	            if (curatorClient.checkExists().forPath("/fs/" + fs + path) != null) {
-	                curatorClient.delete().forPath("/fs/" + fs + path);
-	            }
-	            curatorClient.create().creatingParentsIfNeeded().forPath("/fs/" + fs + path, bytes);
-	            while (true) {
-	                Thread.sleep(10000);
-                        curatorClient.setData().forPath("/fs/" + fs + path, bytes);
-	            }
-	    }
+         */
+        //Thread.sleep(10000);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
+
+        String zookeeperConnectionString = System.getProperty("ZOO");
+        CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        curatorClient.start();
+        String fs = System.getProperty("FS");
+        String path = System.getProperty("PATH");
+        log.info("Using {} {}", fs, path);
+        String[] paths = path.split(",");
+        //int port = new MyListener().getPort();
+        int port = aListener.getPort();
+        String whereami = InetAddress.getLocalHost().getHostAddress() + ":" + port;
+        System.out.println("Whereami " + whereami);
+        log.info("Whereami {}", whereami);
+        byte[] bytes = whereami.getBytes();
+        for (String aPath : paths) {
+            if (curatorClient.checkExists().forPath("/fs/" + fs + aPath) != null) {
+                curatorClient.delete().forPath("/fs/" + fs + aPath);
+            }
+            curatorClient.create().creatingParentsIfNeeded().forPath("/fs/" + fs + aPath, bytes);
+        }
+        while (true) {
+            Thread.sleep(10000);
+            for (String aPath : paths) {
+                curatorClient.setData().forPath("/fs/" + fs + aPath, bytes);
+            }
+        }
+    }
 
 }
