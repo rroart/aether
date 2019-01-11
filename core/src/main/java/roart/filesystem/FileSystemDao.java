@@ -10,10 +10,10 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.model.FileObject;
+import roart.common.constants.Constants;
+import roart.common.constants.FileSystemConstants;
+import roart.common.model.FileObject;
 import roart.service.ControlService;
-import roart.util.Constants;
-import roart.util.FileSystemConstants;
 
 public class FileSystemDao {
 

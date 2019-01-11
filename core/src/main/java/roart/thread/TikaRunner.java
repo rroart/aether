@@ -19,10 +19,10 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.constants.Constants;
 import roart.content.TikaHandler;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
-import roart.util.Constants;
 
 public class TikaRunner implements Runnable {
 	

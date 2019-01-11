@@ -145,14 +145,9 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>${elasticsearch.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.elasticsearch.client</groupId>
-      <artifactId>transport</artifactId>
-      <version>${elasticsearch.version}</version>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.elastic</artifactId>
+      <version>${aether.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

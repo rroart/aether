@@ -2,27 +2,27 @@ package roart.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.*;
-import org.springframework.boot.autoconfigure.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
+import roart.common.database.DatabaseLanguagesResult;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
-import roart.config.MyConfig;
+import roart.common.service.ServiceParam;
+import roart.common.service.ServiceResult;
 import roart.config.MyXMLConfig;
-import roart.database.DatabaseLanguagesResult;
+import roart.eureka.util.EurekaUtil;
 import roart.service.ControlService;
 import roart.service.SearchService;
-import roart.service.ServiceParam;
-import roart.service.ServiceResult;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
-
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @RestController
 @SpringBootApplication
@@ -57,7 +57,7 @@ public class ServiceController implements CommandLineRunner {
                     // TODO fix
                         //getInstance().config(param.config);
                 } catch (Exception e) {
-                        log.error(roart.util.Constants.EXCEPTION, e);
+                        log.error(Constants.EXCEPTION, e);
                         result.error = e.getMessage();
                 }
                 return result;
@@ -71,7 +71,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.config = MyConfig.conf;
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -85,7 +85,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.languages = getInstance().getLanguages();
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             //result.error = e.getMessage();
         }
         return result;
@@ -103,7 +103,7 @@ public class ServiceController implements CommandLineRunner {
 	        result.list = getInstance().traverse(param);
 	    }
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -117,7 +117,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().overlapping(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -131,7 +131,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().indexsuffix(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -145,7 +145,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().index(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -159,7 +159,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().reindexdatelower(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -173,7 +173,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().reindexdatehigher(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -187,7 +187,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().reindexlanguage(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -201,7 +201,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().cleanupfs(param.dirname);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -215,7 +215,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().memoryusage(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -229,7 +229,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().notindexed(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -247,7 +247,7 @@ public class ServiceController implements CommandLineRunner {
 		result.list = getInstance().filesystemlucenenew(param);
 	    }
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -265,7 +265,7 @@ public class ServiceController implements CommandLineRunner {
 		result.list = getInstance().dbindex(param);
 	    }
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -283,7 +283,7 @@ public class ServiceController implements CommandLineRunner {
 		result.list = getInstance().dbsearch(param);
 	    }
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -297,7 +297,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().consistentclean(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -311,7 +311,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().deletepathdb(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -325,7 +325,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().searchengine(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -339,7 +339,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().database(param.name);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -353,7 +353,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().filesystem(param.name);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -367,7 +367,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance().machinelearning(param.name);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;
@@ -381,7 +381,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance2().searchme(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             // TODO fix
             //result.error = e.getMessage();
         }
@@ -396,7 +396,7 @@ public class ServiceController implements CommandLineRunner {
         try {
             result.list = getInstance2().searchsimilar(param);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             // TODO fix
             //result.error = e.getMessage();
         }
@@ -426,6 +426,10 @@ public class ServiceController implements CommandLineRunner {
         public void run(String... args) throws InterruptedException {
             EurekaUtil.initEurekaClient();
             String configFile = null;
+            if (args != null && args.length > 0) {
+            System.out.println("args " + args[0]);
+            log.info("args " + args[0]);
+            }
             if (args != null && args.length > 0) {
                 configFile = args[0];
             }

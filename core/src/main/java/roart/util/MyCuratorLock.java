@@ -2,6 +2,8 @@ package roart.util;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
+import roart.common.constants.Constants;
+import roart.common.synchronization.MyLock;
 import roart.service.ControlService;
 
 public class MyCuratorLock extends MyLock {

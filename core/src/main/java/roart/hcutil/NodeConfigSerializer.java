@@ -4,11 +4,11 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.StreamSerializer;
 
+import roart.common.config.NodeConfig;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-
-import roart.config.NodeConfig;
 
 public class NodeConfigSerializer implements StreamSerializer<NodeConfig> {
 

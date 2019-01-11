@@ -1,6 +1,6 @@
 package roart.util;
 
-import roart.config.MyConfig;
+import roart.common.config.MyConfig;
 
 public class MyAtomicLongFactory extends MyFactory {
 

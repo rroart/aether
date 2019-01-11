@@ -1,7 +1,7 @@
 package roart.servlet.listeners;
 
-import roart.util.Constants;
-import roart.util.EurekaUtil;
+import roart.common.constants.Constants;
+import roart.eureka.util.EurekaUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -14,7 +14,7 @@ public class StartupListener implements javax.servlet.ServletContextListener {
     private static final Logger log = LoggerFactory.getLogger(StartupListener.class);
 
     public void contextInitialized(ServletContextEvent context)  {
-	    
+	System.out.println("grrr");    
     	EurekaUtil.initEurekaClient();
     }
 

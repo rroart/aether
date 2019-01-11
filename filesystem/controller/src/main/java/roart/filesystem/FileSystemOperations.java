@@ -1,5 +1,13 @@
 package roart.filesystem;
 
+import roart.common.filesystem.FileSystemBooleanResult;
+import roart.common.filesystem.FileSystemByteResult;
+import roart.common.filesystem.FileSystemConstructorResult;
+import roart.common.filesystem.FileSystemFileObjectParam;
+import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemPathParam;
+import roart.common.filesystem.FileSystemPathResult;
+
 public abstract class FileSystemOperations {
     
     public abstract FileSystemConstructorResult destroy() throws Exception;

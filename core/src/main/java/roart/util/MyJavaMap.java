@@ -5,6 +5,8 @@ import java.util.Queue;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import roart.common.collections.MyMap;
+
 public class MyJavaMap<K, V> extends MyMap<K, V> {
     public volatile Map<K, V> map;
 

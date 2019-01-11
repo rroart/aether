@@ -1,7 +1,5 @@
 package roart.service;
 
-import roart.model.ResultItem;
-
 import javax.servlet.http.*;
 
 import java.util.List;
@@ -17,21 +15,24 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.io.*;
 
-import roart.service.ServiceParam.Function;
 import roart.thread.ClientRunner;
-import roart.model.FileLocation;
-import roart.model.FileObject;
-import roart.model.IndexFiles;
-import roart.model.SearchDisplay;
 import roart.queue.Queues;
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.config.NodeConfig;
-import roart.database.DatabaseLanguagesResult;
-import roart.util.Constants;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
-import roart.util.MyLock;
+import roart.common.config.ConfigConstants;
+import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
+import roart.common.database.DatabaseLanguagesResult;
+import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
+import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
+import roart.common.model.SearchDisplay;
+import roart.common.service.ServiceParam;
+import roart.common.service.ServiceResult;
+import roart.common.service.ServiceParam.Function;
+import roart.common.synchronization.MyLock;
+import roart.eureka.util.EurekaUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

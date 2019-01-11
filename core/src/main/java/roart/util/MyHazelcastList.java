@@ -34,7 +34,7 @@ public class MyHazelcastList<T> extends MyList<T> {
         try {
             list.add(o);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(roart.common.constants.Constants.EXCEPTION, e);
         }
     }
 

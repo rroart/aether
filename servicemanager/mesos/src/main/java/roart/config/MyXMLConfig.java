@@ -9,7 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import roart.util.Constants;
+import roart.common.constants.Constants;
+import roart.common.config.ConfigConstants;
+import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.util.MesosUtil;
 
 public class MyXMLConfig {

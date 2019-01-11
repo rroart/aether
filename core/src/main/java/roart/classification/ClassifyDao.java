@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
-import roart.config.ConfigConstants;
-import roart.model.ResultItem;
-import roart.util.Constants;
+import roart.common.config.ConfigConstants;
+import roart.common.constants.Constants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -4,11 +4,11 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.StreamSerializer;
 
+import roart.common.model.ResultItem;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-
-import roart.model.ResultItem;
 
 public class ResultItemSerializer implements StreamSerializer<ResultItem> {
 

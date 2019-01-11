@@ -10,13 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.model.IndexFiles;
-import roart.model.FileLocation;
+import roart.common.config.ConfigConstants;
+import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
+import roart.common.model.FileLocation;
+import roart.common.model.IndexFiles;
+import roart.common.synchronization.MyLock;
 import roart.service.ControlService;
-import roart.util.Constants;
-import roart.util.MyLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

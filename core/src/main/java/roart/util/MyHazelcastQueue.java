@@ -1,5 +1,6 @@
 package roart.util;
 
+import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -13,7 +14,7 @@ public class MyHazelcastQueue<T> extends MyQueue<T> {
         try {
             queue.put(o);
         } catch (InterruptedException e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
     }
 

@@ -155,11 +155,30 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase-client</artifactId>
       <version>${hbase.version}</version>
+    </dependency-->
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.hbase</artifactId>
+      <version>${aether.version}</version>
     </dependency>
+    <!--dependency>
+      <groupId>roart.shadow</groupId>
+      <artifactId>hbase-client-shadow</artifactId>
+      <scope>system</scope>
+      <version>${hbase.version}</version>
+      <systemPath>${project.basedir}/../hbaseclientshadow/target/hbase-client-shadow-${aether.version}.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>roart.shadow</groupId>
+      <artifactId>hbase-common-shadow</artifactId>
+      <version>${hbase.version}</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../hbasecommonshadow/target/hbase-common-shadow-${aether.version}.jar</systemPath>
+    </dependency-->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>

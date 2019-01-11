@@ -1,7 +1,5 @@
 package roart.search;
 
-import roart.model.FileLocation;
-import roart.model.IndexFiles;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.service.ControlService;
@@ -9,7 +7,9 @@ import roart.service.SearchService;
 import roart.util.MyList;
 import roart.util.MyLists;
 import roart.lang.LanguageDetect;
-import roart.model.ResultItem;
+import roart.common.model.FileLocation;
+import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
@@ -60,13 +60,13 @@ public class Search {
     try {
     retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, dbindex);
     } catch (Exception e) {
-	    log.error(roart.util.Constants.EXCEPTION, e);
+	    log.error(roart.common.constants.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
 	    retsize = -1;
 	} catch (OutOfMemoryError e) {
 	    System.gc();
 	    log.error("Error " + Thread.currentThread().getId() + " " + dbfilename);
-	    log.error(roart.util.Constants.ERROR, e);
+	    log.error(roart.common.constants.Constants.ERROR, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
 	    retsize = -1;
     }
@@ -99,7 +99,7 @@ public class Search {
 		inputStream.close();
 	}
 	} catch (IOException e) {
-		log.error(roart.util.Constants.EXCEPTION, e);
+		log.error(roart.common.constants.Constants.EXCEPTION, e);
 	}
     }
     dbindex.setPriority(1);

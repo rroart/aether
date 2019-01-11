@@ -1,9 +1,11 @@
 package roart.search;
 
-import roart.model.ResultItem;
 import roart.service.ControlService;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
+import roart.common.config.MyConfig;
+import roart.common.constants.EurekaConstants;
+import roart.common.model.FileLocation;
+import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -15,11 +17,9 @@ import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 import roart.common.searchengine.SearchEngineResult;
-import roart.config.MyConfig;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
-import roart.model.FileLocation;
-import roart.model.IndexFiles;
+import roart.eureka.util.EurekaUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -142,7 +142,7 @@ public abstract class SearchAccess {
     			i++;
     		}
     	} catch (Exception e) {
-    		log.error(roart.util.Constants.EXCEPTION, e);
+    		log.error(roart.common.constants.Constants.EXCEPTION, e);
     	}
     	return strarr;
 	}

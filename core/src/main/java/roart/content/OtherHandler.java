@@ -16,13 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.dir.Traverse;
-import roart.model.IndexFiles;
-import roart.model.ResultItem;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
-import roart.util.Constants;
-import roart.util.ExecCommand;
-import roart.util.FileSystemConstants;
+import roart.common.constants.Constants;
+import roart.common.constants.FileSystemConstants;
+import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
+import roart.common.util.ExecCommand;
 import roart.database.IndexFilesDao;
 
 import org.apache.tika.metadata.Metadata;

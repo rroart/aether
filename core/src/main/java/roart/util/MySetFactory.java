@@ -4,7 +4,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import roart.config.MyConfig;
+import roart.common.collections.MySet;
+import roart.common.config.MyConfig;
 
 public class MySetFactory extends MyFactory {
     

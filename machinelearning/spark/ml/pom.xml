@@ -147,6 +147,26 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.spark</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <!--dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.spark.core</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.spark.mllib</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.spark.sql</artifactId>
+      <version>${aether.version}</version>
+    </dependency-->
+    <!--dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-mllib_2.11</artifactId>
       <version>${spark.version}</version>
@@ -155,7 +175,7 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_2.11</artifactId>
       <version>${spark.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>

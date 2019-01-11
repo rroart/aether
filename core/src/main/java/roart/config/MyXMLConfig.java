@@ -29,16 +29,20 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyMap;
+import roart.common.config.ConfigConstants;
+import roart.common.config.ConfigTreeMap;
+import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
+import roart.common.zkutil.ZKMessageUtil;
 import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
 import roart.service.ControlService;
 import roart.thread.EurekaThread;
-import roart.util.Constants;
 import roart.util.MyCollections;
 import roart.util.MyHazelcastRemover;
-import roart.util.MyMap;
 import roart.util.MyMaps;
-import roart.zkutil.ZKMessageUtil;
 
 public class MyXMLConfig {
 
@@ -80,6 +84,7 @@ public class MyXMLConfig {
             if (myConfigFile == null) {
                 myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
             }
+            log.info("myconf " + myConfigFile);
             getConfigInstance(configFile);
             configxml = new XMLConfiguration();
             Parameters params = new Parameters();
@@ -248,7 +253,7 @@ public class MyXMLConfig {
     }
 
     private void configCurator() {
-        if (roart.util.Constants.CURATOR.equals(configInstance.getLocker())) {
+        if (roart.common.constants.Constants.CURATOR.equals(configInstance.getLocker())) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
             String zookeeperConnectionString = configInstance.getZookeeper();
             ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);

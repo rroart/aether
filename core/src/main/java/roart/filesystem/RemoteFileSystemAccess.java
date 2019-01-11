@@ -11,9 +11,9 @@ import org.apache.tika.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.constants.Constants;
+import roart.common.model.FileObject;
 import roart.content.TikaHandler;
-import roart.model.FileObject;
-import roart.util.Constants;
 
 public class RemoteFileSystemAccess extends FileSystemAccess {
 

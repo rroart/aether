@@ -12,10 +12,10 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.constants.Constants;
 import roart.content.OtherHandler;
 import roart.dir.Traverse;
 import roart.queue.Queues;
-import roart.util.Constants;
 
 public class OtherRunner implements Runnable {
 	

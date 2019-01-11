@@ -3,6 +3,9 @@ package roart.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import roart.common.config.ConfigConstants;
+import roart.common.config.XMLType;
+
 public class ConfigConstantMaps {
     public static Map<String, Class> map = new HashMap();
 

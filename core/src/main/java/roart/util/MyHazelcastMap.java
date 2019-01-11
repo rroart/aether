@@ -2,6 +2,8 @@ package roart.util;
 
 import java.util.Map;
 
+import roart.common.collections.MyMap;
+import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -15,7 +17,7 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
         try {
             return map.put(k, v);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }
@@ -25,7 +27,7 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
         try {
             return map.remove(k);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }

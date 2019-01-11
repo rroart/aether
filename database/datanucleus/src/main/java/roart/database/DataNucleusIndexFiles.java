@@ -21,9 +21,9 @@ import org.datanucleus.store.query.QueryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.model.FileLocation;
-import roart.model.IndexFiles;
-import roart.util.Constants;
+import roart.common.constants.Constants;
+import roart.common.model.FileLocation;
+import roart.common.model.IndexFiles;
 
 @PersistenceCapable(table="IndexFiles")
     public class DataNucleusIndexFiles /*implements Serializable*/ {

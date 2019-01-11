@@ -8,7 +8,8 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
 import org.junit.Test;
 
-import roart.model.FileObject;
+import roart.common.model.FileObject;
+import roart.filesystem.FileSystemDao;
 
 public class FileSystemDaoIT {
     

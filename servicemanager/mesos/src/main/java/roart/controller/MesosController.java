@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.web.bind.annotation.RestController;
 
-import roart.util.JarThread;
+import roart.common.util.JarThread;
 
 @RestController
 @SpringBootApplication

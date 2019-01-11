@@ -2,9 +2,16 @@ package roart.filesystem;
 
 import org.junit.Test;
 
-import roart.config.ConfigConstants;
-import roart.config.NodeConfig;
-import roart.model.FileObject;
+import roart.common.config.ConfigConstants;
+import roart.common.config.NodeConfig;
+import roart.common.filesystem.FileSystemBooleanResult;
+import roart.common.filesystem.FileSystemFileObjectParam;
+import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemParam;
+import roart.common.filesystem.FileSystemPathParam;
+import roart.common.model.FileObject;
+import roart.filesystem.swift.Swift;
+import roart.filesystem.swift.SwiftConfig;
 
 import static org.junit.Assert.*;
 

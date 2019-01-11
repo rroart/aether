@@ -1,6 +1,6 @@
 package roart.filesystem;
 
-import roart.util.EurekaConstants;
+import roart.common.constants.EurekaConstants;
 
 public class SwiftAccess extends RemoteFileSystemAccess {
 

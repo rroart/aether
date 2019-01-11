@@ -11,9 +11,9 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.util.Constants;
+import roart.common.config.ConfigConstants;
+import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
 
 import java.io.*;
 

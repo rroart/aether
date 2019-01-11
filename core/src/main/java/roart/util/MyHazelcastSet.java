@@ -2,6 +2,8 @@ package roart.util;
 
 import java.util.Set;
 
+import roart.common.collections.MySet;
+import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -15,7 +17,7 @@ public class MyHazelcastSet<T> extends MySet<T> {
         try {
             return set.add(o);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return false;
     }
@@ -25,7 +27,7 @@ public class MyHazelcastSet<T> extends MySet<T> {
         try {
             return set.remove(o);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(roart.common.constants.Constants.EXCEPTION, e);
         }
         return false;
     }

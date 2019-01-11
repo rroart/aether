@@ -1,15 +1,15 @@
 package roart.search;
 
-import roart.model.ResultItem;
-import roart.model.SearchDisplay;
-import roart.util.EurekaConstants;
+import roart.common.config.MyConfig;
+import roart.common.constants.EurekaConstants;
+import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
+import roart.common.model.SearchDisplay;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexParam;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
-import roart.config.MyConfig;
-import roart.model.IndexFiles;
 
 import java.util.List;
 

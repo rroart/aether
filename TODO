@@ -39,6 +39,7 @@ F: display diff docs and number indexed
 F: deleted/missing files and distributed system
 
 Front
+B: vaadin with errorview
 F: Vaadin threads
 F: tab refreshing
 C: fix webstat

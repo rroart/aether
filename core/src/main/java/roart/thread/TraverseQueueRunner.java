@@ -10,14 +10,14 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.util.Constants;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
-import roart.config.MyConfig;
+import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
+import roart.common.model.FileObject;
 import roart.dir.Traverse;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
-import roart.model.FileObject;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 

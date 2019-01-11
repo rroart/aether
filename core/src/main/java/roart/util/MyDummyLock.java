@@ -1,5 +1,7 @@
 package roart.util;
 
+import roart.common.synchronization.MyLock;
+
 public class MyDummyLock extends MyLock {
     
     @Override

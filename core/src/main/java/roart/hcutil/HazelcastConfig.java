@@ -1,9 +1,9 @@
 package roart.hcutil;
 
-import roart.model.FileObject;
-import roart.model.ResultItem;
 import roart.queue.TraverseQueueElement;
-import roart.config.NodeConfig;
+import roart.common.config.NodeConfig;
+import roart.common.model.FileObject;
+import roart.common.model.ResultItem;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.SerializerConfig;

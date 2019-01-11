@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.queue.Queues;
-import roart.util.Constants;
+import roart.common.constants.Constants;
 import roart.database.IndexFilesDao;
 
 public class DbRunner implements Runnable {

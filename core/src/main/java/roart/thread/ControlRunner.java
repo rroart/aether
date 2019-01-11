@@ -12,9 +12,9 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.config.MyConfig;
+import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
 import roart.service.ControlService;
-import roart.util.Constants;
 
 public class ControlRunner implements Runnable {
 	

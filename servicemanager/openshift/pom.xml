@@ -154,35 +154,9 @@
       <version>1.9.3</version>
     </dependency>
     <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>kubernetes-api</artifactId>
-      <version>3.0.8</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/io.fabric8/kubernetes-client -->
-    <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>openshift-client</artifactId>
-      <version>3.1.8</version>
-    </dependency>
-    <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>kubernetes-client</artifactId>
-      <version>3.1.8</version>
-    </dependency>
-    <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>docker-client</artifactId>
-      <version>1.3.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>jdk.tools</groupId>
-          <artifactId>jdk.tools</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.fabric8</artifactId>
+      <version>${aether.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

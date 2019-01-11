@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import roart.config.MyConfig;
+import roart.common.collections.MyMap;
+import roart.common.config.MyConfig;
 
 public class MyMapFactory extends MyFactory {
     

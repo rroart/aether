@@ -1,16 +1,15 @@
 package roart.classification;
 
+import roart.common.config.MyConfig;
+import roart.common.constants.EurekaConstants;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
 import roart.common.machinelearning.MachineLearningResult;
 import roart.common.searchengine.SearchEngineIndexResult;
-import roart.config.MyConfig;
-import roart.model.ResultItem;
+import roart.eureka.util.EurekaUtil;
 import roart.service.ControlService;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
 
 import java.util.List;
 

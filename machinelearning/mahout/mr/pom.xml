@@ -142,10 +142,15 @@
       <version>${hadoop.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.mahout.mr</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <!--dependency>
       <groupId>org.apache.mahout</groupId>
       <artifactId>mahout-mr</artifactId>
       <version>${mahout.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>

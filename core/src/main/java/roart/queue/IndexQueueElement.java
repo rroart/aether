@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.tika.metadata.Metadata;
 
-import roart.model.IndexFiles;
-import roart.model.ResultItem;
-import roart.model.SearchDisplay;
+import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
+import roart.common.model.SearchDisplay;
 
 public class IndexQueueElement {
 	public String type;

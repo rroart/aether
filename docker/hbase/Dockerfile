@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk
+FROM openjdk:11-jdk
 MAINTAINER <roart@nvg.ntnu.no>
 ADD files/aether-hbase-0.10-SNAPSHOT.jar /usr/local/bin
 WORKDIR /usr/local/bin

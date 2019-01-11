@@ -5,6 +5,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import roart.common.collections.MySet;
+
 public class MyJavaSet<T> extends MySet<T> {
     public volatile Set set;
 

@@ -1,5 +1,16 @@
 package roart.database;
 
+import roart.common.database.DatabaseConstructorResult;
+import roart.common.database.DatabaseFileLocationParam;
+import roart.common.database.DatabaseFileLocationResult;
+import roart.common.database.DatabaseIndexFilesParam;
+import roart.common.database.DatabaseIndexFilesResult;
+import roart.common.database.DatabaseLanguagesResult;
+import roart.common.database.DatabaseMd5Param;
+import roart.common.database.DatabaseMd5Result;
+import roart.common.database.DatabaseParam;
+import roart.common.database.DatabaseResult;
+
 public abstract class DatabaseOperations {
     
     public abstract DatabaseConstructorResult destroy() throws Exception;

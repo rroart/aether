@@ -1,7 +1,7 @@
 package roart.filesystem;
 
-import roart.util.FsUtil;
-import roart.util.FileSystemConstants.FileSystemType;
+import roart.common.constants.FileSystemConstants.FileSystemType;
+import roart.common.util.FsUtil;
 
 public class FileSystemFactory {
     public static FileSystemAccess getFileSystem(String filename) {

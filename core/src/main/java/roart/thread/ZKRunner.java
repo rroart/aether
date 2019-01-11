@@ -8,10 +8,10 @@ import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.util.Constants;
-import roart.zkutil.ZKInitialize;
-import roart.zkutil.ZKMessageUtil;
-import roart.config.MyConfig;
+import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
+import roart.common.zkutil.ZKInitialize;
+import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 

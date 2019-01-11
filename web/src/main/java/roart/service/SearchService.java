@@ -1,9 +1,5 @@
 package roart.service;
 
-import roart.service.ServiceParam.Function;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
-
 import javax.servlet.http.*;
 
 import java.util.Vector;
@@ -12,13 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
+import roart.common.config.ConfigConstants;
+import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
+import roart.common.constants.EurekaConstants;
+import roart.common.model.ResultItem;
+import roart.common.model.SearchDisplay;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-import roart.config.NodeConfig;
-import roart.model.ResultItem;
-import roart.model.SearchDisplay;
+import roart.common.service.ServiceParam.Function;
+import roart.eureka.util.EurekaUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

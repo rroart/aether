@@ -27,6 +27,7 @@ import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.ImageStreamStatus;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
+import roart.common.constants.Constants;
 
 public class Fabric8Util {
     private static Logger log = LoggerFactory.getLogger(OpenshiftUtil.class);

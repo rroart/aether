@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
+import roart.common.service.ServiceParam;
+import roart.common.service.ServiceResult;
 import roart.config.MyXMLConfig;
-import roart.service.ServiceParam;
-import roart.service.ServiceResult;
-import roart.util.EurekaConstants;
 
 @RestController
 @SpringBootApplication
@@ -28,7 +29,7 @@ public class ServiceController {
         try {
             MyXMLConfig.instance(param.config);
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
         return result;

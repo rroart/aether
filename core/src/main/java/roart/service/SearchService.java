@@ -2,9 +2,6 @@ package roart.service;
 
 import roart.queue.Queues;
 import roart.search.SearchDao;
-import roart.service.ServiceParam.Function;
-
-import javax.servlet.http.*;
 
 import java.util.Vector;
 import java.util.Enumeration;
@@ -12,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
+import roart.common.config.ConfigConstants;
+import roart.common.config.MyConfig;
+import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineSearchParam;
-import roart.config.ConfigConstants;
-import roart.config.MyConfig;
-//import roart.dao.FilesDao;
+import roart.common.service.ServiceParam.Function;
 import roart.database.IndexFilesDao;
-import roart.model.ResultItem;
-import roart.model.SearchDisplay;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

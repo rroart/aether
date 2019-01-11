@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import roart.common.collections.MyMap;
+
 public class MyMaps extends MyCollections {
     
     public static MyMap get(String id) {

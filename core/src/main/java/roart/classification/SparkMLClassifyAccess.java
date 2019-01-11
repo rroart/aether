@@ -1,6 +1,6 @@
 package roart.classification;
 
-import roart.util.EurekaConstants;
+import roart.common.constants.EurekaConstants;
 
 public class SparkMLClassifyAccess extends ClassifyAccess {
 

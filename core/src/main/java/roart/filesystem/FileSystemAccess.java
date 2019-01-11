@@ -5,11 +5,19 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import roart.config.MyConfig;
-import roart.model.FileObject;
+import roart.common.config.MyConfig;
+import roart.common.constants.EurekaConstants;
+import roart.common.filesystem.FileSystemBooleanResult;
+import roart.common.filesystem.FileSystemByteResult;
+import roart.common.filesystem.FileSystemConstructorParam;
+import roart.common.filesystem.FileSystemConstructorResult;
+import roart.common.filesystem.FileSystemFileObjectParam;
+import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemPathParam;
+import roart.common.filesystem.FileSystemPathResult;
+import roart.common.model.FileObject;
+import roart.eureka.util.EurekaUtil;
 import roart.service.ControlService;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +54,7 @@ public class FileSystemAccess {
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, param, getAppName(), EurekaConstants.LISTFILES);
-        return Arrays.asList(result.fileObject);
+        return Arrays.asList(result.getFileObject());
 
     }
 
@@ -66,7 +74,7 @@ public class FileSystemAccess {
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemPathResult result = EurekaUtil.sendMe(FileSystemPathResult.class, param, getAppName(), EurekaConstants.GETABSOLUTEPATH);
-        return result.path;
+        return result.getPath();
 
     }
 
@@ -96,7 +104,7 @@ public class FileSystemAccess {
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, param, getAppName(), EurekaConstants.GETPARENT);
-        return result.fileObject[0];
+        return result.getFileObject()[0];
 
     }
 
@@ -106,7 +114,7 @@ public class FileSystemAccess {
         param.conf = MyConfig.conf;
         param.path = string;
         FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, param, getAppName(), EurekaConstants.GET);
-        return result.fileObject[0];
+        return result.getFileObject()[0];
 
     }
 

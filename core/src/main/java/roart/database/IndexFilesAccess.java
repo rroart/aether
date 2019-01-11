@@ -8,12 +8,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import roart.model.IndexFiles;
 import roart.service.ControlService;
-import roart.util.EurekaConstants;
-import roart.util.EurekaUtil;
-import roart.config.MyConfig;
-import roart.model.FileLocation;
+import roart.common.config.MyConfig;
+import roart.common.constants.EurekaConstants;
+import roart.common.database.DatabaseConstructorParam;
+import roart.common.database.DatabaseConstructorResult;
+import roart.common.database.DatabaseFileLocationParam;
+import roart.common.database.DatabaseFileLocationResult;
+import roart.common.database.DatabaseIndexFilesParam;
+import roart.common.database.DatabaseIndexFilesResult;
+import roart.common.database.DatabaseLanguagesResult;
+import roart.common.database.DatabaseMd5Param;
+import roart.common.database.DatabaseMd5Result;
+import roart.common.database.DatabaseParam;
+import roart.common.database.DatabaseResult;
+import roart.common.model.FileLocation;
+import roart.common.model.IndexFiles;
+import roart.eureka.util.EurekaUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +68,7 @@ public abstract class IndexFilesAccess {
         param.setConf(MyConfig.conf);
         param.setFileLocation(fl);
         DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETMD5BYFILELOCATION);
-        return result.md5[0];
+        return result.getMd5()[0];
 
     }
 
@@ -121,7 +132,7 @@ public abstract class IndexFilesAccess {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         param.setConf(MyConfig.conf);
         DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETALLMD5);
-        return new HashSet(Arrays.asList(result.md5));
+        return new HashSet(Arrays.asList(result.getMd5()));
     }
 
     public Set<String> getLanguages() throws Exception {

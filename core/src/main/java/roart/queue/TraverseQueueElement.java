@@ -1,8 +1,8 @@
 package roart.queue;
 
-import roart.model.FileObject;
-import roart.model.SearchDisplay;
-import roart.service.ServiceParam;
+import roart.common.model.FileObject;
+import roart.common.model.SearchDisplay;
+import roart.common.service.ServiceParam;
 
 public class TraverseQueueElement {
 

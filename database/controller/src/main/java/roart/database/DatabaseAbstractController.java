@@ -3,8 +3,18 @@ package roart.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import roart.config.NodeConfig;
-import roart.util.EurekaConstants;
+import roart.common.config.NodeConfig;
+import roart.common.constants.EurekaConstants;
+import roart.common.database.DatabaseConstructorParam;
+import roart.common.database.DatabaseConstructorResult;
+import roart.common.database.DatabaseFileLocationParam;
+import roart.common.database.DatabaseIndexFilesParam;
+import roart.common.database.DatabaseIndexFilesResult;
+import roart.common.database.DatabaseLanguagesResult;
+import roart.common.database.DatabaseMd5Param;
+import roart.common.database.DatabaseMd5Result;
+import roart.common.database.DatabaseParam;
+import roart.common.database.DatabaseResult;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -44,7 +54,7 @@ public abstract class DatabaseAbstractController {
         try {
             DatabaseOperations operation = getOperation(param.getNodename(), param.getConf());
         } catch (Exception e) {
-            log.error(roart.util.Constants.EXCEPTION, e);
+            log.error(roart.common.constants.Constants.EXCEPTION, e);
             error = e.getMessage();
         }
         DatabaseConstructorResult result = new DatabaseConstructorResult();
@@ -62,7 +72,7 @@ public abstract class DatabaseAbstractController {
             try {
                 operation.destroy();
             } catch (Exception e) {
-                log.error(roart.util.Constants.EXCEPTION, e);
+                log.error(roart.common.constants.Constants.EXCEPTION, e);
                 error = e.getMessage();
             }
         } else {

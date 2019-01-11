@@ -3,17 +3,15 @@ package roart.classification;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
-import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
 import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
-import roart.config.NodeConfig;
+import roart.common.config.NodeConfig;
+import roart.common.constants.EurekaConstants;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
-import roart.util.EurekaConstants;
 
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -50,7 +48,7 @@ public abstract class MachineLearningAbstractController {
     	try {
       	MachineLearningAbstractClassifier classifier = getClassifier(param.nodename, param.conf);
 		} catch (Exception e) {
-		    log.error(roart.util.Constants.EXCEPTION, e);
+		    log.error(roart.common.constants.Constants.EXCEPTION, e);
 		    error = e.getMessage();
 		}
 		MachineLearningConstructorResult result = new MachineLearningConstructorResult();
@@ -68,7 +66,7 @@ public abstract class MachineLearningAbstractController {
 			try {
 			classifier.destroy(param.nodename);
 		} catch (Exception e) {
-		    log.error(roart.util.Constants.EXCEPTION, e);
+		    log.error(roart.common.constants.Constants.EXCEPTION, e);
 		    error = e.getMessage();
 		}
 		} else {
