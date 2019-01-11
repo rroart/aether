@@ -10,7 +10,7 @@
     <fileSet>
       <directory>${project.basedir}/../web/target</directory>
       <includes>
-	<include>aether*.war</include>
+	<include>aether*.jar</include>
       </includes>
       <outputDirectory>lib</outputDirectory>
     </fileSet>
@@ -218,13 +218,6 @@
 	<include>*</include>
       </includes>
       <outputDirectory>conf</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>/tmp/jetty-runner</directory>
-      <includes>
-        <include>jetty-runner-9.4.12.v20180830.jar</include>
-      </includes>
-      <outputDirectory>lib</outputDirectory>
     </fileSet>
   </fileSets>
   <!--files>
