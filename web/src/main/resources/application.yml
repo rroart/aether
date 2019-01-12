@@ -1,5 +1,6 @@
-spring:
-  application:
-    name: aethervaadin
-server:
-  port: 8280
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: ${EUREKA_PREFER_IPADDRESS:false}
