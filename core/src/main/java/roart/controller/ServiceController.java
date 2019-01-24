@@ -433,6 +433,10 @@ public class ServiceController implements CommandLineRunner {
             if (args != null && args.length > 0) {
                 configFile = args[0];
             }
-            doConfig(configFile);
+            try {
+                doConfig(configFile);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
         }
 }

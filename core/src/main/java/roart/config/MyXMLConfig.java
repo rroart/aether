@@ -47,12 +47,12 @@ import roart.util.MyMaps;
 public class MyXMLConfig {
 
     protected static Logger log = LoggerFactory.getLogger(MyConfig.class);
-    
+
     protected static MyXMLConfig instance = null;
-    
+
     MyMap nodemap = null;
-    
-   public static MyXMLConfig instance(String configFile) {
+
+    public static MyXMLConfig instance(String configFile) {
         if (instance == null) {
             instance = new MyXMLConfig(configFile);
             if (configInstance == null) {
@@ -63,7 +63,7 @@ public class MyXMLConfig {
     }
 
     protected static NodeConfig configInstance = null;
-    
+
     public static NodeConfig getConfigInstance(String configFile) {
         if (configInstance == null) {
             configInstance = new NodeConfig();
@@ -85,7 +85,7 @@ public class MyXMLConfig {
                 myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
             }
             log.info("myconf " + myConfigFile);
-            getConfigInstance(configFile);
+            getConfigInstance(myConfigFile);
             configxml = new XMLConfiguration();
             Parameters params = new Parameters();
             FileBasedConfigurationBuilder<XMLConfiguration> fileBuilder =
@@ -212,7 +212,7 @@ public class MyXMLConfig {
         ZKMessageUtil.doreconfig(ControlService.nodename);
     }
 
-     public void config() {
+    public void config() {
         try {
             //LanguageDetect.init("./profiles/");
         } catch (Exception e) {
@@ -239,7 +239,7 @@ public class MyXMLConfig {
         configDistributed();
 
         configCurator();
- 
+
         nodemap = MyMaps.get(ConfigConstants.CONFIG);
         nodemap.put(ControlService.nodename, configInstance);
 
@@ -253,11 +253,12 @@ public class MyXMLConfig {
     }
 
     private void configCurator() {
-        if (roart.common.constants.Constants.CURATOR.equals(configInstance.getLocker())) {
+        if (true || roart.common.constants.Constants.CURATOR.equals(configInstance.getLocker())) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
             String zookeeperConnectionString = configInstance.getZookeeper();
             ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
             ControlService.curatorClient.start();
+            log.info("Curator client started");
         }
     }
 
@@ -277,7 +278,7 @@ public class MyXMLConfig {
                 classify = ConfigConstants.MACHINELEARNINGOPENNLP;
             }
             if (classify != null) {
-            roart.classification.ClassifyDao.instance(classify);
+                roart.classification.ClassifyDao.instance(classify);
             }
         } catch (Exception e) {
             // TODO propagate
@@ -287,7 +288,7 @@ public class MyXMLConfig {
 
     private void configHdfs() {
         if (configInstance.wantHDFS()) {
-        new roart.filesystem.LocalFileSystemAccess();
+            new roart.filesystem.LocalFileSystemAccess();
         }
     }
 
@@ -299,6 +300,7 @@ public class MyXMLConfig {
 
     private void configDb() {
         String db = null;
+        System.out.println("type " + configInstance);
         if (configInstance.wantHBase()) {
             db = ConfigConstants.DATABASEHBASE;
         } else if (configInstance.wantCassandra()) {
@@ -311,9 +313,13 @@ public class MyXMLConfig {
             db = ConfigConstants.DATABASEHIBERNATE;
         }
         if (db != null) {
-        roart.database.IndexFilesDao.instance(db);
+            System.out.println("type " + db);
+            log.info("Type {}", db);
+            roart.database.IndexFilesDao.instance(db);
+        } else {
+            log.error("No db selected");
         }
-        }
+    }
 
     public void configIndexing() {
         try {
@@ -327,7 +333,7 @@ public class MyXMLConfig {
             }
             if (index != null) {
                 //ControlService.index = index;
-            roart.search.SearchDao.instance(index);
+                roart.search.SearchDao.instance(index);
             }
         } catch (Exception e) {
             // TODO propagate
