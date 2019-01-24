@@ -188,7 +188,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSTIONOTHERTIMEOUT, 600);
         deflt.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.FALSE);
-        deflt.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, null);
+        deflt.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "localhost:2181");
         deflt.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.TRUE);
         deflt.put(ConfigConstants.NODELANGUAGES, "en");
         deflt.put(ConfigConstants.SEARCHENGINEMLTMLTCOUNT, 10);
@@ -286,7 +286,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.CONVERSIONTIKATIMEOUT, "Tika timeout");
         text.put(ConfigConstants.CONVERSTIONOTHERTIMEOUT, "Other conversion timeout");
         text.put(ConfigConstants.DATABASEDATANUCLEUS, "Use datanucleus");
-        text.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "Use zookeeper");
+        text.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "Zookeeper connection");
         text.put(ConfigConstants.GUIHIGHLIGHTMLT, "Highlight MLT");
         text.put(ConfigConstants.NODELANGUAGES, "languages");
         text.put(ConfigConstants.SEARCHENGINEMLTMLTCOUNT, "MLT count");
@@ -384,6 +384,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.SEARCHENGINEMLTMLTCOUNT, new XMLType( Integer.class, 10, "MLT count"));
         mymap.put(ConfigConstants.SEARCHENGINEMLTMLTMINDF, new XMLType( Integer.class, 5, "Min DF"));
         mymap.put(ConfigConstants.SEARCHENGINEMLTMLTMINTF, new XMLType( Integer.class, 2, "Min TF"));
+        mymap.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, new XMLType( String.class, "localhost:2181", "Zookeeper connection"));
         mymap.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG, new XMLType( Boolean.class, Boolean.TRUE, "Distributed lock mode"));
         mymap.put(ConfigConstants.SMALL, new XMLType( Boolean.class, Boolean.FALSE, "Small lock mode"));
         mymap.put(ConfigConstants.BIG, new XMLType( Boolean.class, Boolean.FALSE, "Big lock mode"));
