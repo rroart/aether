@@ -136,6 +136,7 @@ public class EurekaUtil {
 
         HttpEntity<?> request = new HttpEntity<>(param, headers);
         RestTemplate rt = new RestTemplate();
+        log.info("uuu " + url + path);
         ResponseEntity<T> regr = new RestTemplate().postForEntity(url + path, request, myclass);
         T result = regr.getBody();
         return result;
