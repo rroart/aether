@@ -20,7 +20,7 @@ public class ZKMessageUtil {
 
     public static List<String> getChildren(String dir, Watcher watcher) throws KeeperException, InterruptedException {
 	    try {
-	        Stat i = ZKInitialize.zk.exists(null, false);
+	        //Stat i = ZKInitialize.zk.exists(null, false);
 	        return ZKInitialize.zk.getChildren(dir, watcher);
 	    } catch (KeeperException.NoNodeException e){
 	        throw e;
