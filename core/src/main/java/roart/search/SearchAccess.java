@@ -2,6 +2,7 @@ package roart.search;
 
 import roart.service.ControlService;
 import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
@@ -137,9 +138,14 @@ public abstract class SearchAccess {
 
     			String filename = indexmd5.getFilelocation();
     			log.info("Hit {}.{} : {} {}",i ,md5, filename, res.score);
-    			FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
-    			strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, maybeFl);
-    			i++;
+    			FileLocation maybeFl = null;
+    			try {
+    			    maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
+    			} catch (Exception e) {
+    			    log.error(Constants.EXCEPTION, e);
+    			}
+                        strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, maybeFl);
+                        i++;
     		}
     	} catch (Exception e) {
     		log.error(roart.common.constants.Constants.EXCEPTION, e);
