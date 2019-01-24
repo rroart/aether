@@ -42,7 +42,7 @@ public class ControlRunner implements Runnable {
     				cs.startDbWorker();
     			}
     			if (MyConfig.conf.getZookeeper() != null && !ControlService.zkWorker.isAlive()) {
-    				cs.startZKWorker();
+    				//cs.startZKWorker();
     			}
                 if (!ControlService.traverseQueueWorker.isAlive()) {
                     cs.startTraversequeueWorker();
