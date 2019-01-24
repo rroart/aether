@@ -26,6 +26,8 @@ import com.netflix.discovery.DiscoveryClient;
 
 public class FileSystemAccess {
 
+    private String url;
+    
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DiscoveryClient discoveryClient;
@@ -33,6 +35,7 @@ public class FileSystemAccess {
     public String getAppName() { return null; }
 
     public String constructor(String url) {
+        this.url = url;
         FileSystemConstructorParam param = new FileSystemConstructorParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
@@ -45,7 +48,7 @@ public class FileSystemAccess {
         FileSystemConstructorParam param = new FileSystemConstructorParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
-        FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
+        FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.DESTRUCTOR);
         return result.error;
     }
     public List<FileObject> listFiles(FileObject f) {
@@ -53,7 +56,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, param, getAppName(), EurekaConstants.LISTFILES);
+        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.LISTFILES);
         return Arrays.asList(result.getFileObject());
 
     }
@@ -63,7 +66,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemBooleanResult result = EurekaUtil.sendMe(FileSystemBooleanResult.class, param, getAppName(), EurekaConstants.EXIST);
+        FileSystemBooleanResult result = EurekaUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.EXIST);
         return result.bool;
 
     }
@@ -73,7 +76,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemPathResult result = EurekaUtil.sendMe(FileSystemPathResult.class, param, getAppName(), EurekaConstants.GETABSOLUTEPATH);
+        FileSystemPathResult result = EurekaUtil.sendMe(FileSystemPathResult.class, url, param, EurekaConstants.GETABSOLUTEPATH);
         return result.getPath();
 
     }
@@ -83,7 +86,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemBooleanResult result = EurekaUtil.sendMe(FileSystemBooleanResult.class, param, getAppName(), EurekaConstants.ISDIRECTORY);
+        FileSystemBooleanResult result = EurekaUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.ISDIRECTORY);
         return result.bool;
 
     }
@@ -93,7 +96,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemByteResult result = EurekaUtil.sendMe(FileSystemByteResult.class, param, getAppName(), EurekaConstants.GETINPUTSTREAM);
+        FileSystemByteResult result = EurekaUtil.sendMe(FileSystemByteResult.class, url, param, EurekaConstants.GETINPUTSTREAM);
         return new ByteArrayInputStream(result.bytes);
 
     }
@@ -103,7 +106,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, param, getAppName(), EurekaConstants.GETPARENT);
+        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GETPARENT);
         return result.getFileObject()[0];
 
     }
@@ -113,7 +116,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.path = string;
-        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, param, getAppName(), EurekaConstants.GET);
+        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GET);
         return result.getFileObject()[0];
 
     }
