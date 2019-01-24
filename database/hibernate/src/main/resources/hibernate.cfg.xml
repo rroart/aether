@@ -32,7 +32,7 @@
         <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
 
         <mapping package="roart.database" />
-        <mapping class="roart.database.HibernateIndexFiles"/>
+        <mapping class="roart.database.hibernate.HibernateIndexFiles"/>
 
     </session-factory>
 
