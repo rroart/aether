@@ -1,6 +1,7 @@
 package roart.filesystem;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -178,19 +179,24 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         String zookeeperConnectionString = System.getProperty("ZOO");
         CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
+        String ip = System.getProperty("IP");
         String fs = System.getProperty("FS");
         String path = System.getProperty("PATH");
-        log.info("Using {} {}", fs, path);
+        log.info("Using {} {} {}", ip, fs, path);
         String[] paths = path.split(",");
         //int port = new MyListener().getPort();
         int port = aListener.getPort();
-        String whereami = InetAddress.getLocalHost().getHostAddress() + ":" + port;
+        String address = InetAddress.getLocalHost().getHostAddress();
+        if (ip != null) {
+            address = ip;
+        }
+        String whereami = address + ":" + port;
         System.out.println("Whereami " + whereami);
         log.info("Whereami {}", whereami);
         byte[] bytes = whereami.getBytes();
         for (String aPath : paths) {
             if (curatorClient.checkExists().forPath("/fs/" + fs + aPath) != null) {
-                curatorClient.delete().forPath("/fs/" + fs + aPath);
+                curatorClient.delete().deletingChildrenIfNeeded().forPath("/fs/" + fs + aPath);
             }
             curatorClient.create().creatingParentsIfNeeded().forPath("/fs/" + fs + aPath, bytes);
         }
