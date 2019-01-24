@@ -28,5 +28,8 @@
     <module>util</module>
     <module>zookeeper</module>
   </modules>
+  <properties>
+    <jdk.version>10</jdk.version>
+  </properties>
 </project>
 
