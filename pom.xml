@@ -108,7 +108,7 @@
     <camel.version>2.22.2</camel.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-    <hibernate.version>5.3.7.Final</hibernate.version>
+    <hibernate.version>5.4.0.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
     <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
     <h2.version>1.4.197</h2.version>
