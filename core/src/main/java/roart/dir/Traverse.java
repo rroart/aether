@@ -243,7 +243,12 @@ public class Traverse {
 
     public static int indexnoFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
         String md5 = index.getMd5();
-        String filename = getExistingLocalFile(index);
+        String filename = null;
+        try {
+            filename = getExistingLocalFile(index);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
         if (filename == null) {
             log.error("filename should not be null {}", md5);
             return 0;
