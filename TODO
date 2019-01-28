@@ -21,6 +21,8 @@ F: h2db lucene disk lokasjon rules
 F: db persistence, more db handling
 
 Core
+B: resilience, handle not present fs
+T: use threads with repeat in config?
 F: split off tika etc into microservice
 F: Thread/multitask change
 B: exceeding (re)indexing limits
@@ -60,7 +62,6 @@ WF: refactor into more batch/collection processing
 F: redo config is microserv
 
 ML
-F: mllib
 F: stanford
 
 Filesystems
@@ -90,5 +91,30 @@ F: join a master config.
 F: distributed locking and node los
 T: change lock strategy, hazelcast etc
 F: distrib
+F: mllib
 
 #package lang profiles
+
+Test:
+wrx aether-cassandra
+wrx aether-core
+aether-datanucleus
+wrx aether-dynamodb
+wrx aether-elastic
+x aether-eureka
+wrx aether-hbase
+aether-hdfs
+wrx aether-hibernate
+x aether-local
+wrx aether-lucene
+x ether-mahout-mr
+aether-mahout-spark
+x aether-opennlp
+aether-servicemanager-docker
+aether-servicemanager-mesos
+aether-servicemanager-openshift
+x aether-servicemanager-simple
+wrx aether-solr
+aether-spark-ml
+x aether-swift
+x aether-web

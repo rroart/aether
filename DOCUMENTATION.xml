@@ -51,7 +51,7 @@ Installing
     </listitem>
     <listitem>
       <para>
-	Java 8
+	Java 11 (or 10?)
       </para>
     </listitem>
     <listitem>
@@ -840,7 +840,7 @@ synchronization.zookeeper
 	      Use Zookeeper for synchronization
 	    </entry>
 	    <entry>
-	      ""?
+	      localhost:2181
 	    </entry>
 		  </row>
 		  <row>
@@ -1091,7 +1091,7 @@ The directory list may be ordinary, local filesystem, or it may be HDFS or Swift
 (More about HDFS and Swift later)
 The exceptions are to be listedd in dirlistnot.
 
-The filesystems are configured with for instance -DFS=hdfs -DPATH=/tmp -DZOO=localhost:2181.
+The filesystems are configured with for instance -DFS=hdfs -DPATH=/tmp -DZOO=localhost:2181. (Plus optional, if needed -DIP=ip.address)
 The filesystems with communicate with Zookeeper, not Eureka, to post the filesystems they serve.
   </para>
   <para>
@@ -1103,11 +1103,11 @@ The standalone is currently too slow to handle as big disks/sizes as multimode.
     The indexed file content and metadata are stored in Lucene, Elasticsearch or Solr.
 Lucene is the standalone, while Solr and Elasticsearch is the multinode.
   </para>
-  <para>
+  <!--para>
     If using multinode, the setting distributedlockmode is for setting
 big or small granularity using Curator, if the mode is big only
 one node may use the indexer or other write operations at one single time.
-  </para>
+  </para-->
   <para>
     If using the small granularity, the locking will be on the level on the
 indexed item.
@@ -1635,7 +1635,7 @@ Also, a d for counting database objects which are finished or to be temporarily 
 </para>
   </sect1>
 </chapter>
-<chapter>
+<!--chapter>
   <title>
     Caution
   </title>
@@ -1645,7 +1645,7 @@ For standalone the ordinary java locking is using.
 For multinode zookeeper is needed, or some concurrent modification will happen.
 With zookeeper, only node may index at a given time due to database access.
   </para>
-</chapter>
+</chapter-->
 <chapter>
   <title>
 Changes
@@ -1671,7 +1671,7 @@ new property comma-separated languages
 0.6:
 Metadata change handling, stored, multi-valued.
 No more limit check for using alternative converters, only do that if tika crashes.
-Java 8.
+Java 11 (or 10?).
 Usage of mime type probing.
 DataNucleus table changes.
   </para>
@@ -1695,6 +1695,7 @@ Elasticsearch.
 Spark ML.
 Openstack Swift.
 Refactor in microservices.
+Zookeeper is required.
   </para>
 </chapter>
 <chapter>
@@ -1741,11 +1742,11 @@ Spark 2.4.0 (for the Spark ML)
 OpenNLP 1.5.3
 	</para>
       </listitem>
-      <listitem>
+      <!--listitem>
 	<para>
 Curator 2.12
 	</para>
-      </listitem>
+      </listitem-->
       <listitem>
 	<para>
 	  Hazelcast 3.5.4
