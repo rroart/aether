@@ -31,7 +31,9 @@
 		  <include>org.elasticsearch:elasticsearch</include>
 		  <include>org.elasticsearch:elasticsearch-core</include>
 		  <include>org.elasticsearch:elasticsearch-x-content</include>
+		  <!--include>org.elasticsearch.client:elasticsearch-rest-client</include-->
 		  <include>org.elasticsearch.client:transport</include>
+		  <include>org.elasticsearch.plugin:transport-netty4-client</include>
 		  <include>org.apache.lucene:lucene-suggest</include>
 		</includes>
               </artifactSet>
@@ -57,9 +59,19 @@
       <artifactId>elasticsearch-x-content</artifactId>
       <version>${elasticsearch.version}</version>
     </dependency>
+    <!--dependency>
+      <groupId>org.elasticsearch.client</groupId>
+      <artifactId>elasticsearch-rest-client</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency-->
     <dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>transport</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch.plugin</groupId>
+      <artifactId>transport-netty4-client</artifactId>
       <version>${elasticsearch.version}</version>
     </dependency>
     <dependency>
