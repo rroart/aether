@@ -48,7 +48,10 @@ import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
 import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DeleteTableResult;
+import com.amazonaws.services.dynamodbv2.model.DescribeEndpointsRequest;
+import com.amazonaws.services.dynamodbv2.model.DescribeEndpointsResult;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
+import com.amazonaws.services.dynamodbv2.model.Endpoint;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
@@ -166,7 +169,10 @@ public class DynamodbIndexFiles {
             System.err.println("res5 " + e.getMessage());            
         }
          */
+        log.info("y1");
+        //printEndpoints(client);
         createTable(request, ddb, TABLE_FILES_NAME);
+        log.info("y12");
 
         CreateTableRequest request2 = new CreateTableRequest()
                 .withTableName(TABLE_INDEXFILES_NAME)
@@ -174,7 +180,9 @@ public class DynamodbIndexFiles {
                 .withKeySchema(indexfileskeyelements)
                 .withProvisionedThroughput(new ProvisionedThroughput(
                         new Long(10), new Long(10)));
+        log.info("y123");
         createTable(request2, ddb, TABLE_INDEXFILES_NAME);
+        log.info("y1234");
         //filesTable = ddb.getTable(TABLE_FILES_NAME);
         //indexTable = ddb.getTable(TABLE_INDEXFILES_NAME);
         /*
@@ -218,8 +226,21 @@ public class DynamodbIndexFiles {
 
         }
         System.out.println("Done!");
+        log.info("yend");
 
 
+    }
+
+    private void printEndpoints(AmazonDynamoDB cli) {
+        try {
+        DescribeEndpointsRequest describeEndpointsRequest = new DescribeEndpointsRequest();
+        DescribeEndpointsResult res00 = cli.describeEndpoints(describeEndpointsRequest);
+        for (Endpoint endpoint : res00.getEndpoints()) {
+            log.info("endp " + endpoint.getAddress());
+        }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
     }
 
     private void createTable(CreateTableRequest request, DynamoDB ddb, String tableName) {
@@ -237,13 +258,20 @@ public class DynamodbIndexFiles {
             //CreateTableResult result = client.createTable(request);
             //System.out.println("res1 " + result.getTableDescription().getTableName());
         } catch (AmazonServiceException e) {
+            log.error(Constants.EXCEPTION, e);
             e.printStackTrace();
             System.err.println("res7 " + e.getErrorMessage());
             System.exit(1);
         } catch (TableNeverTransitionedToStateException e) {
+            log.error(Constants.EXCEPTION, e);
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (InterruptedException e) {
+            log.error(Constants.EXCEPTION, e);
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -282,14 +310,22 @@ public class DynamodbIndexFiles {
         String port = "8000";
         String host = "localhost";
         if (ddb != null) {
-            client = ddb;
+            this.client = ddb;
         } else {
-            client = AmazonDynamoDBClientBuilder.defaultClient();
+            this.client = AmazonDynamoDBClientBuilder.defaultClient();
+            //printEndpoints(this.client);
+            log.info("Nodeconf {}", nodeConf);
             if (nodeConf != null) {
                 port = nodeConf.getDynamodbPort();
                 host = nodeConf.getDynamodbHost();
-                EndpointConfiguration endpointConfiguration = new EndpointConfiguration(host, port);
-                client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(endpointConfiguration).build();
+                log.info("Host port {} {}", host, port);
+                //new EndpointConfiguration();
+                EndpointConfiguration endpointConfiguration = new EndpointConfiguration("http://" + host + ":" + port, "us-east-1");
+                //this.client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(endpointConfiguration).
+                //printEndpoints(this.client);
+                this.client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(endpointConfiguration).build();
+                //printEndpoints(this.client);
+                log.info("Client connected {}", this.client);
             }
         }
         /*
@@ -301,15 +337,17 @@ public class DynamodbIndexFiles {
 	        .build(); 
          */
         //client.setEndpoint("http://" + host + ":" + port);
-        config.setClient(client);
+        config.setClient(this.client);
         config.setNodename(nodename);
         amain();
+        log.info("After main");
 
         //ddb = new DynamoDB(new AmazonDynamoDBClient( 
         //     new ProfileCredentialsProvider()));  
-        DynamoDB ddb2 = new DynamoDB(client);
+        DynamoDB ddb2 = new DynamoDB(this.client);
         indexTable = ddb2.getTable(TABLE_INDEXFILES_NAME);
         filesTable = ddb2.getTable(TABLE_FILES_NAME);
+        log.info("After");
     }
 
     /*
@@ -331,37 +369,37 @@ public class DynamodbIndexFiles {
         if (ifile.getIndexed() != null) {
             updatedvalues.put(indexedq, new AttributeValue("" + ifile.getIndexed())); //, AttributeAction.PUT));
         }
-        if (ifile.getTimestamp() != null) {
+        if (ifile.getTimestamp() != null && !ifile.getTimestamp().isEmpty()) {
             updatedvalues.put(timestampq, new AttributeValue(ifile.getTimestamp()));
         }
-        if (ifile.getTimeindex() != null) {
+        if (ifile.getTimeindex() != null && !ifile.getTimeindex().isEmpty()) {
             updatedvalues.put(timeindexq, new AttributeValue(ifile.getTimeindex()));
         }
-        if (ifile.getTimeclass() != null) {
+        if (ifile.getTimeclass() != null && !ifile.getTimeclass().isEmpty()) {
             updatedvalues.put(timeclassq, new AttributeValue(ifile.getTimeclass()));
         }
-        if (ifile.getClassification() != null) {
+        if (ifile.getClassification() != null && !ifile.getClassification().isEmpty()) {
             updatedvalues.put(classificationq, new AttributeValue(ifile.getClassification()));
         }
-        if (ifile.getConvertsw() != null) {
+        if (ifile.getConvertsw() != null && !ifile.getConvertsw().isEmpty()) {
             updatedvalues.put(convertswq, new AttributeValue(ifile.getConvertsw()));
         }
-        if (ifile.getConverttime() != null) {
+        if (ifile.getConverttime() != null && !ifile.getConverttime().isEmpty()) {
             updatedvalues.put(converttimeq, new AttributeValue(ifile.getConverttime()));
         }
         if (ifile.getFailed() != null) {
             updatedvalues.put(failedq, new AttributeValue("" + ifile.getFailed()));
         }
-        if (ifile.getFailedreason() != null) {
+        if (ifile.getFailedreason() != null && !ifile.getFailedreason().isEmpty()) {
             updatedvalues.put(failedreasonq, new AttributeValue(ifile.getFailedreason()));
         }
-        if (ifile.getTimeoutreason() != null) {
+        if (ifile.getTimeoutreason() != null && !ifile.getTimeoutreason().isEmpty()) {
             updatedvalues.put(timeoutreasonq, new AttributeValue(ifile.getTimeoutreason()));
         }
-        if (ifile.getNoindexreason() != null) {
+        if (ifile.getNoindexreason() != null && !ifile.getNoindexreason().isEmpty()) {
             updatedvalues.put(noindexreasonq, new AttributeValue(ifile.getNoindexreason()));
         }
-        if (ifile.getLanguage() != null) {
+        if (ifile.getLanguage() != null && !ifile.getLanguage().isEmpty()) {
             updatedvalues.put(languageq, new AttributeValue(ifile.getLanguage()));
         }
         if (ifile.getFilelocations() != null && !ifile.getFilelocations().isEmpty()) {
@@ -393,6 +431,7 @@ public class DynamodbIndexFiles {
 
         put(ifile.getMd5(), ifile.getFilelocations());
         //client.putI;
+        log.info("grrrr"+updatedvalues.toString());
         client.putItem(TABLE_INDEXFILES_NAME, updatedvalues);
 
         // or if still to slow, simply get current (old) indexfiles
