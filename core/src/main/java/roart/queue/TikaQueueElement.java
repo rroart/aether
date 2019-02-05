@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.tika.metadata.Metadata;
 
+import roart.common.filesystem.MyFile;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 
@@ -20,8 +21,9 @@ public class TikaQueueElement {
     public String convertsw;
   //  public UI ui;
     public String mimetype;
+    public MyFile fsData;
 
-    public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Metadata metadata) {
+    public TikaQueueElement(String dbfilename, String filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Metadata metadata, MyFile fsData) {
 	this.dbfilename = dbfilename;
 	this.filename = filename;
 	this.md5 = md5;
@@ -29,6 +31,7 @@ public class TikaQueueElement {
 	this.retlistid = retlistid;
 	this.retlistnotid = retlistnotid;
 	this.metadata = metadata;
+	this.fsData = fsData;
     }
 
 }

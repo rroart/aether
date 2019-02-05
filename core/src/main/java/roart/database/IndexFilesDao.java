@@ -1,6 +1,7 @@
 package roart.database;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
@@ -335,6 +336,30 @@ public class IndexFilesDao {
                 }
             }
             return is;
+        }
+    }
+
+    public static Map<String, String> getMd5ByFilename(Set<String> filenames) throws Exception {
+        String nodename = ControlService.nodename;
+        Set<FileLocation> fls = new HashSet<>();
+        for (String filename : filenames) {
+            FileLocation fl = new FileLocation(nodename, filename);
+            fls.add(fl);
+        }
+        synchronized(IndexFilesDao.class) {
+            return indexFiles.getMd5ByFilelocation(fls);
+        }
+    }
+
+    public static List<Map> getBothByFilename(Set<String> filenames) throws Exception {
+        String nodename = ControlService.nodename;
+        Set<FileLocation> fls = new HashSet<>();
+        for (String filename : filenames) {
+            FileLocation fl = new FileLocation(nodename, filename);
+            fls.add(fl);
+        }
+        synchronized(IndexFilesDao.class) {
+            return indexFiles.getBothByFilelocation(fls);
         }
     }
 

@@ -19,11 +19,13 @@ import roart.common.filesystem.FileSystemConstructorParam;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -102,6 +104,14 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         return ret;
     }
 
+    @PostMapping(value = "/" + EurekaConstants.LISTFILESFULL)
+    public FileSystemMyFileResult processListFilesFull(@RequestBody FileSystemFileObjectParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.conf);
+        FileSystemMyFileResult ret = operations.listFilesFull(param);
+        return ret;
+    }
+
     @RequestMapping(value = "/" + EurekaConstants.EXIST,
             method = RequestMethod.POST)
     public FileSystemBooleanResult processExist(@RequestBody FileSystemFileObjectParam param)
@@ -135,6 +145,14 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             throws Exception {
         FileSystemOperations operations = getOperations(param.nodename, param.conf);
         FileSystemByteResult ret = operations.getInputStream(param);
+        return ret;
+    }
+
+    @PostMapping(value = "/" + EurekaConstants.GETWITHINPUTSTREAM)
+    public FileSystemMyFileResult processGetWithInputStream(@RequestBody FileSystemPathParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.conf);
+        FileSystemMyFileResult ret = operations.getWithInputStream(param);
         return ret;
     }
 

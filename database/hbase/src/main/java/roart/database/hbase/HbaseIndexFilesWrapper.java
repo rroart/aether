@@ -3,6 +3,7 @@ package roart.database.hbase;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -88,11 +89,14 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception {
-        FileLocation fl = param.getFileLocation();
+        Map<String, String> md5Map = new HashMap<>();
+        for (FileLocation fl : param.getFileLocations()) {
+            String filename = fl.getFilename();
+            String md5 = hbaseIndexFiles.getMd5ByFilelocation(fl);
+            md5Map.put(filename, md5);
+        }
         DatabaseMd5Result result = new DatabaseMd5Result();
-        String[] md5 = new String[1];
-        md5[0] = hbaseIndexFiles.getMd5ByFilelocation(fl);
-        result.setMd5(md5);
+        result.setMd5Map(md5Map);
         return result;
     }
 

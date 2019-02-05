@@ -17,6 +17,7 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.filesystem.MyFile;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -115,28 +116,35 @@ public class Traverse {
             return retset;
         }
         //HashSet<String> md5set = new HashSet<String>();
+        long time0 = System.currentTimeMillis();
         FileObject dir = FileSystemDao.get(dirname);
-        List<FileObject> listDir = FileSystemDao.listFiles(dir);
+        List<MyFile> listDir = FileSystemDao.listFilesFull(dir);
+        long time1 = System.currentTimeMillis();
+        log.info("Time0 {}", usedTime(time1, time0));
         //log.info("dir " + dirname);
         //log.info("listDir " + listDir.length);
         if (listDir == null) {
             return retset;
         }
-        for (FileObject fo : listDir) {
-            String filename = FileSystemDao.getAbsolutePath(fo);
+        for (MyFile file : listDir) {
+            FileObject fo = file.fileObject[0];
+            long time2 = System.currentTimeMillis();
+            String filename = file.absolutePath;
             // for encoding problems
-            if (!FileSystemDao.exists(fo)) {
+            if (!file.exists) {
                 MySet<String> notfoundset = (MySet<String>) MySets.get(notfoundsetid); 
                 notfoundset.add(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
             }
+            long time3 = System.currentTimeMillis();
+            log.info("Time2 {}", usedTime(time3, time2));
             if (filename.length() > MAXFILE) {
                 log.info("Too large filesize {}", filename);
                 continue;
             }
             //log.info("file " + filename);
-            if (FileSystemDao.isDirectory(fo)) {
+            if (file.isDirectory) {
                 log.debug("isdir {}", filename);
                 retset.addAll(doList(filename));
             } else {
@@ -346,7 +354,12 @@ public class Traverse {
     }
 
     public static String getExistingLocalFile(IndexFiles i) {
-        FileLocation fl = getExistingLocalFilelocation(i);
+        FileLocation fl = null;
+        try {
+            fl = getExistingLocalFilelocation(i);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
         if (fl != null) {
             return fl.getFilename();
         }
@@ -575,8 +588,14 @@ public class Traverse {
      * @return boolean state
      */
 
+    // ?
+    @Deprecated
     public static boolean isLocal(FileObject fo) {
         return FileSystemDao.exists(fo);
     }
 
+    private int usedTime(long time2, long time1) {
+        return (int) (time2 - time1); // / 1000;
+    }
+    
 }

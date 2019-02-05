@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.data.Stat;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
+import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.util.FsUtil;
 import roart.service.ControlService;
@@ -31,6 +33,10 @@ public class FileSystemDao {
         return getFileSystemAccess(f).listFiles(f);
     }
 
+    public static List<MyFile> listFilesFull(FileObject f) {
+        return getFileSystemAccess(f).listFilesFull(f);
+    }
+
     public static boolean exists(FileObject f) {
         return getFileSystemAccess(f).exists(f);
     }
@@ -42,8 +48,14 @@ public class FileSystemDao {
     public static String getAbsolutePath(FileObject f) {
         return getFileSystemAccess(f).getAbsolutePath(f);
     }
+    
     public static InputStream getInputStream(FileObject f) {
         return getFileSystemAccess(f).getInputStream(f);
+    }
+
+    public static Map<String, MyFile> getWithInputStream(Set<String> filenames) {
+        String f = filenames.iterator().next();
+        return getFileSystemAccess(f).getWithInputStream(filenames);
     }
 
     public static FileObject get(String string) {
@@ -78,6 +90,9 @@ public class FileSystemDao {
     
     private static FileSystemAccess getFileSystemAccess(String fs, String path) {
         String url = getUrl(ControlService.curatorClient, fs, path, "");
+        if (url == null) {
+            log.error("URL null for {} {}", fs, path);
+        }
         FileSystemAccess access = new FileSystemAccess();
         access.constructor("http://" + url + "/");
         return access;

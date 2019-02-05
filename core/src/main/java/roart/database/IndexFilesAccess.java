@@ -66,7 +66,9 @@ public abstract class IndexFilesAccess {
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         param.setConf(MyConfig.conf);
-        param.setFileLocation(fl);
+        Set<FileLocation> fls = new HashSet<>();
+        fls.add(fl);
+        param.setFileLocations(fls);
         DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETMD5BYFILELOCATION);
         return result.getMd5()[0];
 
@@ -161,6 +163,34 @@ public abstract class IndexFilesAccess {
             simpleMap.put(key, entry.getValue());
         }
         return simpleMap;
+    }
+
+    public Map<String, String> getMd5ByFilelocation(Set<FileLocation> fls) throws Exception {
+        DatabaseFileLocationParam param = new DatabaseFileLocationParam();
+        param.setConf(MyConfig.conf);
+        param.setFileLocations(fls);
+        DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETMD5BYFILELOCATION);
+        Map<String, String> fullMap = result.getMd5Map();
+        Map<String, String> simpleMap = new HashMap<>();
+        for (Entry<String, String> entry : fullMap.entrySet()) {
+            String key = entry.getKey();
+            simpleMap.put(key, entry.getValue());
+        }
+        return simpleMap;
+    }
+
+    public List<Map> getBothByFilelocation(Set<FileLocation> fls) {
+        DatabaseFileLocationParam param = new DatabaseFileLocationParam();
+        param.setConf(MyConfig.conf);
+        param.setFileLocations(fls);
+        DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETBOTHBYFILELOCATION);
+        Map<String, String> fullMap = result.getMd5Map();
+        Map<String, String> simpleMap = new HashMap<>();
+        for (Entry<String, String> entry : fullMap.entrySet()) {
+            String key = entry.getKey();
+            simpleMap.put(key, entry.getValue());
+        }
+        return null; //simpleMap;
     }
 
 }

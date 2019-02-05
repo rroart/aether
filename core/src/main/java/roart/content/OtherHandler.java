@@ -147,7 +147,7 @@ public class OtherHandler {
 	if ((output != null && !output.isEmpty()) && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
-		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlistid, retlistnotid, metadata);
+		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlistid, retlistnotid, metadata, el.fsData);
 		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.addFirst(e);
 	    //size = doTika(filename, tmp, md5, index, retlist);

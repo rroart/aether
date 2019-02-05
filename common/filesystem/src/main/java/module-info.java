@@ -10,4 +10,5 @@ module common.filesystem {
 
     requires common.config;
     requires common.model;
+    requires com.fasterxml.jackson.annotation;
 }

@@ -77,11 +77,14 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception {
-        FileLocation fl = param.getFileLocation();
+        Map<String, String> md5Map = new HashMap<>();
+        for (FileLocation fl : param.getFileLocations()) {
+            String filename = fl.getFilename();
+            String md5 = dataNucleusIndexFiles.getMd5ByFilelocation(fl);
+            md5Map.put(filename, md5);            
+        }
         DatabaseMd5Result result = new DatabaseMd5Result();
-        String[] md5 = new String[1];
-        md5[0] = dataNucleusIndexFiles.getMd5ByFilelocation(fl);
-        result.md5 = md5;
+        result.setMd5Map(md5Map);
         return result;
     }
 

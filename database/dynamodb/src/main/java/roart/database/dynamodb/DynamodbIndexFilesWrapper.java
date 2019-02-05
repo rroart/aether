@@ -3,6 +3,7 @@ package roart.database.dynamodb;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -30,17 +31,17 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private DynamodbIndexFiles hbaseIndexFiles;
+    private DynamodbIndexFiles dynamodbIndexFiles;
 
     public DynamodbIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
-        hbaseIndexFiles = new DynamodbIndexFiles(null, nodename, nodeConf);
+        dynamodbIndexFiles = new DynamodbIndexFiles(null, nodename, nodeConf);
     }
 
     @Override
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
         Set<String> md5s = param.getMd5s();
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        Map<String, IndexFiles> indexFilesMap = hbaseIndexFiles.get(md5s);
+        Map<String, IndexFiles> indexFilesMap = dynamodbIndexFiles.get(md5s);
         result.setIndexFilesMap(indexFilesMap);
         return result;
     }
@@ -48,7 +49,7 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseFileLocationResult getFilelocationsByMd5(DatabaseMd5Param param) throws Exception {
         String md5 = param.getMd5();
-        Set<FileLocation> fileLocationSet = hbaseIndexFiles.getFilelocationsByMd5(md5);
+        Set<FileLocation> fileLocationSet = dynamodbIndexFiles.getFilelocationsByMd5(md5);
         DatabaseFileLocationResult result = new DatabaseFileLocationResult();
         FileLocation[] fileLocations = new FileLocation[1];
         result.fileLocation = fileLocationSet.stream().toArray(FileLocation[]::new);
@@ -58,7 +59,7 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception {
         FileLocation fl = param.getFileLocation();
-        IndexFiles indexFilesGot = hbaseIndexFiles.getIndexByFilelocation(fl);
+        IndexFiles indexFilesGot = dynamodbIndexFiles.getIndexByFilelocation(fl);
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
         IndexFiles[] indexFiles = new IndexFiles[1];
         indexFiles[0] = indexFilesGot;
@@ -77,70 +78,73 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception {
-        FileLocation fl = param.getFileLocation();
+        Map<String, String> md5Map = new HashMap<>();
+        for (FileLocation fl : param.getFileLocations()) {
+            String filename = fl.getFilename();
+            String md5 = dynamodbIndexFiles.getMd5ByFilelocation(fl);
+            md5Map.put(filename, md5);
+        }
         DatabaseMd5Result result = new DatabaseMd5Result();
-        String[] md5 = new String[1];
-        md5[0] = hbaseIndexFiles.getMd5ByFilelocation(fl);
-        result.setMd5(md5);
+        result.setMd5Map(md5Map);
         return result;
     }
 
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setIndexFiles(hbaseIndexFiles.getAll().stream().toArray(IndexFiles[]::new));
+        result.setIndexFiles(dynamodbIndexFiles.getAll().stream().toArray(IndexFiles[]::new));
         return result;
     }
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
         IndexFiles i = param.getIndexFiles();
-        hbaseIndexFiles.put(i);
+        dynamodbIndexFiles.put(i);
         return null;
     }
 
     @Override
     public DatabaseResult flush(DatabaseParam param) throws Exception {
-        hbaseIndexFiles.flush();
+        dynamodbIndexFiles.flush();
         return null;
     }
 
     @Override
     public DatabaseResult commit(DatabaseParam param) throws Exception {
-        hbaseIndexFiles.commit();
+        dynamodbIndexFiles.commit();
         return null;
     }
 
     @Override
     public DatabaseResult close(DatabaseParam param) throws Exception {
-        hbaseIndexFiles.close();
+        dynamodbIndexFiles.close();
         return null;
     }
 
     @Override
     public DatabaseMd5Result getAllMd5(DatabaseParam param) throws Exception {
         DatabaseMd5Result result = new DatabaseMd5Result();
-        result.setMd5(hbaseIndexFiles.getAllMd5().stream().toArray(String[]::new));
+        result.setMd5(dynamodbIndexFiles.getAllMd5().stream().toArray(String[]::new));
         return result;
     }
 
     @Override
     public DatabaseLanguagesResult getLanguages(DatabaseParam param) throws Exception {
         DatabaseLanguagesResult result = new DatabaseLanguagesResult();
-        result.languages = hbaseIndexFiles.getLanguages().stream().toArray(String[]::new);
+        result.languages = dynamodbIndexFiles.getLanguages().stream().toArray(String[]::new);
         return result;
     }
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception {
         IndexFiles index = param.getIndexFiles();
-        hbaseIndexFiles.delete(index);
+        dynamodbIndexFiles.delete(index);
         return null;
     }
 
     @Override
     public DatabaseConstructorResult destroy() throws Exception {
-        hbaseIndexFiles.destroy();
+        dynamodbIndexFiles.destroy();
         return null;
     }
 

@@ -2,8 +2,11 @@ package roart.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import roart.common.config.MyConfig;
 import roart.common.constants.EurekaConstants;
@@ -13,6 +16,8 @@ import roart.common.filesystem.FileSystemConstructorParam;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.MyFile;
+import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.model.FileObject;
@@ -61,6 +66,16 @@ public class FileSystemAccess {
 
     }
 
+    public List<MyFile> listFilesFull(FileObject f) {
+        FileSystemFileObjectParam param = new FileSystemFileObjectParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        param.fo = f;
+        FileSystemMyFileResult result = EurekaUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.LISTFILESFULL);
+        return new ArrayList<>(result.map.values());
+
+    }
+
     public boolean exists(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         param.nodename = ControlService.nodename;
@@ -98,6 +113,16 @@ public class FileSystemAccess {
         param.fo = f;
         FileSystemByteResult result = EurekaUtil.sendMe(FileSystemByteResult.class, url, param, EurekaConstants.GETINPUTSTREAM);
         return new ByteArrayInputStream(result.bytes);
+
+    }
+
+    public Map<String, MyFile> getWithInputStream(Set<String> filenames) {
+        FileSystemPathParam param = new FileSystemPathParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        param.paths = filenames;
+        FileSystemMyFileResult result = EurekaUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHINPUTSTREAM);
+        return result.map;
 
     }
 

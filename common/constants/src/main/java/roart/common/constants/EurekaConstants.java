@@ -61,10 +61,12 @@ public class EurekaConstants {
 
     // file system ops
     public static final String LISTFILES = "listfiles";
+    public static final String LISTFILESFULL = "listfilesfull";
     public static final String EXIST = "exist";
     public static final String GETABSOLUTEPATH = "getabsolutepath";
     public static final String ISDIRECTORY = "isdirectory";
     public static final String GETINPUTSTREAM = "getinputstream";
+    public static final String GETWITHINPUTSTREAM = "getwithinputstream";
     public static final String GETPARENT = "getparent";
     public static final String GET = "get";
 
@@ -72,6 +74,7 @@ public class EurekaConstants {
     public static final String GETFILELOCATIONSBYMD5 = "getfilelocationsbymd5";
     public static final String GETBYFILELOCATION = "getbyfilelocation";
     public static final String GETMD5BYFILELOCATION = "getmd5byfilelocation";
+    public static final String GETBOTHBYFILELOCATION = "getbothbyfilelocation";
     public static final String GETBYMD5 = "getbymd5";
     public static final String GETALL = "getall";
     public static final String SAVE = "save";

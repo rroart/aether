@@ -1,149 +1,137 @@
 package roart.thread;
 
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.constants.Constants;
+import roart.common.filesystem.MyFile;
+import roart.common.model.IndexFiles;
+import roart.dir.TraverseFile;
+import roart.queue.TraverseQueueElement;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
-import roart.common.config.MyConfig;
-import roart.common.constants.Constants;
-import roart.common.model.FileObject;
-import roart.dir.Traverse;
-import roart.dir.TraverseFile;
-import roart.filesystem.FileSystemDao;
-import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
 
 public class TraverseQueueRunner implements Runnable {
-	
+
     static Logger log = LoggerFactory.getLogger(TraverseQueueRunner.class);
 
     private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
-   
+
+    private static final int LIMIT = 10;
+
+    @SuppressWarnings("squid:S2189")
     public void run() {
 
-        int nThreads = 20;
-        /*
-	if (MyConfig.conf.hasHibernate) {
-	    nThreads = 100;
-	    log.info("more threads with hibernate");
-	}
-	*/
-        ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
+        int cpu = 1;
+        int nThreads = (int) (Runtime.getRuntime().availableProcessors() * cpu);
+        log.info("nthreads {}", nThreads);
+        ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
         String queueid = Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
 
-    	while (true) {
-    	    TraverseQueueElement trav = queue.poll();
-    		if (trav == null) {
-    		    try {
+        while (true) {
+            List<TraverseQueueElement> traverseList = new ArrayList<>();
+            for (int i = 0; i < LIMIT; i++) {
+                TraverseQueueElement trav = queue.poll();
+                if (trav == null) {
+                    break;
+                }
+                traverseList.add(trav);
+                String filename = trav.getFilename();
+                log.info("trav cli {}", filename);
+            }
+            if (traverseList.isEmpty()) {
+                try {
                     TimeUnit.SECONDS.sleep(1);
                     continue;
                 } catch (InterruptedException e) {
                     log.error(Constants.EXCEPTION, e); 
                 }    		    
-    		}
-    	    
-    		String filename = trav.getFilename();
-    		log.info("trav cli " + filename);
-            FileObject fo = FileSystemDao.get(filename);
-    		
-    		if (Traverse.isLocal(fo)) {
-    		    try {
-                    if (Queues.traverseQueueHeavyLoaded()) {
-                                                    try {
-                                                            TimeUnit.SECONDS.sleep(1);
-                                                    } catch (InterruptedException e) {
-                                                            // TODO Auto-generated catch block              
-                                                            log.error(Constants.EXCEPTION, e);
-                                                    }
-                                                    continue;
-                                            }
-                   Callable<Object> callable = new Callable<Object>() {
-                        public Object call() /* throws Exception*/ {
-                                try {
-                                    Queues.traverseQueue.add(trav);
-                                        doHandleFo();
-                                } catch (Exception e) {
-                                    log.error(Constants.EXCEPTION, e);
-                                } catch (Error e) {
-                                    System.gc();
-                                log.error("Error " + Thread.currentThread().getId());
-                                    log.error(Constants.ERROR, e);
-                                }
-                                finally {
-                                        //log.info("myend");            
-                                }
-                                return null; //myMethod();              
-                        }
-                };
-                   Callable<Object> callablesimple = new Callable<Object>() {
-                        public Object call() /* throws Exception*/ {
-                                try {
-				    TraverseFile.handleFo3(trav);
-                                } catch (Exception e) {
-                                    log.error(Constants.EXCEPTION, e);
-                                } catch (Error e) {
-                                    System.gc();
-                                log.error("Error " + Thread.currentThread().getId());
-                                    log.error(Constants.ERROR, e);
-                                }
-                                finally {
-                                        //log.info("myend");            
-                                }
-                                return null; //myMethod();              
-                        }
-		   };
-		   log.info("submitting " + executorService.getCompletedTaskCount() + " " + executorService.getPoolSize() + " " + executorService.getActiveCount());
-                    Future<Object> task = executorService.submit(callablesimple);
+            }
+            log.info("Traverse list size {}", traverseList.size());
 
-                    //TraverseFile.handleFo3(trav);
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
-    		} else {
-                    queue.offer(trav);
-    		}
-    		
-      	}
+            try {
+                //handleList(pool, traverseList);
+                handleList2(traverseList);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            } catch (Error e) {
+                System.gc();
+                log.error("Error " + Thread.currentThread().getId());
+                log.error(Constants.ERROR, e);
+            }
+            finally {
+                log.info("myend");            
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                continue;
+            } catch (InterruptedException e) {
+                log.error(Constants.EXCEPTION, e); 
+            }                   
+        }
+    }
+
+    private void handleList2(List<TraverseQueueElement> traverseList) throws Exception {
+        Set<String> filenames = new HashSet<>();
+        for (TraverseQueueElement trav : traverseList) {
+            TraverseFile.handleFo3(trav, filenames);
+        }
+        long time0 = System.currentTimeMillis();
+        Map<String, MyFile> fsMap = TraverseFile.handleFo3(filenames);
+        long time1 = System.currentTimeMillis();
+        Map<String, String> md5Map = TraverseFile.handleFo4(filenames);
+        long time2 = System.currentTimeMillis();
+        Map<String, IndexFiles> ifMap = TraverseFile.handleFo5(new HashSet<>(md5Map.values()));
+        long time3 = System.currentTimeMillis();
+        for (TraverseQueueElement trav : traverseList) {
+            TraverseFile.handleFo3(trav, fsMap, md5Map, ifMap);
+        }
+        long time4 = System.currentTimeMillis();
+        log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));
+    }
+
+    private int usedTime(long time2, long time1) {
+        return (int) (time2 - time1); // 1000;
     }
     
-    public static String doHandleFo() {
-   class HandleFo implements Runnable {
-           private TraverseQueueElement trav;
-           HandleFo(TraverseQueueElement trav) {
-                   this.trav = trav;
-           }
-
-        public void run() {
-                try {
-                        TraverseFile.handleFo3(trav);
-                } catch (Exception e) {
-                        log.error(Constants.EXCEPTION, e);
-                }
-        }
+    private void handleList(ThreadPoolExecutor pool, List<TraverseQueueElement> traverseList) throws Exception {
+        for (TraverseQueueElement trav : traverseList) {
+            //TraverseFile.handleFo3(trav);
+            Runnable runnable = new MyRunnable(trav);
+            pool.execute(runnable);
+        }        
     }
-log.info("here1");
-        TraverseQueueElement trav = Queues.traverseQueue.poll();
-        if (trav == null) {
-                log.error("empty queue");
-                return null;
-            }
-             HandleFo foRunnable = new HandleFo(trav);
-            Thread foWorker = new Thread(foRunnable);
-            foWorker.setName("FoWorker");
-            foWorker.start();
-            return null;
+
+    class MyRunnable implements Runnable {
+        TraverseQueueElement trav;
+
+        public MyRunnable(TraverseQueueElement trav) {
+            super();
+            this.trav = trav;
         }
 
+        @Override
+        public void run() {
+            try {
+                TraverseFile.handleFo3(trav);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
+
+    }
 }
 
 

@@ -25,6 +25,8 @@ import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemMyFileResult;
+import roart.common.filesystem.MyFile;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.model.FileObject;
@@ -35,27 +37,27 @@ import org.slf4j.LoggerFactory;
 
 public class HDFS extends FileSystemOperations {
 
-	private static final Logger log = LoggerFactory.getLogger(HDFS.class);
-	
-	private HDFSConfig conf;
-	
+    private static final Logger log = LoggerFactory.getLogger(HDFS.class);
+
+    private HDFSConfig conf;
+
     private Map<String, Path> pathMap = new HashMap<>();
-    
+
     public HDFS() {        
     }
-    
-	public HDFS(String nodename, NodeConfig nodeConf) {
-	    conf = new HDFSConfig();
-	    Configuration configuration = new Configuration();
-		conf.configuration = configuration;
-		String fsdefaultname = nodeConf.getHDFSDefaultName();
-		if (fsdefaultname != null) {
-		    configuration.set("fs.default.name", fsdefaultname);
-		    log.info("Setting hadoop fs.default.name " + fsdefaultname);
-		}
-	}
-	
-	@Override
+
+    public HDFS(String nodename, NodeConfig nodeConf) {
+        conf = new HDFSConfig();
+        Configuration configuration = new Configuration();
+        conf.configuration = configuration;
+        String fsdefaultname = nodeConf.getHDFSDefaultName();
+        if (fsdefaultname != null) {
+            configuration.set("fs.default.name", fsdefaultname);
+            log.info("Setting hadoop fs.default.name " + fsdefaultname);
+        }
+    }
+
+    @Override
     public FileSystemConstructorResult destroy() throws IOException {
         // TODO right?
         conf.configuration.clear();
@@ -63,109 +65,184 @@ public class HDFS extends FileSystemOperations {
     }
 
     @Override
-	public FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param) {
-	    FileObject f = param.fo;
-	    FileSystemFileObjectResult result = new FileSystemFileObjectResult();
-		List<FileObject> foList = new ArrayList<FileObject>();
-		FileSystem fs;
-		try {
-			fs = FileSystem.get(conf.configuration);
-		Path dir = pathMap.get(f.object);
-		FileStatus[] status = fs.listStatus(dir);
-		Path[] listedPaths = FileUtil.stat2Paths(status);
-		for (Path path : listedPaths) {
-			FileObject fo = new FileObject(path.getName(), this.getClass().getSimpleName());
-			foList.add(fo);
-			pathMap.put(path.getName(), path);
-		}
-		result.setFileObject(foList.toArray(new FileObject[0]));
-		return result;
-		} catch (IOException e) {
-			log.error(Constants.EXCEPTION, e);
-			return null;
-		}
-	}
+    public FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param) {
+        FileObject f = param.fo;
+        FileSystemFileObjectResult result = new FileSystemFileObjectResult();
+        List<FileObject> foList = new ArrayList<FileObject>();
+        FileSystem fs;
+        try {
+            fs = FileSystem.get(conf.configuration);
+            Path dir = pathMap.get(f.object);
+            FileStatus[] status = fs.listStatus(dir);
+            Path[] listedPaths = FileUtil.stat2Paths(status);
+            for (Path path : listedPaths) {
+                FileObject fo = new FileObject(path.getName(), this.getClass().getSimpleName());
+                foList.add(fo);
+                pathMap.put(path.getName(), path);
+            }
+            result.setFileObject(foList.toArray(new FileObject[0]));
+            return result;
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+    }
 
     @Override
-	public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
-	    FileObject f = param.fo;
-		Path path = pathMap.get(f.object);
-		boolean exist;
-		try {
-			FileSystem fs = FileSystem.get(conf.configuration);
-			exist = fs.exists(path);
-		} catch (Exception e) {
-			log.error(Constants.EXCEPTION, e);
-			exist = false;
-		}
+    public FileSystemMyFileResult listFilesFull(FileSystemFileObjectParam param) throws Exception {
+        FileObject f = param.fo;
+        Map<String, MyFile> map = new HashMap<>();
+        FileSystem fs;
+        try {
+            fs = FileSystem.get(conf.configuration);
+            Path dir = pathMap.get(f.object);
+            FileStatus[] status = fs.listStatus(dir);
+            Path[] listedPaths = FileUtil.stat2Paths(status);
+            for (Path path : listedPaths) {
+                FileObject[] fo = new FileObject[1];
+                fo[0] = new FileObject(path.getName(), this.getClass().getSimpleName());
+                MyFile my = getMyFile(fo, false);
+                map.put(my.absolutePath, my);
+                pathMap.put(path.getName(), path);
+            }
+            FileSystemMyFileResult result = new FileSystemMyFileResult();
+            result.map = map;
+            return result;
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+    }
+
+    @Override
+    public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
         FileSystemBooleanResult result = new FileSystemBooleanResult();
-        result.bool = exist;
+        result.bool = existsInner(param.fo);
         return result;
-	}
+    }
+
+    private boolean existsInner(FileObject f) {
+        Path path = pathMap.get(f.object);
+        boolean exist;
+        try {
+            FileSystem fs = FileSystem.get(conf.configuration);
+            exist = fs.exists(path);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            exist = false;
+        }
+        return exist;
+    }
 
     @Override
-	public FileSystemPathResult getAbsolutePath(FileSystemFileObjectParam param) {
-	    FileObject f = param.fo;
-		Path path = pathMap.get(f.object);
-		//log.info("mypath " + path.getName() + " " + path.getParent().getName() + " " + path.toString());
-		// this is hdfs://server/path
-		String p = path.toString();
-		p = p.substring(7);
-		int i = p.indexOf("/");
-		p = p.substring(i);
-		//log.info("p " + p);
+    public FileSystemPathResult getAbsolutePath(FileSystemFileObjectParam param) {
+        FileObject f = param.fo;
+        String p = getAbsolutePathInner(f);
         FileSystemPathResult result = new FileSystemPathResult();
-		result.setPath(FileSystemConstants.HDFS + p);
-		return result;
-		/*
+        result.setPath(p);
+        return result;
+        /*
 		try {
 			FileSystem fs = FileSystem.get(configuration);
 			FileStatus fstat = fs.getFileStatus(path);
-			
+
 		} catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);
 			return null;
 		}
-		*/
-	}
+         */
+    }
+
+    private String getAbsolutePathInner(FileObject f) {
+        Path path = pathMap.get(f.object);
+        //log.info("mypath " + path.getName() + " " + path.getParent().getName() + " " + path.toString());
+        // this is hdfs://server/path
+        String p = path.toString();
+        p = p.substring(7);
+        int i = p.indexOf("/");
+        p = FileSystemConstants.HDFS + p.substring(i);
+        //log.info("p " + p);
+        return p;
+    }
 
     @Override
-	public FileSystemBooleanResult isDirectory(FileSystemFileObjectParam param) {
-	    FileObject f = param.fo;
-		Path path = pathMap.get(f.object);
-		boolean isDirectory;
-		try {
-			FileSystem fs = FileSystem.get(conf.configuration);
-			isDirectory = fs.isDirectory(path);
-		} catch (Exception e) {
-			log.error(Constants.EXCEPTION, e);
-			isDirectory = false;
-		}
-		FileSystemBooleanResult result = new FileSystemBooleanResult();
-		result.bool = isDirectory;
-		return result;
-	}
+    public FileSystemBooleanResult isDirectory(FileSystemFileObjectParam param) {
+        FileObject f = param.fo;
+        boolean isDirectory = isDirectoryInner(f);
+        FileSystemBooleanResult result = new FileSystemBooleanResult();
+        result.bool = isDirectory;
+        return result;
+    }
+
+    private boolean isDirectoryInner(FileObject f) {
+        Path path = pathMap.get(f.object);
+        boolean isDirectory;
+        try {
+            FileSystem fs = FileSystem.get(conf.configuration);
+            FileStatus status = fs.getFileStatus(path);
+            isDirectory = status.isDirectory();
+         } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            isDirectory = false;
+        }
+        return isDirectory;
+    }
 
     @Override
-	public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
-	    FileObject f = param.fo;
-		FileSystem fs;
-		try {
-			fs = FileSystem.get(conf.configuration);
-			InputStream is = fs.open(pathMap.get(f.object));
-			FileSystemByteResult result = new FileSystemByteResult();
-			result.bytes = IOUtils.toByteArray(is);
-			return result;
-	} catch (IOException e) {
-			// TODO Auto-generated catch block
-			log.error(Constants.EXCEPTION, e);
-			return null;
-		}
-	}
+    public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
+        FileObject f = param.fo;
+        FileSystemByteResult result = new FileSystemByteResult();
+        result.bytes = getInputStreamInner(f);
+        return result;
+    }
+
+    private byte[] getInputStreamInner(FileObject f) {
+        FileSystem fs;
+        byte[] bytes;
+        try {
+            fs = FileSystem.get(conf.configuration);
+            InputStream is = fs.open(pathMap.get(f.object));
+            bytes = IOUtils.toByteArray(is);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+        return bytes;
+    }
 
     @Override
-	public FileSystemFileObjectResult getParent(FileSystemFileObjectParam param) {
-	    FileObject f = param.fo;
+    public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) {
+        Map<String, MyFile> map = new HashMap<>();
+        for (String filename : param.paths) {
+            FileObject[] fo = getInner(filename);
+            MyFile my = getMyFile(fo, true);
+            map.put(filename, my);
+        }
+        FileSystemMyFileResult result = new FileSystemMyFileResult();
+        result.map = map;
+        return result;
+    }
+
+    private MyFile getMyFile(FileObject[] fo, boolean withBytes) {
+        MyFile my = new MyFile();
+        my.fileObject = fo;
+        if (fo[0] != null) {
+            my.exists = existsInner(fo[0]);
+            if (my.exists) {
+                my.isDirectory = isDirectoryInner(fo[0]);
+                my.absolutePath = getAbsolutePathInner(fo[0]);
+                if (withBytes) {
+                    my.bytes = getInputStreamInner(fo[0]);
+                }
+            }
+        }
+        return my;
+    }
+
+    @Override
+    public FileSystemFileObjectResult getParent(FileSystemFileObjectParam param) {
+        FileObject f = param.fo;
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
         Path parent = pathMap.get(f.object).getParent();
@@ -173,20 +250,25 @@ public class HDFS extends FileSystemOperations {
         result.setFileObject(fo);
         pathMap.put(parent.getName(), parent);
         return result;
-	}
+    }
 
     @Override
-	public FileSystemFileObjectResult get(FileSystemPathParam param) {
-	    String string = param.path;
-	    if (string.startsWith(FileSystemConstants.HDFS)) {
-	    	string = string.substring(FileSystemConstants.HDFSLEN);
-	    }
+    public FileSystemFileObjectResult get(FileSystemPathParam param) {
+        String string = param.path;
+        FileObject[] fo = getInner(string);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
+        result.setFileObject(fo);
+        return result;
+    }
+
+    private FileObject[] getInner(String string) {
+        if (string.startsWith(FileSystemConstants.HDFS)) {
+            string = string.substring(FileSystemConstants.HDFSLEN);
+        }
         FileObject[] fo = new FileObject[1];
-		fo[0] = new FileObject(string, this.getClass().getSimpleName());
-		result.setFileObject(fo);
+        fo[0] = new FileObject(string, this.getClass().getSimpleName());
         pathMap.put(string, new Path(string));
-		return result;
-	}
+        return fo;
+    }
 
 }
