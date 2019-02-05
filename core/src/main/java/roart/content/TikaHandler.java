@@ -1,79 +1,60 @@
 package roart.content;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.apache.tika.detect.DefaultDetector;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+
 import roart.classification.ClassifyDao;
 import roart.common.constants.Constants;
-import roart.common.constants.FileSystemConstants;
+import roart.common.filesystem.MyFile;
 import roart.common.model.FileLocation;
-import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
-import roart.common.model.SearchDisplay;
-import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
+import roart.dir.Traverse;
+import roart.filesystem.FileSystemAccess;
+import roart.filesystem.FileSystemFactory;
 import roart.lang.LanguageDetect;
 import roart.lang.LanguageDetectFactory;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.service.ControlService;
-import roart.service.SearchService;
 import roart.util.MyList;
 import roart.util.MyLists;
-import roart.dir.Traverse;
-import roart.filesystem.FileSystemAccess;
-import roart.filesystem.FileSystemDao;
-import roart.filesystem.FileSystemFactory;
-import roart.filesystem.RemoteFileSystemAccess;
-
-import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.ParsingReader;
-import org.apache.tika.parser.AbstractParser;
-import org.apache.tika.sax.XHTMLContentHandler;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.detect.DefaultDetector;
-import org.apache.tika.detect.Detector;
-import org.apache.tika.extractor.EmbeddedDocumentExtractor;
-import org.apache.tika.fork.ForkParser;
-import org.apache.tika.io.CloseShieldInputStream;
-import org.apache.tika.io.IOUtils;
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.language.LanguageProfilerBuilder;
-import org.apache.tika.language.ProfilingHandler;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.mime.MediaTypeRegistry;
-import org.apache.tika.mime.MimeTypeException;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.NetworkParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.parser.ParserDecorator;
-import org.apache.tika.parser.html.BoilerpipeContentHandler;
-import org.apache.tika.sax.BodyContentHandler;
-import org.apache.tika.sax.XMPContentHandler;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TikaHandler {
     private Logger log = LoggerFactory.getLogger(TikaHandler.class);
 
-    public ByteArrayOutputStream process(String filename, Metadata metadata, IndexFiles index) throws Exception {
-        FileObject file = FileSystemDao.get(filename);
-        InputStream is = FileSystemDao.getInputStream(file);
+    public ByteArrayOutputStream process(TikaQueueElement el) throws Exception {
+        String filename = el.filename;
+        Metadata metadata = el.metadata;
+        MyFile fsData = el.fsData;
+        IndexFiles index = el.index;
+        
+        InputStream is = fsData.getInputStream();
         InputStream input = TikaInputStream.get(is);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -89,13 +70,13 @@ public class TikaHandler {
             index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
             output = null;
         } catch (java.lang.ThreadDeath e) {
-            log.error("Error expected " + Thread.currentThread().getId() + " " + filename);
+            log.error("Error expected {} {}", Thread.currentThread().getId(), filename);
             log.error(Constants.ERROR, e);
             index.setFailedreason(index.getFailedreason() + "tika timeout " + e.getClass().getName() + " ");
             output = null;
         } catch (Error e) {
             System.gc();
-            log.error("Error " + Thread.currentThread().getId() + " " + filename);
+            log.error("Error {} {}", Thread.currentThread().getId(), filename);
             log.error(Constants.ERROR, e);
             index.setFailedreason(index.getFailedreason() + "tika error " + e.getClass().getName() + " ");
             output = null;
@@ -139,11 +120,11 @@ public class TikaHandler {
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
         Metadata metadata = el.metadata;
-        log.info("incTikas " + dbfilename);
+        log.info("incTikas {}", dbfilename);
         Queues.tikaTimeoutQueue.add(dbfilename);
         int size = 0;
         try {
-            OutputStream outputStream = process(filename, metadata, index);
+            OutputStream outputStream = process(el);
             long time = System.currentTimeMillis() - now;
             el.index.setConverttime("" + time);
             InputStream inputStream = null;
