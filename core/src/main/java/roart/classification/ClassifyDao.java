@@ -26,16 +26,13 @@ public class ClassifyDao {
 	  return;
 	}
 	if (classify != null) {
-		// TODO propagate error
 		try {
 			classify.destructor();
         } catch (Exception e) {
-        	// TODO propagate
             log.error(Constants.EXCEPTION, e); 
         }
 	}
 	if (true || classify == null) {
-		// TODO make OO of this
 	    if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
 		classify = new MahoutClassifyAccess();
 	    }
@@ -48,7 +45,6 @@ public class ClassifyDao {
 	    if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
 		classify = new OpennlpClassifyAccess();
 	    }
-	    // TODO propagate
 	    String error = classify.constructor();
 	}
     }
