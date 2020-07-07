@@ -80,7 +80,7 @@ import roart.util.MySets;
             ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.SETCONFIG);
             return;
             */     
-            // TODO fix
+           
         }
         
         private NodeConfig getConfig() {
@@ -381,7 +381,6 @@ import roart.util.MySets;
             retNewFilesList.add(new ResultItem(s));
         }
     
-    	// TODO set clear
     	
     	MyCollections.remove(retlistid);
         MyCollections.remove(retnotlistid);
@@ -1047,14 +1046,12 @@ import roart.util.MySets;
             public List database(String db) {
             	//MyXMLConfig property = (MyXMLConfig) MyXMLConfig.getConfigInstance();
             	return null;
-            	// TODO fix
             	//property.configClassify(db);      	
             }
     
             public List filesystem(String fs) {
             	//MyXMLConfig property = (MyXMLConfig) MyXMLConfig.getConfigInstance();
             	return null;
-            	// TODO fix
             	//property.configFileSystem(fs);      	
             }
     }
