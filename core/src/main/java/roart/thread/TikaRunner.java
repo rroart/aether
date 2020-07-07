@@ -120,7 +120,6 @@ public class TikaRunner implements Runnable {
     			try {
     				TimeUnit.SECONDS.sleep(1);
     			} catch (InterruptedException e) {
-    				// TODO Auto-generated catch block
     				log.error(Constants.EXCEPTION, e);
     			}
     			continue;
@@ -161,7 +160,6 @@ public class TikaRunner implements Runnable {
 			try {
 				//TimeUnit.SECONDS.sleep(60);
 			} catch (/*Interrupted*/Exception e) {
-				// TODO Auto-generated catch block
 				log.error(Constants.EXCEPTION, e);
 			}
     	}
@@ -199,7 +197,6 @@ public class TikaRunner implements Runnable {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				log.error(Constants.EXCEPTION, e);
-				// TODO Auto-generated catch block
 			}
     		long now = System.currentTimeMillis();
     		if ((now - start) > 1000 * timeout) {
@@ -217,10 +214,8 @@ public class TikaRunner implements Runnable {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			log.error(Constants.EXCEPTION, e);
-			// TODO Auto-generated catch block
 		}
 		log.info("Tikaworker timeout " + tikaWorker + " " + tikaRunnable + " " + tikaWorker.isAlive() + " " + tikaWorker.isInterrupted() + " " + tikaWorker.interrupted());
-		// TODO not needed here anymore? double insertion to otherQueue bug 
 		//Queues.otherQueue.add(el);
 		return (String) null;
     }
