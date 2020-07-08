@@ -59,7 +59,6 @@ public class HDFS extends FileSystemOperations {
 
     @Override
     public FileSystemConstructorResult destroy() throws IOException {
-        // TODO right?
         conf.configuration.clear();
         return null;
     }
@@ -204,7 +203,6 @@ public class HDFS extends FileSystemOperations {
             InputStream is = fs.open(pathMap.get(f.object));
             bytes = IOUtils.toByteArray(is);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             log.error(Constants.EXCEPTION, e);
             return null;
         }
