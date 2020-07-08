@@ -13,6 +13,11 @@ public class FileSystemFactory {
             return new HDFSAccess();
         case SWIFT:
             return new SwiftAccess();
+        //missing default case
+        default:
+            // add default case
+            break;
+        
         }
         return null;
     }
