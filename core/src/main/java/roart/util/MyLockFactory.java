@@ -18,6 +18,11 @@ public class MyLockFactory {
         case Constants.ZOOKEEPER:
             return new MyZookeeperLock();
             */
+        //missing default case
+        default:
+            // add default case
+            break;
+
         }
         return new MyDummyLock();
     }
