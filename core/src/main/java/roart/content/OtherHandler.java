@@ -225,7 +225,6 @@ public class OtherHandler {
     					Thread.sleep(1000);
     				} catch (InterruptedException e) {
     					log.error(Constants.EXCEPTION, e);
-    					// TODO Auto-generated catch block
     				}
     	    		long now = System.currentTimeMillis();
     	    		if ((now - start) > 1000 * timeout) {
@@ -243,7 +242,6 @@ public class OtherHandler {
     				Thread.sleep(1000);
     			} catch (InterruptedException e) {
     				log.error(Constants.EXCEPTION, e);
-    				// TODO Auto-generated catch block
     			}
     			log.info("Otherworker timeout " + otherWorker + " " + otherRunnable + " " + otherWorker.isAlive() + " " + otherWorker.isInterrupted() + " " + otherWorker.interrupted());
 
