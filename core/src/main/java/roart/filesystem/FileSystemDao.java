@@ -66,7 +66,6 @@ public class FileSystemDao {
         return getFileSystemAccess(f).getParent(f);
     }
 
-    // TODO make this OO
     private static FileSystemAccess getFileSystemAccess(FileObject f) {
         if (f == null) {
             log.error("f null");
@@ -137,7 +136,6 @@ public class FileSystemDao {
         return url;
     }
 
-    // TODO make this OO
     private static FileSystemAccess getFileSystemAccess(String s) {
         String fs = "LocalFileSystem";
         String path = FsUtil.getFsPath(s);
