@@ -143,7 +143,6 @@ public class TikaHandler {
                 if (dbfilename.equals(filename)) {
                     String fn = null;
                     String tmpfn = null;
-                    // TODO make OO version of this
                     FileSystemAccess fsAccess = FileSystemFactory.getFileSystem(filename);
                     fn = fsAccess.getLocalFilesystemFile(filename);
                     el.filename = fn;
@@ -217,7 +216,6 @@ public class TikaHandler {
             } else {
                 //log.info("filenames " + dbfilename + " " + filename);
                 if (dbfilename.equals(filename)) {
-                    // TODO make OO version of this
                     FileSystemAccess fsAccess = FileSystemFactory.getFileSystem(filename);
                     String fn = fsAccess.getLocalFilesystemFile(filename);
                     el.filename = fn;
