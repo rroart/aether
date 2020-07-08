@@ -28,7 +28,6 @@ public class FileLocation {
     public FileLocation(String filename, String csNodename, String dummy) {
     	String file = filename;
     	String prefix = "";
-    	// TODO redo this if system. make it oo.
     	if (filename.startsWith(FileSystemConstants.FILESLASH) || filename.startsWith(FileSystemConstants.HDFSSLASH) || filename.startsWith(FileSystemConstants.SWIFTSLASH)) {
     		int split;
     		if (filename.startsWith(FileSystemConstants.SWIFT)) {
@@ -76,7 +75,6 @@ public class FileLocation {
 	    log.error("No nodename");
 	    return "'" + filename + "'";
 	}
-	// TODO make OO version
 	if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
 		if (filename.startsWith(FileSystemConstants.SWIFT)) {
 			String prefix = filename.substring(0, FileSystemConstants.SWIFTLEN);
@@ -96,7 +94,6 @@ public class FileLocation {
             log.error("No nodename");
             return filename;
         }
-        // TODO make OO version
         if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
                 if (filename.startsWith(FileSystemConstants.SWIFT)) {
                         String prefix = filename.substring(0, FileSystemConstants.SWIFTLEN);
