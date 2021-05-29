@@ -105,7 +105,6 @@
     <hazelcast.version>3.5.4</hazelcast.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
     <jackson.version>2.9.7</jackson.version>
-    <camel.version>2.22.2</camel.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>5.4.0.Final</hibernate.version>
@@ -136,6 +135,15 @@
     <netty.version>4.1.7.Final</netty.version>
     <jaxb.version>2.3.0</jaxb.version>
     <javaxinject.version>1</javaxinject.version>
+    <kafka.version>2.6.0</kafka.version>
+    <pulsar.version>2.6.1</pulsar.version>
+    <commons.math3.version>3.6.1</commons.math3.version>
+    <commons.lang3.version>3.8.1</commons.lang3.version>
+    <log4j.version>1.2.17</log4j.version>
+    <camel.version>3.6.0</camel.version>
+    <camelactivemq.version>5.16.0</camelactivemq.version>
+    <springintegration.version>5.4.0</springintegration.version>
+    <springrabbit.version>2.3.1</springrabbit.version>
   </properties>
   <repositories>
     <repository>
