@@ -205,7 +205,7 @@ public class TikaHandler {
                 }
 
                 //size = SearchLucene.indexme("all", md5, inputStream);
-                IndexQueueElement elem = new IndexQueueElement("all", md5, inputStream, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
+                IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
                 elem.lang = lang;
                 elem.content = content;
                 if (el.convertsw != null) {

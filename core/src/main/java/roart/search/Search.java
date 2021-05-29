@@ -45,7 +45,7 @@ public class Search {
     	
     	String type = el.type;
      	String md5 = el.md5;
-    	InputStream inputStream = el.inputStream;
+    	//InputStream inputStream = el.inputStream;
     	IndexFiles dbindex = el.index;
     	String dbfilename = el.dbfilename;
 	Metadata metadata = el.metadata;
@@ -58,7 +58,7 @@ public class Search {
     	int retsize = 0;
 
     try {
-    retsize = SearchDao.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, dbindex);
+    retsize = SearchDao.indexme(type, md5, dbfilename, metadata, lang, content, classification, dbindex);
     } catch (Exception e) {
 	    log.error(roart.common.constants.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
@@ -94,13 +94,6 @@ public class Search {
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlist.add(ri);
 	
-    try {
-	if (inputStream != null) {
-		inputStream.close();
-	}
-	} catch (IOException e) {
-		log.error(roart.common.constants.Constants.EXCEPTION, e);
-	}
     }
     dbindex.setPriority(1);
     // file unlock dbindex

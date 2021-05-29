@@ -48,8 +48,8 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
-	return search.indexme(type, md5, inputStream, dbfilename, metadata, lang, content, classification, index);
+    public static int indexme(String type, String md5, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
+	return search.indexme(type, md5, dbfilename, metadata, lang, content, classification, index);
     }
 
     public static ResultItem[] searchme(String str, String searchtype) {

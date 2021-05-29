@@ -20,6 +20,12 @@ import roart.util.MyAtomicLongs;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
 
+/**
+ * Event queues
+ * @author roart
+ *
+ */
+
 public class Queues {
 	
 	private static Logger log = LoggerFactory.getLogger(Queues.class);

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.io.InputStream;
 
 import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
@@ -78,7 +77,7 @@ public abstract class SearchAccess {
         return result.error;
     }
     
-    public int indexme(String type, String md5, InputStream inputStream, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
+    public int indexme(String type, String md5, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
         Metadata md = metadata;
         String[] str = new String[md.names().length];
         int i = 0;
