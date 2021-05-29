@@ -31,8 +31,11 @@ public static final String RETLISTID = "retlistid";
 public static final String RETNOTLISTID = "retnotlistid";
 public static final String ZOOKEEPER = "zookeeper";
 public static final String CURATOR = "curator";
-public static final String HAZELCAST = "hazelcast";
 public static final String GLOBALLOCK = "globallock";
 public static final String FILESTODOSETID = "filestodoset";
+
+public static final String REDIS = "redis";
+public static final String HAZELCAST = "hazelcast";
+public static final String HZ = "hz";
 
 }

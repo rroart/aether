@@ -101,8 +101,8 @@
     <zookeeper.version>3.4.6</zookeeper.version>
     <!-- must keep at old version for some time -->
     <curator.version>2.12.0</curator.version>
-    <!-- must keep at old version for some time -->
-    <hazelcast.version>3.5.4</hazelcast.version>
+    <hazelcast.version>3.12.12</hazelcast.version>
+    <hazelcastclient.version>3.2.12</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
     <jackson.version>2.9.7</jackson.version>
     <httpclient.version>4.5.6</httpclient.version>
@@ -144,6 +144,7 @@
     <camelactivemq.version>5.16.0</camelactivemq.version>
     <springintegration.version>5.4.0</springintegration.version>
     <springrabbit.version>2.3.1</springrabbit.version>
+    <redisclient.version>3.5.1</redisclient.version>
   </properties>
   <repositories>
     <repository>
