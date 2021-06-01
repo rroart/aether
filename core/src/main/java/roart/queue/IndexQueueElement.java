@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.tika.metadata.Metadata;
 
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.model.SearchDisplay;
@@ -14,7 +15,7 @@ public class IndexQueueElement {
     public String lang;
     // public String classification;
     // TODO also remove
-    public String content; // made from inputStream
+    //public String content; // made from inputStream
 	//public InputStream inputStream;
 	public volatile IndexFiles index;
     public String retlistid;
@@ -23,6 +24,7 @@ public class IndexQueueElement {
 	public String dbfilename;
     public Metadata metadata;
     public String convertsw;
+    public InmemoryMessage message;
 	
     public IndexQueueElement(String type, String md5, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Metadata metadata) {
 	this.type = type;

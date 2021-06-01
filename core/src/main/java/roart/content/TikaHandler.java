@@ -44,6 +44,9 @@ import roart.queue.TikaQueueElement;
 import roart.service.ControlService;
 import roart.util.MyList;
 import roart.util.MyLists;
+import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.factory.InmemoryFactory;
 
 public class TikaHandler {
     private Logger log = LoggerFactory.getLogger(TikaHandler.class);
@@ -207,7 +210,11 @@ public class TikaHandler {
                 //size = SearchLucene.indexme("all", md5, inputStream);
                 IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
                 elem.lang = lang;
-                elem.content = content;
+                //elem.content = content;
+                //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
+                Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
+                InmemoryMessage message = inmemory.send(el.md5, content);
+                elem.message = message;
                 if (el.convertsw != null) {
                     elem.convertsw = el.convertsw;
                 } else {

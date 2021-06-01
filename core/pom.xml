@@ -357,6 +357,16 @@
       <artifactId>commons-beanutils</artifactId>
       <version>1.9.3</version>
     </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-factory</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-model</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
   </dependencies>
 </project>
 

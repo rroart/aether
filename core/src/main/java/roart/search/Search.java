@@ -14,8 +14,13 @@ import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
+import roart.common.util.JsonUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
+import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.constants.Constants;
+import roart.common.inmemory.factory.InmemoryFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -50,7 +55,7 @@ public class Search {
     	String dbfilename = el.dbfilename;
 	Metadata metadata = el.metadata;
 	String lang = el.lang;
-	String content = el.content;
+	String content = getParam(el.message);
 	String classification = el.index.getClassification();
     	MyList<ResultItem> retlist = MyLists.get(el.retlistid);
     	MyList<ResultItem> retlistnot = MyLists.get(el.retlistnotid);
@@ -129,5 +134,12 @@ public class Search {
     public static List<String> cleanup2() throws Exception {
 	return null;
     }//End of removeDuplicate method
+
+    private static String getParam(InmemoryMessage message) {
+        //InmemoryMessage message = JsonUtil.convert(message, InmemoryMessage.class);
+        //Inmemory inmemory = InmemoryFactory.get(instance.getInmemoryServer(), instance.getInmemoryHazelcast(), instance.getInmemoryRedis());
+        Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
+       return inmemory.read(message);
+    }
 
 }

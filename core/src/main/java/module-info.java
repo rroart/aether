@@ -28,7 +28,7 @@ module core {
     requires curator.recipes;
     requires eureka.client;
     requires guava;
-    requires hazelcast;
+    requires com.hazelcast.core;
     requires java.desktop;
     requires java.sql;
     requires java.xml;
@@ -47,4 +47,6 @@ module core {
     requires spring.core;
     requires spring.web;
     requires zookeeper;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
 }
