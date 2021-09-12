@@ -78,7 +78,7 @@
     <springcloudstarter.version>Finchley.SR2</springcloudstarter.version>
     <springcore.version>5.1.3.RELEASE</springcore.version>
     <eurekaclient.version>1.9.8</eurekaclient.version>
-    <jdk.version>11</jdk.version>
+    <jdk.version>16</jdk.version>
     <junit.version>4.12</junit.version>
     <lucene.version>7.6.0</lucene.version>
     <solr.version>7.6.0</solr.version>

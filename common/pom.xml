@@ -31,7 +31,7 @@
     <module>zookeeper</module>
   </modules>
   <properties>
-    <jdk.version>10</jdk.version>
+    <jdk.version>11</jdk.version>
   </properties>
 </project>
 
