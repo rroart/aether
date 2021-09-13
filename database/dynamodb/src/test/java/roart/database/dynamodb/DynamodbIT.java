@@ -4,11 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.local.embedded.DynamoDBEmbedded;
@@ -21,13 +21,13 @@ import roart.common.model.IndexFilesUtil;
 import roart.database.dynamodb.DynamodbIndexFiles;
 
 public class DynamodbIT {
-    @ClassRule
+    @RegisterExtension
     public static LocalDbCreationRule dynamoDB = new LocalDbCreationRule();
 
     AmazonDynamoDB ddb;
     DynamodbIndexFiles indexfiles;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ddb = DynamoDBEmbedded.create().amazonDynamoDB();
         System.out.println("here");
@@ -70,7 +70,7 @@ public class DynamodbIT {
         System.out.println("md5 " + md5);
     }
 
-    @After
+    @AfterEach
     public void shutdown() {
         deleteTables();
         ddb.shutdown();

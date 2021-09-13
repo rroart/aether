@@ -1,6 +1,6 @@
 package roart.filesystem;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
@@ -21,14 +21,14 @@ import org.javaswift.joss.client.factory.AccountConfig;
 import org.javaswift.joss.client.factory.AccountFactory;
 import org.javaswift.joss.client.factory.AuthenticationMethod;
 import org.javaswift.joss.model.Account;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
-public class SwiftTest {
+public class SwiftIT {
     
     private SwiftConfig conf;
     private Swift swift;
     
-   @Before
+   @BeforeEach
     public void setup() {
        try {
        conf = new SwiftConfig();

@@ -5,8 +5,8 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.data.Stat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import roart.common.model.FileObject;
 import roart.filesystem.FileSystemDao;
@@ -15,7 +15,7 @@ public class FileSystemDaoIT {
     
     CuratorFramework curatorClient;
     
-    @Before
+    @BeforeEach
     public void setup() {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
         String zookeeperConnectionString = "localhost:2181";
@@ -26,8 +26,8 @@ public class FileSystemDaoIT {
     @Test
     public void testIT() {
         FileObject f = new FileObject("/tmp/fakerepo/c/bla", "local");
-        String url = FileSystemDao.getUrl(curatorClient, f, "");
-        System.out.println("URL " + url);
+        //String url = FileSystemDao.getUrl(curatorClient, f, "");
+        //System.out.println("URL " + url);
     }
     /*
                 // write zk nodename, hdfs-type, path

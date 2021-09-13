@@ -11,9 +11,9 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 //import com.rabbitmq.client.Connection;
 //import com.rabbitmq.client.DeliverCallback;
 //import com.rabbitmq.client.Channel;
@@ -28,7 +28,7 @@ public class CamelIT {
 
     CamelContext context;
 
-    @Before
+    @BeforeEach
     public void setup() {
         System.out.println("setup1");
         context = new DefaultCamelContext();
@@ -201,7 +201,7 @@ public class CamelIT {
    }
      */
 
-    @After
+    @AfterEach
     public void shutdown() {
         try {
             Thread.sleep(10000);

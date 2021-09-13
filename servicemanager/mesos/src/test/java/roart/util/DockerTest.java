@@ -9,9 +9,9 @@ import java.util.logging.LogRecord;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -27,7 +27,7 @@ public class DockerTest {
 	//public IOpenShiftConnection connection;
 	String project = "myproject";
 	 	
-	@Before
+	@BeforeEach
     public void setUp() {
 	    try {
 	    Response r = null;
@@ -39,7 +39,7 @@ public class DockerTest {
     	System.out.println("setup done");
 	}
 
-    @After
+    @AfterEach
     public void after() {
      	System.out.println("after test");
     	//IUser user = user = connection.getUser();

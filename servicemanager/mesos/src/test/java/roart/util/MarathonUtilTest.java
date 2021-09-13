@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,11 +21,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.netflix.discovery.util.EurekaUtils;
 
+import roart.common.util.JarThread;
+
 import javax.ws.rs.core.Response;
 
 public class MarathonUtilTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         try {
         Response r = null;
@@ -37,7 +39,7 @@ public class MarathonUtilTest {
         System.out.println("setup done");
     }
     
-    @After
+    @AfterEach
     public void after() {
         System.out.println("after test");
         //IUser user = user = connection.getUser();

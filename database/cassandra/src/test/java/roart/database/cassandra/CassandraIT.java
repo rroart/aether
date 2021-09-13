@@ -10,9 +10,9 @@ import java.util.Set;
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.datastax.driver.core.Session;
 
@@ -26,7 +26,7 @@ public class CassandraIT {
     Session session;
     CassandraIndexFiles indexfiles;
 
-    @Before
+    @BeforeEach
     public void setup() throws ConfigurationException, TTransportException, IOException, InterruptedException {
         System.out.println("st1");
         EmbeddedCassandraServerHelper.startEmbeddedCassandra();
@@ -67,7 +67,7 @@ public class CassandraIT {
         }
     }
 
-    @After
+    @AfterEach
     public void shutdown() {
         System.out.println("stopped0");
         try {
