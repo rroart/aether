@@ -73,9 +73,9 @@
     <mavenshade.version>3.2.1</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>9.4.12.v20180830</jetty.version>
-    <springboot.version>2.1.1.RELEASE</springboot.version>
-    <springcloud.version>2.0.2.RELEASE</springcloud.version>
-    <springcloudstarter.version>Finchley.SR2</springcloudstarter.version>
+    <springboot.version>2.5.4</springboot.version>
+    <springcloud.version>3.0.3</springcloud.version>
+    <springcloudstarter.version>2020.0.3</springcloudstarter.version>
     <springcore.version>5.1.3.RELEASE</springcore.version>
     <eurekaclient.version>1.9.8</eurekaclient.version>
     <jdk.version>16</jdk.version>
