@@ -1,9 +1,9 @@
 diff -ru ../../configsets/_default/conf/managed-schema ./managed-schema
---- ../../configsets/_default/conf/managed-schema	2018-11-29 17:52:52.000000000 +0100
-+++ ./managed-schema	2018-12-31 18:29:32.601184681 +0100
-@@ -115,6 +115,15 @@
-     <field name="_version_" type="plong" indexed="false" stored="false"/>
-     <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
+--- ../../configsets/_default/conf/managed-schema	2021-06-10 22:23:17.000000000 +0200
++++ ./managed-schema	2021-09-13 23:03:42.145389641 +0200
+@@ -121,6 +121,15 @@
+     <field name="_nest_path_" type="_nest_path_" /><fieldType name="_nest_path_" class="solr.NestPathField" />
+ 
      <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 +    <field name="lang" type="text_general" indexed="true" stored="true"/>
 +    <field name="metadata" type="text_general" indexed="true" stored="true" multiValued="true"/>
@@ -17,20 +17,19 @@ diff -ru ../../configsets/_default/conf/managed-schema ./managed-schema
  
      <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
           because it's very expensive to index everything twice. -->
-Only in .: managed-schema.orig
 diff -ru ../../configsets/_default/conf/solrconfig.xml ./solrconfig.xml
---- ../../configsets/_default/conf/solrconfig.xml	2018-11-29 17:52:52.000000000 +0100
-+++ ./solrconfig.xml	2018-12-31 18:29:32.601184681 +0100
-@@ -372,7 +372,7 @@
-          since it is purely an arbitrary limit to try and catch user errors where
-          large boolean queries may not be the best implementation choice.
+--- ../../configsets/_default/conf/solrconfig.xml	2021-06-10 22:31:39.000000000 +0200
++++ ./solrconfig.xml	2021-09-13 22:56:42.355443771 +0200
+@@ -377,7 +377,7 @@
+          specified in `solr.xml`, it will have no effect, as that setting also limits the size
+          of user specified boolean queries.
        -->
--    <maxBooleanClauses>1024</maxBooleanClauses>
-+    <maxBooleanClauses>16384</maxBooleanClauses>
+-    <maxBooleanClauses>${solr.max.booleanClauses:1024}</maxBooleanClauses>
++    <maxBooleanClauses>${solr.max.booleanClauses:16384}</maxBooleanClauses>
  
      <!-- Solr Internal Query Caches
  
-@@ -760,6 +760,7 @@
+@@ -838,12 +838,13 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
@@ -38,13 +37,10 @@ diff -ru ../../configsets/_default/conf/solrconfig.xml ./solrconfig.xml
      </lst>
    </requestHandler>
  
-@@ -781,7 +782,7 @@
- 
-   <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,/browse">
+   <initParams path="/update/**,/query,/select,/spell">
      <lst name="defaults">
 -      <str name="df">_text_</str>
 +      <str name="df">content</str>
      </lst>
    </initParams>
  
-Only in .: solrconfig.xml.orig

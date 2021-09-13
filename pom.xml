@@ -80,8 +80,8 @@
     <eurekaclient.version>1.9.8</eurekaclient.version>
     <jdk.version>16</jdk.version>
     <junit.version>5.7.2</junit.version>
-    <lucene.version>7.6.0</lucene.version>
-    <solr.version>7.6.0</solr.version>
+    <lucene.version>8.9.0</lucene.version>
+    <solr.version>8.9.0</solr.version>
     <hbase.version>2.1.0</hbase.version>
     <cassandra.version>3.6.0</cassandra.version>
     <aws.version>1.11.460</aws.version>
@@ -130,7 +130,7 @@
     <commons.version>2.1.1</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
     <joss.version>0.9.14</joss.version>
-    <elasticsearch.version>6.5.4</elasticsearch.version>
+    <elasticsearch.version>7.14.1</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
     <jaxb.version>2.3.0</jaxb.version>
