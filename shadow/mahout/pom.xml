@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
   <name>Aether Disk Search Engine Shadow Mahout</name>
   <modules>
-    <module>mr</module>
+    <!--module>mr</module-->
     <module>spark</module>
     <module>sparkcore</module>
   </modules>

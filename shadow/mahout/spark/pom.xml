@@ -28,9 +28,7 @@
             <configuration>
               <artifactSet>
 		<includes>
-		  <include>org.apache.mahout:mahout-math</include>
-		  <include>org.apache.mahout:mahout-spark_2.10</include>
-		  <include>org.apache.mahout:mahout-math-scala_2.10</include>
+		  <include>org.apache.mahout:mahout-spark</include>
 		  <!--include>org.scala-lang:scala-library</include-->
 		</includes>
               </artifactSet>
@@ -43,25 +41,15 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-spark_2.10</artifactId>
+      <artifactId>mahout-spark</artifactId>
       <version>${mahout.version}</version>
+      <classifier>scala_2.11</classifier>
       <!--scope>provided</scope-->
-    </dependency>
-    <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-math-scala_2.10</artifactId>
-      <version>${mahout.version}</version>
-      <!--scope>provided</scope-->
-    </dependency>
-    <dependency>
-      <groupId>org.apache.mahout</groupId>
-      <artifactId>mahout-math</artifactId>
-      <version>${mahout.version}</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
-      <version>2.10.7</version>
+      <version>2.11.10</version>
     </dependency>
   </dependencies>
 </project>
