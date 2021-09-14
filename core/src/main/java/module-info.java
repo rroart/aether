@@ -36,7 +36,7 @@ module core {
     requires language.detector;
     requires org.apache.commons.codec;
     requires org.apache.tika.core;
-    requires org.apache.tika.parsers;
+    //requires org.apache.tika.parsers;
     requires org.slf4j;
     requires spring.beans;
     requires spring.boot;
@@ -49,4 +49,5 @@ module core {
     requires zookeeper;
     requires common.inmemory.model;
     requires common.inmemory.factory;
+    requires org.apache.commons.io;
 }

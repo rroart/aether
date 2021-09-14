@@ -226,7 +226,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			IndexReader ind = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(ind);
 			//TopDocCollector collector = new TopDocCollector(hitsPerPage);
-			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
+			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, hitsPerPage);
 			searcher.search(q, collector);
 			ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
@@ -251,7 +251,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			// searching ...
 			IndexReader ind = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(ind);
-			TopScoreDocCollector collector = TopScoreDocCollector.create(1);
+			TopScoreDocCollector collector = TopScoreDocCollector.create(1, 1);
 			searcher.search(q, collector);
 			ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
@@ -325,7 +325,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			IndexReader ind = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(ind);
 			//TopDocCollector collector = new TopDocCollector(hitsPerPage);
-			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
+			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, hitsPerPage);
 
 			int totalDocs = ind.numDocs();
 			//Document found = null;

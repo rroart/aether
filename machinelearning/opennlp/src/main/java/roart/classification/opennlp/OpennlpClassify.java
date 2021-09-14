@@ -53,7 +53,7 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
     		String type = classify.str;
     		String language = classify.language;
     	DocumentCategorizerME myCategorizer = conf.categorizerMap.get(language);
-	double[] outcomes = myCategorizer.categorize(type);
+	double[] outcomes = myCategorizer.categorize(new String[] { type });
 	String category = myCategorizer.getBestCategory(outcomes);
 	log.info("opennlp cat " + category);
 	MachineLearningClassifyResult result = new MachineLearningClassifyResult();
