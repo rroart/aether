@@ -15,7 +15,7 @@ module aether.mahout.mr {
     requires hadoop.common;
     requires lucene.analyzers.common;
     requires lucene.core;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.boot;
     requires spring.cloud.commons;

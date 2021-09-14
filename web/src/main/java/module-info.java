@@ -20,7 +20,7 @@ module web {
     requires eureka.client;
     requires javax.servlet.api;
     requires jsoup;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.boot;
     requires spring.boot.autoconfigure;

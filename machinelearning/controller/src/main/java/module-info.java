@@ -11,7 +11,7 @@ module classification {
     requires common.config;
     requires common.constants;
     requires common.machinelearning;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;

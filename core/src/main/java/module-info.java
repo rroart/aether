@@ -37,7 +37,7 @@ module core {
     requires org.apache.commons.codec;
     requires org.apache.tika.core;
     requires org.apache.tika.parsers;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.boot;
     requires spring.boot.autoconfigure;

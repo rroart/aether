@@ -13,7 +13,7 @@ module hbase {
     requires common.model;
     requires database;
     requires hadoop.common;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.boot;
     requires spring.cloud.commons;

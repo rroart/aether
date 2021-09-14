@@ -16,7 +16,7 @@ module hibernate {
     requires java.persistence;
     requires java.sql;
     requires org.hibernate.orm.core;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
     requires spring.web;

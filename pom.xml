@@ -82,10 +82,10 @@
     <junit.version>5.7.2</junit.version>
     <lucene.version>8.9.0</lucene.version>
     <solr.version>8.9.0</solr.version>
-    <hbase.version>2.1.0</hbase.version>
-    <cassandra.version>3.6.0</cassandra.version>
+    <hbase.version>2.4.5</hbase.version>
+    <cassandra.version>4.0.0</cassandra.version>
     <aws.version>1.11.460</aws.version>
-    <dynamodblocal.version>1.11.0.1</dynamodblocal.version>
+    <dynamodblocal.version>1.15.0</dynamodblocal.version>
     <tika.version>2.1.0</tika.version>
     <mahout.version>14.1</mahout.version>
     <!-- must keep at old version for some time -->
@@ -104,13 +104,13 @@
     <hazelcast.version>3.12.12</hazelcast.version>
     <hazelcastclient.version>3.2.12</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
-    <jackson.version>2.9.7</jackson.version>
+    <jackson.version>2.12.5</jackson.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-    <hibernate.version>5.4.0.Final</hibernate.version>
+    <hibernate.version>5.5.7.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
     <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
-    <h2.version>1.4.197</h2.version>
+    <h2.version>1.4.200</h2.version>
     <jdbc.groupId>com.h2database</jdbc.groupId>
     <jdbc.artifactId>h2</jdbc.artifactId>
     <jdbc.version>1.3.160</jdbc.version>

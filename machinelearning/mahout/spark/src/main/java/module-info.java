@@ -16,7 +16,7 @@ module mahout.spark {
     requires guava;
     requires lucene.core;
     requires scala.library;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
     requires spring.web;

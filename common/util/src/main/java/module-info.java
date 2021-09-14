@@ -10,7 +10,7 @@ module common.util {
 
     requires common.constants;
     requires java.xml;
-    requires slf4j.api;
+    requires org.slf4j;
     requires commons.math3;
     requires org.apache.commons.lang3;
     requires com.fasterxml.jackson.databind;

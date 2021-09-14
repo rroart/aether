@@ -8,5 +8,5 @@
 module common.synchronization {
     exports roart.common.synchronization;
 
-    requires slf4j.api;
+    requires org.slf4j;
 }

@@ -8,5 +8,5 @@
 module common.collections {
     exports roart.common.collections;
 
-    requires slf4j.api;
+    requires org.slf4j;
 }

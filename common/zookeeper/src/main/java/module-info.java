@@ -9,6 +9,6 @@ module common.zookeeper {
     exports roart.common.zkutil;
 
     requires common.constants;
-    requires slf4j.api;
+    requires org.slf4j;
     requires zookeeper;
 }

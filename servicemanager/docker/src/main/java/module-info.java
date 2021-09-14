@@ -13,7 +13,7 @@ module servicemanager.docker {
     requires docker.java;
     requires java.logging;
     requires java.ws.rs;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;

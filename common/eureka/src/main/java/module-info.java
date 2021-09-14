@@ -10,7 +10,7 @@ module common.eureka {
 
     requires eureka.client;
     requires javax.inject;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.cloud.commons;
     requires spring.core;

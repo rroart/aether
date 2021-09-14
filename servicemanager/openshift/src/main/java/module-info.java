@@ -20,7 +20,7 @@ module servicemanager.openshift {
     //requires kubernetes.client;
     //requires kubernetes.model;
     //requires openshift.client;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
