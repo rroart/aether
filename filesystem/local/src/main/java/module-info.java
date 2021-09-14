@@ -14,7 +14,7 @@ module local {
     requires common.model;
     requires commons.io;
     requires filesystem;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.boot;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;

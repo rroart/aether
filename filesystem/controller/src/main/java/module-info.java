@@ -13,7 +13,7 @@ module filesystem {
     requires common.filesystem;
     requires curator.client;
     requires curator.framework;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.boot;
     requires spring.boot.autoconfigure;
