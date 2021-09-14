@@ -758,7 +758,7 @@ public class DynamodbIndexFiles {
         public List<FileLocation> unconvert(String objectsString) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                List<FileLocation> objects = objectMapper.readValue(objectsString, new TypeReference<List<Object>>(){});
+                List objects = objectMapper.readValue(objectsString, new TypeReference<List<Object>>(){});
                 return objects;
             } catch (JsonParseException e) {
                 //do something
