@@ -16,7 +16,7 @@
   <modules>
     <module>docker</module>
     <module>mesos</module>
-    <module>openshift</module>
+    <!--module>openshift</module-->
     <module>simple</module>
   </modules>
 </project>

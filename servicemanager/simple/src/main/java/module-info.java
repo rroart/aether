@@ -9,7 +9,6 @@ module servicemanager.simple {
     exports roart.config;
     exports roart.controller;
 
-    requires commons.lang;
     requires java.xml;
     requires org.slf4j;
     requires spring.boot;
@@ -20,4 +19,5 @@ module servicemanager.simple {
     requires common.util;
     requires common.constants;
     requires common.service;
+    requires org.apache.commons.lang3;
 }
