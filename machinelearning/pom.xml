@@ -15,7 +15,7 @@
   <name>Aether Disk Search Engine Machine Learning</name>
   <modules>
     <module>controller</module>
-    <module>mahout</module>
+    <!--module>mahout</module-->
     <module>opennlp</module>
     <module>spark</module>
   </modules>
