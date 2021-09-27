@@ -154,7 +154,7 @@
       <artifactId>solr-core</artifactId>
       <version>${solr.version}</version>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
       <version>${jetty.version}</version>
@@ -178,6 +178,6 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
       <version>${jetty.version}</version>
-    </dependency>
+    </dependency-->
   </dependencies>
 </project>
