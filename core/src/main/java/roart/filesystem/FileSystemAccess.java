@@ -27,15 +27,11 @@ import roart.service.ControlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.discovery.DiscoveryClient;
-
 public class FileSystemAccess {
 
     private String url;
     
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private DiscoveryClient discoveryClient;
 
     public String getAppName() { return null; }
 

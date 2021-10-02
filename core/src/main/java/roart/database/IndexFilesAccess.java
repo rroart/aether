@@ -29,13 +29,9 @@ import roart.eureka.util.EurekaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.discovery.DiscoveryClient;
-
 public abstract class IndexFilesAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private DiscoveryClient discoveryClient;
 
     public abstract String getAppName();
 

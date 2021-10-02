@@ -42,22 +42,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.appinfo.MyDataCenterInstanceConfig;
-import com.netflix.discovery.DefaultEurekaClientConfig;
-import com.netflix.discovery.DiscoveryClient;
-import com.netflix.discovery.DiscoveryManager;
-import com.netflix.discovery.EurekaClient;
-import com.netflix.discovery.shared.Application;
-
-//@EnableEurekaClient
-//@EnableDiscoveryClient
 public abstract class SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    //@Autowired
-    private DiscoveryClient discoveryClient;
 
     public abstract String getAppName();
     

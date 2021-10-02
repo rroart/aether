@@ -26,7 +26,7 @@ module core {
     requires curator.client;
     requires curator.framework;
     requires curator.recipes;
-    requires eureka.client;
+    //requires eureka.client;
     requires guava;
     requires com.hazelcast.core;
     requires java.desktop;
