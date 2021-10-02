@@ -13,7 +13,7 @@ module solr {
     requires common.constants;
     requires common.searchengine;
     requires org.slf4j;
-    requires solr.core;
+    //requires solr.core;
     requires solr.solrj;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;

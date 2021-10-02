@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.action.ActionFuture;
-import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -185,14 +184,14 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		String searchtype = search.searchtype;
 		//SearchDisplay display) {
 		MoreLikeThisQueryBuilder moreLikeThisRequestBuilder;
-		Item[] items = MoreLikeThisQueryBuilder.ids(id);
+		//Item[] items = MoreLikeThisQueryBuilder.ids(id);
 		Item item = new Item(myindex, mytype, id);
 		Item likeItems[] = new Item[1];
 		likeItems[0] = item;
 		int count = nodeConf.getMLTCount();
 		int mintf = nodeConf.getMLTMinTF();
 		int mindf = nodeConf.getMLTMinDF();
-		MoreLikeThisQueryBuilder queryBuilder = QueryBuilders.moreLikeThisQuery(items)
+		MoreLikeThisQueryBuilder queryBuilder = QueryBuilders.moreLikeThisQuery(likeItems)
 				.minDocFreq(mindf)
 				.minTermFreq(mintf);
 

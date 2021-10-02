@@ -22,7 +22,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.highlight.DefaultSolrHighlighter;
 
 import roart.common.config.NodeConfig;
 import roart.common.searchengine.Constants;
