@@ -17,13 +17,13 @@ public class JarThread implements Runnable {
             arglen = args.length;
         }
         String[] params = new String[2 + arglen];
-        params[0] = "-jar";
-        params[1] = (String) parameter;
         if (args != null) {
             for (int i = 0; i < arglen; i++) {
-                params[2 + i] = args[i];
+                params[0 + i] = args[i];
             }
         }
+        params[0 + arglen] = "-jar";
+        params[1 + arglen] = (String) parameter;
         RunUtil.execute("/usr/bin/java", params);
     }
 }

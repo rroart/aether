@@ -37,8 +37,8 @@ public class SimpleController implements CommandLineRunner {
     public void run(String... args) throws InterruptedException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         //MyXMLConfig instance = MyXMLConfig.instance();
         //instance.config();
-        Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar", null);
-        new Thread(eureka).start();
+        //Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar", null);
+        //new Thread(eureka).start();
         Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", args);
         new Thread(core).start();
         String configFile = null;
@@ -76,9 +76,10 @@ public class SimpleController implements CommandLineRunner {
             */
             String[] myargs = new String[3];
             myargs[0] = "-DFS=" + myType;
-            myargs[1] = "-DPATH" + path;
+            myargs[1] = "-DPATH=" + path;
             myargs[2] = "-DZOO=localhost:2181";
-            Runnable local = new JarThread("aether-" + myType + "-0.10-SNAPSHOT.jar", myargs);
+            String myTypeStr = ("" + myType).toLowerCase();
+            Runnable local = new JarThread("aether-" + myTypeStr + "-0.10-SNAPSHOT.jar", myargs);
             new Thread(local).start();
         }
 
