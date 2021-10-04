@@ -219,6 +219,17 @@
       </includes>
       <outputDirectory>conf</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../webr</directory>
+      <includes>
+        <include>**</include>
+      </includes>
+      <excludes>
+        <exclude>src/**</exclude>
+        <exclude>node_modules/**</exclude>
+      </excludes>
+      <outputDirectory>webr</outputDirectory>
+    </fileSet>
   </fileSets>
   <!--files>
     <file>
