@@ -1,0 +1,96 @@
+<config>
+  <node>
+    <classify enable='true'/>
+  </node>
+  <fs>
+    <dirlist>$DIRLIST</dirlist>
+    <dirlistnot>$DIRLISTNOT</dirlistnot>
+    <datadir></datadir>
+    <homedir></homedir>
+    <logdir></logdir>
+  </fs>
+  <gui>
+    <downloader enable="true"/>
+    <authenticate enable="false"/>
+    <highlightmlt enable="true"/>
+  </gui>
+  <conversion>
+    <tikatimeout>600</tikatimeout>
+    <othertimeout>600</othertimeout>
+  </conversion>
+  <index>
+    <indexlimit>0</indexlimit>
+    <failedlimit>1</failedlimit>
+    <reindexlimit>10000</reindexlimit>
+  </index>
+  <database>
+    <hbase enable='$HBASE'>
+      <hbasequorum>$HBASEQUORUM</hbasequorum>
+      <hbaseport>$HBASEPORT</hbaseport>
+      <hbasemaster>$HBASEMASTER</hbasemaster>
+    </hbase>
+    <hibernate enable='$HIBERNATE'>
+      <h2dir>$H2DIR</h2dir>
+    </hibernate>
+    <datanucleus enable='$DATANUCLEUS'>
+      
+    </datanucleus>
+    <cassandra enable='$CASSANDRA'>
+      <host>$CASSANDRAHOST</host>
+      <port>$CASSANDRAPOR</port>
+    </cassandra>
+    <dynamodb enable='$DYNAMODB'>
+      <host>$DYNAMODBHOST</host>
+      <port>$DYNAMODBPORT</port>
+     </dynamodb>
+  </database>
+  <machinelearning>
+    <sparkml enable='$SPARKML'>
+      <sparkmlmodelpath>$SPARKMLMODELPATH</sparkmlmodelpath>
+      <sparkmllabelindexpath>$SPARKMLLABELINDEXPATH</sparkmllabelindexpath>
+      <sparkmaster>$SPARKMASTER</sparkmaster>
+    </sparkml>
+    <mahoutspark enable='$MAHOUTSPARK'>
+      <mahoutsparkmaster>$MAHOUTSPARKMASTER</mahoutsparkmaster>
+      <mahoutmodelpath>$MAHOUTMODELPATH</mahoutmodelpath>
+      <mahoutlabelindexfilepath>$MAHOUTLABELINDEXFILEPATH</mahoutlabelindexfilepath>
+      <mahoutdictionarypath>$MAHOUTDICTIONARYPATH</mahoutdictionarypath>
+      <mahoutdocumentfrequencypath>$MAHOUTDOCUMENTFREQUENCYPATH</mahoutdocumentfrequencypath>
+    </mahoutspark>
+    <opennlp enable='$OPENNLP'>
+      <opennlpmodelpath>$OPENNLPMODELPATH</opennlpmodelpath>
+    </opennlp>
+  </machinelearning>
+  <searchengine>
+    <lucene enable="$LUCENE">
+      <lucenepath>$LUCENEPATH</lucenepath>
+    </lucene>
+    <solr enable="$SOLR">
+      <solrurl>$SOLRURL</solrurl>
+    </solr>
+    <elastic enable="$ELASTIC">
+      <elastichost>$ELASTICHOST</elastichost>
+      <elasticport>$ELASTICPORT</elasticport>
+    </elastic>
+    <mlt>
+      <mltcount>10</mltcount>
+      <mltmindf>5</mltmindf>
+      <mltmintf>2</mltmintf>
+    </mlt>
+  </searchengine>
+  <filesystem>
+    <hdfs enable="$HDFS">
+      <hdfsconffs>$HDFSCONFFS</hdfsconffs>
+    </hdfs>
+    <swift enable="$SWIFT">
+      <swiftconfurl>$SWIFTCONFURL</swiftconfurl>
+      <swiftconfuser>$SWIFTCONFUSER</swiftconfuser>
+      <swiftconfkey>$SWIFTCONFKEY</swiftconfkey>
+      <swiftconfcontainer>$SWIFTCONFCONTAINER</swiftconfcontainer>
+    </swift>
+  </filesystem>
+  <synchronization>
+    <distributedlockmodebig enable='true'/>
+    <distributedprocess enable='false'/>
+  </synchronization>
+</config>
