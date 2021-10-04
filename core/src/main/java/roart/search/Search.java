@@ -106,6 +106,10 @@ public class Search {
     IndexFilesDao.add(dbindex);
     Queues.decIndexs();
     
+    if (el.message != null) {
+        Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
+        inmemory.delete(el.message);
+    }
 	}
 
     public static ResultItem[] searchme(String str, String searchtype) {
