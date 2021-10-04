@@ -39,16 +39,16 @@ public class SimpleController implements CommandLineRunner {
         //instance.config();
         //Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar", null);
         //new Thread(eureka).start();
-        Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", args);
-        new Thread(core).start();
         String configFile = null;
-        if (args.length > 1) {
+        if (args.length > 0) {
             configFile = args[0];
         }
         String myConfigFile = configFile;
         if (myConfigFile == null) {
             myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
         }
+        Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", null, new String[] { myConfigFile });
+        new Thread(core).start();
         Set<FileSystemType> fileSystems = new HashSet<>();
         fileSystems.add(FileSystemType.LOCAL);
         startFsService(myConfigFile, fileSystems);
