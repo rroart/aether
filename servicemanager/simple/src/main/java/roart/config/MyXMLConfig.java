@@ -91,6 +91,10 @@ public class MyXMLConfig {
                     String dirlist = (String) configInstance.getValueOrDefault(ConfigConstants.FSDIRLIST);
                     SimpleController.startFsServiceWithDirList(dirlist, fileSystems);
                     break;
+                case ConfigConstants.DATABASEHBASE:
+                    Runnable def2 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED" });
+                    new Thread(def2).start();
+                    break;
                 default:
                     Runnable def = new JarThread(jar, null);
                     new Thread(def).start();
