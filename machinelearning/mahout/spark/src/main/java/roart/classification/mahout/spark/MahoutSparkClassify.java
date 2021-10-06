@@ -135,7 +135,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 				labels = conf.nbm.labelIndex();
 				Map<Integer, String> labelsSwapMap = new HashMap<>();
 				scala.collection.Set<String> keySetScala = labels.keySet();
-				Set<String> keySet = JavaConversions.asJavaSet(keySetScala);
+				Set<String> keySet = JavaConversions.setAsJavaSet(keySetScala);
 				for(String key : keySet){
 					scala.Option<Integer> value = labels.get(key);
 					if (value != null) {
