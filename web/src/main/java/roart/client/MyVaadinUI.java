@@ -362,11 +362,6 @@ public class MyVaadinUI extends UI implements ViewDisplay {
         horDb.addComponent(getDbItem());
         horDb.addComponent(getDbSearch());
 
-        HorizontalLayout horConf = new HorizontalLayout();
-        horConf.setHeight("20%");
-        horConf.setWidth("60%");
-        horConf.addComponent(getConfigNodes());
-
         tab.addComponent(horNewInd);
         tab.addComponent(horNew);
         tab.addComponent(horInd);
@@ -377,12 +372,6 @@ public class MyVaadinUI extends UI implements ViewDisplay {
         tab.addComponent(horClean);
         tab.addComponent(horStat);
         tab.addComponent(horDb);
-        tab.addComponent(horConf);
-        HorizontalLayout horTree = new HorizontalLayout();
-        ConfigTreeMap map2 = controlService.getConfig().configTreeMap;
-        componentMap = new HashMap<>();
-        print(map2, horTree);
-        tab.addComponent(horTree);
         return tab;
     }
 
@@ -585,7 +574,20 @@ public class MyVaadinUI extends UI implements ViewDisplay {
         VerticalLayout tab = new VerticalLayout();
         nodeTabMap.put(nodename, tab);
         tab.setCaption("Configuration");
-        /*
+
+        HorizontalLayout horConf = new HorizontalLayout();
+        horConf.setHeight("20%");
+        horConf.setWidth("60%");
+        horConf.addComponent(getConfigNodes());
+
+        tab.addComponent(horConf);
+
+        HorizontalLayout horTree = new HorizontalLayout();
+        ConfigTreeMap map2 = controlService.getConfig().configTreeMap;
+        componentMap = new HashMap<>();
+        print(map2, horTree);
+        tab.addComponent(horTree);
+/*
     HorizontalLayout name = new HorizontalLayout();
     Label nameLabel = new Label(ConfigConstants.NODENODENAME + DELIMITER + nodename);    
     tab.addComponent(nameLabel);
