@@ -70,7 +70,7 @@ public class Traverse {
             return false;
         }
         for (int i = 0; i < dirlistnot.length; i++) {
-            if (filename.indexOf(dirlistnot[i])>=0) {
+            if (!dirlistnot[i].isEmpty() && filename.indexOf(dirlistnot[i])>=0) {
                 return true;
             }
         }
