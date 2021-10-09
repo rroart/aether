@@ -716,7 +716,7 @@ import roart.util.MySets;
         	startControlWorker();
         	}
         	if (MyConfig.conf.getZookeeper() != null && zkRunnable == null) {
-        	//startZKWorker();
+        	startZKWorker();
         	}
             if (MyConfig.conf.getZookeeper() != null && MyConfig.conf.wantZookeeperSmall() && traverseQueueRunnable == null) {
             startTraversequeueWorker();

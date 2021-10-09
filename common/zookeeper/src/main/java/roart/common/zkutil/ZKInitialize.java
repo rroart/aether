@@ -22,9 +22,9 @@ public class ZKInitialize {
 	    }
 	    try {
 		zk = new ZooKeeper(zookeeper, Integer.MAX_VALUE, watcher);
-		createTempIfNotExists(zk, "/" + Constants.AETHER);
-		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.LOCK);
-		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES);
+		createIfNotExists(zk, "/" + Constants.AETHER);
+		createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.LOCK);
+		createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES);
 		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + nodename);
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
@@ -42,4 +42,15 @@ public class ZKInitialize {
         }
 	}
 	
+        public static void createIfNotExists(ZooKeeper zk, String path) {
+        try {
+            Stat s = zk.exists(path, false);
+            if (s == null) {
+                zk.create(path, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        }
+        
 }
