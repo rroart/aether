@@ -1,9 +1,51 @@
 /* eslint-disable no-undef */
-function search(query, cb) {
+
+function getPort() {
+    console.log(process.env.NODE_ENV);
+    if (typeof process.env.MYPORT !== 'undefined') {
+        return process.env.MYPORT;
+    }
+    return 23456;
+    // return 80;
+}
+
+function getHost() {
+    console.log("pppp");
+    console.log(process.env);
+    if (typeof process.env.MYSERVER !== 'undefined') {
+        return process.env.MYSERVER;
+    }
+    return "localhost";
+}
+
+
+function searchn(query, cb) {
   return fetch(`http://localhost:8080` + query, {
     accept: 'application/json',
   }).then(checkStatus)
     .then(parseJSON)
+    .then(cb)
+    .catch((error) => console.log(error.message));
+}
+
+function search(query, serviceparam, cb) {
+    console.log("hhh");
+    console.log(JSON.stringify(serviceparam));
+    /*
+  var bla = fetch(`http://localhost:22345` + query, {
+      method: "POST",
+      headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+      body: JSON.stringify(serviceparam),
+  }).then(checkStatus);
+    console.log(bla);
+*/
+    return fetch("http://" + getHost() + ":" + getPort() + query, {
+      method: "POST",
+      headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+      body: JSON.stringify(serviceparam),
+  }).then(checkStatus)
+        .then(parseJSON)
+    //.then(console.log)
     .then(cb)
     .catch((error) => console.log(error.message));
 }
@@ -24,5 +66,29 @@ function parseJSON(response) {
   return response.json();
 }
 
-const Client = { search };
+const fetchApi = {
+    search(query, serviceparam) {
+        console.log(query);
+        console.log(JSON.stringify(serviceparam));
+        return fetch("http://" + getHost() + ":" + getPort() + query, {
+            method: "POST",
+            headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+            body: JSON.stringify(serviceparam),
+        })
+            .then(statusHelper)
+            .then(parseJSON)
+            .catch((error) => console.log(error.message))
+            .then (data => data)
+    }
+}
+
+function statusHelper (response) {
+  if (response.status >= 200 && response.status < 300) {
+    return Promise.resolve(response)
+  } else {
+    return Promise.reject(new Error(response.statusText))
+  }
+}
+
+const Client = { search, fetchApi };
 export default Client;

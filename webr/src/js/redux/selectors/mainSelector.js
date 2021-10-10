@@ -27,10 +27,17 @@ const resultTabs = createSelector(
   payload => payload.get('tabs')
 );
 
+const resultConfig = createSelector(
+  mainDataSelector,
+  payload => payload.get('config')
+);
+
 export const mainSelector = state => ({
     result2: resultSelector(state),
     result3: resultSelector3(state),
     result4: resultSelector4(state),
     count: resultCount(state),
     tabs: resultTabs(state),
+    languages: resultTabs(state),
+    config: resultConfig(state),
 });

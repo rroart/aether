@@ -16,6 +16,16 @@ const INCREMENT = 'app/main/INCREMENT';
 const INCREMENT_ASYNC = 'app/main/INCREMENT_ASYNC';
 const INCREMENT2 = 'app/main/INCREMENT2';
 const GET_COUNT = 'app/main/GET_COUNT';
+const SETMARKETS = 'app/main/SETMARKETS';
+const GETMARKETS = 'app/main/GETMARKETS';
+const SETCONFIG = 'app/main/SETCONFIG';
+const SETCONFIGVALUE = 'app/main/SETCONFIGVALUE';
+const SETCONFIGVALUEMAP = 'app/main/SETCONFIGVALUEMAP';
+const GETCONFIG = 'app/main/GETCONFIG';
+const GETLANGUAGES = 'app/main/GETLANGUAGES';
+const SETLANGUAGES = 'app/main/SETLANGUAGES';
+const CONTROL = 'app/main/CONTROL';
+const SEARCH = 'app/main/SEARCH';
 
 export const constants = {
   INCREMENT2,
@@ -30,6 +40,14 @@ export const constants = {
     NEWTAB_MAIN,
     NEWTAB_MAIN3,
     GET_COUNT,
+        SETCONFIG,
+    SETCONFIGVALUE,
+    SETCONFIGVALUEMAP,
+    GETCONFIG,
+    GETLANGUAGES,
+    SETLANGUAGES,
+    CONTROL,
+    SEARCH,
 };
 
 // ------------------------------------
@@ -48,6 +66,14 @@ export const increment = createAction(INCREMENT, ( num = 1) => ({ num }));
 export const increment2 = createAction(INCREMENT2, ( count ) => ({ count }));
 export const incrementasync = createAction(INCREMENT_ASYNC, () => ({  }));
 export const getCount = createAction(GET_COUNT, () => ({ }));
+export const setconfig = createAction(SETCONFIG, (config) => ( { config } ) );
+export const setconfigvalue = createAction(SETCONFIGVALUE, ( array ) => ( array ) );
+export const setconfigvaluemap = createAction(SETCONFIGVALUEMAP, ( array ) => ( array ) );
+export const getConfig = createAction(GETCONFIG, () => ( {} ) );
+export const getLanguages = createAction(GETLANGUAGES, () => ( {} ) );
+export const setLanguages = createAction(SETLANGUAGES, () => ( {} ) );
+export const control = createAction(CONTROL, (value, type, props) => ( { value, type, props } ) );
+export const search = createAction(SEARCH, (value, type, props) => ( { value, type, props } ) );
 				      
 export const actions = {
   getAwesomeCode,
@@ -62,6 +88,14 @@ export const actions = {
     increment2,
     incrementasync,
     getCount,
+        setconfig,
+    setconfigvalue,
+    setconfigvaluemap,
+    getConfig,
+    getLanguages,
+    setLanguages,
+    control,
+    search,
 };
 
 export const reducers = {
@@ -111,6 +145,22 @@ export const reducers = {
     state.merge({
       ...payload,
     }),
+        [SETCONFIG]: (state, { payload }) =>
+        state.merge({
+            ...payload
+        }),
+    [SETCONFIGVALUE]: (state, { payload }) =>
+        state.merge({
+            config: getConfigAfterSet(state, payload)
+    }),
+    [SETCONFIGVALUEMAP]: (state, { payload }) =>
+        state.merge({
+            config: getConfigValueMapAfterSet(state, payload)
+    }),
+        [SETLANGUAGES]: (state, { payload }) =>
+        state.merge({
+            ...payload
+        }),
 }
 
 function gettabs(state) {
@@ -165,6 +215,53 @@ function gettabs3(state) {
     //return arr;
 }
 
+function getConfigAfterSet(state, payload) {
+    //state.get('config').set(payload)                                          
+    var config = state.get('config');
+    //console.log(config);                                                      
+    //console.log(payload);                                                     
+    //var valueMap = config.get('configValueMap');                              
+    //console.log(valueMap);                                                    
+    //var valueMap2 = valueMap; //.set(payload);                                
+    //var k = Object.keys(payload)[0];                                          
+    //var v = Object.values(payload)[0];                                        
+    //valueMap2 = valueMap2.set(k, v);                                          
+    //valueMap2 = valueMap2.set({k: v});                                        
+    //console.log(k);                                                           
+    //console.log(v);                                                           
+    //console.log(valueMap2.get(payload));                                      
+    //console.log(valueMap2.get(k));                                            
+    //console.log(valueMap2.get("predictors[@enable]"));                        
+    //console.log(valueMap2.get("predictors.lstm.horizon"));                    
+    //console.log(valueMap);                                                    
+    //console.log(valueMap2);                                                   
+    return config.set(payload[0], payload[1]);
+}
+
+function getConfigValueMapAfterSet(state, payload) {
+    //state.get('config').set(payload)                                          
+    var config = state.get('config');
+    //console.log(config);                                                      
+    //console.log(payload);                                                     
+    //var valueMap = config.get('configValueMap');                              
+    //console.log(valueMap);                                                    
+    //var valueMap2 = valueMap; //.set(payload);                                
+    //var k = Object.keys(payload)[0];                                          
+    //var v = Object.values(payload)[0];                                        
+    //valueMap2 = valueMap2.set(k, v);                                          
+    //valueMap2 = valueMap2.set({k: v});                                        
+    //console.log(k);                                                           
+    //console.log(v);                                                           
+    //console.log(valueMap2.get(payload));                                      
+    //console.log(valueMap2.get(k));                                            
+    //console.log(valueMap2.get("predictors[@enable]"));                        
+    //console.log(valueMap2.get("predictors.lstm.horizon"));                    
+    //console.log(valueMap);                                                    
+    //console.log(valueMap2);                                                   
+    const valueMap = config.get('configValueMap');
+    return config.set('configValueMap', valueMap.set(payload[0], payload[1]));
+}
+
 export const initialState = () =>
   Map({
     result2: '',
@@ -172,6 +269,8 @@ export const initialState = () =>
     result4: '',
       tabs: [],
       count: 0,
+      languages: [],
+      config: '',
   })
 
 export default handleActions(reducers, initialState());

@@ -1,9 +1,10 @@
-import { put, fork, takeLatest, takeEvery } from 'redux-saga/effects';
+import { put, fork, takeLatest, takeEvery, call } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { constants as mainConstants, actions as mainActions } from '../modules/main';
 import { Tabs, Tab } from 'react-bootstrap';
 
-import type { mainType } from '../../common/types/main'
+import { Client } from '../../common/components/util' 
+import type { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
 
 export function* fetchMainData() {
   // pretend there is an api call
@@ -40,6 +41,83 @@ export function* fetchCount() {
     //console.log(bl);
   console.log("blbl2");
   //yield put(mainActions.getCount(result));
+}
+
+export function* fetchConfig() {
+    var serviceparam = new ServiceParam();
+    //serviceparam.market = '0';
+    console.log("hereconfig");
+    let config = yield call(Client.fetchApi.search, "/GETCONFIG", serviceparam);
+    console.log("hereconfig2");
+    console.log(config);
+    const config2 = config;
+    console.log(config2);
+    yield put(mainActions.setconfig(config2.config));
+}
+
+export function* fetchLanguages() {
+    var serviceparam = new ServiceParam();
+    //serviceparam.market = '0';
+    console.log("hereconfig");
+    let config = yield call(Client.fetchApi.search, "/getlanguages", serviceparam);
+    console.log("hereconfig2");
+    console.log(config);
+    const config2 = config;
+    console.log(config2);
+    yield put(mainActions.setLanguages(config2.languages));
+}
+
+export function* fetchControl() {
+    var serviceparam = new ServiceParam();
+    //serviceparam.market = '0';
+    console.log("hereconfig");
+    let config = yield call(Client.fetchApi.search, "/" + serviceparam.webpath, serviceparam);
+    console.log("hereconfig2");
+    console.log(config);
+    const config2 = config;
+    console.log(config2);
+    yield put(mainActions.setconfig(config2.config));
+}
+
+function getMyConfig(config, market, date) {
+    const myconfig = new MyConfig();
+    myconfig.configTreeMap = config.get('configTreeMap');
+    myconfig.configValueMap = config.get('configValueMap');
+    myconfig.text = config.get('text');
+    myconfig.deflt = config.get('deflt');
+    myconfig.type = config.get('type');
+    myconfig.date = date;
+    myconfig.market = market;
+    return myconfig;
+}
+
+
+export function* fetchSearch(action) {
+    var serviceparam = new SearchEngineSearchParam();
+    console.log(action);
+    const config = action.payload.config;
+    const props = action.payload.props;
+    const date = config.get('enddate');
+    serviceparam.market = config.get('market');
+    console.log(serviceparam.market);
+    serviceparam.config = getMyConfig(config, serviceparam.market, date);
+    console.log("herecontent");
+    console.log(serviceparam.market);
+    var neuralnetcommand = new NeuralNetCommand();
+    neuralnetcommand.mllearn = false;
+    neuralnetcommand.mlclassify = true;
+    neuralnetcommand.mldynamic = false;
+    serviceparam.neuralnetcommand = neuralnetcommand;
+    let result = yield call(Client.fetchApi.search, "/getcontent", serviceparam)
+;
+    console.log("herecontent2");
+    console.log(result);
+    console.log(action);
+    const config2 = result;
+    console.log(config2);
+    const list = result.list;
+    const tab = MyTable.getTab(result.list, Date.now(), props);
+    yield put(mainActions.newtabMain(tab));
 }
 
 export function* getNewTab() {
@@ -81,11 +159,44 @@ function* watchNewTabMain() {
   //yield takeLatest(mainConstants.NEWTAB_MAIN, getNewTab);
 }
 
+function* watchGetConfig() {
+    console.log("watchgetconfig");
+  yield takeLatest(mainConstants.GETCONFIG, fetchConfig);
+}
+
+function* watchControl() {
+    console.log("watchgetcontent");
+    //console.log(action);
+    //const config = null;
+    //console.log(config);
+    yield takeEvery(mainConstants.CONTROL, fetchControl);
+}
+
+function* watchGetLanguages() {
+    console.log("watchgetlanguages");
+    //console.log(action);
+    //const config = null;
+    //console.log(config);
+    yield takeEvery(mainConstants.GETLANGUAGES, fetchLanguages);
+}
+
+function* watchSearch() {
+    console.log("watchgetsearch");
+    //console.log(action);
+    //const config = null;
+    //console.log(config);
+    yield takeEvery(mainConstants.SEARCH, fetchSearch);
+}
+
 export const mainSaga = [
   fork(watchGetMain),
   fork(watchNewTabMain),
   fork(watchGetR3),
   fork(watchGetR4),
   fork(watchIncrementAsync),
-  fork(watchCount),
+    fork(watchCount),
+     fork(watchGetConfig),
+  fork(watchGetLanguages),
+  fork(watchControl),
+  fork(watchSearch),
 ];

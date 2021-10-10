@@ -6,7 +6,9 @@ import './Main.css';
 //import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { Tabs, Tab } from 'react-bootstrap';
 
-import { Misc } from '../Misc'
+import { Search } from '../Search'
+import { Configuration } from '../Configuration'
+import { ControlPanel } from '../ControlPanel'
 import { Test } from '../test'
 //import Misc from '../util'
 //import Client from '../util/Client'
@@ -76,22 +78,20 @@ var newtab = new Tab(map);
           <h1>Aether search engine</h1>
 	  <h2>H{result3}H{count}H</h2>
         <Tabs defaultActiveKey={1} id="maintabs">
-          <Tab eventKey={1} title="Misc">
+          <Tab eventKey={1} title="Search">
             <h2>Any content 1</h2>
-            <Misc/>
+            <Search  {...this.props}/>
             <h3>Cont</h3>
           </Tab>
-          <Tab eventKey={2} title="Comics">
-            <h2>Any content 2</h2>
+          <Tab eventKey={2} title="Control panel">
+              <h2>Any content 2</h2>
+	      <ControlPanel {...this.props}/>
           </Tab>
-          <Tab eventKey={3} title="Coin">
-            <h2>Any content 3</h2>
+          <Tab eventKey={3} title="Configuration">
+              <h2>Any content 3</h2>
+	      <Configuration {...this.props}/>
           </Tab>
-          <Tab eventKey={4} title="Training">
-            <h2>Any content 4</h2>
-          </Tab>
-	  <Tab title="t"/>
-	  { mytabs.map(item => this.getanewtab(item)) }
+	    { mytabs.map((item, index) => this.getanewtab(item, 3 + index)) }
         </Tabs>
         <Button
        bsStyle="primary"

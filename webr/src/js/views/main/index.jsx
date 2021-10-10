@@ -34,7 +34,9 @@ class MainView extends Component {
     this.props.getAwesomeCode();
     this.props.getAwesomeR3();
     this.props.getAwesomeR4();
-    this.props.getCount();
+      this.props.getCount();
+          this.props.getLanguages();
+    this.props.getConfig();
   }
 
   render() {
