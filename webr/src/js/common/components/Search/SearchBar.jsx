@@ -2,23 +2,13 @@ import React, { PureComponent } from 'react';
 
 import { Client, ConvertToSelect } from '../util'
 import Select from 'react-select';
-import { DropdownButton, MenuItem, ButtonToolbar, Nav, Navbar, NavItem, FormControl } from 'react-bootstrap';
-
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-];
-
-const options2 = [
-  { label: 'chocolate' },
-  { label: 'strawberry' },
-  { label: 'vanilla' }
-];
+import { DropdownButton, MenuItem, ButtonToolbar, Nav, Navbar, NavItem, Form, FormControl } from 'react-bootstrap';
+import type { SearchEngineSearchParam } from '../../types/main'
 
 class SearchBar extends PureComponent {
     type : string;
     text: string;
+    searchstring: string;
     constructor(props) {
     super(props);
       this.type = props.type;
@@ -27,18 +17,17 @@ class SearchBar extends PureComponent {
 	console.log("bbb"+typeof props.text);
 }
 
-handleYearChange = (e) => {
-  console.log(e);
-  const value = e.value;
-  var result;
-}
-
-    handleChange(event, type) {
+    search(event, type) {
+	var param = new SearchEngineSearchParam();
+	param.config = this.props.config;
+	param.str = event;
+	param.searchtype = type;
 	console.log(event + " " + type + " " + event.value);
 	console.log(Object.keys(event));
-	console.log(Object.keys(event.target) + " " + event.type);
-	console.log("bbb" + event.target.value + " " + type);
-	props.search(event.target.value, type, props)
+	console.log(Object.keys(this.props));
+	//console.log(Object.keys(event.target) + " " + event.type);
+	//console.log("bbb" + event.target.value + " " + type);
+	this.props.search(param.config, param, this.props)
   }
   
   render() {
@@ -51,12 +40,13 @@ handleYearChange = (e) => {
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
-        <NavItem eventKey={3} href="#">
+            <NavItem eventKey={3} href="#">
+		<Form onSubmit={ (e) => this.search(this.searchstring, this.type, this.props) }>
           <FormControl
-            type="text"
             placeholder="Enter text"
-              onChange={ (e) => this.handleChange(e, this.type, this.props) }
-          />
+              onChange={ (e) => this.searchstring = e.target.value }
+            type="text"/>
+		</Form>
         </NavItem>
             </Nav>
           </Navbar>

@@ -5,6 +5,7 @@ import { Tabs, Tab } from 'react-bootstrap';
 
 import { Client } from '../../common/components/util' 
 import type { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
+import { MyTable } from '../../common/components/Table'
 
 export function* fetchMainData() {
   // pretend there is an api call
@@ -67,16 +68,21 @@ export function* fetchLanguages() {
     yield put(mainActions.setLanguages(config2.languages));
 }
 
-export function* fetchControl() {
-    var serviceparam = new ServiceParam();
+export function* fetchControl(action) {
+    console.log(action)
+    const config = action.payload.config;
+    const props = action.payload.props;
+    const serviceparam = action.payload.param;
+    //var serviceparam = new ServiceParam();
     //serviceparam.market = '0';
     console.log("hereconfig");
-    let config = yield call(Client.fetchApi.search, "/" + serviceparam.webpath, serviceparam);
-    console.log("hereconfig2");
-    console.log(config);
-    const config2 = config;
+    console.log(action);
+    let result = yield call(Client.fetchApi.search, "/" + serviceparam.webpath, serviceparam);
+    const config2 = result;
     console.log(config2);
-    yield put(mainActions.setconfig(config2.config));
+    const list = result.list;
+    const tab = MyTable.getTab(result.list, Date.now(), props);
+    yield put(mainActions.newtabMain(tab));
 }
 
 function getMyConfig(config, market, date) {
@@ -93,22 +99,16 @@ function getMyConfig(config, market, date) {
 
 
 export function* fetchSearch(action) {
-    var serviceparam = new SearchEngineSearchParam();
     console.log(action);
     const config = action.payload.config;
     const props = action.payload.props;
-    const date = config.get('enddate');
-    serviceparam.market = config.get('market');
-    console.log(serviceparam.market);
-    serviceparam.config = getMyConfig(config, serviceparam.market, date);
+    const serviceparam = action.payload.param;
+    //const date = config.get('enddate');
+    //serviceparam.config = getMyConfig(config, serviceparam.market, date);
+
     console.log("herecontent");
-    console.log(serviceparam.market);
-    var neuralnetcommand = new NeuralNetCommand();
-    neuralnetcommand.mllearn = false;
-    neuralnetcommand.mlclassify = true;
-    neuralnetcommand.mldynamic = false;
-    serviceparam.neuralnetcommand = neuralnetcommand;
-    let result = yield call(Client.fetchApi.search, "/getcontent", serviceparam)
+    //console.log(serviceparam.market);
+    let result = yield call(Client.fetchApi.search, "/search", serviceparam)
 ;
     console.log("herecontent2");
     console.log(result);

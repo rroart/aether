@@ -72,8 +72,8 @@ export const setconfigvaluemap = createAction(SETCONFIGVALUEMAP, ( array ) => ( 
 export const getConfig = createAction(GETCONFIG, () => ( {} ) );
 export const getLanguages = createAction(GETLANGUAGES, () => ( {} ) );
 export const setLanguages = createAction(SETLANGUAGES, () => ( {} ) );
-export const control = createAction(CONTROL, (value, type, props) => ( { value, type, props } ) );
-export const search = createAction(SEARCH, (value, type, props) => ( { value, type, props } ) );
+export const control = createAction(CONTROL, (config, param, props) => ( { config, param, props } ) );
+export const search = createAction(SEARCH, (config, param, props) => ( { config, param, props } ) );
 				      
 export const actions = {
   getAwesomeCode,
