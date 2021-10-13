@@ -89,6 +89,9 @@ public class FileSystemDao {
     }
     
     private static FileSystemAccess getFileSystemAccess(String fs, String path) {
+        if ("LocalFileSystem".equals(fs)) {
+            fs = "LOCAL";
+        }
         String url = getUrl(ControlService.curatorClient, fs, path, "");
         if (url == null) {
             log.error("URL null for {} {}", fs, path);
@@ -140,12 +143,13 @@ public class FileSystemDao {
     // TODO make this OO
     private static FileSystemAccess getFileSystemAccess(String s) {
         String fs = "LocalFileSystem";
+        fs = "LOCAL";
         String path = FsUtil.getFsPath(s);
         if (s.startsWith(FileSystemConstants.HDFS)) {
             fs = "HDFS";
         }
         if (s.startsWith(FileSystemConstants.SWIFT)){
-            fs = "Swift";
+            fs = "SWIFT";
         }
         log.info("getgrr " + s + " :: " + fs + " " + path);
         return getFileSystemAccess(fs, path);
