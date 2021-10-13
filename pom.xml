@@ -64,13 +64,29 @@
 	<artifactId>jetty-maven-plugin</artifactId>
 	<version>${jetty.version}</version>
       </plugin>
+      <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+      </plugin>
+      <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
     </plugins>
   </build>
   <dependencies>
   </dependencies>
   <properties>
     <aether.version>0.10-SNAPSHOT</aether.version>
-    <mavencompiler.version>3.8.0</mavencompiler.version>
+    <mavencompiler.version>3.8.1</mavencompiler.version>
     <mavenshade.version>3.2.1</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>9.4.12.v20180830</jetty.version>
