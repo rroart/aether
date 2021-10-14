@@ -81,6 +81,19 @@ public class IndexFilesDao {
         return getByMd5(md5, true);
     }
 
+    public static IndexFiles getNewByMd5(String md5) throws Exception {
+        if (md5 == null) {
+            return null;
+        }
+        synchronized(IndexFilesDao.class) {
+            IndexFiles i = new IndexFiles(md5);
+            if (i != null) {
+                all.put(md5, i);
+            }
+            return i;
+        }
+    }
+
     public static IndexFiles getExistingByMd5(String md5) throws Exception {
         return getByMd5(md5, false);
     }

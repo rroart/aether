@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class TraverseQueueRunner implements Runnable {
         long time1 = System.currentTimeMillis();
         Map<String, String> md5Map = TraverseFile.handleFo4(filenames);
         long time2 = System.currentTimeMillis();
-        Map<String, IndexFiles> ifMap = TraverseFile.handleFo5(new HashSet<>(md5Map.values()));
+        Map<String, IndexFiles> ifMap = TraverseFile.handleFo5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         long time3 = System.currentTimeMillis();
         for (TraverseQueueElement trav : traverseList) {
             TraverseFile.handleFo3(trav, fsMap, md5Map, ifMap);

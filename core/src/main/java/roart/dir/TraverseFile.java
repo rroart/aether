@@ -250,6 +250,10 @@ public class TraverseFile {
                         lock.lock(md5);
                         files = ifMap.get(md5);
                     //}
+                        if (files == null) {
+                            files = IndexFilesDao.getNewByMd5(md5);
+                            //files = new IndexFiles(md5);
+                        }
                     // modify write file
                     String nodename = ControlService.nodename;
                     files.addFile(filename, nodename);
