@@ -1,6 +1,7 @@
 package roart.content;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -25,6 +26,8 @@ import roart.common.model.ResultItem;
 import roart.common.util.ExecCommand;
 import roart.database.IndexFilesDao;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.tika.metadata.Metadata;
 
 public class OtherHandler {
@@ -147,6 +150,12 @@ public class OtherHandler {
 	if ((output != null && !output.isEmpty()) && retry && txt.exists()) {
 		log.info("handling filename " + dbfilename + " : " + time);
 		//retlist.add(new ResultItem("other handling filename " + dbfilename + " : " + time));
+		try {
+		    InputStream targetStream = FileUtils.openInputStream(temp);
+		    el.fsData.bytes = IOUtils.toByteArray(targetStream);
+		} catch (Exception e) {
+		    log.error(Constants.EXCEPTION, e);
+		}
 		TikaQueueElement e = new TikaQueueElement(filename, tmp, md5, index, retlistid, retlistnotid, metadata, el.fsData);
 		e.convertsw = el.convertsw;
 	    Queues.tikaQueue.addFirst(e);
