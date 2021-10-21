@@ -14,11 +14,15 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
@@ -58,16 +62,30 @@ public class TikaHandler {
         IndexFiles index = el.index;
         
         InputStream is = fsData.getInputStream();
+        // xxx
         InputStream input = TikaInputStream.get(is);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
+            if (false) {
+                listConfig();
+            }
             ParseContext context = new ParseContext();
             Detector detector = new DefaultDetector();
             Parser parser = new AutoDetectParser(detector);
             context.set(Parser.class, parser);
             ContentHandler handler = new BodyContentHandler(getOutputWriter(output, null));
             parser.parse(input, handler, metadata, context);
+/*
+            //ParseContext context = new ParseContext();
+            //Detector detector = new DefaultDetector();
+            AutoDetectParser parser = new AutoDetectParser();
+            //context.set(Parser.class, parser);
+            ContentHandler handler = new BodyContentHandler();
+            parser.parse(input, handler, metadata);
+            InputStream targetStream = IOUtils.toInputStream(handler.toString());
+            IOUtils.copy(targetStream, output);
+            */
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             index.setFailedreason(index.getFailedreason() + "tika exception " + e.getClass().getName() + " ");
@@ -88,6 +106,26 @@ public class TikaHandler {
             System.out.flush();
         }
         return output;
+    }
+
+    private void listConfig() {
+        ParseContext context = new ParseContext();
+        TikaConfig config = TikaConfig.getDefaultConfig();
+        // Get the root parser
+        CompositeParser parser = (CompositeParser)config.getParser();
+        // Fetch the types it supports
+        for (MediaType type : parser.getSupportedTypes(new ParseContext())) {
+            String typeStr = type.toString();
+            log.info("typestr"+typeStr);
+        }
+        // Fetch the parsers that make it up (note - may need to recurse if any are a CompositeParser too)
+        for (Parser p : parser.getAllComponentParsers()) {
+            String parserName = p.getClass().getName();
+            log.info("pnam"+parserName);
+            if (p instanceof CompositeParser) {
+                // Check child ones too
+            }
+        }
     }
 
     private Writer getOutputWriter(OutputStream output, String encoding)
@@ -195,6 +233,7 @@ public class TikaHandler {
                 LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
                 String lang = languageDetect.detect(content);
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
+                    try {
                     now = System.currentTimeMillis();
                     String classification = ClassifyDao.classify(content, lang);
                     time = System.currentTimeMillis() - now;
@@ -202,6 +241,9 @@ public class TikaHandler {
                     //System.out.println("classtime " + time);
                     el.index.setTimeclass("" + time);
                     el.index.setClassification(classification);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
                 }
                 if (lang != null) {
                     el.index.setLanguage(lang);

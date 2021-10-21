@@ -103,7 +103,7 @@
     <cassandra.version>3.11.0</cassandra.version>
     <aws.version>1.11.460</aws.version>
     <dynamodblocal.version>1.15.0</dynamodblocal.version>
-    <tika.version>2.1.0</tika.version>
+    <tika.version>1.27</tika.version>
     <mahout.version>14.1</mahout.version>
     <!-- must keep at old version for some time -->
     <mahout.spark.version>2.4.0</mahout.spark.version>
