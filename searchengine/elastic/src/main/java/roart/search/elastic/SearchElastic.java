@@ -23,6 +23,7 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +53,13 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		String port = nodeConf.getElasticPort(); 
 
 		try {
-			conf.client = new PreBuiltTransportClient(Settings.EMPTY).
-					addTransportAddress(new TransportAddress(InetAddress.getByName(host), new Integer(port)));
-		} catch (Exception e) {
+			conf.client = 
+			new PreBuiltXPackTransportClient(Settings.builder()
+			        //.put("cluster.name", "myClusterName")
+			        //.put("xpack.security.user", "transport_client_user:x-pack-test-password")
+			        .build())
+			    .addTransportAddress(new TransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
+			} catch (Exception e) {
 			log.error(roart.common.constants.Constants.EXCEPTION, e);
 		}
 	}
