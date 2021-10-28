@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrDocument;
@@ -48,20 +50,20 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		        .withSocketTimeout(60000)
 		        .withConnectionTimeout(5000)
 		        .build();
-		conf.server = server;
+ 		conf.server = server;
 		log.info("server " + server);
 		System.out.println("server " + server);
 		// Setting the XML response parser is only required for cross
 		// version compatibility and only when one side is 1.4.1 or
 		// earlier and the other side is 3.1 or later.
-		server.setParser(new XMLResponseParser()); 
+		server.setParser(new XMLResponseParser());
 		// binary parser is used by default
 		// The following settings are provided here for completeness.
 		// They will not normally be required, and should only be used 
 		// after consulting javadocs to know whether they are truly required.
 		// server.setDefaultMaxConnectionsPerHost(100);
 		// server.setMaxTotalConnections(100);
-		server.setFollowRedirects(false);  // defaults to false
+		//server.setFollowRedirects(true);  // defaults to false
 		// allowCompression defaults to false.
 		// Server side must support gzip or deflate for this to have any effect.
 		// server.setAllowCompression(true);
@@ -177,11 +179,31 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			if (nodeConf.getHighlightmlt()) {
 				query.add("hl", "true");
 				query.add("hl.fl", Constants.CONTENT);
-				query.add("hl.useFastVectorHighlighter", "true");
+				query.add("hl.method", "fastVector");
 			}
 			//    Query the server 
 
-			QueryResponse rsp = conf.server.query( query );
+			final Map<String, String> queryParamMap = new HashMap<>();
+			//queryParamMap.put("q", "rook");
+			//queryParamMap.put("fl", "id, name");
+			//queryParamMap.put("sort", "id asc");
+                        queryParamMap.put("fl", "*, score");
+			queryParamMap.put("q", str /*"*:*"*/ );
+                        query.setIncludeScore(true);
+                        queryParamMap.put("rows", "100");
+                        if (defType != null) {
+                                queryParamMap.put("defType", defType); 
+                        }
+                        //query.addSortField( "price", SolrQuery.ORDER.asc );
+
+                        if (nodeConf.getHighlightmlt()) {
+                                queryParamMap.put("hl", "true");
+                                queryParamMap.put("hl.fl", Constants.CONTENT);
+                                queryParamMap.put("hl.method", "fastVector");
+                        }
+			MapSolrParams queryParams = new MapSolrParams(queryParamMap);			
+                        //QueryResponse rsp = conf.server.query( queryParams );
+			QueryResponse rsp = conf.server.query( query, METHOD.POST );
 
 			SolrDocumentList docs = rsp.getResults();
 
