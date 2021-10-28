@@ -70,8 +70,8 @@ export const setconfig = createAction(SETCONFIG, (config) => ( { config } ) );
 export const setconfigvalue = createAction(SETCONFIGVALUE, ( array ) => ( array ) );
 export const setconfigvaluemap = createAction(SETCONFIGVALUEMAP, ( array ) => ( array ) );
 export const getConfig = createAction(GETCONFIG, () => ( {} ) );
-export const getLanguages = createAction(GETLANGUAGES, () => ( {} ) );
-export const setLanguages = createAction(SETLANGUAGES, () => ( {} ) );
+export const getLanguages = createAction(GETLANGUAGES, (l) => ( { l } ) );
+export const setLanguages = createAction(SETLANGUAGES, (l) => ( { l } ) );
 export const control = createAction(CONTROL, (config, param, props) => ( { config, param, props } ) );
 export const search = createAction(SEARCH, (config, param, props) => ( { config, param, props } ) );
 				      
@@ -161,6 +161,7 @@ export const reducers = {
         state.merge({
             ...payload
         }),
+
 }
 
 function gettabs(state) {
@@ -180,8 +181,9 @@ function gettabs4(state, payload) {
     var arr = (state.get('tabs'));
     console.log(arr);
     var arrayLength = arr.length;
-    var newpay = payload + arrayLength;
-    arr.push(newpay);
+    //ar newpay = payload + arrayLength;
+    //arr.push(newpay);
+    arr.push(payload);
     console.log("state1");
     console.log(state);
     console.log(arr);

@@ -14,7 +14,7 @@ function handleButtonClick(props, e, value) {
 function convert(resultitemtable, date, props) {
     console.log("here");
     console.log(resultitemtable);
-    const array = resultitemtable.rows;
+    const array = resultitemtable;
     console.log(array);
     if (array.length == 0) {
 	return (
@@ -25,29 +25,35 @@ function convert(resultitemtable, date, props) {
     const rest = array.slice(1);
     const columns = [];
     const result = [];
-    for(var i = 0; i < head.cols.length; i++) {
-	if (head.cols[i] == "Img") {
-	    //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={console.log('clicked value', value)}>Button</a>) });
-	    columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
+    console.log(head);
+    console.log(head.items);
+    console.log(head.items.length);
+    for(var i = 0; i < head.items.length; i++) {
+	if (head.items[i] == "Img") {
+	    //columns.push({ accessor: head[i], Header: head[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={console.log('clicked value', value)}>Button</a>) });
+	    columns.push({ accessor: head[i], Header: head[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
 	} else {
-	    columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true });
+	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true });
 	}
     }
     console.log(columns);
     console.log(head);
+    console.log(Object.keys(head));
     console.log(head.length);
     console.log(rest);
     console.log(rest.length);
     for(var j = 0; j < rest.length; j++) {
-	const row = rest[j];
-	//console.log(row);
+	const row = rest[j].items;
+	console.log(row);
 	const newrow = [];
-	for(var i = 0; i < head.cols.length; i++) {
-	    newrow[head.cols[i]] = row.cols[i];
+	for(var i = 0; i < head.items.length; i++) {
+	    console.log(i);
+	    newrow[head.items[i]] = row[i];
+	    console.log(i);
 	}
 	/*
-	if (head.cols[0] == "Img") {
-	    newrow[head.cols[0]] = "bla";
+	if (head[0] == "Img") {
+	    newrow[head[0]] = "bla";
 	}
 	*/
 	result.push(newrow);
@@ -164,7 +170,8 @@ function getTab(list, date, props) {
     const tables = [];
     for(var i = 0; i < list.length; i++) {
 	console.log(list[i])
-	if (list[i]._class == "roart.model.ResultItemTable") {
+	console.log(list[i]._class)
+	if (true || list[i]._class == "roart.model.ResultItemTable") {
 	    const resultitemtable = list[i];
 	    const table = getTable(resultitemtable, date + i, props);
 	    tables.push(table);

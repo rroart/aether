@@ -31,6 +31,7 @@ class ControlPanel extends PureComponent {
 	param.add = path;
 	param.md5checknew = md5checknew;
 	param.webpath = "filesystemlucenenew";
+	this.props.control(param.config, param, this.props)
     //props.control([ param ]);
   }
 
@@ -44,6 +45,7 @@ class ControlPanel extends PureComponent {
 	console.log("h");
 	props.control(param.config, param, props);
 	console.log("h2");
+	this.props.control(param.config, param, this.props)
     //props.control([ param ]);
   }
 
@@ -54,6 +56,7 @@ class ControlPanel extends PureComponent {
         param.add = add;
         param.reindex = reindex;
         param.webpath = "index";
+	this.props.control(param.config, param, this.props)
     }
 
     indexsuffix(suffix, reindex, props) {
@@ -63,6 +66,7 @@ class ControlPanel extends PureComponent {
         param.suffix = suffix;
         param.reindex = reindex;
         param.webpath = "indexsuffix";
+	this.props.control(param.config, param, this.props)
 	}
 
         reindexdatelower(date, reindex) {
@@ -72,6 +76,7 @@ class ControlPanel extends PureComponent {
         param.lowerdate = date;
         param.reindex = reindex;
         param.webpath = "reindexdatelower";
+	this.props.control(param.config, param, this.props)
     }
 
  reindexdatehigher(date,  reindex) {
@@ -81,6 +86,7 @@ class ControlPanel extends PureComponent {
         param.higherdate = date;
         param.reindex = reindex;
         param.webpath = "reindexdatehigher";
+	this.props.control(param.config, param, this.props)
    }
  reindexlanguage(lang) {
         var param = new ServiceParam();
@@ -88,6 +94,7 @@ class ControlPanel extends PureComponent {
         param.function = "REINDEXLANGUAGE";
         param.lang = lang;
         param.webpath = "reindexlanguage";
+	this.props.control(param.config, param, this.props)
     }
 
   cleanupfs(dirname) {
@@ -96,6 +103,7 @@ class ControlPanel extends PureComponent {
         param.function = "CONSISTENTCLEAN";
         param.dirname = dirname;
         param.webpath = "cleanupfs";
+	this.props.control(param.config, param, this.props)
     }
 
     memoryusage() {
@@ -103,6 +111,7 @@ class ControlPanel extends PureComponent {
         param.config = this.props.config;
         param.function = "MEMORYUSAGE";
         param.webpath = "memoryusage";
+	this.props.control(param.config, param, this.props)
     }
 
     notindexed() {
@@ -110,6 +119,7 @@ class ControlPanel extends PureComponent {
         param.config = this.props.config;
         param.function = "NOTINDEXED";
         param.webpath = "notindexed";
+	this.props.control(param.config, param, this.props)
     }
 
      consistentclean( clean) {
@@ -119,6 +129,7 @@ class ControlPanel extends PureComponent {
 	    param.clean = clean;
         param.webpath = "consistentclean";
         Queues.clientQueue.add(param);
+	this.props.control(param.config, param, this.props)
         return;           
 	    }
 
@@ -128,6 +139,7 @@ class ControlPanel extends PureComponent {
             //param.function = Function.DELETEPATHDB;
             param.path = path;
             param.webpath = "deletepathdb";
+	this.props.control(param.config, param, this.props)
        }
 
      dbindex( md5) {
@@ -136,6 +148,7 @@ class ControlPanel extends PureComponent {
         param.function = "DBINDEX";
         param.md5 = md5;
         param.webpath = "dbindex";
+	this.props.control(param.config, param, this.props)
     }
 
      dbsearch( md5)  {
@@ -144,11 +157,15 @@ class ControlPanel extends PureComponent {
         param.function = "DBSEARCH";
         param.md5 = md5;
         param.webpath = "dbsearch";
+	this.props.control(param.config, param, this.props)
     }
 
     render() {
 	const { main } = this.props;
+	const languages = main && main.languages ? main.languages : null;
 	//this.bardvd = new SearchBar('dvd');
+	console.log(main);
+	console.log(languages);
 	console.log(Object.keys(main))
 	console.log(main.config);
 	//console.log(main.config.get("searchengine.lucene"));
@@ -270,7 +287,7 @@ class ControlPanel extends PureComponent {
 			    Reindex language
 			    <Select options="[{size:'5'}]"
 				    onChange={e => this.reindexlanguage(e, this.props)}
-				    options={this.props.languages}
+				    options={languages}
 			    />
 
 			</NavItem>

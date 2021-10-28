@@ -32,12 +32,17 @@ const resultConfig = createSelector(
   payload => payload.get('config')
 );
 
+const resultLanguages = createSelector(
+  mainDataSelector,
+  payload => payload.get('languages')
+);
+
 export const mainSelector = state => ({
     result2: resultSelector(state),
     result3: resultSelector3(state),
     result4: resultSelector4(state),
     count: resultCount(state),
     tabs: resultTabs(state),
-    languages: resultTabs(state),
+    languages: resultLanguages(state),
     config: resultConfig(state),
 });
