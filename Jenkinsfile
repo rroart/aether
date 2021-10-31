@@ -5,7 +5,7 @@ node {
       def buildImage = docker.build("buildimage", "-f docker/jenkins/Dockerfile.build docker/jenkins") 
       buildImage.inside {
         env.npm_config_cache='/tmp/.npm'
-        sh 'mvn verify -DskipTests -pl !web'
+        sh 'mvn verify -Dmaven.test.skip=true -DskipTests -pl !web'
         if (env.MYBRANCH == 'develop') {
           env.OTHERBRANCH = 'master'
         } else {
@@ -14,7 +14,7 @@ node {
         sh 'git checkout $OTHERBRANCH'
 	sh 'git pull'
         sh 'git merge origin/$MYBRANCH || (git merge --abort && exit 1)'
-        sh 'mvn verify -DskipTests -pl !web'
+        sh 'mvn verify -Dmaven.test.skip=true -DskipTests -pl !web'
         env.MYPUSH = sh(script: 'git config remote.origin.url | cut -c9-', returnStdout: true)
         withCredentials([usernameColonPassword(credentialsId: 'githubtoken', variable: 'TOKEN')]) {
           sh 'git push https://$TOKEN@$MYPUSH'
