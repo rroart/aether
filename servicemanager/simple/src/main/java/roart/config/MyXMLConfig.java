@@ -91,9 +91,17 @@ public class MyXMLConfig {
                     String dirlist = (String) configInstance.getValueOrDefault(ConfigConstants.FSDIRLIST);
                     SimpleController.startFsServiceWithDirList(dirlist, fileSystems);
                     break;
+                case ConfigConstants.MACHINELEARNINGSPARKML:
+                    Runnable def4 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED", "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED" });
+                    new Thread(def4).start();
+                    break;
                 case ConfigConstants.DATABASEHBASE:
                     Runnable def2 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED" });
                     new Thread(def2).start();
+                    break;
+                case ConfigConstants.DATABASEDYNAMODB:
+                    Runnable def3 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.lang=ALL-UNNAMED" });
+                    new Thread(def3).start();
                     break;
                 default:
                     Runnable def = new JarThread(jar, null);
