@@ -18,6 +18,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.execution.datasources.DataSource;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
@@ -55,8 +56,8 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 			sparkconf.set("spark.executor.memory", "4g");
 			// it does not work well with default snappy
 			sparkconf.set("spark.io.compression.codec", "lzf");
-			sparkconf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
-			sparkconf.set("spark.kryoserializer.buffer.max", "1024m");
+			//sparkconf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+			//sparkconf.set("spark.kryoserializer.buffer.max", "1024m");
 
 			SparkSession spark = SparkSession
 					.builder()
@@ -68,6 +69,10 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 			conf.spark = spark;
 
 			String[] languages = nodeConf.getLanguages();
+			log.info("L {} {}", languages.length, modelPath);
+			var source = "parquet";
+			var cls = DataSource.lookupDataSource(source, spark.sessionState().conf());
+			log.info("C {}", cls);
 			for (String lang : languages) {
 				conf.nbm = PipelineModel.load(modelPath.replaceAll("LANG", lang));
 				Dataset<Row> label = spark.read().load(labelIndexPath.replaceAll("LANG", lang));

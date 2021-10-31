@@ -163,6 +163,8 @@
     <springintegration.version>5.4.0</springintegration.version>
     <springrabbit.version>2.3.1</springrabbit.version>
     <redisclient.version>3.5.1</redisclient.version>
+    <chill.version>0.9.3</chill.version>
+    <jersey.version>2.22.2</jersey.version>
   </properties>
   <!--repositories>
     <repository>
