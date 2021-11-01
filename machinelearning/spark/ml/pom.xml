@@ -169,6 +169,52 @@
       <groupId>roart</groupId>
       <artifactId>aether.shadow.spark</artifactId>
       <version>${aether.version}</version>
+      <exclusions>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-catalyst_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-network-common_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-network-shuffle_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-kvstore_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-unsafe_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-launcher_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib-local_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-http</artifactId>
+    </exclusion>
+      </exclusions>
     </dependency>
     <!--dependency>
       <groupId>roart</groupId>
