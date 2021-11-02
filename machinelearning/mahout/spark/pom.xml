@@ -31,15 +31,15 @@
       <plugin>
 	<artifactId>maven-dependency-plugin</artifactId>
 	<executions>
-	  <execution>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>copy-dependencies</goal>
-	    </goals>
-	    <configuration>
-	      <outputDirectory>${project.build.directory}/deps</outputDirectory>
-	    </configuration>
-	  </execution>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deps</outputDirectory>
+            </configuration>
+          </execution>
 	</executions>
       </plugin>
     </plugins>
@@ -136,11 +136,6 @@
       <version>${springboot.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-servlet</artifactId>
-      <version>1.19.1</version>
-    </dependency>
-    <dependency>
       <groupId>roart</groupId>
       <artifactId>aether-common-machinelearning</artifactId>
       <version>${aether.version}</version>
@@ -164,16 +159,88 @@
       <groupId>roart</groupId>
       <artifactId>aether.shadow.mahout.spark</artifactId>
       <version>${aether.version}</version>
+      <exclusions>
+    <exclusion>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-core</artifactId>
+      <!--scope>provided</scope-->
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-hdfs</artifactId>
+      <!--scope>provided</scope-->
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-spark</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+    </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>roart</groupId>
       <artifactId>aether.shadow.mahout.sparkcore</artifactId>
       <version>${aether.version}</version>
+      <exclusions>                                                                 <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.11</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-network-common_2.11</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-network-shuffle_2.11</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-kvstore_2.11</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-unsafe_2.11</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-launcher_2.11</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-http</artifactId>
+    </exclusion>
+       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-spark</artifactId>
+      <version>${mahout.version}</version>
+      <classifier>scala_2.11</classifier>
+      <!--scope>provided</scope-->
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.47.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.9.9.Final</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <version>${hadoop.version}</version>
+      <exclusions>
+	<exclusion>
+	  <groupId>io.netty</groupId>
+	  <artifactId>netty</artifactId>
+	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
@@ -191,23 +258,79 @@
       <version>${lucene.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+      <version>4.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-json</artifactId>
+      <version>4.2.4</version>
+    </dependency>
+    <!--dependency>
       <groupId>com.esotericsoftware.kryo</groupId>
       <artifactId>kryo</artifactId>
-      <version>${kryo.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-    </dependency>
-    <!-- dependent package for sparkconf setjars -->
-    <dependency>
-      <groupId>it.unimi.dsi</groupId>
-      <artifactId>fastutil</artifactId>
-      <version>${fastutil.version}</version>
-    </dependency>
-  </dependencies>
+      <version>2.24.0</version>
+    </dependency-->
+     <dependency>
+        <groupId>com.twitter</groupId>
+        <artifactId>chill_2.11</artifactId>
+        <version>${chill.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.twitter</groupId>
+        <artifactId>chill-java</artifactId>
+        <version>${chill.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.json4s</groupId>
+        <artifactId>json4s-ast_2.11</artifactId>
+        <version>3.5.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+	<groupId>org.scala-lang.modules</groupId>
+	<artifactId>scala-xml_2.11</artifactId>
+	<version>1.0.6</version>
+      </dependency>
+       <dependency>
+        <groupId>org.glassfish.jersey.containers</groupId>
+        <artifactId>jersey-container-servlet-core</artifactId>
+        <version>${jersey.version}</version>
+       </dependency>
+       <dependency>
+	 <groupId>com.google.guava</groupId>
+	 <artifactId>guava</artifactId>
+	 <version>${guava.version}</version>
+       </dependency>
+       <!-- dependent package for sparkconf setjars -->
+       <dependency>
+	 <groupId>it.unimi.dsi</groupId>
+	 <artifactId>fastutil</artifactId>
+	 <version>${fastutil.version}</version>
+       </dependency>
+      <dependency>
+    <groupId>com.ning</groupId>
+    <artifactId>compress-lzf</artifactId>
+    <version>1.1</version>
+      </dependency>
+      <dependency>
+    <groupId>org.roaringbitmap</groupId>
+    <artifactId>RoaringBitmap</artifactId>
+    <version>0.9.22</version>
+      </dependency>
+<dependency>
+    <groupId>org.apache.xbean</groupId>
+    <artifactId>xbean-asm6-shaded</artifactId>
+    <version>4.10</version>
+</dependency>       
+    </dependencies>
   <properties>
-    <mahout.spark.version>1.5.2</mahout.spark.version>
+    <jdk.version>11</jdk.version>
   </properties>
 </project>

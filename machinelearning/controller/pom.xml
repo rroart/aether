@@ -85,4 +85,7 @@
       <version>${opennlp.version}</version>
     </dependency>
   </dependencies>
+  <properties>
+    <jdk.version>11</jdk.version>
+  </properties>
 </project>

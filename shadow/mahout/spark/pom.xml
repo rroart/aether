@@ -29,6 +29,7 @@
               <artifactSet>
 		<includes>
 		  <include>org.apache.mahout:mahout-core</include>
+		  <include>org.apache.mahout:mahout-hdfs</include>
 		  <include>org.apache.mahout:mahout-spark</include>
 		  <!--include>org.scala-lang:scala-library</include-->
 		</includes>
@@ -46,6 +47,11 @@
       <version>${mahout.version}</version>
       <classifier>scala_2.11</classifier>
       <!--scope>provided</scope-->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.mahout</groupId>
+      <artifactId>mahout-hdfs</artifactId>
+      <version>${mahout.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.mahout</groupId>

@@ -46,6 +46,8 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 
 	private static Logger log = LoggerFactory.getLogger(MahoutSparkClassify.class);
 
+	private static JavaSparkContext jsc = null;
+	
 	private MahoutSparkConfig conf;
 
 	public MahoutSparkClassify(String nodename, NodeConfig nodeConf) {
@@ -89,21 +91,27 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 				// it does not work well with default snappy
 				sparkconf.set("spark.io.compression.codec", "lzf");
 				sparkconf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+				//sparkconf.set("spark.closure.serializer", "org.apache.spark.serializer.JavaSerializer");
 				sparkconf.set("spark.kryo.registrator", "org.apache.mahout.sparkbindings.io.MahoutKryoRegistrator");
+				//sparkconf.set("spark.driver.allowMultipleContexts","true");				
 				String userDir = System.getProperty("user.dir");
 				log.info("user.dir " + userDir);
 
 				String[] jars = { 
-						"file:" + userDir + "/deps/mahout-spark_2.10-0.12.0.jar", 
-						"file:" + userDir + "/deps/mahout-hdfs-0.12.0.jar", 
-						"file:" + userDir + "/deps/mahout-math-0.12.0.jar", 
-						"file:" + userDir + "/deps/mahout-math-scala_2.10-0.12.0.jar", 
+		                              "file:" + userDir + "/deps/mahout-core-14.1-scala_2.11.jar", 
+		                              "file:" + userDir + "/deps/mahout-spark-14.1-scala_2.11.jar", 
+						"file:" + userDir + "/deps/mahout-hdfs-14.1.jar", 
+						//"file:" + userDir + "/deps/mahout-math-14.1-scala_2.11.jar", 
+						//"file:" + userDir + "/deps/mahout-math-scala_14.1-scala_2.11.jar",
+						"file:" + userDir + "/deps/mahout-spark-14.1-scala_2.11.jar",
 						"file:" + userDir + "/deps/guava-16.0.1.jar", 
-						"file:" + userDir + "/deps/fastutil-7.0.11.jar", 
+						"file:" + userDir + "/deps/fastutil-7.0.11.jar",
 						"file:" + userDir + "/aether-mahout-spark-0.10-SNAPSHOT.jar", 
 				};
 				sparkconf.setJars(jars);
-				JavaSparkContext jsc = new JavaSparkContext(sparkconf);
+				if (jsc == null) {
+				    jsc = new JavaSparkContext(sparkconf);
+				}
 				conf.jsc = jsc;
 				SparkDistributedContext sdc = new SparkDistributedContext(jsc.sc());
 				DistributedContext dc = sdc;
@@ -174,7 +182,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	}
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
-		String content = classify.str;
+		String content = classify. str;
 		String language = classify.language;
 		try {
 			Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
