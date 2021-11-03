@@ -126,7 +126,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 					.setSize(100)
 					.setExplain(true);
 			if (search.conf.getHighlightmlt()) {
-				q = q.highlighter(new HighlightBuilder().field(Constants.CONTENT));
+				q = q.highlighter(new HighlightBuilder().field(Constants.CONTENT).maxAnalyzedOffset(999999));
 			}
 			SearchResponse response = q.execute().actionGet();//get();
 			SearchHits docs = response.getHits();
