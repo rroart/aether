@@ -16,6 +16,7 @@ module dynamodb {
     requires common.constants;
     requires common.database;
     requires common.model;
+    requires common.util;
     requires database;
     requires guava;
     requires org.slf4j;

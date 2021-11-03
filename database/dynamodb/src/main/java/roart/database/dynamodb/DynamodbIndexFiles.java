@@ -3,6 +3,7 @@ package roart.database.dynamodb;
 import java.util.HashSet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import roart.common.util.JsonUtil;
 
 public class DynamodbIndexFiles {
 
@@ -495,7 +497,7 @@ public class DynamodbIndexFiles {
         ifile.setNoindexreason(item.getString(noindexreasonq));
         ifile.setLanguage(item.getString(languageq));
         System.out.println("get fl " + item.getList(filelocationq) + " " + item.getString(filelocationq));
-        ifile.setFilelocations(item.getList(filelocationq) != null ? new HashSet<>(item.getList(filelocationq)) : new HashSet<>());
+        ifile.setFilelocations(item.getList(filelocationq) != null ? new HashSet<>(convert(item.getList(filelocationq))) : new HashSet<>());
         Set<FileLocation> fls;
         /*
         try {
@@ -507,6 +509,14 @@ public class DynamodbIndexFiles {
          */
         ifile.setUnchanged();
         return ifile;
+    }
+
+    private List<FileLocation> convert(List<String> list) {
+        List<FileLocation> listnew = new ArrayList<>();
+        for (String str : list) {
+            listnew.addAll(Arrays.asList(JsonUtil.convert(str, FileLocation[].class)));
+        }
+        return listnew;
     }
 
     public Map<String, IndexFiles> get(Set<String> md5s) {
