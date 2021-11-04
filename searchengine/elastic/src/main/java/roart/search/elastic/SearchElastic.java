@@ -14,6 +14,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder.Item;
@@ -59,6 +60,19 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 			        //.put("xpack.security.user", "transport_client_user:x-pack-test-password")
 			        .build())
 			    .addTransportAddress(new TransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
+	                    conf.client.admin().indices().prepareCreate(myindex).execute().actionGet();
+	                    conf.client.admin().indices().preparePutMapping(myindex).setType(mytype)
+	                    .setSource(XContentFactory.jsonBuilder().prettyPrint()
+	                            .startObject()
+	                            .startObject("properties")
+	                                .startObject(Constants.CONTENT)
+	                                .field("type", "text")
+	                                .field("store", "true")
+	                                .field("term_vector", "with_positions_offsets")
+	                                .endObject()
+	                            .endObject()
+	                        .endObject())
+	                    .execute().actionGet();
 			} catch (Exception e) {
 			log.error(roart.common.constants.Constants.EXCEPTION, e);
 		}
@@ -82,28 +96,31 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		//, IndexFiles index) {
 		int retsize = content.length();
 		// this to a method
-		log.info("indexing " + md5);
+		log.info("indexing {}", md5);
 
 		String cat = classification;
 
 		String indexName = myindex;
 		String typeName = mytype;
 		try {
-			IndexRequestBuilder irb = conf.client.prepareIndex(indexName, typeName, "" + md5).setSource(XContentFactory.jsonBuilder()
-					.startObject()
-					.field(Constants.ID, md5)
-					.field(Constants.LANG, lang)
-					.field(Constants.CAT, cat)
-					.field(Constants.CONTENT, content)
-					.startArray(Constants.METADATA + "array")
-					.startObject()
-					.array(Constants.METADATA, metadata)
-					.endObject()
-					.endArray()
-					.endObject());
-			IndexResponse response = irb.execute().actionGet();
+		    XContentBuilder builder = XContentFactory.jsonBuilder()
+		            .startObject()
+		            .field(Constants.ID, md5)
+		            .field(Constants.LANG, lang)
+		            .field(Constants.CAT, cat)
+		            .field(Constants.CONTENT, content)
+		            //.startObject()
+		            .startArray(Constants.METADATA);
+		    for (String data : metadata) {
+		        builder.value(data);
+		    }
+		    builder.endArray()
+		    //.endObject()
+		    .endObject();
+		    IndexRequestBuilder irb = conf.client.prepareIndex(indexName, typeName, "" + md5).setSource(builder);
+		    IndexResponse response = irb.execute().actionGet();
 		} catch (Exception e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+		    log.error(roart.common.constants.Constants.EXCEPTION, e);
 		}
 		SearchEngineIndexResult result = new SearchEngineIndexResult();
 		result.size = retsize;
