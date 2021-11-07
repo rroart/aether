@@ -69,6 +69,7 @@ import roart.common.model.IndexFiles;
 	private String noindexreason;
 	private Set<String> filenames;
 	private String language;
+	private String isbn;
 	
 	private String nodename;
 	private NodeConfig nodeconf;
@@ -242,6 +243,16 @@ import roart.common.model.IndexFiles;
     	public void setLanguage(String language) {
     	    this.language = language;
     	}
+
+        @Column(name = "isbn")
+        
+        public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
 
 	public HibernateIndexFiles ensureExistence(String md5) throws Exception {
 	    HibernateIndexFiles fi = getByMd5(md5);

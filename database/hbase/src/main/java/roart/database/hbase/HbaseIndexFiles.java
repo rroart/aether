@@ -65,6 +65,7 @@ public class HbaseIndexFiles {
     private final byte[] timeoutreasonq = Bytes.toBytes("timeoutreason");
     private final byte[] noindexreasonq = Bytes.toBytes("noindexreason");
     private final byte[] languageq = Bytes.toBytes("language");
+    private final byte[] isbnq = Bytes.toBytes("isbn");
     private final byte[] nodeq = Bytes.toBytes("node");
     private final byte[] filenameq = Bytes.toBytes("filename");
     private final byte[] filelocationq = Bytes.toBytes("filelocation");
@@ -180,6 +181,9 @@ public class HbaseIndexFiles {
         if (ifile.getLanguage() != null) {
             put.addColumn(indexcf, languageq, Bytes.toBytes(ifile.getLanguage()));
         }
+        if (ifile.getIsbn() != null) {
+            put.addColumn(indexcf, isbnq, Bytes.toBytes(ifile.getIsbn()));
+        }
         //log.info("hbase " + ifile.getMd5());
         int i = -1;
         for (FileLocation file : ifile.getFilelocations()) {
@@ -246,6 +250,7 @@ public class HbaseIndexFiles {
         ifile.setTimeoutreason(bytesToString(index.getValue(indexcf, timeoutreasonq)));
         ifile.setNoindexreason(bytesToString(index.getValue(indexcf, noindexreasonq)));
         ifile.setLanguage(bytesToString(index.getValue(indexcf, languageq)));
+        ifile.setIsbn(bytesToString(index.getValue(indexcf, isbnq)));
         List<Cell> list = index.listCells();
         if (list != null) {
             for (Cell kv : list) {

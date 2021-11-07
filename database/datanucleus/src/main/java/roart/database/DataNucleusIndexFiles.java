@@ -172,6 +172,18 @@ import roart.common.model.IndexFiles;
     	    this.language = language;
     	}
 
+        @Column(name = "isbn")
+        @Persistent     
+        private String isbn;
+        
+            public String getIsbn() {
+            return isbn;
+        }
+
+        public void setIsbn(String isbn) {
+            this.isbn = isbn;
+        }
+
 	public DataNucleusIndexFiles ensureExistence(String md5) throws Exception {
 	    DataNucleusIndexFiles fi = getByMd5(md5);
 	    if (fi == null) {

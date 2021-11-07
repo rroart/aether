@@ -121,6 +121,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
             hif.setTimeoutreason(i.getTimeoutreason());
             hif.setNoindexreason(i.getNoindexreason());
             hif.setLanguage(i.getLanguage());
+            hif.setIsbn(i.getIsbn());
             hif.setFilenames(i.getFilenames());
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -147,6 +148,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         ifile.setTimeoutreason(hif.getTimeoutreason());
         ifile.setNoindexreason(hif.getNoindexreason());
         ifile.setLanguage(hif.getLanguage());
+        ifile.setIsbn(hif.getIsbn());
         Set<String> files = hif.getFilenames();
         for (String file : files) {
             ifile.addFile(new FileLocation(file, nodename, null));

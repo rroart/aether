@@ -378,6 +378,11 @@
       <artifactId>archaius-core</artifactId>
       <version>0.7.7</version>
     </dependency>
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.7</version>
+    </dependency>
   </dependencies>
 </project>
 

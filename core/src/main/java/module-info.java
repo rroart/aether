@@ -52,4 +52,5 @@ module core {
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.apache.commons.io;
+    requires commons.validator;
 }

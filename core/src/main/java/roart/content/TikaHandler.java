@@ -46,6 +46,7 @@ import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.service.ControlService;
+import roart.util.ISBNUtil;
 import roart.util.MyList;
 import roart.util.MyLists;
 import roart.common.inmemory.model.InmemoryMessage;
@@ -248,7 +249,13 @@ public class TikaHandler {
                 if (lang != null) {
                     el.index.setLanguage(lang);
                 }
-
+                try {
+                el.index.setIsbn(new ISBNUtil().extract(content, false));
+                log.info("ISBN {}", el.index.getIsbn());
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+                
                 //size = SearchLucene.indexme("all", md5, inputStream);
                 IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
                 elem.lang = lang;

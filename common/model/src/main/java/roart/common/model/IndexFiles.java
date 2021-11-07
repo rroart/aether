@@ -38,6 +38,7 @@ public class IndexFiles {
 	private Set<FileLocation> filelocations;
     private int maxfilelocations; // keep max count, for hbase deletions
     private String language;
+    private String isbn;
     
     private boolean changed = false;
     private boolean indb = false;
@@ -323,6 +324,15 @@ public class IndexFiles {
     }
     */
 
+    public String getIsbn() {
+            return isbn;
+        }
+
+        public void setIsbn(String isbn) {
+            changed |= true;
+            this.isbn = isbn;
+        }
+
     public boolean hasChanged() {
 	return changed;
     }
@@ -372,6 +382,7 @@ public class IndexFiles {
 	ri.add("Node");
 	ri.add("Filename");
 	ri.add("Lang");
+        ri.add("ISBN");
 	if (doclassify) {
 	ri.add("Classification");
 	}
@@ -404,6 +415,7 @@ public class IndexFiles {
 		ri.add("Highlight and similar");
 	}
 	ri.add("Lang");
+        ri.add("ISBN");
 	if (doclassify) {
 	ri.add("Classification");
 	}
@@ -450,6 +462,7 @@ public class IndexFiles {
 	    }
 	}
 	ri.add(lang);
+        ri.add(index.getIsbn());
 	if (doclassify) {
 	    ri.add(index.getClassification());
 	}
@@ -497,6 +510,7 @@ public class IndexFiles {
 	ri.add(nodename);
 	ri.add(filename);
 	ri.add(lang);
+	ri.add(index.getIsbn());
 	if (doclassify) {
 	    ri.add(index.getClassification());
 	}

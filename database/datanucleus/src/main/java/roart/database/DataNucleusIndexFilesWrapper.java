@@ -123,6 +123,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
             hif.setNoindexreason(i.getNoindexreason());
             hif.setFilelocations(i.getFilelocations());
             hif.setLanguage(i.getLanguage());
+            hif.setIsbn(i.getIsbn());
 
             // check timing of this
             List<DataNucleusFiles> curFiles = dataNucleusFiles.getByMd5(i.getMd5());
@@ -170,6 +171,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         ifile.setTimeoutreason(hif.getTimeoutreason());
         ifile.setNoindexreason(hif.getNoindexreason());
         ifile.setLanguage(hif.getLanguage());
+        ifile.setIsbn(hif.getIsbn());
         Set<String> files = hif.getFilelocations();
         if (files != null) {
             for (String file : files) {

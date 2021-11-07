@@ -107,6 +107,7 @@ public class DynamodbIndexFiles {
         AttributeDefinition timeoutreason = new AttributeDefinition(timeoutreasonq, ScalarAttributeType.S);
         AttributeDefinition noindexreason = new AttributeDefinition(noindexreasonq, ScalarAttributeType.S);
         AttributeDefinition language = new AttributeDefinition(languageq, ScalarAttributeType.S);
+        AttributeDefinition isbn = new AttributeDefinition(isbnq, ScalarAttributeType.S);
         AttributeDefinition node = new AttributeDefinition(nodeq, ScalarAttributeType.S);
         AttributeDefinition filename = new AttributeDefinition(filenameq, ScalarAttributeType.S);
         AttributeDefinition filelocation = new AttributeDefinition(filelocationq, ScalarAttributeType.S);
@@ -297,6 +298,7 @@ public class DynamodbIndexFiles {
     private final String timeoutreasonq = "timeoutreason";
     private final String noindexreasonq = "noindexreason";
     private final String languageq = "language";
+    private final String isbnq = "isbn";
     private final String nodeq = "node";
     private final String filenameq = "filename";
     private final String filelocationq = "filelocation";
@@ -404,6 +406,9 @@ public class DynamodbIndexFiles {
         if (ifile.getLanguage() != null && !ifile.getLanguage().isEmpty()) {
             updatedvalues.put(languageq, new AttributeValue(ifile.getLanguage()));
         }
+        if (ifile.getIsbn() != null && !ifile.getIsbn().isEmpty()) {
+            updatedvalues.put(isbnq, new AttributeValue(ifile.getIsbn()));
+        }
         if (ifile.getFilelocations() != null && !ifile.getFilelocations().isEmpty()) {
             //updatedvalues.put(filelocationq, new AttributeValue(new ArrayList(ifile.getFilelocations())));              
             String str = null;
@@ -496,6 +501,7 @@ public class DynamodbIndexFiles {
         ifile.setTimeoutreason(item.getString(timeoutreasonq));
         ifile.setNoindexreason(item.getString(noindexreasonq));
         ifile.setLanguage(item.getString(languageq));
+        ifile.setIsbn(item.getString(isbnq));
         System.out.println("get fl " + item.getList(filelocationq) + " " + item.getString(filelocationq));
         ifile.setFilelocations(item.getList(filelocationq) != null ? new HashSet<>(convert(item.getList(filelocationq))) : new HashSet<>());
         Set<FileLocation> fls;

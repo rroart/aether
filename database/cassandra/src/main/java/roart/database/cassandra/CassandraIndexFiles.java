@@ -117,6 +117,7 @@ public class CassandraIndexFiles {
                 .append("timeoutreason text, ")
                 .append("noindexreason text, ")
                 .append("language text, ")
+                .append("isbn text, ")
                 .append("node text, ")
                 .append("filename text, ")
                 .append("filelocation set<frozen<filelocation>>);");
@@ -149,6 +150,7 @@ public class CassandraIndexFiles {
     private final String timeoutreasonq = "timeoutreason";
     private final String noindexreasonq = "noindexreason";
     private final String languageq = "language";
+    private final String isbnq = "isbn";
     private final String nodeq = "node";
     private final String filenameq = "filename";
     private final String filelocationq = "filelocation";
@@ -188,6 +190,7 @@ public class CassandraIndexFiles {
             createTable();
         } catch (Exception e) {
             e.printStackTrace();
+            // check if exists
         }
         System.out.println("ct2");
     }
@@ -230,6 +233,9 @@ public class CassandraIndexFiles {
         }
         if (ifile.getLanguage() != null) {
             sb.append(languageq + " = '" +ifile.getLanguage() + "', ");
+        }
+        if (ifile.getIsbn() != null) {
+            sb.append(isbnq + " = '" +ifile.getIsbn() + "', ");
         }
         if (ifile.getFilelocations() != null) {
             sb.append(filelocationq + " = ? ");	        
@@ -319,6 +325,7 @@ public class CassandraIndexFiles {
         ifile.setTimeoutreason(row.getString(timeoutreasonq));
         ifile.setNoindexreason(row.getString(noindexreasonq));
         ifile.setLanguage(row.getString(languageq));
+        ifile.setIsbn(row.getString(isbnq));
         ifile.setFilelocations(row.getSet(filelocationq, FileLocation.class));
         ifile.setUnchanged();
         return ifile;
