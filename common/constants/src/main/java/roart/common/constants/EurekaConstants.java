@@ -21,7 +21,12 @@ public class EurekaConstants {
     public static final String LOCAL = "LOCAL";
     public static final String SWIFT = "SWIFT";
     public static final String HDFS = "HDFS";
-
+    public static final String TIKA = "TIKA";
+    public static final String CALIBRE = "CALIBRE";
+    public static final String PDFTOTEXT = "PDTTOTEXT";
+    public static final String WVTEXT = "WVTEXT";
+    public static final String DJVUTXT = "DJVUTXT";
+    
     public static final String AETHERSERVICEMANAGER = "AETHERSERVICEMANAGER";
 
     public static final String GETCONFIG = "GETCONFIG";
@@ -46,6 +51,9 @@ public class EurekaConstants {
     public static final String MACHINELEARNING = "machinelearning";
     public static final String OVERLAPPING = "overlapping";
 
+    // convert
+    public static final String CONVERT = "convert";
+    
     // common ops
     public static final String CONSTRUCTOR = "constructor";
     public static final String DESTRUCTOR = "destructor";

@@ -89,7 +89,8 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.INDEXREINDEXLIMIT, Integer.class);
         map.put(ConfigConstants.INDEXINDEXLIMIT, Integer.class);
         map.put(ConfigConstants.CONVERSIONTIKATIMEOUT, Integer.class);
-        map.put(ConfigConstants.CONVERSTIONOTHERTIMEOUT, Integer.class);
+        map.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, Integer.class);
+        map.put(ConfigConstants.CONVERSION, String.class);
         map.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.class);
         map.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, String.class);
         map.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.class);
@@ -186,7 +187,8 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.INDEXREINDEXLIMIT, 0);
         deflt.put(ConfigConstants.INDEXINDEXLIMIT, 0);
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
-        deflt.put(ConfigConstants.CONVERSTIONOTHERTIMEOUT, 600);
+        deflt.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, 600);
+        deflt.put(ConfigConstants.CONVERSION, "{\"tika\",600,[],[]}");
         deflt.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "localhost:2181");
         deflt.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.TRUE);
@@ -284,7 +286,8 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.INDEXREINDEXLIMIT, "Reindex limit");
         text.put(ConfigConstants.INDEXINDEXLIMIT, "Index limit");
         text.put(ConfigConstants.CONVERSIONTIKATIMEOUT, "Tika timeout");
-        text.put(ConfigConstants.CONVERSTIONOTHERTIMEOUT, "Other conversion timeout");
+        text.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, "Other conversion timeout");
+        text.put(ConfigConstants.CONVERSION, "Conversion");
         text.put(ConfigConstants.DATABASEDATANUCLEUS, "Use datanucleus");
         text.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "Zookeeper connection");
         text.put(ConfigConstants.GUIHIGHLIGHTMLT, "Highlight MLT");
@@ -376,7 +379,8 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.INDEXREINDEXLIMIT, new XMLType( Integer.class, 0, "Reindex limit"));
         mymap.put(ConfigConstants.INDEXINDEXLIMIT, new XMLType( Integer.class, 0, "Index limit"));
         mymap.put(ConfigConstants.CONVERSIONTIKATIMEOUT, new XMLType( Integer.class, 600, "Tika timeout"));
-        mymap.put(ConfigConstants.CONVERSTIONOTHERTIMEOUT, new XMLType( Integer.class, 600, "Other conversion timeout"));
+        mymap.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, new XMLType( Integer.class, 600, "Other conversion timeout"));
+        mymap.put(ConfigConstants.CONVERSION, new XMLType( String.class, "{\"tika\",600,[],[]}", "Conversion"));
         mymap.put(ConfigConstants.DATABASEDATANUCLEUS, new XMLType( Boolean.class, Boolean.FALSE, "Use datanucleus"));
         mymap.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, new XMLType( String.class, null, "Use zookeeper"));
         mymap.put(ConfigConstants.GUIHIGHLIGHTMLT, new XMLType( Boolean.class, Boolean.TRUE, "Highlight MLT"));

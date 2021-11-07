@@ -12,6 +12,7 @@ module core {
     requires common.collections;
     requires common.config;
     requires common.constants;
+    requires common.convert;
     requires common.database;
     requires common.eureka;
     requires common.filesystem;

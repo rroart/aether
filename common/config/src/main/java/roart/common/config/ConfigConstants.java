@@ -83,7 +83,8 @@ public class ConfigConstants {
     public static final String INDEXREINDEXLIMIT = "index.reindexlimit";
     public static final String INDEXINDEXLIMIT = "index.indexlimit";
     public static final String CONVERSIONTIKATIMEOUT = "conversion.tikatimeout";
-    public static final String CONVERSTIONOTHERTIMEOUT = "conversion.othertimeout";
+    public static final String CONVERSIONOTHERTIMEOUT = "conversion.othertimeout";
+    public static final String CONVERSION = "conversion";
     public static final String DATABASEDATANUCLEUS = "database.datanucleus[@enable]";
     public static final String SYNCHRONIZATIONZOOKEEPER = "synchronization.zookeeper";
     public static final String GUIHIGHLIGHTMLT = "gui.highlightmlt[@enable]";

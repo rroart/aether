@@ -371,7 +371,12 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public Integer getOtherTimeout() {
-        return (Integer) getValueOrDefault(ConfigConstants.CONVERSTIONOTHERTIMEOUT);        
+        return (Integer) getValueOrDefault(ConfigConstants.CONVERSIONOTHERTIMEOUT);        
+    }
+    
+    @JsonIgnore
+    public String getConverters() {
+        return (String) getValueOrDefault(ConfigConstants.CONVERSION);        
     }
     
     @JsonIgnore

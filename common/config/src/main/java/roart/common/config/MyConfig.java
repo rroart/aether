@@ -79,7 +79,7 @@ public abstract class MyConfig {
         
         configStrMap.put(NodeConfig.Config.FAILEDLIMIT, ConfigConstants.INDEXFAILEDLIMIT);
         configStrMap.put(NodeConfig.Config.TIKATIMEOUT, ConfigConstants.CONVERSIONTIKATIMEOUT);
-        configStrMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.CONVERSTIONOTHERTIMEOUT);
+        configStrMap.put(NodeConfig.Config.OTHERTIMEOUT, ConfigConstants.CONVERSIONOTHERTIMEOUT);
         configStrMap.put(NodeConfig.Config.INDEXLIMIT, ConfigConstants.INDEXINDEXLIMIT);
         configStrMap.put(NodeConfig.Config.REINDEXLIMIT, ConfigConstants.INDEXREINDEXLIMIT);
     

@@ -14,6 +14,7 @@
   <modules>
     <module>shadow</module>
     <module>common</module>
+    <module>convert</module>
     <module>core</module>
     <module>eureka</module>
     <module>database</module>
