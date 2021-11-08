@@ -19,6 +19,7 @@ import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.Inmemory;
+import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.inmemory.factory.InmemoryFactory;
 
@@ -107,7 +108,7 @@ public class Search {
     Queues.decIndexs();
     
     if (el.message != null) {
-        Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
+        Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
         inmemory.delete(el.message);
     }
 	}
@@ -142,7 +143,7 @@ public class Search {
     private static String getParam(InmemoryMessage message) {
         //InmemoryMessage message = JsonUtil.convert(message, InmemoryMessage.class);
         //Inmemory inmemory = InmemoryFactory.get(instance.getInmemoryServer(), instance.getInmemoryHazelcast(), instance.getInmemoryRedis());
-        Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
+        Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
        return inmemory.read(message);
     }
 

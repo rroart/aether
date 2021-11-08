@@ -400,7 +400,22 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
-   public Object getValueOrDefault(String key) {
+    public String getInmemoryServer() {
+        return (String) getValueOrDefault(ConfigConstants.INMEMORYSERVER);
+    }
+
+    @JsonIgnore
+    public String getInmemoryHazelcast() {
+        return (String) getValueOrDefault(ConfigConstants.INMEMORYHAZELCAST);
+    }
+
+    @JsonIgnore
+    public String getInmemoryRedis() {
+        return (String) getValueOrDefault(ConfigConstants.INMEMORYREDIS);
+    }
+
+    @JsonIgnore
+    public Object getValueOrDefault(String key) {
         Object retVal = configValueMap.get(key);
         //System.out.println("r " + retVal + " " + deflt.get(key));
         return Optional.ofNullable(retVal).orElse(deflt.get(key));

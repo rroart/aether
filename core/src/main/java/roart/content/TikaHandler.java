@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 
 import roart.classification.ClassifyDao;
+import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileLocation;
@@ -261,7 +262,7 @@ public class TikaHandler {
                 elem.lang = lang;
                 //elem.content = content;
                 //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
-                Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
+                Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
                 InmemoryMessage message = inmemory.send(el.md5, content);
                 elem.message = message;
                 if (el.convertsw != null) {
@@ -344,7 +345,7 @@ public class TikaHandler {
 	return 4096;
 	}
 
-	private String getString(InputStream inputStream) {
+	public String getString(InputStream inputStream) {
 	try {
 	    if (inputStream == null) {
 		return "";

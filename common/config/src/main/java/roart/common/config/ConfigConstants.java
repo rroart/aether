@@ -100,6 +100,11 @@ public class ConfigConstants {
     public static final String SYNCHRONIZATIONDISTRIBUTEDPROCESS = "synchronization.distributedprocess[@enable]";
     public static final String CONFIG = "config";
 
+    public static final String INMEMORY = "inmemory";
+    public static final String INMEMORYSERVER = "inmemory.server";
+    public static final String INMEMORYHAZELCAST = "inmemory.hazelcast";
+    public static final String INMEMORYREDIS = "inmemory.redis";
+
     public static final int DEFAULT_CONFIG_FAILEDLIMIT = 0;
     public static final int DEFAULT_CONFIG_TIKATIMEOUT = 600;
     public static final int DEFAULT_CONFIG_OTHERTIMEOUT = 600;

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.XMLType;
+import roart.common.constants.Constants;
 
 public class ConfigConstantMaps {
     public static Map<String, Class> map = new HashMap();
@@ -104,7 +105,10 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, Boolean.class);
         map.put(ConfigConstants.CONFIG, String.class);
         map.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, String.class);
-    }
+        map.put(ConfigConstants.INMEMORYSERVER, String.class);
+        map.put(ConfigConstants.INMEMORYHAZELCAST, String.class);
+        map.put(ConfigConstants.INMEMORYREDIS, String.class);
+ }
 
     public static Map<String, Object> deflt = new HashMap();
     public static void makeDefaultMap() {
@@ -202,7 +206,10 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, Boolean.FALSE);
         deflt.put(ConfigConstants.CONFIG, "");
         deflt.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, "/tmp");
-    }
+        deflt.put(ConfigConstants.INMEMORYSERVER, Constants.HAZELCAST);
+        deflt.put(ConfigConstants.INMEMORYHAZELCAST, null);
+        deflt.put(ConfigConstants.INMEMORYREDIS, "localhost");
+}
 
     public static Map<String, String> text = new HashMap();
 
@@ -301,7 +308,10 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, "Distributed processing");
         text.put(ConfigConstants.CONFIG, "");
         text.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, "Lucene path");
-    }
+        text.put(ConfigConstants.INMEMORYSERVER, "In memory server");
+        text.put(ConfigConstants.INMEMORYHAZELCAST, "In memory Hazelcast connection");
+        text.put(ConfigConstants.INMEMORYREDIS, "In memory Redis connection");
+}
     public static Map<String, XMLType> mymap = new HashMap<>();
     public static void makeMap() {
         mymap.put(ConfigConstants.FS, new XMLType( String.class, null, "Filesystem"));
@@ -396,6 +406,9 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.CONFIG, new XMLType( String.class, "", ""));
         mymap.put(ConfigConstants.CONFIGFILE, new XMLType(null, null, null));
         mymap.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, new XMLType( String.class, "/tmp", "Lucene path"));
-    }
+        mymap.put(ConfigConstants.INMEMORYSERVER, new XMLType( String.class, Constants.HAZELCAST, "In memory server"));
+        mymap.put(ConfigConstants.INMEMORYHAZELCAST, new XMLType( String.class, null, "In memory Hazelcast connection"));
+        mymap.put(ConfigConstants.INMEMORYREDIS, new XMLType( String.class, "localhost", "In memory Redis connection"));
+}
 }
 
