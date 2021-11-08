@@ -45,7 +45,7 @@ public class SwiftIT {
            config.setAuthenticationMethod(AuthenticationMethod.BASIC);
            Account account = new AccountFactory(config).createAccount();
            conf.account = account;
-           swift = new Swift();
+           swift = new Swift(null, null);
            swift.conf = conf;
            //log.info("here");
        }

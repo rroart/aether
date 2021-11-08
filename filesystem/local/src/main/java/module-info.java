@@ -13,6 +13,8 @@ module local {
     requires common.filesystem;
     requires common.model;
     requires commons.io;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires filesystem;
     requires org.slf4j;
     requires spring.boot;
@@ -20,4 +22,5 @@ module local {
     requires spring.cloud.commons;
     requires spring.context;
     requires spring.web;
+    requires org.apache.commons.codec;
 }

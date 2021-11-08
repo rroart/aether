@@ -1,6 +1,8 @@
 package roart.filesystem.swift;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -20,10 +22,14 @@ import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.MyFile;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.filesystem.FileSystemOperations;
 
@@ -46,10 +52,11 @@ public class Swift extends FileSystemOperations {
 
     private Map<String, DirectoryOrObject> dooMap = new HashMap<>();
 
-    public Swift() {
-    }
+    //public Swift() {
+    //}
 
     public Swift(String nodename, NodeConfig nodeConf) {
+        super(nodename, nodeConf);
         try {
             conf = new SwiftConfig();
             String url = nodeConf.getSwiftUrl();
@@ -306,6 +313,24 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemConstructorResult destroy() {
         return null;
+    }
+
+    @Override
+    public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
+        byte[] bytes;
+        String md5;
+        try {
+            bytes  = getInputStreamInner(param.fo);
+            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
+            } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+        InmemoryMessage msg = inmemory.send(md5, new String(bytes));
+        FileSystemMessageResult result = new FileSystemMessageResult();
+        result.message = msg;
+        return result;
     }
 
 }

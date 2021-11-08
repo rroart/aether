@@ -19,6 +19,7 @@ import roart.common.filesystem.FileSystemConstructorParam;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
@@ -171,6 +172,15 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             throws Exception {
         FileSystemOperations operations = getOperations(param.nodename, param.conf);
         FileSystemFileObjectResult ret = operations.get(param);
+        return ret;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.READFILE,
+            method = RequestMethod.POST)
+    public FileSystemMessageResult processReadFile(@RequestBody FileSystemFileObjectParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.conf);
+        FileSystemMessageResult ret = operations.readFile(param);
         return ret;
     }
 

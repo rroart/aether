@@ -145,6 +145,16 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-factory</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-model</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.javaswift</groupId>
       <artifactId>joss</artifactId>
       <version>${joss.version}</version>
@@ -159,6 +169,11 @@
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-framework</artifactId>
       <version>${curator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.15</version>
     </dependency>
   </dependencies>
 </project>

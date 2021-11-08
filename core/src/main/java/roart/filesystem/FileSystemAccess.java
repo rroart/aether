@@ -16,7 +16,9 @@ import roart.common.filesystem.FileSystemConstructorParam;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.MyFile;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
@@ -149,5 +151,14 @@ public class FileSystemAccess {
             fn = fn.substring(5);
         }
         return fn;
+    }
+
+    public InmemoryMessage readFile(FileObject f) {
+        FileSystemFileObjectParam param = new FileSystemFileObjectParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        param.fo = f;
+        FileSystemMessageResult result = EurekaUtil.sendMe(FileSystemMessageResult.class, url, param, EurekaConstants.READFILE);
+        return result.message;
     }
 }

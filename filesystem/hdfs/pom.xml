@@ -145,6 +145,16 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-factory</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-model</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-hdfs</artifactId>
       <version>${hadoop.version}</version>
@@ -168,6 +178,11 @@
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper</artifactId>
       <version>${zookeeper.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.15</version>
     </dependency>
   </dependencies>
 </project>

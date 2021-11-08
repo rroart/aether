@@ -1,16 +1,26 @@
 package roart.filesystem;
 
+import roart.common.config.NodeConfig;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
+import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 
 public abstract class FileSystemOperations {
     
+    private String nodename;
+    protected NodeConfig nodeConf;
+
+    public FileSystemOperations(String nodename, NodeConfig nodeConf) {
+        this.nodename = nodename;
+        this.nodeConf = nodeConf;
+    }
+
     public abstract FileSystemConstructorResult destroy() throws Exception;
 	
     public abstract FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param);
@@ -31,4 +41,6 @@ public abstract class FileSystemOperations {
     
     public abstract FileSystemFileObjectResult get(FileSystemPathParam param);
 
+    public abstract FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception;
+    
 }

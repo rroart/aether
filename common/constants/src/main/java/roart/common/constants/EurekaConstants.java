@@ -77,6 +77,7 @@ public class EurekaConstants {
     public static final String GETWITHINPUTSTREAM = "getwithinputstream";
     public static final String GETPARENT = "getparent";
     public static final String GET = "get";
+    public static final String READFILE = "readfile";
 
     // database ops
     public static final String GETFILELOCATIONSBYMD5 = "getfilelocationsbymd5";

@@ -1,7 +1,7 @@
-package roart.common.convert;
+package roart.common.filesystem;
 
 import roart.common.inmemory.model.InmemoryMessage;
 
-public class ConvertResult {
+public class FileSystemMessageResult {
     public InmemoryMessage message;
 }

@@ -21,4 +21,5 @@ module filesystem {
     requires spring.context;
     requires spring.web;
     requires zookeeper;
+    //requires common.zookeeper;
 }
