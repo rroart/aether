@@ -20,7 +20,7 @@ public class TikaController extends ConvertAbstractController {
 
     @Override
     protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return null; //new Calibre(nodename, nodeConf);
+        return new Tika(nodename, nodeConf);
     }
 }
 

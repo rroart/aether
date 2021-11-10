@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SpringBootApplication
 @EnableDiscoveryClient
-public class PdftotxtController extends ConvertAbstractController {
+public class PdftotextController extends ConvertAbstractController {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(PdftotxtController.class, args);
+		SpringApplication.run(PdftotextController.class, args);
 	}
 
     @Override
     protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return null; //new Calibre(nodename, nodeConf);
+        return new Pdftotext(nodename, nodeConf);
     }
 }
 

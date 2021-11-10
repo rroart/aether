@@ -17,12 +17,15 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
 import roart.common.config.ConfigConstants;
+import roart.common.config.Converter;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.FileSystemConstants.FileSystemType;
 import roart.controller.SimpleController;
 import roart.common.util.JarThread;
+import roart.common.util.JsonUtil;
 import roart.common.util.XmlFs;
 
 public class MyXMLConfig {
@@ -56,6 +59,11 @@ public class MyXMLConfig {
     public void config() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         String version = "-0.10-SNAPSHOT.jar";
         Map<String, String> map = new HashMap<>();
+        map.put(EurekaConstants.CALIBRE, "aether-calibre" + version);
+        map.put(EurekaConstants.DJVUTXT, "aether-djvutxt" + version);
+        map.put(EurekaConstants.PDFTOTEXT, "aether-pdftotext" + version);
+        map.put(EurekaConstants.TIKA, "aether-tika" + version);
+        map.put(EurekaConstants.WVTEXT, "aether-wvtext" + version);
         map.put(ConfigConstants.DATABASEHBASE, "aether-hbase" + version);
         map.put(ConfigConstants.DATABASECASSANDRA, "aether-cassandra" + version);
         map.put(ConfigConstants.DATABASEDYNAMODB, "aether-dynamodb" + version);
@@ -111,6 +119,17 @@ public class MyXMLConfig {
                     Runnable def = new JarThread(jar, null);
                     new Thread(def).start();
                 }
+            }
+        }
+        String converterString = MyConfig.conf.getConverters();
+        Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
+        for (int i = 0; i < converters.length; i++) {
+            Converter converter = converters[i];
+            String name = converter.getName();
+            String jar = map.get(name);
+            if (jar != null) {
+                Runnable def = new JarThread(jar, null);
+                new Thread(def).start();                
             }
         }
 

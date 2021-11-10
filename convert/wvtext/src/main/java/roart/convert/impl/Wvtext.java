@@ -25,11 +25,11 @@ import roart.common.inmemory.model.InmemoryMessage;
 
 //import roart.queue.TikaQueueElement;
 
-public class Calibre extends ConvertAbstract {
+public class Wvtext extends ConvertAbstract {
 
-    private static Logger log = LoggerFactory.getLogger(Calibre.class);
+    private static Logger log = LoggerFactory.getLogger(Wvtext.class);
 
-    public Calibre(String nodename, NodeConfig nodeConf) {
+    public Wvtext(String nodename, NodeConfig nodeConf) {
         super(nodename, nodeConf);        
     }
 
@@ -52,7 +52,7 @@ public class Calibre extends ConvertAbstract {
 
             String[] arg = { in, out };
             String[] ret = new String[1];
-            output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret, converter.getTimeout());
+            output = ConvertUtil.executeTimeout("/usr/bin/wvText", arg, retlistid, ret, converter.getTimeout());
             Files.delete(inPath);
             Files.delete(outPath);
             result.error = ret[0];

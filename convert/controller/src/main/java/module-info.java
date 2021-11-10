@@ -10,6 +10,7 @@ module convert {
     requires common.config;
     requires common.constants;
     requires common.convert;
+    requires common.util;
     requires org.slf4j;
     requires spring.beans;
     requires spring.boot;

@@ -20,7 +20,7 @@ public class DjvutxtController extends ConvertAbstractController {
 
     @Override
     protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return null; //new Calibre(nodename, nodeConf);
+        return new Djvutxt(nodename, nodeConf);
     }
 }
 
