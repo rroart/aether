@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.MyFile;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.common.util.FsUtil;
 import roart.service.ControlService;
@@ -64,6 +65,10 @@ public class FileSystemDao {
 
     public static FileObject getParent(FileObject f) {
         return getFileSystemAccess(f).getParent(f);
+    }
+
+    public static InmemoryMessage readFile(FileObject f) {
+        return getFileSystemAccess(f).readFile(f);
     }
 
     // TODO make this OO

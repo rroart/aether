@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.config.TikaConfig;
@@ -206,6 +208,7 @@ public class TikaHandler {
                     Path path = new File(fn).toPath();
                     String mimetype = Files.probeContentType(path);
                     metadata.add(Constants.FILESCONTENTTYPE, mimetype);
+                    //metadata.
                     el.mimetype = mimetype;
                     if (tmpfn != null && tmpfn.contains("/tmp/")) {
                         File delFile = new File(tmpfn);
@@ -256,9 +259,16 @@ public class TikaHandler {
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
-                
+
                 //size = SearchLucene.indexme("all", md5, inputStream);
-                IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
+                Map<String, String> metadatamap = new HashMap<>();
+                String[] str = new String[metadata.names().length];
+                int i = 0;
+                for (String name : metadata.names()) {
+                    String value = metadata.get(name);
+                    metadatamap.put(name, value);
+                }                
+                IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadatamap);
                 elem.lang = lang;
                 //elem.content = content;
                 //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());

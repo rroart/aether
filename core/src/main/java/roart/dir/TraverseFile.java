@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
+import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
 import roart.queue.TikaQueueElement;
 import roart.queue.TraverseQueueElement;
@@ -396,8 +397,10 @@ public class TraverseFile {
         if (fsMap != null) {
             fsData = fsMap.get(filename);
         }
-        TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), fsData);
-        Queues.tikaQueue.add(e);
+        //TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), fsData);
+        //Queues.tikaQueue.add(e);
+        ConvertQueueElement e2 = new ConvertQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), fsData, null);
+        Queues.convertQueue.add(e2);
         //size = doTika(filename, filename, md5, index, retlist);
     }
 

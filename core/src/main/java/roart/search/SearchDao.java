@@ -16,7 +16,6 @@ import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
 
-import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,7 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
+    public static int indexme(String type, String md5, String dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index) {
 	return search.indexme(type, md5, dbfilename, metadata, lang, content, classification, index);
     }
 

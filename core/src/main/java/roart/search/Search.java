@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
-import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ public class Search {
     	//InputStream inputStream = el.inputStream;
     	IndexFiles dbindex = el.index;
     	String dbfilename = el.dbfilename;
-	Metadata metadata = el.metadata;
+	Map<String, String> metadata = el.metadata;
 	String lang = el.lang;
 	String content = getParam(el.message);
 	String classification = el.index.getClassification();

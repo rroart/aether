@@ -8,6 +8,7 @@ import roart.common.config.XMLType;
 import roart.common.constants.Constants;
 
 public class ConfigConstantMaps {
+    public static final String MYCONVERSION = "[{\"name\":\"tika\",\"timeout\":600,\"mimetypes\":[],\"suffixes\":[]}]";
     public static Map<String, Class> map = new HashMap();
 
     public static void makeTypeMap() {
@@ -192,7 +193,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.INDEXINDEXLIMIT, 0);
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, 600);
-        deflt.put(ConfigConstants.CONVERSION, "{\"tika\",600,[],[]}");
+        deflt.put(ConfigConstants.CONVERSION, MYCONVERSION);
         deflt.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "localhost:2181");
         deflt.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.TRUE);
@@ -390,7 +391,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.INDEXINDEXLIMIT, new XMLType( Integer.class, 0, "Index limit"));
         mymap.put(ConfigConstants.CONVERSIONTIKATIMEOUT, new XMLType( Integer.class, 600, "Tika timeout"));
         mymap.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, new XMLType( Integer.class, 600, "Other conversion timeout"));
-        mymap.put(ConfigConstants.CONVERSION, new XMLType( String.class, "{\"tika\",600,[],[]}", "Conversion"));
+        mymap.put(ConfigConstants.CONVERSION, new XMLType( String.class, MYCONVERSION, "Conversion"));
         mymap.put(ConfigConstants.DATABASEDATANUCLEUS, new XMLType( Boolean.class, Boolean.FALSE, "Use datanucleus"));
         mymap.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, new XMLType( String.class, null, "Use zookeeper"));
         mymap.put(ConfigConstants.GUIHIGHLIGHTMLT, new XMLType( Boolean.class, Boolean.TRUE, "Highlight MLT"));

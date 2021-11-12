@@ -1,6 +1,7 @@
 package roart.queue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tika.metadata.Metadata;
 
@@ -22,11 +23,11 @@ public class IndexQueueElement {
     public String retlistnotid;
 	public int size;
 	public String dbfilename;
-    public Metadata metadata;
+    public Map<String, String> metadata;
     public String convertsw;
     public InmemoryMessage message;
 	
-    public IndexQueueElement(String type, String md5, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Metadata metadata) {
+    public IndexQueueElement(String type, String md5, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Map<String, String> metadata) {
 	this.type = type;
 	this.md5 = md5;
 	this.index = index;

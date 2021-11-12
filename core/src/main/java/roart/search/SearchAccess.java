@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,11 +63,11 @@ public abstract class SearchAccess {
         return result.error;
     }
     
-    public int indexme(String type, String md5, String dbfilename, Metadata metadata, String lang, String content, String classification, IndexFiles index) {
-        Metadata md = metadata;
-        String[] str = new String[md.names().length];
+    public int indexme(String type, String md5, String dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index) {
+        Map<String, String> md = metadata;
+        String[] str = new String[md.keySet().size()];
         int i = 0;
-        for (String name : md.names()) {
+        for (String name : md.keySet()) {
             String value = md.get(name);
             str[i++] = value;
         }

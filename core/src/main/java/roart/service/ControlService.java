@@ -33,6 +33,7 @@ import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.thread.CamelRunner;
 import roart.thread.ControlRunner;
+import roart.thread.ConvertRunner;
 import roart.thread.DbRunner;
 import roart.thread.IndexRunner;
 import roart.thread.OtherRunner;
@@ -683,6 +684,8 @@ import roart.util.MySets;
     
         private static TikaRunner tikaRunnable = null;
         public static Thread tikaWorker = null;
+        private static ConvertRunner convertRunnable = null;
+        public static Thread convertWorker = null;
         private static IndexRunner indexRunnable = null;
         public static Thread indexWorker = null;
         private static OtherRunner otherRunnable = null;
@@ -703,7 +706,10 @@ import roart.util.MySets;
         	if (tikaRunnable == null) {
     	    startTikaWorker();
         	}
-        	if (indexRunnable == null) {
+                if (convertRunnable == null) {
+                    startConvertWorker();
+                        }
+                	if (indexRunnable == null) {
         	startIndexWorker();
         	}
         	if (otherRunnable == null) {
@@ -766,6 +772,17 @@ import roart.util.MySets;
         	tikaWorker.start();
         	log.info("starting tika worker");
     	}
+    
+        public void startConvertWorker() {
+            int timeout = MyConfig.conf.getTikaTimeout();
+            ConvertRunner.timeout = timeout;
+    
+                convertRunnable = new ConvertRunner();
+                convertWorker = new Thread(convertRunnable);
+                convertWorker.setName("TikaWorker");
+                convertWorker.start();
+                log.info("starting convert worker");
+        }
     
     	public void startIndexWorker() {
     		indexRunnable = new IndexRunner();
