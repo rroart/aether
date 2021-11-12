@@ -23,7 +23,7 @@ public class EurekaConstants {
     public static final String HDFS = "HDFS";
     public static final String TIKA = "TIKA";
     public static final String CALIBRE = "CALIBRE";
-    public static final String PDFTOTEXT = "PDTTOTEXT";
+    public static final String PDFTOTEXT = "PDFTOTEXT";
     public static final String WVTEXT = "WVTEXT";
     public static final String DJVUTXT = "DJVUTXT";
     

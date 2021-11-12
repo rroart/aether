@@ -88,7 +88,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 
 	//public static int indexme(String type, String md5, InputStream inputStream) {
 	//public static void indexme() {
-	public SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
+	public synchronized SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
 		NodeConfig conf = index.conf;
 		String type = index.type; 
 		String md5 = index.md5; 
@@ -136,7 +136,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 				doc.add(new TextField(Constants.CONTENT, content, Field.Store.NO));
 			}
 			if (metadata != null) {
-				log.info("with md " + metadata.toString());
+				log.info("with md {}", Arrays.asList(metadata));
 				//doc.add(new TextField(Constants.METADATA, metadata.toString(), Field.Store.NO));
 				String[] md = metadata;
 				for (String name : md) {

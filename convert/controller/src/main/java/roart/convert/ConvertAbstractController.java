@@ -39,11 +39,11 @@ public abstract class ConvertAbstractController {
 		return convert;
 	}
 
-	@RequestMapping(value = "/" + EurekaConstants.SEARCH,
+	@RequestMapping(value = "/" + EurekaConstants.CONVERT,
 			method = RequestMethod.POST)
 	public ConvertResult processSearch(@RequestBody ConvertParam param)
 			throws Exception {
-		ConvertAbstract convert = getConvert("", null);
+		ConvertAbstract convert = getConvert(param.nodename, param.conf);
 		ConvertResult ret = convert.convert(param);
 		return ret;
 	}

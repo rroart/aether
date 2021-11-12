@@ -10,4 +10,5 @@ public class ConvertParam {
     public InmemoryMessage message;
     public NodeConfig conf;
     public Converter converter;
+    public String filename;
 }

@@ -59,6 +59,46 @@ public class Tika extends ConvertAbstract {
 
     @Override
     public ConvertResult convert(ConvertParam param) {
+        Object[] param2 = new Object[2];
+        param2[0] = param;
+        class OtherTimeout implements Runnable {
+            public void run() {
+                try {
+                    convert2(param2);
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
+        }
+        OtherTimeout otherRunnable = new OtherTimeout();
+        Thread otherWorker = new Thread(otherRunnable);
+        otherWorker.setName("OtherTimeout");
+        otherWorker.start();
+        int timeout = param.converter.getTimeout();
+        long start = System.currentTimeMillis();
+        boolean b = true;
+        while (b) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.error(Constants.EXCEPTION, e);
+                // TODO Auto-generated catch block
+            }
+            long now = System.currentTimeMillis();
+            if ((now - start) > 1000 * timeout) {
+                b = false;
+            }
+            if (!otherWorker.isAlive()) {
+                log.info("Otherworker finished " + " " + otherWorker + " " + otherRunnable);
+                return (ConvertResult) param2[1]; // "end"
+            }
+        }
+        otherWorker.stop(); // .interrupt();
+        return null;
+    }
+    
+    public ConvertResult convert2(Object[] param2) {
+        ConvertParam param = (ConvertParam) param2[0];
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         String content = inmemory.read(param.message);
         Converter converter = param.converter;
@@ -70,28 +110,34 @@ public class Tika extends ConvertAbstract {
             //output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret);
             Map<String, String> metadata = new HashMap<>();
             result.metadata = metadata;
-            md5 = DigestUtils.md5Hex(output );
+            String inmd5 = param.message.getId();
             InputStream is = IOUtils.toInputStream(content);
-            ByteArrayOutputStream outputStream = process(is, ret, metadata, md5);
+            ByteArrayOutputStream outputStream = process(is, ret, metadata, inmd5);
             InputStream inputStream = null;
             if (outputStream != null) {
                 inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
                 //size = ((ByteArrayOutputStream)outputStream).size();
-                log.info("size1 " + md5);
+                log.info("size1 " + inmd5);
             } else {
                 //size = -1;
-                log.info("size1 " + md5 + " crash "); 
+                log.info("size1 " + inmd5 + " crash "); 
             }
-            output = getString(inputStream);
+            if (inputStream != null) {
+                output = getString(inputStream);
+                md5 = DigestUtils.md5Hex(output );
+            }
             result.error = ret[0];
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
         if (output == null) {
-            log.info("ebook-convert no output");
+            log.info("tika no output");
         }
-        InmemoryMessage msg = inmemory.send(md5, output);
-        result.message = msg;
+        if (output != null) {
+            InmemoryMessage msg = inmemory.send(md5, output);
+            result.message = msg;
+        }
+        param2[1] = result;
         return result;
     }
 
@@ -142,6 +188,7 @@ public class Tika extends ConvertAbstract {
             String value = metadata.get(name);
             map.put(name, value);
         }
+        log.info("Metadata {}", "" + map);
         return output;
     }
 

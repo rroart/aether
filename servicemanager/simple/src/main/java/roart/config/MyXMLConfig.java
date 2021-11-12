@@ -58,12 +58,13 @@ public class MyXMLConfig {
 
     public void config() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         String version = "-0.10-SNAPSHOT.jar";
+        Map<String, String> map2 = new HashMap<>();
+        map2.put(EurekaConstants.CALIBRE, "aether-calibre" + version);
+        map2.put(EurekaConstants.DJVUTXT, "aether-djvutxt" + version);
+        map2.put(EurekaConstants.PDFTOTEXT, "aether-pdftotext" + version);
+        map2.put(EurekaConstants.TIKA, "aether-tika" + version);
+        map2.put(EurekaConstants.WVTEXT, "aether-wvtext" + version);
         Map<String, String> map = new HashMap<>();
-        map.put(EurekaConstants.CALIBRE, "aether-calibre" + version);
-        map.put(EurekaConstants.DJVUTXT, "aether-djvutxt" + version);
-        map.put(EurekaConstants.PDFTOTEXT, "aether-pdftotext" + version);
-        map.put(EurekaConstants.TIKA, "aether-tika" + version);
-        map.put(EurekaConstants.WVTEXT, "aether-wvtext" + version);
         map.put(ConfigConstants.DATABASEHBASE, "aether-hbase" + version);
         map.put(ConfigConstants.DATABASECASSANDRA, "aether-cassandra" + version);
         map.put(ConfigConstants.DATABASEDYNAMODB, "aether-dynamodb" + version);
@@ -87,6 +88,9 @@ public class MyXMLConfig {
         for (Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey();
             Boolean bool = (Boolean) configInstance.getValueOrDefault(key);
+            if (bool == null) {
+                continue;
+            }
             if (bool) {
                 String jar = entry.getValue();
                 log.info("Starting {}", jar);
@@ -121,13 +125,16 @@ public class MyXMLConfig {
                 }
             }
         }
-        String converterString = MyConfig.conf.getConverters();
+        String converterString = configInstance.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
+        log.info("convs"+converters.length);
         for (int i = 0; i < converters.length; i++) {
             Converter converter = converters[i];
             String name = converter.getName();
-            String jar = map.get(name);
+            String jar = map2.get(name.toUpperCase());
+            log.info("convs"+name);
             if (jar != null) {
+                log.info("convs"+name);
                 Runnable def = new JarThread(jar, null);
                 new Thread(def).start();                
             }
