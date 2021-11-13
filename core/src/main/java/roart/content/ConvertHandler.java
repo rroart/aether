@@ -57,12 +57,14 @@ public class ConvertHandler {
         InmemoryMessage message = FileSystemDao.readFile(el.fsData.fileObject[0]);
         el.message = message;
 
-        long now = System.currentTimeMillis();
+	log.info("file " + el.fsData.fileObject[0].object);
+	log.info("file " + el.fsData.absolutePath);
         String converterString = MyConfig.conf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
         String origcontent = inmemory.read(message);
-        String mimetype = getMimetype(origcontent);
+        String mimetype = getMimetype(origcontent, Paths.get(filename).getFileName().toString());
+        // null mime isbn
         InmemoryMessage str = null;
         for (int i = 0; i < converters.length; i++) {
             Converter converter = converters[i];
@@ -78,15 +80,16 @@ public class ConvertHandler {
                 }
             }
             // TODO error
+	    long now = System.currentTimeMillis();
             str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename).getFileName().toString());
+	    long time = System.currentTimeMillis() - now;
             if (str != null) {
                 el.convertsw = converter.getName();
+		el.index.setConverttime("" + time);
                 break;
             }
         }
         el.mimetype = mimetype;
-        long time = System.currentTimeMillis() - now;
-        el.index.setConverttime("" + time);
         log.info("Mimetype {}", mimetype);
         if (mimetype != null) {
             metadata.put(Constants.FILESCONTENTTYPE, mimetype);
@@ -98,10 +101,10 @@ public class ConvertHandler {
                 LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
                 lang = languageDetect.detect(content);
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
-                    long now2 = System.currentTimeMillis();
+                    long now = System.currentTimeMillis();
                     String classification = ClassifyDao.classify(content, lang);
-                    long time2 = System.currentTimeMillis() - now2;
-                    log.info("classtime " + dbfilename + " " + time2);
+                    long time = System.currentTimeMillis() - now;
+                    log.info("classtime " + dbfilename + " " + time);
                     //System.out.println("classtime " + time);
                     el.index.setTimeclass("" + time);
                     el.index.setClassification(classification);
@@ -158,10 +161,13 @@ public class ConvertHandler {
         log.info("ending " + el.md5 + " " + el.dbfilename);
     }
 
-    private String getMimetype(String content) {
+    private String getMimetype(String content, String filename) {
         try {
-            Path tempFile = Files.createTempFile(null, null);
-            Files.write(tempFile, content.getBytes(StandardCharsets.UTF_8));
+	    Path tempPath = Paths.get("/tmp", filename);
+	    Files.deleteIfExists(tempPath);
+            Path tempFile = Files.createFile(Paths.get("/tmp", filename));
+	    log.info("File " + filename + " " + tempFile.toString());
+            Files.write(tempFile, content.getBytes());
             String mimetype = Files.probeContentType(tempFile);
             Files.delete(tempFile);
             return mimetype;

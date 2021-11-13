@@ -42,7 +42,9 @@ public class Wvtext extends ConvertAbstract {
         String output = null;
         ConvertResult result = new ConvertResult();
         try {
-            Path inPath = Files.createFile(Paths.get("/tmp", param.filename));
+            Path myPath = Paths.get("/tmp", param.filename);
+            Files.deleteIfExists(myPath);
+            Path inPath = Files.createFile(myPath);
             Files.write(inPath, content.getBytes());
             String in = inPath.toString();
             Path outPath = null;
@@ -67,6 +69,7 @@ public class Wvtext extends ConvertAbstract {
         }
         if (output == null) {
             log.info("Wvtext with no output");
+            return result;
         }
         String md5 = DigestUtils.md5Hex(output );
         InmemoryMessage msg = inmemory.send(md5, output);

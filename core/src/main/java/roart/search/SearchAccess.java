@@ -69,7 +69,7 @@ public abstract class SearchAccess {
         int i = 0;
         for (String name : md.keySet()) {
             String value = md.get(name);
-            str[i++] = value;
+            str[i++] = name + "=" + value;
         }
         SearchEngineIndexParam param = new SearchEngineIndexParam();
         param.nodename = ControlService.nodename;

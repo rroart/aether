@@ -25,11 +25,15 @@ public class ConvertDAO {
         param.filename = filename;
         ConvertResult result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT);
 
-        if (result == null || result.message == null) {
+        if (result == null) {
             return null;
         }
+        // get md from Tika and use it, even if Tika fails
         if (result.metadata != null) {
             metadata.putAll(result.metadata);
+        }
+        if (result.message == null) {
+            return null;
         }
         return result.message;
         //Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);

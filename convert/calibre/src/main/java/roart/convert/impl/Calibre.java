@@ -42,7 +42,9 @@ public class Calibre extends ConvertAbstract {
         String output = null;
         ConvertResult result = new ConvertResult();
         try {
-            Path inPath = Files.createFile(Paths.get("/tmp", param.filename));
+            Path myPath = Paths.get("/tmp", param.filename);
+            Files.deleteIfExists(myPath);
+            Path inPath = Files.createFile(myPath);
             Files.write(inPath, content.getBytes());
             String in = inPath.toString();
             Path outPath = null;
@@ -54,6 +56,7 @@ public class Calibre extends ConvertAbstract {
             String[] arg = { in, out };
             String[] ret = new String[1];
             output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret, converter.getTimeout());
+    
             if ("end".equals(output)) {
                 output = new String(Files.readAllBytes(outPath));
             } else {
@@ -67,6 +70,7 @@ public class Calibre extends ConvertAbstract {
         }
         if (output == null) {
             log.info("Calibre with no output");
+            return result;
         }
         String md5 = DigestUtils.md5Hex(output );
         InmemoryMessage msg = inmemory.send(md5, output);

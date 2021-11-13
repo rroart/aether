@@ -131,7 +131,7 @@ public class Tika extends ConvertAbstract {
             log.error(Constants.EXCEPTION, e);
         }
         if (output == null) {
-            log.info("tika no output");
+            log.info("Tika with no output");
         }
         if (output != null) {
             InmemoryMessage msg = inmemory.send(md5, output);
