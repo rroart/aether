@@ -85,6 +85,13 @@ public class IndexFiles {
 	    return ((FileLocation) (getFilelocations()).iterator().next()).toString();
 	}
 
+        public FileLocation getaFilelocation() {
+            if (filelocations.size() == 0) {
+                return null;
+            }
+            return ((FileLocation) (getFilelocations()).iterator().next());
+        }
+
         public Boolean getIndexed() {
 	    return indexed;
 	}

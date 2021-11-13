@@ -122,14 +122,18 @@ public abstract class SearchAccess {
     			IndexFiles indexmd5 = indexmd5s.get(md5);
 
     			String filename = indexmd5.getFilelocation();
+    			FileLocation aFl = indexmd5.getaFilelocation();
     			log.info("Hit {}.{} : {} {}",i ,md5, filename, res.score);
     			FileLocation maybeFl = null;
+    			/*
     			try {
+    			    // slow
     			    maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
     			} catch (Exception e) {
     			    log.error(Constants.EXCEPTION, e);
     			}
-                        strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, maybeFl);
+    			*/
+                        strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, aFl);
                         i++;
     		}
     	} catch (Exception e) {
