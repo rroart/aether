@@ -22,7 +22,12 @@ public abstract class Inmemory {
     public InmemoryMessage send(String id, Object data) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        String string = JsonUtil.convert(data, mapper);
+        String string;
+        if (data instanceof String) {
+            string = (String) data;
+        } else {
+            string = JsonUtil.convert(data, mapper);
+        }
         if (string == null) {
             string = "";
         }
