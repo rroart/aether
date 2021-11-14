@@ -14,11 +14,11 @@ public class ConvertUtil {
 
     private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
 
-    private static String execute(String filename, String[] arg) {
+    private static String execute(String filename, String[] arg, long[] pid) {
         String res = null;
 
         ExecCommand ec = new ExecCommand();
-        ec.execute(filename, arg);
+        ec.execute(filename, arg, pid);
 
         res = ec.getOutput() + ec.getError();
         log.info("output " + res);
@@ -29,7 +29,8 @@ public class ConvertUtil {
         Object [] objs = execQueue.poll();
         String filename = (String) objs[0];
         String [] arg = (String []) objs[1];
-        return execute(filename, arg);
+        long[] pid = (long[]) objs[2];
+        return execute(filename, arg, pid);
     }
 
     public static String executeTimeout(String filename, String [] arg, String retlistid, String[] el, int timeout) {
@@ -43,9 +44,12 @@ public class ConvertUtil {
             }
         }
 
+        long[] pid = new long[1];
+        
         Object [] objs = new Object[2];
         objs[0] = filename;
         objs[1] = arg;
+        objs[2] = pid;
         execQueue.add(objs);
 
         OtherTimeout otherRunnable = new OtherTimeout();
@@ -70,7 +74,8 @@ public class ConvertUtil {
                 return "end";
             }
         }
-        otherWorker.stop(); // .interrupt();
+        new ExecCommand().execute("/bin/kill", new String[] { "-9", "" + pid[0] }, null);
+        //otherWorker.stop(); // .interrupt();
         el[0]= "othertimeout" + filename + " " + timeout + " ";
         log.info("Otherworker timeout " + otherWorker + " " + otherRunnable);
         try {

@@ -119,7 +119,7 @@ public class ExecCommand {
         return value;
     }
 
-    public String execute(String filename, String[] arg) {
+    public String execute(String filename, String[] arg, long[] pid) {
         String res = null;
         Process proc = null;
         try {
@@ -133,6 +133,9 @@ public class ExecCommand {
             envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
             proc = Runtime.getRuntime().exec(cmdarray, envarray);
             p = proc;
+            if (pid != null) {
+                pid[0] = p.pid();
+            }
             log.info("proc {} {} {}", filename, arg[0], proc);
             OutputReader or = null;
             ErrorReader er = null;
