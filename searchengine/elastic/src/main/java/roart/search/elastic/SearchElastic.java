@@ -29,6 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.searchengine.Constants;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -91,8 +94,15 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		String dbfilename = index.dbfilename;
 		String metadata[] = index.metadata;
 		String lang = index.lang;
-		String content = index.content;
 		String classification = index.classification;
+                Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                String content = inmemory.read(index.message);
+                if (!InmemoryUtil.validate(index.message.getId(), content)) {
+                    SearchEngineIndexResult result = new SearchEngineIndexResult();
+                    result.noindexreason = "invalid";
+                    result.size = -1;
+                    return result;
+                }
 		//, IndexFiles index) {
 		int retsize = content.length();
 		// this to a method

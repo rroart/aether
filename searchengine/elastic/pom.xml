@@ -146,8 +146,23 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-factory</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-model</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
       <artifactId>aether.shadow.elastic</artifactId>
       <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast</artifactId>
+      <version>${hazelcast.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

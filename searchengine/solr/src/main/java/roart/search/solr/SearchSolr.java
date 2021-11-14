@@ -26,6 +26,9 @@ import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import roart.common.config.NodeConfig;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.searchengine.Constants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
@@ -75,14 +78,22 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 	}
 
 	public SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
+	        NodeConfig nodeConf = index.conf;
 		String type = index.type;
 		String md5 = index.md5; 
 		//InputStream inputStream,
 		String dbfilename = index.dbfilename;
 		String[] metadata = index.metadata;
 		String lang = index.lang;
-		String content = index.content;
 		String classification = index.classification;
+                Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                String content = inmemory.read(index.message);
+                if (!InmemoryUtil.validate(index.message.getId(), content)) {
+                    SearchEngineIndexResult result = new SearchEngineIndexResult();
+                    result.noindexreason = "invalid";
+                    result.size = -1;
+                    return result;
+                }
 		int retsize = content.length();
 		// this to a method
 		log.info("indexing " + md5);

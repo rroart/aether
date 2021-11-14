@@ -56,6 +56,7 @@ public class Search {
 	Map<String, String> metadata = el.metadata;
 	String lang = el.lang;
 	String content = getParam(el.message);
+	InmemoryMessage message = el.message;
 	String classification = el.index.getClassification();
     	MyList<ResultItem> retlist = MyLists.get(el.retlistid);
     	MyList<ResultItem> retlistnot = MyLists.get(el.retlistnotid);
@@ -63,7 +64,7 @@ public class Search {
     	int retsize = 0;
 
     try {
-    retsize = SearchDao.indexme(type, md5, dbfilename, metadata, lang, content, classification, dbindex);
+    retsize = SearchDao.indexme(type, md5, dbfilename, metadata, lang, content, classification, dbindex, message);
     } catch (Exception e) {
 	    log.error(roart.common.constants.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");

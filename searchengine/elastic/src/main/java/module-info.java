@@ -11,6 +11,8 @@ module elastic {
     requires common.config;
     requires common.constants;
     requires common.searchengine;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires searchengine;
     requires org.slf4j;
     requires spring.boot.autoconfigure;

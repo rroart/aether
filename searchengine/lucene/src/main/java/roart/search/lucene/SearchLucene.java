@@ -1,6 +1,9 @@
 package roart.search.lucene;
 
 import roart.common.config.NodeConfig;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.searchengine.Constants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
@@ -90,14 +93,22 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	//public static void indexme() {
 	public synchronized SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
 		NodeConfig conf = index.conf;
+                NodeConfig nodeConf = conf;
 		String type = index.type; 
 		String md5 = index.md5; 
 		//InputStream inputStream, 
 		String dbfilename = index.dbfilename;
 		String[] metadata = index.metadata;
 		String lang = index.lang;
-		String content = index.content;
 		String classification = index.classification;
+		Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+		String content = inmemory.read(index.message);
+		if (!InmemoryUtil.validate(index.message.getId(), content)) {
+                    SearchEngineIndexResult result = new SearchEngineIndexResult();
+                    result.noindexreason = "invalid";
+                    result.size = -1;
+                    return result;
+	        }
 
 		int retsize = 0;
 		// create some index

@@ -145,6 +145,16 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-factory</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-inmemory-model</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
       <version>${solr.version}</version>
@@ -153,6 +163,11 @@
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-core</artifactId>
       <version>${solr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast</artifactId>
+      <version>${hazelcast.version}</version>
     </dependency>
     <!--dependency>
       <groupId>org.eclipse.jetty</groupId>

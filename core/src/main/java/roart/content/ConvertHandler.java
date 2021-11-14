@@ -18,6 +18,7 @@ import roart.common.constants.Constants;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
@@ -122,18 +123,13 @@ public class ConvertHandler {
                 log.error(Constants.EXCEPTION, e);
             }
             //size = SearchLucene.indexme("all", md5, inputStream);
-            IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata);
+            IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata, str);
             elem.lang = lang;
             //elem.content = content;
             //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
             //Inmemory inmemory2 = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
             //InmemoryMessage message = inmemory2.send(el.md5, content);
             elem.message = str;
-            if (el.convertsw != null) {
-                elem.convertsw = el.convertsw;
-            } else {
-                elem.convertsw = "tika";
-            }
             Queues.indexQueue.add(elem);
 
         } else {

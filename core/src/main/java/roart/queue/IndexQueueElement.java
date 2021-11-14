@@ -27,7 +27,7 @@ public class IndexQueueElement {
     public String convertsw;
     public InmemoryMessage message;
 	
-    public IndexQueueElement(String type, String md5, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Map<String, String> metadata) {
+    public IndexQueueElement(String type, String md5, IndexFiles index, String retlistid, String retlistnotid, String dbfilename, Map<String, String> metadata, InmemoryMessage message) {
 	this.type = type;
 	this.md5 = md5;
 	this.index = index;
@@ -35,6 +35,7 @@ public class IndexQueueElement {
 	this.retlistnotid = retlistnotid;
 	this.dbfilename = dbfilename;
 	this.metadata = metadata;
+	this.message = message;
     }
 
 }

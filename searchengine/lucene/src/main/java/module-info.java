@@ -12,6 +12,8 @@ module lucene {
     requires common.config;
     requires common.constants;
     requires common.searchengine;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires lucene.core;
     requires lucene.highlighter;
     requires lucene.queries;

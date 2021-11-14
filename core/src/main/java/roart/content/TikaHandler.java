@@ -268,7 +268,7 @@ public class TikaHandler {
                     String value = metadata.get(name);
                     metadatamap.put(name, value);
                 }                
-                IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadatamap);
+                IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadatamap, null);
                 elem.lang = lang;
                 //elem.content = content;
                 //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
