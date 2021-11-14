@@ -45,6 +45,8 @@ import roart.common.convert.ConvertResult;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.InmemoryUtil;
+
 import org.xml.sax.ContentHandler;
 
 //import roart.queue.TikaQueueElement;
@@ -98,20 +100,23 @@ public class Tika extends ConvertAbstract {
     }
     
     public ConvertResult convert2(Object[] param2) {
+        ConvertResult result = new ConvertResult();
         ConvertParam param = (ConvertParam) param2[0];
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         String content = inmemory.read(param.message);
+        if (!InmemoryUtil.validate(param.message.getId(), content)) {
+            return result;
+        }
         Converter converter = param.converter;
         String output = null;
         String md5 = null;
-        ConvertResult result = new ConvertResult();
         try {
             String[] ret = new String[1];
             //output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret);
             Map<String, String> metadata = new HashMap<>();
             result.metadata = metadata;
             String inmd5 = param.message.getId();
-            InputStream is = IOUtils.toInputStream(content);
+            InputStream is = new ByteArrayInputStream(InmemoryUtil.convertWithCharset(content));
             ByteArrayOutputStream outputStream = process(is, ret, metadata, inmd5);
             InputStream inputStream = null;
             if (outputStream != null) {

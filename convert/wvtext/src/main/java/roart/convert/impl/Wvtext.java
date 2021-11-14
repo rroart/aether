@@ -23,6 +23,7 @@ import roart.common.convert.ConvertResult;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.InmemoryUtil;
 
 //import roart.queue.TikaQueueElement;
 
@@ -36,16 +37,19 @@ public class Wvtext extends ConvertAbstract {
 
     @Override
     public ConvertResult convert(ConvertParam param) {
+        ConvertResult result = new ConvertResult();
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         String content = inmemory.read(param.message);
+        if (!InmemoryUtil.validate(param.message.getId(), content)) {
+            return result;
+        }
         Converter converter = param.converter;
         String output = null;
-        ConvertResult result = new ConvertResult();
         try {
             Path myPath = Paths.get("/tmp", param.filename);
             Files.deleteIfExists(myPath);
             Path inPath = Files.createFile(myPath);
-            Files.write(inPath, content.getBytes());
+            Files.write(inPath, InmemoryUtil.convertWithCharset(content));
             String in = inPath.toString();
             Path outPath = null;
             String out = null;
@@ -57,7 +61,7 @@ public class Wvtext extends ConvertAbstract {
             String[] ret = new String[1];
             output = ConvertUtil.executeTimeout("/usr/bin/wvText", arg, retlistid, ret, converter.getTimeout());
             if ("end".equals(output)) {
-                output = new String(Files.readAllBytes(outPath));
+                output = InmemoryUtil.convertWithCharset(outPath);
             } else {
                 output = null;
             }

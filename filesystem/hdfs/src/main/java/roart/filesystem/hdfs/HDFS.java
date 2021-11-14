@@ -33,6 +33,7 @@ import roart.common.filesystem.MyFile;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.model.FileObject;
@@ -290,7 +291,7 @@ public class HDFS extends FileSystemOperations {
             return null;
         }
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InmemoryMessage msg = inmemory.send(md5, new String(bytes));
+        InmemoryMessage msg = inmemory.send(md5, InmemoryUtil.convertWithCharset(bytes));
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = msg;
         return result;
