@@ -2,6 +2,7 @@
 import React, { PureComponent } from 'react';
 import ReactTable from "react-table";
 import 'react-table/react-table.css';
+import ReactTooltip from "react-tooltip";
 
 function handleButtonClick(props, e, value) {
     console.log("hhaha");
@@ -29,9 +30,11 @@ function convert(resultitemtable, date, props) {
     console.log(head.items);
     console.log(head.items.length);
     for(var i = 0; i < head.items.length; i++) {
-	if (head.items[i] == "Img") {
+	if (head.items[i] != "Score") {
 	    //columns.push({ accessor: head[i], Header: head[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={console.log('clicked value', value)}>Button</a>) });
-	    columns.push({ accessor: head[i], Header: head[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
+	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'button'+i, Cell: (row) => (<div><span title={row.value}>{row.value}</span></div>) });
+	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row) => (<span data-tip = {row.value}>{row.value}</span>) });
+	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'button'+i, Cell: (row) => (<span id={head.items[i]} data-tip = {row.value} dangerouslySetInnerHTML={{__html: row.value }}/>) });
 	} else {
 	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true });
 	}
@@ -61,7 +64,10 @@ function convert(resultitemtable, date, props) {
     console.log(result);
     console.log(columns);
     return (
-    <ReactTable key={date} data={ result } columns={ columns } />
+	<div>
+	    <ReactTooltip effect="solid" html="true"/>
+		<ReactTable key={date} data={ result } columns={ columns } onPageSizeChange={() => { ReactTooltip.rebuild();}}/>
+		</div>
   );
 }
 
