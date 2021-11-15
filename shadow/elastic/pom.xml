@@ -36,6 +36,8 @@
 		  <include>org.elasticsearch.client:x-pack-transport</include>
 		  <include>org.elasticsearch.plugin:transport-netty4-client</include>
 		  <include>org.elasticsearch.plugin:reindex-client</include>
+		  <include>org.elasticsearch.client:elasticsearch-rest-high-level-client</include>
+		  <include>org.elasticsearch.client:elasticsearch-rest-client</include>
 		  <include>org.apache.lucene:lucene-core</include>
 		  <include>org.apache.lucene:lucene-suggest</include>
 		</includes>
@@ -85,6 +87,16 @@
     <dependency>
       <groupId>org.elasticsearch.plugin</groupId>
       <artifactId>reindex-client</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch.client</groupId>
+      <artifactId>elasticsearch-rest-high-level-client</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch.client</groupId>
+      <artifactId>elasticsearch-rest-client</artifactId>
       <version>${elasticsearch.version}</version>
     </dependency>
     <dependency>

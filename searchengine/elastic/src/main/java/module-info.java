@@ -20,4 +20,5 @@ module elastic {
     requires spring.web;
     requires spring.boot;
     requires aether.shadow.elastic;
+    requires org.apache.httpcomponents.httpcore;
 }

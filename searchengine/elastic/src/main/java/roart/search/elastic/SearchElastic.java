@@ -1,5 +1,6 @@
 package roart.search.elastic;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +8,10 @@ import java.util.Map;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
@@ -21,10 +24,9 @@ import org.elasticsearch.index.query.MoreLikeThisQueryBuilder.Item;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,12 @@ import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 import roart.search.SearchEngineAbstractSearcher;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.PutMappingRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.apache.http.HttpHost;
 
 public class SearchElastic extends SearchEngineAbstractSearcher {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -57,15 +65,18 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		String port = nodeConf.getElasticPort(); 
 
 		try {
-			conf.client = 
+			conf.client = new RestHighLevelClient(
+			        RestClient.builder(
+			                new HttpHost(host, Integer.valueOf(port), "http")));
+			        /*
 			new PreBuiltXPackTransportClient(Settings.builder()
 			        //.put("cluster.name", "myClusterName")
 			        //.put("xpack.security.user", "transport_client_user:x-pack-test-password")
 			        .build())
 			    .addTransportAddress(new TransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
-	                    conf.client.admin().indices().prepareCreate(myindex).execute().actionGet();
-	                    conf.client.admin().indices().preparePutMapping(myindex).setType(mytype)
-	                    .setSource(XContentFactory.jsonBuilder().prettyPrint()
+			    */
+	                    conf.client.indices().create(new CreateIndexRequest(myindex), RequestOptions.DEFAULT);
+	                    XContentBuilder mappingBuilder = XContentFactory.jsonBuilder().prettyPrint()
 	                            .startObject()
 	                            .startObject("properties")
 	                                .startObject(Constants.CONTENT)
@@ -74,15 +85,19 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 	                                .field("term_vector", "with_positions_offsets")
 	                                .endObject()
 	                            .endObject()
-	                        .endObject())
-	                    .execute().actionGet();
+	                        .endObject();
+                            conf.client.indices().putMapping(new PutMappingRequest(myindex).source(mappingBuilder), RequestOptions.DEFAULT);
 			} catch (Exception e) {
 			log.error(roart.common.constants.Constants.EXCEPTION, e);
 		}
 	}
 
 	public  SearchEngineConstructorResult destroy() {
-		conf.client.close();
+		try {
+            conf.client.close();
+        } catch (IOException e) {
+            log.error(roart.common.constants.Constants.EXCEPTION, e);
+        }
 		return null;
 	}
 
@@ -127,8 +142,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		    builder.endArray()
 		    //.endObject()
 		    .endObject();
-		    IndexRequestBuilder irb = conf.client.prepareIndex(indexName, typeName, "" + md5).setSource(builder);
-		    IndexResponse response = irb.execute().actionGet();
+		    IndexResponse response = conf.client.index(new IndexRequest(indexName).id(md5).source(builder), RequestOptions.DEFAULT);
 		} catch (Exception e) {
 		    log.error(roart.common.constants.Constants.EXCEPTION, e);
 		}
@@ -145,19 +159,19 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
 		int stype = new Integer(searchtype).intValue();
 		try {
-			SearchRequestBuilder q = conf.client.prepareSearch(myindex)
-					.setTypes(mytype)
+			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+			searchSourceBuilder
 					//.setQuery(QueryBuilders.queryStringQuery(str))
-					.setQuery(QueryBuilders.termQuery(Constants.CONTENT, str))                 // Query
-					//.setQuery(QueryBuilders.simpleQueryStringQuery(str))
-					.setFetchSource(new String[]{Constants.ID, Constants.LANG, Constants.METADATA}, new String[]{Constants.CONTENT})
-					.setFrom(0)
-					.setSize(100)
-					.setExplain(true);
+					.query(QueryBuilders.termQuery(Constants.CONTENT, str))                 // Query
+					//.setQuery(QueryBuilders.simpleQueryStringQuery(str))		.f
+					.fetchSource(new String[]{Constants.ID, Constants.LANG, Constants.METADATA}, new String[]{Constants.CONTENT})
+					.from(0)
+					.size(100)
+					.explain(true);
 			if (search.conf.getHighlightmlt()) {
-				q = q.highlighter(new HighlightBuilder().field(Constants.CONTENT).maxAnalyzedOffset(999999));
+				searchSourceBuilder.highlighter(new HighlightBuilder().field(Constants.CONTENT).maxAnalyzedOffset(999999));
 			}
-			SearchResponse response = q.execute().actionGet();//get();
+			SearchResponse response = conf.client.search(new SearchRequest(myindex).source(searchSourceBuilder), RequestOptions.DEFAULT);
 			SearchHits docs = response.getHits();
 
 			SearchEngineSearchResult result = handleDocs(search, response, docs, true);
@@ -220,7 +234,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		//SearchDisplay display) {
 		MoreLikeThisQueryBuilder moreLikeThisRequestBuilder;
 		//Item[] items = MoreLikeThisQueryBuilder.ids(id);
-		Item item = new Item(myindex, mytype, id);
+		Item item = new Item(myindex, id);
 		Item likeItems[] = new Item[1];
 		likeItems[0] = item;
 		int count = nodeConf.getMLTCount();
@@ -230,16 +244,20 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 				.minDocFreq(mindf)
 				.minTermFreq(mintf);
 
-		SearchResponse searchResponse = conf.client.prepareSearch(myindex)
-				.setTypes(mytype)
-				.setQuery(queryBuilder)
-				.setFetchSource(new String[]{Constants.ID, Constants.LANG, Constants.METADATA}, new String[]{Constants.CONTENT})
-				.setFrom(0)
-				.setSize(count)
-				.setExplain(true)
-				.execute()
-				.actionGet();
+                SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+                searchSourceBuilder
+				.query(queryBuilder)
+				.fetchSource(new String[]{Constants.ID, Constants.LANG, Constants.METADATA}, new String[]{Constants.CONTENT})
+				.from(0)
+				.size(count)
+				.explain(true);
 
+		                SearchResponse searchResponse = null;
+                        try {
+                            searchResponse = conf.client.search(new SearchRequest(myindex).source(searchSourceBuilder), RequestOptions.DEFAULT);
+                        } catch (IOException e) {
+                            log.error(roart.common.constants.Constants.EXCEPTION, e);
+                        }
 		try {
 			SearchHits docs = searchResponse.getHits();
 			SearchEngineSearchResult result = handleDocs(search, searchResponse, docs, false);
@@ -255,14 +273,19 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                 NodeConfig nodeConf = delete.conf;
                 String myindex = nodeConf.elasticIndex();
 		String str = delete.delete;
-		ActionFuture<DeleteResponse> action1 = conf.client.prepareDelete(myindex, mytype, str).execute();
-		DeleteRequest deleteRequest = new DeleteRequest(myindex, mytype, str);
-		ActionFuture<DeleteResponse> action2 = conf.client.delete(deleteRequest);
+		//ActionFuture<DeleteResponse> action1 = conf.client.delete(myindex, mytype, str).execute();
+		DeleteRequest deleteRequest = new DeleteRequest(myindex, str);
+		DeleteResponse action2 = null;
+        try {
+            action2 = conf.client.delete(deleteRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error(roart.common.constants.Constants.EXCEPTION, e);
+        }
 		int requestTimeout = 30;
-		DeleteResponse response = action1.actionGet(requestTimeout);
-		DeleteResponse response2 = action2.actionGet(requestTimeout);
-		System.out.println("r1 " + response.toString());
-		System.out.println("r2 " + response.toString());
+		//DeleteResponse response = action1.actionGet(requestTimeout);
+		//DeleteResponse response2 = action2.actionGet(requestTimeout);
+		//System.out.println("r1 " + response.toString());
+		System.out.println("r2 " + action2.toString());
 		return null;
 	}
 
