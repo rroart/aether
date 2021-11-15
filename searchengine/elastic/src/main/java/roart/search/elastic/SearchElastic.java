@@ -46,13 +46,13 @@ import roart.search.SearchEngineAbstractSearcher;
 public class SearchElastic extends SearchEngineAbstractSearcher {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	final static String myindex = "index";
 	final static String mytype = "type";
 
 	private ElasticConfig conf;
 
 	public SearchElastic(String nodename, NodeConfig nodeConf) {
 		conf = new ElasticConfig();
+		String myindex = nodeConf.elasticIndex();
 		String host = nodeConf.getElasticHost(); 
 		String port = nodeConf.getElasticPort(); 
 
@@ -138,6 +138,8 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 	}
 
 	public SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
+                NodeConfig nodeConf = search.conf;
+	        String myindex = nodeConf.elasticIndex();
 		String str = search.str;
 		String searchtype = search.searchtype;
 
@@ -212,6 +214,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
 	public SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
 		NodeConfig nodeConf = search.conf;
+                String myindex = nodeConf.elasticIndex();
 		String id = search.str;
 		String searchtype = search.searchtype;
 		//SearchDisplay display) {
@@ -249,6 +252,8 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
 	// TODO untested
 	public SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
+                NodeConfig nodeConf = delete.conf;
+                String myindex = nodeConf.elasticIndex();
 		String str = delete.delete;
 		ActionFuture<DeleteResponse> action1 = conf.client.prepareDelete(myindex, mytype, str).execute();
 		DeleteRequest deleteRequest = new DeleteRequest(myindex, mytype, str);

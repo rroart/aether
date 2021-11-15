@@ -123,7 +123,7 @@ public class ConvertHandler {
                 log.error(Constants.EXCEPTION, e);
             }
             //size = SearchLucene.indexme("all", md5, inputStream);
-            IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata, str);
+            IndexQueueElement elem = new IndexQueueElement(null, md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata, str);
             elem.lang = lang;
             //elem.content = content;
             //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());

@@ -52,12 +52,24 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.SEARCHENGINELUCENE);
     }
     
+    public String luceneIndex() {
+        return (String) getValueOrDefault(ConfigConstants.SEARCHENGINELUCENEINDEX);
+    }
+
     public Boolean wantSolr() {
         return (Boolean) getValueOrDefault(ConfigConstants.SEARCHENGINESOLR);
     }
     
+    public String solrIndex() {
+        return (String) getValueOrDefault(ConfigConstants.SEARCHENGINESOLRINDEX);
+    }
+    
     public Boolean wantElastic() {
         return (Boolean) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTIC);
+    }
+    
+    public String elasticIndex() {
+        return (String) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICINDEX);
     }
     
     public Boolean wantHibernate() {

@@ -13,8 +13,11 @@ public class ConfigConstants {
     @Deprecated
     public static final String INDEX = "index";
     public static final String SEARCHENGINESOLR = "searchengine.solr[@enable]";
+    public static final String SEARCHENGINESOLRINDEX = "searchengine.solr.index";
     public static final String SEARCHENGINELUCENE = "searchengine.lucene[@enable]";
+    public static final String SEARCHENGINELUCENEINDEX = "searchengine.lucene.index";
     public static final String SEARCHENGINEELASTIC = "searchengine.elastic[@enable]";
+    public static final String SEARCHENGINEELASTICINDEX = "searchengine.elastic.index";
     @Deprecated
     public static final String DB = "db";
     public static final String LOCALHOST = "localhost";

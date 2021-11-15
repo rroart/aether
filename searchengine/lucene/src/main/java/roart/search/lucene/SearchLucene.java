@@ -94,7 +94,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	public synchronized SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
 		NodeConfig conf = index.conf;
                 NodeConfig nodeConf = conf;
-		String type = index.type; 
+                String indexName = nodeConf.luceneIndex();
 		String md5 = index.md5; 
 		//InputStream inputStream, 
 		String dbfilename = index.dbfilename;
@@ -115,7 +115,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		// we could also create an index in our ram ...
 		// Directory index = new RAMDirectory();
 		try {
-			Directory lindex = FSDirectory.open(getLucenePath(conf, type));
+			Directory lindex = FSDirectory.open(getLucenePath(conf, indexName));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
 			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 			IndexWriter w = new IndexWriter(lindex, iwc);
@@ -190,7 +190,6 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		String str = search.str;
 		String searchtype = search.searchtype;
 
-		String type = "all";
 		int stype = new Integer(searchtype).intValue();
 		try {
 			Directory index = FSDirectory.open(getLucenePath(search.conf, type));
@@ -254,7 +253,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	// or could use docid as id instead of md5 here and there
 	public static int searchdocid(NodeConfig conf, String md5) {
 		try {
-			Directory index = FSDirectory.open(getLucenePath(conf, "all"));
+			Directory index = FSDirectory.open(getLucenePath(conf, conf.luceneIndex()));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
 			Query tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.ID, md5);
 			Query q = tmpQuery;
@@ -322,7 +321,6 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		NodeConfig conf = search.conf;
 		String md5i = search.str;
 		String searchtype = search.searchtype;
-		String type = "all";
 		try {
 			Directory index = FSDirectory.open(getLucenePath(conf, type));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
@@ -414,8 +412,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 
 	public SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
 		try {
-			String type = "all";
-			Directory index = FSDirectory.open(getLucenePath(delete.conf, type));
+			Directory index = FSDirectory.open(getLucenePath(delete.conf, nodeConf.luceneIndex()));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
 			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 			IndexWriter iw = new IndexWriter(index, iwc);

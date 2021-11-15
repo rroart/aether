@@ -48,7 +48,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
 	public SearchSolr(String nodename, NodeConfig nodeConf) {
 		conf = new SolrConfig();
-		String url = nodeConf.getSolrurl();
+		String url = nodeConf.getSolrurl() + nodeConf.solrIndex();
 		HttpSolrClient server = new HttpSolrClient.Builder(url)
 		        .withSocketTimeout(60000)
 		        .withConnectionTimeout(5000)

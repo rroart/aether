@@ -22,8 +22,11 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.SWIFT, String.class);
         map.put(ConfigConstants.INDEX, String.class);
         map.put(ConfigConstants.SEARCHENGINESOLR, Boolean.class);
+        map.put(ConfigConstants.SEARCHENGINESOLRINDEX, String.class);
         map.put(ConfigConstants.SEARCHENGINELUCENE, Boolean.class);
+        map.put(ConfigConstants.SEARCHENGINELUCENEINDEX, String.class);
         map.put(ConfigConstants.SEARCHENGINEELASTIC, Boolean.class);
+        map.put(ConfigConstants.SEARCHENGINEELASTICINDEX, String.class);
         map.put(ConfigConstants.DB, String.class);
         map.put(ConfigConstants.LOCALHOST, String.class);
         map.put(ConfigConstants.DATABASEHBASE, Boolean.class);
@@ -123,8 +126,11 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.SWIFT, null);
         deflt.put(ConfigConstants.INDEX, null);
         deflt.put(ConfigConstants.SEARCHENGINESOLR, Boolean.FALSE);
+        deflt.put(ConfigConstants.SEARCHENGINESOLRINDEX, "myindex");
         deflt.put(ConfigConstants.SEARCHENGINELUCENE, Boolean.TRUE);
+        deflt.put(ConfigConstants.SEARCHENGINELUCENEINDEX, "myindex");
         deflt.put(ConfigConstants.SEARCHENGINEELASTIC, Boolean.FALSE);
+        deflt.put(ConfigConstants.SEARCHENGINEELASTICINDEX, "myindex");
         deflt.put(ConfigConstants.DB, null);
         deflt.put(ConfigConstants.LOCALHOST, null);
         deflt.put(ConfigConstants.DATABASEHBASE, Boolean.FALSE);
@@ -225,8 +231,11 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.SWIFT, "");
         text.put(ConfigConstants.INDEX, "");
         text.put(ConfigConstants.SEARCHENGINESOLR, "Use Solr");
+        text.put(ConfigConstants.SEARCHENGINESOLRINDEX, "Solr index");
         text.put(ConfigConstants.SEARCHENGINELUCENE, "Use Lucene");
+        text.put(ConfigConstants.SEARCHENGINELUCENEINDEX, "Lucene index");
         text.put(ConfigConstants.SEARCHENGINEELASTIC, "Use Elastic");
+        text.put(ConfigConstants.SEARCHENGINEELASTICINDEX, "Elastic index");
         text.put(ConfigConstants.DB, "Database");
         text.put(ConfigConstants.LOCALHOST, "");
         text.put(ConfigConstants.DATABASEHBASE, "");
@@ -321,8 +330,11 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.SWIFT, new XMLType( String.class, null, ""));
         mymap.put(ConfigConstants.INDEX, new XMLType( String.class, null, ""));
         mymap.put(ConfigConstants.SEARCHENGINESOLR, new XMLType( Boolean.class, Boolean.FALSE, "Use Solr"));
+        mymap.put(ConfigConstants.SEARCHENGINESOLRINDEX, new XMLType( String.class, "myindex", "Solr index"));
         mymap.put(ConfigConstants.SEARCHENGINELUCENE, new XMLType( Boolean.class, Boolean.TRUE, "Use Lucene"));
+        mymap.put(ConfigConstants.SEARCHENGINELUCENEINDEX, new XMLType( String.class, "myindex", "Lucene index"));
         mymap.put(ConfigConstants.SEARCHENGINEELASTIC, new XMLType( Boolean.class, Boolean.FALSE, "Use Elastic"));
+        mymap.put(ConfigConstants.SEARCHENGINEELASTICINDEX, new XMLType( String.class, "myindex", "Elastic index"));
         mymap.put(ConfigConstants.DB, new XMLType( String.class, null, "Database"));
         mymap.put(ConfigConstants.LOCALHOST, new XMLType( String.class, null, ""));
         mymap.put(ConfigConstants.DATABASEHBASE, new XMLType( Boolean.class, Boolean.FALSE, ""));
