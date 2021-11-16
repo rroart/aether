@@ -103,7 +103,7 @@ public class ConvertHandler {
                 lang = languageDetect.detect(content);
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                     long now = System.currentTimeMillis();
-                    String classification = ClassifyDao.classify(content, lang);
+                    String classification = ClassifyDao.classify(str, lang);
                     long time = System.currentTimeMillis() - now;
                     log.info("classtime " + dbfilename + " " + time);
                     //System.out.println("classtime " + time);

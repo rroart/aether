@@ -4,6 +4,9 @@ import roart.classification.MachineLearningAbstractClassifier;
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorResult;
@@ -51,6 +54,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	private MahoutSparkConfig conf;
 
 	public MahoutSparkClassify(String nodename, NodeConfig nodeConf) {
+	    super(nodename, nodeConf);
 		try {
 			conf = new MahoutSparkConfig();
 			conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
@@ -182,7 +186,12 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	}
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
-		String content = classify. str;
+            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+            String content = inmemory.read(classify.message);
+            if (!InmemoryUtil.validate(classify.message.getId(), content)) {
+                MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+                return result;
+            }
 		String language = classify.language;
 		try {
 			Map<String, Integer> dictionary = conf.dictionaryMap.get(language);

@@ -13,6 +13,8 @@ module mahout.spark {
     requires common.config;
     requires common.constants;
     requires common.machinelearning;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires guava;
     requires lucene.core;
     requires scala.library;

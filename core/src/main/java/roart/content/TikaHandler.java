@@ -240,7 +240,7 @@ public class TikaHandler {
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                     try {
                     now = System.currentTimeMillis();
-                    String classification = ClassifyDao.classify(content, lang);
+                    String classification = ClassifyDao.classify(null, lang);
                     time = System.currentTimeMillis() - now;
                     log.info("classtime " + dbfilename + " " + time);
                     //System.out.println("classtime " + time);

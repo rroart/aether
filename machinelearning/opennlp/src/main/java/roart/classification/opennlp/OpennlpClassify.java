@@ -3,6 +3,9 @@ package roart.classification.opennlp;
 import roart.classification.MachineLearningAbstractClassifier;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorParam;
@@ -27,11 +30,13 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
     private OpenNLPConfig conf;
     
     public OpennlpClassify(String nodename, NodeConfig nodeConf) {
+        super(nodename, nodeConf);
 	try {
 	    conf = new OpenNLPConfig();
 		conf.categorizerMap = new HashMap<String, DocumentCategorizerME>();
 		String[] languages = nodeConf.getLanguages();
 	    String modelFilePath = nodeConf.getOpenNLPModelPath(); 
+	    log.info("Detected language {}", languages.length);
 	    for (String lang : languages) {
 	    	String path = new String(modelFilePath);
 	    	path = path.replaceFirst("LANG", lang);
@@ -50,10 +55,16 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
 	}
 	
    public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
-    		String type = classify.str;
+       Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+       String content = inmemory.read(classify.message);
+       if (!InmemoryUtil.validate(classify.message.getId(), content)) {
+           MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+           return result;
+       }
     		String language = classify.language;
+    	         log.info("Detected language {}", language);
     	DocumentCategorizerME myCategorizer = conf.categorizerMap.get(language);
-	double[] outcomes = myCategorizer.categorize(new String[] { type });
+	double[] outcomes = myCategorizer.categorize(new String[] { content });
 	String category = myCategorizer.getBestCategory(outcomes);
 	log.info("opennlp cat " + category);
 	MachineLearningClassifyResult result = new MachineLearningClassifyResult();

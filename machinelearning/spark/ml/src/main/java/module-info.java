@@ -16,6 +16,8 @@ module spark.ml {
     requires spring.boot;
     requires common.config;
     requires common.constants;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires classification;
     requires aether.shadow.spark;
 }

@@ -3,6 +3,9 @@ package roart.classification.spark.ml;
 import roart.classification.MachineLearningAbstractClassifier;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorResult;
@@ -33,6 +36,7 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 	private SparkMLConfig conf;
 
 	public SparkMLClassify(String nodename, NodeConfig nodeConf) {
+            super(nodename, nodeConf);
 		try {
 			conf = new SparkMLConfig();
 
@@ -93,7 +97,12 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 	}
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
-		String content = classify.str;
+            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+            String content = inmemory.read(classify.message);
+            if (!InmemoryUtil.validate(classify.message.getId(), content)) {
+                MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+                return result;
+            }
 		String language = classify.language;
 		try {
 			SparkSession spark = conf.spark;

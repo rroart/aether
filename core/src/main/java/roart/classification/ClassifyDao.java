@@ -10,6 +10,7 @@ import java.util.HashSet;
 
 import roart.common.config.ConfigConstants;
 import roart.common.constants.Constants;
+import roart.common.inmemory.model.InmemoryMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +54,11 @@ public class ClassifyDao {
 	}
     }
 
-    public static String classify(String type, String language) {
+    public static String classify(InmemoryMessage message, String language) {
 	if (classify == null) {
 	    return null;
 	}
-	return classify.classify(type, language);
+	return classify.classify(message, language);
     }
 
 }

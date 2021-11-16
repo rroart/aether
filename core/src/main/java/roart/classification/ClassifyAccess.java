@@ -2,6 +2,7 @@ package roart.classification;
 
 import roart.common.config.MyConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorParam;
@@ -40,11 +41,11 @@ public abstract class ClassifyAccess {
         return result.error;
     }
     
-    public String classify(String type, String language) {
+    public String classify( InmemoryMessage message, String language) {
     	MachineLearningClassifyParam param = new MachineLearningClassifyParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
-    	param.str = type;
+    	param.message = message;
     	param.language = language;
         MachineLearningClassifyResult result = EurekaUtil.sendMe(MachineLearningClassifyResult.class, param, getAppName(), EurekaConstants.CLASSIFY);
 
