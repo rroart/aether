@@ -1,22 +1,22 @@
 package roart.search.elastic;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.action.ActionFuture;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
@@ -44,17 +44,9 @@ import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 import roart.search.SearchEngineAbstractSearcher;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.PutMappingRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.apache.http.HttpHost;
 
 public class SearchElastic extends SearchEngineAbstractSearcher {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-
-	final static String mytype = "type";
 
 	private ElasticConfig conf;
 
@@ -103,7 +95,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
 	public  SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
 		NodeConfig nodeConf = index.conf;
-		String type = index.type;
 		String md5 = index.md5;  
 		//InputStream inputStream, 
 		String dbfilename = index.dbfilename;
@@ -125,8 +116,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
 		String cat = classification;
 
-		String indexName = myindex;
-		String typeName = mytype;
+		String indexName = nodeConf.elasticIndex();
 		try {
 		    XContentBuilder builder = XContentFactory.jsonBuilder()
 		            .startObject()
