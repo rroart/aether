@@ -136,7 +136,7 @@ public class DynamodbIndexFiles {
 
         System.out.format(
                 "Creating table \"%s\" with a simple primary key: \"Name\".\n",
-                TABLE_FILES_NAME);
+                getFiles());
 
         ProvisionedThroughput ptIndex = new ProvisionedThroughput()
                 .withReadCapacityUnits(1L)
@@ -150,7 +150,7 @@ public class DynamodbIndexFiles {
                 .withProjection(new Projection() 
                         .withProjectionType("KEYS_ONLY"));        
         CreateTableRequest request = new CreateTableRequest()
-                .withTableName(TABLE_FILES_NAME)
+                .withTableName(getFiles())
                 .withAttributeDefinitions(filesattributes)
                 .withKeySchema(fileskeyelements)
                 //.withGlobalSecondaryIndexes(md5Index)
@@ -162,10 +162,10 @@ public class DynamodbIndexFiles {
         System.out.println("cl " + client);
         /*
         try {
-            Table table = ddb.getTable(TABLE_FILES_NAME);
+            Table table = ddb.getTable(getFiles());
             table.delete();
             table.waitForDelete();
-            //DeleteTableResult res = client.deleteTable(TABLE_FILES_NAME);
+            //DeleteTableResult res = client.deleteTable(getFiles());
             //Thread.sleep(10000);
             //System.out.println("res0 " + res.toString());
         } catch (InterruptedException e) {
@@ -174,26 +174,26 @@ public class DynamodbIndexFiles {
          */
         log.info("y1");
         //printEndpoints(client);
-        createTable(request, ddb, TABLE_FILES_NAME);
+        createTable(request, ddb, getFiles());
         log.info("y12");
 
         CreateTableRequest request2 = new CreateTableRequest()
-                .withTableName(TABLE_INDEXFILES_NAME)
+                .withTableName(getIndexFiles())
                 .withAttributeDefinitions(indexfilesattributes)
                 .withKeySchema(indexfileskeyelements)
                 .withProvisionedThroughput(new ProvisionedThroughput(
                         new Long(10), new Long(10)));
         log.info("y123");
-        createTable(request2, ddb, TABLE_INDEXFILES_NAME);
+        createTable(request2, ddb, getIndexFiles());
         log.info("y1234");
-        //filesTable = ddb.getTable(TABLE_FILES_NAME);
-        //indexTable = ddb.getTable(TABLE_INDEXFILES_NAME);
+        //filesTable = ddb.getTable(getFiles());
+        //indexTable = ddb.getTable(getIndexFiles());
         /*
         try {
-            Table table = ddb.getTable(TABLE_INDEXFILES_NAME);
+            Table table = ddb.getTable(getIndexFiles());
             table.delete();
             table.waitForDelete();
-            //DeleteTableResult res = client.deleteTable(TABLE_INDEXFILES_NAME);
+            //DeleteTableResult res = client.deleteTable(getIndexFiles());
             //Thread.sleep(10000);
             //System.out.println("res2 " + res.toString());
         } catch (InterruptedException e) {
@@ -204,9 +204,9 @@ public class DynamodbIndexFiles {
         try {
             boolean created = TableUtils.createTableIfNotExists(client, request2);
             System.out.println("res1 " + created);
-            TableUtils.waitUntilActive(client, TABLE_INDEXFILES_NAME);
-            TableUtils.waitUntilExists(client, TABLE_INDEXFILES_NAME);
-            Table table = ddb.getTable(TABLE_INDEXFILES_NAME);
+            TableUtils.waitUntilActive(client, getIndexFiles());
+            TableUtils.waitUntilExists(client, getIndexFiles());
+            Table table = ddb.getTable(getIndexFiles());
             System.out.println("res1 " + table);
             //CreateTableResult result = client.createTable(request2);
             //System.out.println("res3 " + result.getTableDescription().getTableName());
@@ -343,14 +343,16 @@ public class DynamodbIndexFiles {
         //client.setEndpoint("http://" + host + ":" + port);
         config.setClient(this.client);
         config.setNodename(nodename);
+        config.setTableprefix(nodeConf.getDynamodbTableprefix());
+
         amain();
         log.info("After main");
 
         //ddb = new DynamoDB(new AmazonDynamoDBClient( 
         //     new ProfileCredentialsProvider()));  
         DynamoDB ddb2 = new DynamoDB(this.client);
-        indexTable = ddb2.getTable(TABLE_INDEXFILES_NAME);
-        filesTable = ddb2.getTable(TABLE_FILES_NAME);
+        indexTable = ddb2.getTable(getIndexFiles());
+        filesTable = ddb2.getTable(getFiles());
         log.info("After");
     }
 
@@ -439,7 +441,7 @@ public class DynamodbIndexFiles {
         put(ifile.getMd5(), ifile.getFilelocations());
         //client.putI;
         log.info("grrrr"+updatedvalues.toString());
-        client.putItem(TABLE_INDEXFILES_NAME, updatedvalues);
+        client.putItem(getIndexFiles(), updatedvalues);
 
         // or if still to slow, simply get current (old) indexfiles
         Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
@@ -481,7 +483,7 @@ public class DynamodbIndexFiles {
             //Put put = new Put(filename));
             //put.addColumn(filescf, md5q, md5));
             //filesTable.put(put);
-            client.putItem(TABLE_FILES_NAME, updatedvalues);
+            client.putItem(getFiles(), updatedvalues);
         }
     }
 
@@ -610,7 +612,7 @@ public class DynamodbIndexFiles {
     public List<IndexFiles> getAll() throws Exception {
         List<IndexFiles> retlist = new ArrayList<>();
         ScanRequest scanRequest = new ScanRequest()
-                .withTableName(TABLE_INDEXFILES_NAME);
+                .withTableName(getIndexFiles());
 
         ScanResult result = client.scan(scanRequest);
         List<Map<String, AttributeValue>> list = result.getItems();
@@ -678,7 +680,7 @@ public class DynamodbIndexFiles {
     public Set<String> getAllMd5() throws Exception {
         Set<String> md5s = new HashSet<>();
         ScanRequest scanRequest = new ScanRequest()
-                .withTableName(TABLE_INDEXFILES_NAME);
+                .withTableName(getIndexFiles());
 
         ScanResult result = client.scan(scanRequest);
         for (Map<String, AttributeValue> itemMap : result.getItems()){
@@ -691,7 +693,7 @@ public class DynamodbIndexFiles {
     public Set<String> getLanguages() throws Exception {
         Set<String> languages = new HashSet<String>();
         ScanRequest scanRequest = new ScanRequest()
-                .withTableName(TABLE_INDEXFILES_NAME);
+                .withTableName(getIndexFiles());
 
         ScanResult result = client.scan(scanRequest);
         for (Map<String, AttributeValue> itemMap : result.getItems()){
@@ -786,5 +788,11 @@ public class DynamodbIndexFiles {
             return null;
         }
        }
+    public String getIndexFiles() {
+        return config.getTableprefix() + " " + TABLE_INDEXFILES_NAME;
+    }
+public String getFiles() {
+    return config.getTableprefix() + "_" + TABLE_FILES_NAME;
+}
 }
 

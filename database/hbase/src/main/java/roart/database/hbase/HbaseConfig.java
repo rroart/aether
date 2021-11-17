@@ -8,6 +8,8 @@ public class HbaseConfig {
 
     private String nodename = null;
     
+    private String tableprefix = null;
+    
     public Connection getConnection() {
         return connection;
     }
@@ -22,6 +24,14 @@ public class HbaseConfig {
 
     public void setNodename(String nodename) {
         this.nodename = nodename;
+    }
+
+    public String getTableprefix() {
+        return tableprefix;
+    }
+
+    public void setTableprefix(String tableprefix) {
+        this.tableprefix = tableprefix;
     }
 
 }

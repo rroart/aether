@@ -69,13 +69,16 @@ public class ConfigConstants {
     public static final String DATABASEHBASEHBASEQUORUM = "database.hbase.hbasequorum";
     public static final String DATABASEHBASEHBASEPORT = "database.hbase.hbaseport";
     public static final String DATABASEHBASEHBASEMASTER = "database.hbase.hbasemaster";
+    public static final String DATABASEHBASETABLEPREFIX = "database.hbase.tableprefix";
     public static final String DATABASECASSANDRAHOST = "database.cassandra.host";
     public static final String DATABASECASSANDRATLS = "database.cassandra.tls[@enable]";
     public static final String DATABASECASSANDRAPORT = "database.cassandra.port";
+    public static final String DATABASECASSANDRAKEYSPACE = "database.cassandra.keyspace";
     public static final String DATABASECASSANDRATHRIFTPORT = "database.cassandra.thriftport";
     public static final String DATABASECASSANDRATLSPORT = "database.cassandra.tlsport";
     public static final String DATABASEDYNAMODBHOST = "database.dynamodb.host";
     public static final String DATABASEDYNAMODBPORT = "database.dynamodb.port";
+    public static final String DATABASEDYNAMODBTABLEPREFIX = "database.dynamodb.tableprefix";
     public static final String NODE = "node";
     public static final String NODENODENAME = "node.nodename";
     public static final String FSDATADIR = "fs.datadir";

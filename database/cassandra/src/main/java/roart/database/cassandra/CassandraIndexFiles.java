@@ -185,7 +185,7 @@ public class CassandraIndexFiles {
         config.setNodename(nodename);
         System.out.println("ct1");
         try {
-            createKeyspace("library", "SimpleStrategy", 1);
+            createKeyspace(nodeConf.getCassandraKeyspace(), "SimpleStrategy", 1);
             createType();
             createTable();
         } catch (Exception e) {

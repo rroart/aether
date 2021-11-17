@@ -73,6 +73,9 @@ public class HbaseIndexFiles {
     private Table filesTable = null;
     private Table indexTable = null;
 
+    private final String INDEX = "index";
+    private final String FILES = "files";
+    
     public HbaseIndexFiles(String nodename, NodeConfig nodeConf) {
         config = new HbaseConfig();
         try {
@@ -87,62 +90,63 @@ public class HbaseIndexFiles {
             Connection hconn = ConnectionFactory.createConnection(conf);
             config.setConnection(hconn);
             config.setNodename(nodename);
+            config.setTableprefix(nodeConf.getHbaseTableprefix());
 
             Admin admin = hconn.getAdmin();
-            //HTableDescriptor indexTableDesc = new HTableDescriptor(TableName.valueOf("index"));
-            if (admin.tableExists(TableName.valueOf("index"))) {
+            //HTableDescriptor indexTableDesc = new HTableDescriptor(TableName.valueOf(getIndex()));
+            if (admin.tableExists(TableName.valueOf(getIndex()))) {
                 //admin.disableTable(table.getName());
                 //admin.deleteTable(table.getName());
             } else {
                 TableDescriptor indexTableDesc = TableDescriptorBuilder
-                        .newBuilder(TableName.valueOf("index"))
+                        .newBuilder(TableName.valueOf(getIndex()))
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder(indexcf).build())
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder(flcf).build())
                         .build();
                 admin.createTable(indexTableDesc);
             }
 
-            indexTable = hconn.getTable(TableName.valueOf("index"));
-            if (admin.isTableEnabled(TableName.valueOf("index"))) {
-                admin.disableTable(TableName.valueOf("index"));
+            indexTable = hconn.getTable(TableName.valueOf(getIndex()));
+            if (admin.isTableEnabled(TableName.valueOf(getIndex()))) {
+                admin.disableTable(TableName.valueOf(getIndex()));
             }
             if (!indexTable.getDescriptor().hasColumnFamily(indexcf)) {
-                admin.addColumnFamily(TableName.valueOf("index"), ColumnFamilyDescriptorBuilder.newBuilder(indexcf).build());
+                admin.addColumnFamily(TableName.valueOf(getIndex()), ColumnFamilyDescriptorBuilder.newBuilder(indexcf).build());
                 //tableDesc.addFamily(new HColumnDescriptor("if"));
             }
             if (!indexTable.getDescriptor().hasColumnFamily(flcf)) {
-                admin.addColumnFamily(TableName.valueOf("index"), ColumnFamilyDescriptorBuilder.newBuilder(flcf).build());
+                admin.addColumnFamily(TableName.valueOf(getIndex()), ColumnFamilyDescriptorBuilder.newBuilder(flcf).build());
                 //tableDesc.addFamily(new HColumnDescriptor("fl"));
             }
-            admin.enableTable(TableName.valueOf("index"));
+            admin.enableTable(TableName.valueOf(getIndex()));
 
-            if (admin.tableExists(TableName.valueOf("index"))) {
+            if (admin.tableExists(TableName.valueOf(getIndex()))) {
                 //admin.disableTable(table.getName());
                 //admin.deleteTable(table.getName());
             } else {
                 TableDescriptor filesTableDesc = TableDescriptorBuilder
-                        .newBuilder(TableName.valueOf("files"))
+                        .newBuilder(TableName.valueOf(getFiles()))
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder(filescf).build())
                         .build();
                 admin.createTable(filesTableDesc);
             }
-            filesTable = hconn.getTable(TableName.valueOf("files"));
-            if (admin.isTableEnabled(TableName.valueOf("files"))) {
-                admin.disableTable(TableName.valueOf("files"));
+            filesTable = hconn.getTable(TableName.valueOf(getFiles()));
+            if (admin.isTableEnabled(TableName.valueOf(getFiles()))) {
+                admin.disableTable(TableName.valueOf(getFiles()));
             }
             if (!filesTable.getDescriptor().hasColumnFamily(filescf)) {
-                admin.addColumnFamily(TableName.valueOf("files"), ColumnFamilyDescriptorBuilder.newBuilder(filescf).build());
+                admin.addColumnFamily(TableName.valueOf(getFiles()), ColumnFamilyDescriptorBuilder.newBuilder(filescf).build());
                 //filesTableDesc.addFamily(new HColumnDescriptor("fi"));
             }
-            admin.enableTable(TableName.valueOf("files"));
-            //HTable table = new HTable(conf, "index");
+            admin.enableTable(TableName.valueOf(getFiles()));
+            //HTable table = new HTable(conf, getIndex());
         } catch (IOException e) {
             log.error(Constants.EXCEPTION, e);
         }
     }
 
     public void put(IndexFiles ifile) throws Exception {
-        //HTable /*Interface*/ filesTable = new HTable(conf, "index");
+        //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
         Put put = new Put(Bytes.toBytes(ifile.getMd5()));
         put.addColumn(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
         if (ifile.getIndexed() != null) {
@@ -225,7 +229,7 @@ public class HbaseIndexFiles {
     // plus get set of existing, remove new from that, delete the rest.
 
     public void put(String md5, Set<FileLocation> files) throws Exception {
-        //HTable /*Interface*/ filesTable = new HTable(conf, "index");
+        //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
         for (FileLocation file : files) {
             String filename = getFile(file);
             Put put = new Put(Bytes.toBytes(filename));
@@ -328,7 +332,7 @@ public class HbaseIndexFiles {
     public String getMd5ByFilelocation(FileLocation fl) {
         String name = getFile(fl);
         try {
-            //HTable /*Interface*/ filesTable = new HTable(conf, "index");
+            //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
             Get get = new Get(Bytes.toBytes(name));
             //get.addColumn(filescf, md5q);
             get.addFamily(filescf);
@@ -375,7 +379,7 @@ public class HbaseIndexFiles {
         /*
 	Configuration conf = HBaseConfiguration.create();
 	HTablePool pool = new HTablePool();
-	HTableInterface indexTable = pool.getTable("index");
+	HTableInterface indexTable = pool.getTable(getIndex());
          */
         ResultScanner scanner = indexTable.getScanner(new Scan());
         for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
@@ -386,7 +390,7 @@ public class HbaseIndexFiles {
 
     public IndexFiles ensureExistenceNot(String md5) throws Exception {
         try {
-            //HTable /*Interface*/ filesTable = new HTable(conf, "index");
+            //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
             Put put = new Put(Bytes.toBytes(md5));
             indexTable.put(put);
         } catch (IOException e) {
@@ -444,11 +448,11 @@ public class HbaseIndexFiles {
         log.info("closing db");
         if (filesTable != null) {
             filesTable.close();
-            filesTable = config.getConnection().getTable(TableName.valueOf("files"));
+            filesTable = config.getConnection().getTable(TableName.valueOf(getFiles()));
         }
         if (indexTable != null) {
             indexTable.close();
-            indexTable = config.getConnection().getTable(TableName.valueOf("index"));
+            indexTable = config.getConnection().getTable(TableName.valueOf(getIndex()));
         }
     }
 
@@ -494,6 +498,13 @@ public class HbaseIndexFiles {
     public void destroy() throws Exception {
         config.getConnection().close();
     }
+
+    public String getIndex() {
+        return config.getTableprefix() + "_" + getIndex();
+    }
+public String getFiles() {
+    return config.getTableprefix() + "_" + getFiles();
+}
 
 }
 

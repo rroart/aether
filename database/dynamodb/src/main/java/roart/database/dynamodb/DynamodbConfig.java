@@ -8,6 +8,8 @@ public class DynamodbConfig {
 
     private AmazonDynamoDB client;
     
+    private String tableprefix;
+    
     public String getNodename() {
         return nodename;
     }
@@ -22,5 +24,13 @@ public class DynamodbConfig {
 
     public AmazonDynamoDB getClient() {
         return client;
+    }
+
+    public String getTableprefix() {
+        return tableprefix;
+    }
+
+    public void setTableprefix(String tableprefix) {
+        this.tableprefix = tableprefix;
     }
 }

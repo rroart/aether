@@ -342,6 +342,11 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public String getHbaseTableprefix() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASEHBASETABLEPREFIX);
+    }
+
+    @JsonIgnore
     public String getCassandraHost() {
         return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRAHOST);
     }
@@ -354,6 +359,11 @@ public class NodeConfig extends MyConfig {
     @JsonIgnore
     public String getCassandraPort() {
         return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRAPORT);
+    }
+    
+    @JsonIgnore
+    public String getCassandraKeyspace() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASECASSANDRAKEYSPACE);
     }
     
     @JsonIgnore
@@ -374,6 +384,11 @@ public class NodeConfig extends MyConfig {
     @JsonIgnore
     public String getDynamodbPort() {
         return (String) getValueOrDefault(ConfigConstants.DATABASEDYNAMODBPORT);
+    }
+    
+    @JsonIgnore
+    public String getDynamodbTableprefix() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASEDYNAMODBTABLEPREFIX);
     }
     
     @JsonIgnore
