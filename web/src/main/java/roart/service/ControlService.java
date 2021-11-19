@@ -311,6 +311,38 @@ public class ControlService {
             return;           
        }
 
+        public void dbclear() {
+            ServiceParam param = new ServiceParam();
+            param.config = getConfig();
+            param.webpath = EurekaConstants.DBCLEAR;
+            Queues.clientQueue.add(param);
+            return;           
+       }
+
+        public void dbdrop() {
+            ServiceParam param = new ServiceParam();
+            param.config = getConfig();
+            param.webpath = EurekaConstants.DBDROP;
+            Queues.clientQueue.add(param);
+            return;           
+       }
+
+        public void indexclean() {
+            ServiceParam param = new ServiceParam();
+            param.config = getConfig();
+            param.webpath = EurekaConstants.INDEXCLEAN;
+            Queues.clientQueue.add(param);
+            return;           
+       }
+
+        public void indexdelete() {
+            ServiceParam param = new ServiceParam();
+            param.config = getConfig();
+            param.webpath = EurekaConstants.INDEXDELETE;
+            Queues.clientQueue.add(param);
+            return;           
+       }
+
         public Set<String> getLanguages() {
             ServiceParam param = new ServiceParam();
             param.config = getConfig();

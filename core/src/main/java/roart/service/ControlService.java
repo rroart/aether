@@ -1045,6 +1045,22 @@ import roart.util.MySets;
                 }
            }
     
+            public void dbclear() throws Exception {
+                IndexFilesDao.clear();
+                }
+                
+            public void dbdrop() throws Exception {
+                IndexFilesDao.drop();
+                }
+                
+            public void indexclean() throws Exception {
+                SearchDao.clear();
+                }
+                
+            public void indexdelete() throws Exception {
+                SearchDao.drop();
+                }
+                
         public static String[] getLanguages() throws Exception {
         return IndexFilesDao.getLanguages().stream().toArray(String[]::new);
         }

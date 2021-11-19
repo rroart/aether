@@ -1,7 +1,7 @@
 package roart.database.dynamodb;
 
 import java.util.HashSet;
-
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
 
@@ -794,5 +795,30 @@ public class DynamodbIndexFiles {
 public String getFiles() {
     return config.getTableprefix() + "_" + TABLE_FILES_NAME;
 }
+
+public void clear(DatabaseConstructorParam param) {
+    try {
+    clear(indexTable, "md5");
+    clear(filesTable, "filename");
+} catch (Exception e) {
+    log.info(Constants.EXCEPTION, e);
 }
+}
+
+public void drop(DatabaseConstructorParam param) {
+    client.deleteTable(getIndexFiles());
+    client.deleteTable(getFiles());
+}
+private void clear(Table table, String hashKeyName) throws Exception {
+    ScanSpec spec = new ScanSpec();
+    ItemCollection<ScanOutcome> items = table.scan(spec);
+    Iterator<Item> it = items.iterator();
+    while (it.hasNext()) {
+        Item item = it.next();
+        String hashKey = item.getString(hashKeyName);
+        PrimaryKey key = new PrimaryKey(hashKeyName, hashKey);
+        table.deleteItem(key);
+        System.out.printf("Deleted item with key: %s\n", hashKey);
+    }
+}}
 

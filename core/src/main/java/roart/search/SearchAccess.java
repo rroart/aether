@@ -64,6 +64,22 @@ public abstract class SearchAccess {
         return result.error;
     }
     
+    public String clear() {
+        SearchEngineConstructorParam param = new SearchEngineConstructorParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
+        return result.error;
+    }
+    
+    public String drop() {
+        SearchEngineConstructorParam param = new SearchEngineConstructorParam();
+        param.nodename = ControlService.nodename;
+        param.conf = MyConfig.conf;
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
+        return result.error;
+    }
+    
     public int indexme(String type, String md5, String dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
         Map<String, String> md = metadata;
         String[] str = new String[md.keySet().size()];

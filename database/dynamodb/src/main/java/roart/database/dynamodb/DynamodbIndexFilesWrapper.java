@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.io.IOException;
 
 import roart.common.config.NodeConfig;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
 import roart.common.database.DatabaseFileLocationResult;
@@ -148,5 +149,16 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
+    @Override
+    public DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception {
+        dynamodbIndexFiles.clear(param);
+        return new DatabaseConstructorResult();
+    }
+
+    @Override
+    public DatabaseConstructorResult drop(DatabaseConstructorParam param) throws Exception {
+        dynamodbIndexFiles.drop(param);
+        return new DatabaseConstructorResult();        
+    }
 }
 

@@ -319,6 +319,62 @@ public class ServiceController implements CommandLineRunner {
         return result;
     }
 
+    @RequestMapping(value = "/" + EurekaConstants.DBCLEAR,
+            method = RequestMethod.POST)
+    public ServiceResult getDbClear(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            result.list = getInstance().dbclear();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.DBDROP,
+            method = RequestMethod.POST)
+    public ServiceResult getDbDrop(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            result.list = getInstance().dbdrop(param);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.INDEXCLEAN,
+            method = RequestMethod.POST)
+    public ServiceResult getIndexClean(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            result.list = getInstance().indexclean(param);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.INDEXDELETE,
+            method = RequestMethod.POST)
+    public ServiceResult getIndexDelete(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            result.list = getInstance().indexdelete(param);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/" + EurekaConstants.SEARCHENGINE,
             method = RequestMethod.POST)
     public ServiceResult getSearchEngine(@RequestBody ServiceParam param)

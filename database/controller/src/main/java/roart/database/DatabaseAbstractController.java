@@ -83,6 +83,22 @@ public abstract class DatabaseAbstractController {
         return result;
     }
 
+    @RequestMapping(value = "/" + EurekaConstants.CLEAR,
+            method = RequestMethod.POST)
+    public DatabaseConstructorResult processClear(@RequestBody DatabaseConstructorParam param)
+            throws Exception {
+        DatabaseOperations operation = getOperation(param.getNodename(), param.getConf());
+        return operation.clear(param);
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.DROP,
+            method = RequestMethod.POST)
+    public DatabaseConstructorResult processDrop(@RequestBody DatabaseConstructorParam param)
+            throws Exception {
+        DatabaseOperations operation = getOperation(param.getNodename(), param.getConf());
+        return operation.drop(param);
+    }
+
     @RequestMapping(value = "/" + EurekaConstants.GETFILELOCATIONSBYMD5,
             method = RequestMethod.POST)
     public DatabaseResult processGetFilelocationsByMd5(@RequestBody DatabaseMd5Param param)

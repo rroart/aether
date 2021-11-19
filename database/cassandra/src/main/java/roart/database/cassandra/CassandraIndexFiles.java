@@ -504,5 +504,24 @@ public class CassandraIndexFiles {
         config.getSession().close();
     }
 
+    public void clear(String tableName) {
+    StringBuilder sb = 
+            new StringBuilder("TRUNCATE ");
+    sb.append(tableName);
+    sb.append(";");
+    String query = sb.toString();
+    session.execute(query);
+
+    }
+
+    public void drop(String keyspaceName) {
+    StringBuilder sb = 
+            new StringBuilder("DROP KEYSPACE IF EXISTS ");
+    sb.append(keyspaceName);
+    sb.append(";");
+    String query = sb.toString();
+    session.execute(query);
+
+    }
 }
 

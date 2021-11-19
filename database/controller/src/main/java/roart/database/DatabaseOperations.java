@@ -1,5 +1,6 @@
 package roart.database;
 
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
 import roart.common.database.DatabaseFileLocationResult;
@@ -14,6 +15,10 @@ import roart.common.database.DatabaseResult;
 public abstract class DatabaseOperations {
     
     public abstract DatabaseConstructorResult destroy() throws Exception;
+
+    public abstract DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception;
+
+    public abstract DatabaseConstructorResult drop(DatabaseConstructorParam param) throws Exception;
 
     public abstract DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception;
     

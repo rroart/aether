@@ -84,4 +84,12 @@ public class SearchDao {
 	return null;
     }
 
+    public static void clear() {
+        search.clear();
+    }
+
+    public static void drop() {
+        search.drop();
+    }
+
 }

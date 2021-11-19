@@ -77,6 +77,26 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		return null;
 	}
 
+	public void deconstruct() {
+	}
+
+	@Override
+	public SearchEngineConstructorResult clear(SearchEngineConstructorParam param) {
+	    try {
+	        NodeConfig nodeConf = param.conf;
+	        conf.server.deleteByQuery( "*:*" );
+	        conf.server.commit();
+	    } catch (Exception e) {
+	        log.error(roart.common.constants.Constants.EXCEPTION, e);
+	    }
+	    return new SearchEngineConstructorResult();
+	}
+
+        @Override
+        public SearchEngineConstructorResult drop(SearchEngineConstructorParam param) {
+            return clear(param);
+        }
+	
 	public SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
 	        NodeConfig nodeConf = index.conf;
 		String type = index.type;

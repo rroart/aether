@@ -1,5 +1,6 @@
 package roart.search;
 
+import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
 import roart.common.searchengine.SearchEngineDeleteResult;
@@ -12,6 +13,10 @@ public abstract class SearchEngineAbstractSearcher {
     
     public abstract SearchEngineConstructorResult destroy() throws Exception;
 	
+    public abstract SearchEngineConstructorResult clear(SearchEngineConstructorParam param) throws Exception;
+    
+    public abstract SearchEngineConstructorResult drop(SearchEngineConstructorParam param) throws Exception;
+    
     public abstract SearchEngineIndexResult indexme(SearchEngineIndexParam index);
     
     public abstract SearchEngineSearchResult searchme(SearchEngineSearchParam search);

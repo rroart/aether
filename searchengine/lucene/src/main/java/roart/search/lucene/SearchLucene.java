@@ -89,6 +89,27 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	public static void deconstruct(String nodename) {
 	}
 
+        @Override
+	public SearchEngineConstructorResult clear(SearchEngineConstructorParam param) {
+	    try {
+	        NodeConfig conf = param.conf;
+	        Directory lindex = FSDirectory.open(getLucenePath(conf));
+	        StandardAnalyzer analyzer = new StandardAnalyzer();
+	        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+	        IndexWriter indexWriter = new IndexWriter(lindex, iwc);
+	        indexWriter.deleteAll();
+	        indexWriter.commit();                
+	    } catch (Exception e) {
+	        log.error(roart.common.constants.Constants.EXCEPTION, e);
+	    }
+	    return new SearchEngineConstructorResult();
+	}
+
+	@Override
+	public SearchEngineConstructorResult drop(SearchEngineConstructorParam param) {
+	    return clear(param);
+	}
+
 	//public static int indexme(String type, String md5, InputStream inputStream) {
 	//public static void indexme() {
 	public synchronized SearchEngineIndexResult indexme(SearchEngineIndexParam index) {

@@ -22,6 +22,8 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder.Item;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -35,6 +37,7 @@ import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
 import roart.common.searchengine.SearchEngineDeleteResult;
@@ -84,13 +87,37 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		}
 	}
 
+	@Override
+	public SearchEngineConstructorResult clear(SearchEngineConstructorParam param) {
+	    try {
+	    NodeConfig nodeConf = param.conf;
+	    String myindex = nodeConf.elasticIndex();
+	    BulkByScrollResponse response = conf.client.deleteByQuery(new DeleteByQueryRequest(myindex), RequestOptions.DEFAULT);
+            } catch (Exception e) {
+                log.error(roart.common.constants.Constants.EXCEPTION, e);
+            }
+	    return new SearchEngineConstructorResult();
+	}
+
+	@Override
+	public SearchEngineConstructorResult drop(SearchEngineConstructorParam param) {
+	    try {
+	    NodeConfig nodeConf = param.conf;
+	    String myindex = nodeConf.elasticIndex();
+	    DeleteResponse response = conf.client.delete(new DeleteRequest(myindex), RequestOptions.DEFAULT);
+            } catch (Exception e) {
+                log.error(roart.common.constants.Constants.EXCEPTION, e);
+            }
+	    return new SearchEngineConstructorResult();	        
+	}
+
 	public  SearchEngineConstructorResult destroy() {
-		try {
-            conf.client.close();
-        } catch (IOException e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
-        }
-		return null;
+	    try {
+	        conf.client.close();
+	    } catch (IOException e) {
+	        log.error(roart.common.constants.Constants.EXCEPTION, e);
+	    }
+	    return null;
 	}
 
 	public  SearchEngineIndexResult indexme(SearchEngineIndexParam index) {

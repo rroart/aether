@@ -51,6 +51,22 @@ public abstract class IndexFilesAccess {
         return result.error;
     }
 
+    public String clear() {
+        DatabaseConstructorParam param = new DatabaseConstructorParam();
+        param.setNodename(ControlService.nodename);
+        param.setConf(MyConfig.conf);
+        DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
+        return result.error;
+    }
+    
+    public String drop() {
+        DatabaseConstructorParam param = new DatabaseConstructorParam();
+        param.setNodename(ControlService.nodename);
+        param.setConf(MyConfig.conf);
+        DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
+        return result.error;
+    }
+    
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         param.setConf(MyConfig.conf);

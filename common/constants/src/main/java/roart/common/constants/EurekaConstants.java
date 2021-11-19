@@ -57,12 +57,16 @@ public class EurekaConstants {
     // common ops
     public static final String CONSTRUCTOR = "constructor";
     public static final String DESTRUCTOR = "destructor";
+    public static final String CLEAR = "clear";
+    public static final String DROP = "drop";
 
     // search engine ops
     public static final String DELETE = "delete";
     public static final String INDEX = "index";
     public static final String SEARCH = "search";
     public static final String SEARCHMLT = "searchmlt";
+    public static final String INDEXCLEAN = "indexclean";
+    public static final String INDEXDELETE = "indexdelete";
 
     // classifier ops
     public static final String CLASSIFY = "classify";
@@ -92,4 +96,6 @@ public class EurekaConstants {
     public static final String CLOSE = "close";
     public static final String GETALLMD5 = "getallmd5";
     public static final String GETLANGUAGES = "getlanguages";
+    public static final String DBCLEAR = "dbclear";
+    public static final String DBDROP = "dbdrop";
 }

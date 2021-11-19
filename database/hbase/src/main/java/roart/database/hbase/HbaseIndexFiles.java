@@ -34,6 +34,8 @@ import org.apache.hadoop.hbase.filter.SubstringComparator;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.database.DatabaseConstructorParam;
+import roart.common.database.DatabaseConstructorResult;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
 
@@ -506,5 +508,41 @@ public String getFiles() {
     return config.getTableprefix() + "_" + getFiles();
 }
 
+public DatabaseConstructorResult clear(DatabaseConstructorParam param) {
+    clear(indexTable);
+    clear(filesTable);
+    return new DatabaseConstructorResult();
+}
+
+private void clear(Table table) {
+    try {
+        List<Delete> deleteList = new ArrayList<Delete>();
+        Scan scan = new Scan();
+        ResultScanner scanner = table.getScanner(scan);
+        for (Result rr : scanner) {
+            Delete d = new Delete(rr.getRow());
+            deleteList.add(d);
+        }
+        table.delete(deleteList);
+        scanner.close();    
+    } 
+    catch (IOException e) {
+        log.error(Constants.EXCEPTION, e);
+    }
+}
+
+public DatabaseConstructorResult drop(DatabaseConstructorParam param) {
+    try {
+    Admin admin = config.getConnection().getAdmin();
+
+    admin.disableTable(TableName.valueOf(getIndex()));
+    admin.disableTable(TableName.valueOf(getFiles()));
+    admin.deleteTable(TableName.valueOf(getIndex()));
+    admin.deleteTable(TableName.valueOf(getFiles()));
+    } catch (IOException e) {
+        log.error(Constants.EXCEPTION, e);
+    }
+    return new DatabaseConstructorResult();
+}
 }
 

@@ -21,6 +21,7 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 
 import roart.common.config.NodeConfig;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
 import roart.common.database.DatabaseFileLocationResult;
@@ -157,6 +158,18 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     public DatabaseConstructorResult destroy() throws Exception {
         hbaseIndexFiles.destroy();
         return null;
+    }
+
+    @Override
+    public DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception {
+        hbaseIndexFiles.clear(param);
+        return new DatabaseConstructorResult();
+    }
+
+    @Override
+    public DatabaseConstructorResult drop(DatabaseConstructorParam param) throws Exception {
+        hbaseIndexFiles.drop(param);
+        return new DatabaseConstructorResult();        
     }
 
 }

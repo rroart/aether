@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
 import roart.common.database.DatabaseFileLocationResult;
@@ -231,4 +232,13 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
+    @Override
+    public DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception {
+        return new DatabaseConstructorResult();
+    }
+
+    @Override
+    public DatabaseConstructorResult drop(DatabaseConstructorParam param) throws Exception {
+        return new DatabaseConstructorResult();        
+    }
 }

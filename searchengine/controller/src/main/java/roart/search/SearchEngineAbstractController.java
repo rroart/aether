@@ -82,6 +82,48 @@ public abstract class SearchEngineAbstractController {
 		return result;
 	}
 
+        @RequestMapping(value = "/" + EurekaConstants.CLEAR,
+                method = RequestMethod.POST)
+public SearchEngineConstructorResult processClear(@RequestBody SearchEngineConstructorParam param)
+                throws Exception {
+            SearchEngineAbstractSearcher search = getSearch(param.nodename, param.conf);
+        String error = null;
+        if (search != null) {
+                try {
+                        search.clear(param);
+                } catch (Exception e) {
+                        log.error(roart.common.constants.Constants.EXCEPTION, e);
+                        error = e.getMessage();
+                }
+        } else {
+                error = "did not exist";
+        }
+        SearchEngineConstructorResult result = new SearchEngineConstructorResult();
+        result.error = error;
+        return result;
+}
+
+        @RequestMapping(value = "/" + EurekaConstants.DROP,
+                method = RequestMethod.POST)
+public SearchEngineConstructorResult processDrop(@RequestBody SearchEngineConstructorParam param)
+                throws Exception {
+            SearchEngineAbstractSearcher search = getSearch(param.nodename, param.conf);
+        String error = null;
+        if (search != null) {
+                try {
+                        search.drop(param);
+                } catch (Exception e) {
+                        log.error(roart.common.constants.Constants.EXCEPTION, e);
+                        error = e.getMessage();
+                }
+        } else {
+                error = "did not exist";
+        }
+        SearchEngineConstructorResult result = new SearchEngineConstructorResult();
+        result.error = error;
+        return result;
+}
+
 	@RequestMapping(value = "/" + EurekaConstants.DELETE,
 			method = RequestMethod.POST)
 	public SearchEngineDeleteResult processDelete(@RequestBody SearchEngineDeleteParam param)

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
 import roart.common.database.DatabaseFileLocationResult;
@@ -143,5 +144,16 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
+    @Override
+    public DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception {
+        cassandraIndexFiles.clear(param);
+        return new DatabaseConstructorResult();
+    }
+
+    @Override
+    public DatabaseConstructorResult drop(DatabaseConstructorParam param) throws Exception {
+        cassandraIndexFiles.drop(param);
+        return new DatabaseConstructorResult();        
+    }
 }
 

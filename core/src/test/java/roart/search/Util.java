@@ -184,6 +184,38 @@ public class Util {
         return sender.send(param, param.webpath);
     }
 
+    public Object dbclear() {
+        ServiceParam param = new ServiceParam();
+        param.config = getConfig();
+        param.function = Function.DBCLEAR;
+        param.webpath = EurekaConstants.DBCLEAR;
+        return sender.send(param, param.webpath);
+    }
+    
+    public Object dbdrop() {
+        ServiceParam param = new ServiceParam();
+        param.config = getConfig();
+        param.function = Function.DBDROP;
+        param.webpath = EurekaConstants.DBDROP;
+        return sender.send(param, param.webpath);
+    }
+    
+    public Object indexclean() {
+        ServiceParam param = new ServiceParam();
+        param.config = getConfig();
+        param.function = Function.INDEXCLEAN;
+        param.webpath = EurekaConstants.INDEXCLEAN;
+        return sender.send(param, param.webpath);
+    }
+    
+    public Object indexdelete() {
+        ServiceParam param = new ServiceParam();
+        param.config = getConfig();
+        param.function = Function.INDEXDELETE;
+        param.webpath = EurekaConstants.INDEXDELETE;
+        return sender.send(param, param.webpath);
+    }
+    
     private NodeConfig getConfig() {
         return MyConfig.conf;
     }

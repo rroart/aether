@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
 
@@ -414,6 +415,23 @@ import roart.common.model.IndexFiles;
     @Transient
     public String getH2Dir() {
         return nodeconf.getH2dir();
+    }
+
+    public void clear(DatabaseConstructorParam param) {
+        try {
+        HibernateUtil.currentSession(getH2Dir()).createQuery("DROP ALL OBJECTS DELETE FILES;");
+    } catch (Exception e) {
+        log.error(Constants.EXCEPTION, e);
+    }
+    }
+
+    public void drop(DatabaseConstructorParam param) {
+ try {
+        HibernateUtil.currentSession(getH2Dir()).createQuery("delete from HibernateIndexFiles");
+
+    } catch (Exception e) {
+        log.error(Constants.EXCEPTION, e);
+    }
     }
     
     }
