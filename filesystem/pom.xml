@@ -15,6 +15,7 @@
   <name>Aether Disk Search Engine File System</name>
   <modules>
     <module>controller</module>
+    <module>s3</module>
     <module>hdfs</module>
     <module>local</module>
     <module>swift</module>

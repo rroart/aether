@@ -20,6 +20,7 @@ public class EurekaConstants {
     public static final String DATANUCLEUS = "DATANUCLEUS";
     public static final String LOCAL = "LOCAL";
     public static final String SWIFT = "SWIFT";
+    public static final String S3 = "S3";
     public static final String HDFS = "HDFS";
     public static final String TIKA = "TIKA";
     public static final String CALIBRE = "CALIBRE";

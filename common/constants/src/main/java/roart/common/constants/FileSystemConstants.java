@@ -2,7 +2,7 @@ package roart.common.constants;
 
 public class FileSystemConstants {
 
-    public enum FileSystemType { LOCAL, SWIFT, HDFS };
+    public enum FileSystemType { LOCAL, SWIFT, HDFS, S3 };
     
     public static final String LOCAL = "local:";
     public static final String FILE = "file:";
@@ -11,6 +11,7 @@ public class FileSystemConstants {
     public static final int HDFSLEN = 5;
     public static final String SWIFT = "swift:";
     public static final int SWIFTLEN = 6;
+    public static final String S3 = "s3:";
     public static final String FILESLASH = "file://";
     public static final int FILESLASHLEN = 7;
     public static final String HDFSSLASH = "hdfs://";

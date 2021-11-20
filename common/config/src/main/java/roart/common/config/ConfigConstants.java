@@ -66,6 +66,12 @@ public class ConfigConstants {
     public static final String FILESYSTEMSWIFTSWIFTCONFUSER = "filesystem.swift.swiftconfuser";
     public static final String FILESYSTEMSWIFTSWIFTCONFKEY = "filesystem.swift.swiftconfkey";
     public static final String FILESYSTEMSWIFTSWIFTCONFCONTAINER = "filesystem.swift.swiftconfcontainer";
+    public static final String FILESYSTEMS3 = "filesystem.s3[@enable]";
+    public static final String FILESYSTEMS3HOST = "filesystem.s3.host";
+    public static final String FILESYSTEMS3PORT = "filesystem.s3.port";
+    public static final String FILESYSTEMS3REGION = "filesystem.s3.region";
+    public static final String FILESYSTEMS3ACCESSKEY = "filesystem.s3.accesskey";
+    public static final String FILESYSTEMS3SECRETKEY = "filesystem.s3.secretkey";
     public static final String DATABASEHBASEHBASEQUORUM = "database.hbase.hbasequorum";
     public static final String DATABASEHBASEHBASEPORT = "database.hbase.hbaseport";
     public static final String DATABASEHBASEHBASEMASTER = "database.hbase.hbasemaster";

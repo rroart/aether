@@ -100,6 +100,10 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMHDFS);
     }
     
+    public Boolean wantS3() {
+        return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMS3);
+    }
+    
     public Boolean wantZookeeperSmall() {
         return !((Boolean) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG));
     }
@@ -284,6 +288,31 @@ public class NodeConfig extends MyConfig {
     @JsonIgnore
     public String getSwiftContainer() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFTSWIFTCONFCONTAINER);
+    }
+   
+    @JsonIgnore
+    public String getS3Host() {
+        return (String) getValueOrDefault(ConfigConstants.FILESYSTEMS3HOST);
+    }
+   
+    @JsonIgnore
+    public String getS3Port() {
+        return (String) getValueOrDefault(ConfigConstants.FILESYSTEMS3PORT);
+    }
+   
+    @JsonIgnore
+    public String getS3Region() {
+        return (String) getValueOrDefault(ConfigConstants.FILESYSTEMS3REGION);
+    }
+   
+    @JsonIgnore
+    public String getS3AccessKey() {
+        return (String) getValueOrDefault(ConfigConstants.FILESYSTEMS3ACCESSKEY);
+    }
+   
+    @JsonIgnore
+    public String getS3SecretKey() {
+        return (String) getValueOrDefault(ConfigConstants.FILESYSTEMS3SECRETKEY);
     }
    
     @JsonIgnore

@@ -13,6 +13,8 @@ public class FileSystemFactory {
             return new HDFSAccess();
         case SWIFT:
             return new SwiftAccess();
+        case S3:
+            return new S3Access();
         }
         return null;
     }

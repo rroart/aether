@@ -84,6 +84,7 @@ public class MyXMLConfig {
         //fsmap.put(ConfigConstants.FILESYSTEMLOCAL, FileSystemType.HDFS);
         fsmap.put(ConfigConstants.FILESYSTEMHDFS, FileSystemType.HDFS);
         fsmap.put(ConfigConstants.FILESYSTEMSWIFT, FileSystemType.SWIFT);
+        fsmap.put(ConfigConstants.FILESYSTEMS3, FileSystemType.S3);
 
         for (Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey();
