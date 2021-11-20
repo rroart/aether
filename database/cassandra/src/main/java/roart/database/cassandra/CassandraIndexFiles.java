@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
 
@@ -522,6 +523,15 @@ public class CassandraIndexFiles {
     String query = sb.toString();
     session.execute(query);
 
+    }
+
+    public void clear(DatabaseConstructorParam param) {
+        clear(TABLE_INDEXFILES_NAME);
+        clear(TABLE_FILES_NAME);
+    }
+
+    public void drop(DatabaseConstructorParam param) {
+        drop(param.getConf().getCassandraKeyspace());
     }
 }
 

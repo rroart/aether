@@ -325,7 +325,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().dbclear();
+            getInstance().dbclear();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -339,7 +339,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().dbdrop(param);
+             getInstance().dbdrop();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -353,7 +353,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().indexclean(param);
+            getInstance().indexclean();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -367,7 +367,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().indexdelete(param);
+            getInstance().indexdelete();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();

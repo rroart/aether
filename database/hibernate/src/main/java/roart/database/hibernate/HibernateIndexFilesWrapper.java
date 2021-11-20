@@ -204,12 +204,6 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
     }
 
     @Override
-    public DatabaseConstructorResult destroy2() throws Exception {
-        hibernateIndexFiles.destroy();
-        return null;"DROP ALL OBJECTS DELETE FILES;"
-    }
-
-    @Override
     public DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception {
         hibernateIndexFiles.clear(param);
         return new DatabaseConstructorResult();

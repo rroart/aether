@@ -160,11 +160,11 @@ public class IndexFilesDao {
 
     /*
     public static IndexFiles ensureExistence(String md5) throws Exception {
-	IndexFiles fi = getByMd5(md5);
-	if (fi == null) {
-	    indexFilesJpa.ensureExistence(md5);
-	}
-	return fi;
+        IndexFiles fi = getByMd5(md5);
+        if (fi == null) {
+            indexFilesJpa.ensureExistence(md5);
+        }
+        return fi;
     }
      */
 
@@ -374,6 +374,14 @@ public class IndexFilesDao {
         synchronized(IndexFilesDao.class) {
             return indexFiles.getBothByFilelocation(fls);
         }
+    }
+
+    public static void clear() {
+        indexFiles.clear();
+    }
+
+    public static void drop() {
+        indexFiles.drop();
     }
 
 }
