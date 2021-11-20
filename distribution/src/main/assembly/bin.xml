@@ -182,6 +182,13 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/../filesystem/s3/target</directory>
+      <includes>
+	<include>aether*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/../servicemanager/openshift/target</directory>
       <includes>
 	<include>aether*.jar</include>
