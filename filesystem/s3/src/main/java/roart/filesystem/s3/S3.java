@@ -50,6 +50,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
+//import software.amazon.awssdk.services.s3.S3Client;
 
 public class S3 extends FileSystemOperations {
 
@@ -67,6 +68,7 @@ public class S3 extends FileSystemOperations {
             ClientConfiguration clientConfiguration = new ClientConfiguration();
             clientConfiguration.setSignerOverride("AWSS3V4SignerType");
             
+            //S3Client s3Client2 = null;
             AmazonS3 s3Client = AmazonS3ClientBuilder
                     .standard()
                     .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://" + nodeConf.getS3Host() + ":" + nodeConf.getS3Port(), nodeConf.getS3Region()))

@@ -159,17 +159,22 @@
       <artifactId>aws-java-sdk</artifactId>
       <version>${aws.version}</version>
     </dependency-->    
-    <!--dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.s3</artifactId>
+      <version>${aether.version}</version>
+      <exclusions>
+    <exclusion>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-core</artifactId>
-      <version>${aws.version}</version>
-    </dependency>    
-    <dependency>
+    </exclusion>    
+    <exclusion>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
-      <version>${aws.version}</version>
-    </dependency-->
-    <dependency>
+    </exclusion>
+      </exclusions>
+    </dependency>
+    <!--dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>protocol-core</artifactId>
       <version>${awssdk.version}</version>
@@ -178,7 +183,7 @@
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>s3</artifactId>
       <version>${awssdk.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>

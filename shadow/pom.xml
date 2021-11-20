@@ -19,5 +19,6 @@
     <module>hbase</module>
     <module>mahout</module>
     <module>spark</module>
+    <module>s3</module>
   </modules>
 </project>
