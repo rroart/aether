@@ -51,10 +51,7 @@ public class Swift extends FileSystemOperations {
 
     /*private*/ SwiftConfig conf;
 
-    private Map<String, DirectoryOrObject> dooMap = new HashMap<>();
-
-    //public Swift() {
-    //}
+    private static final Character DELIMITER = '/';
 
     public Swift(String nodename, NodeConfig nodeConf) {
         super(nodename, nodeConf);
@@ -84,9 +81,9 @@ public class Swift extends FileSystemOperations {
     public FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
         List<FileObject> foList = new ArrayList<FileObject>();
-        DirectoryOrObject mydir = dooMap.get(f.object);
+        DirectoryOrObject mydir = new Directory(f.object, DELIMITER);
         try {
-            String containerName = param.conf.getSwiftContainer();
+            String containerName = param.str;
             Container container = conf.account.getContainer(containerName);
             if (mydir.isObject()) {
                 foList.add(f);
@@ -96,7 +93,6 @@ public class Swift extends FileSystemOperations {
                 for (DirectoryOrObject doo : list) {
                     FileObject fo = new FileObject(doo.getName(), this.getClass().getSimpleName());
                     foList.add(fo);
-                    dooMap.put(doo.getName(), doo);
                 }
             }
             FileSystemFileObjectResult result = new FileSystemFileObjectResult();
@@ -112,14 +108,14 @@ public class Swift extends FileSystemOperations {
     public FileSystemMyFileResult listFilesFull(FileSystemFileObjectParam param) throws Exception {
         FileObject f = param.fo;
         Map<String, MyFile> map = new HashMap<>();
-        DirectoryOrObject mydir = dooMap.get(f.object);
+        DirectoryOrObject mydir = new Directory(f.object, DELIMITER);
         try {
-            String containerName = param.conf.getSwiftContainer();
+            String containerName = param.str;
             Container container = conf.account.getContainer(containerName);
             if (mydir.isObject()) {
                 FileObject[] fo = new FileObject[1];
                 fo[0] = f;
-                MyFile my = getMyFile(containerName, fo, false);
+                MyFile my = getMyFile(containerName, fo, false, param.str);
                 map.put(my.absolutePath, my);
             } else {
                 Directory dir = mydir.getAsDirectory();
@@ -127,9 +123,8 @@ public class Swift extends FileSystemOperations {
                 for (DirectoryOrObject doo : list) {
                     FileObject[] fo = new FileObject[1];
                     fo[0] = new FileObject(doo.getName(), this.getClass().getSimpleName());
-                    MyFile my = getMyFile(containerName, fo, false);
+                    MyFile my = getMyFile(containerName, fo, false, param.str);
                     map.put(my.absolutePath, my);
-                    dooMap.put(doo.getName(), doo);
                 }
             }
             FileSystemMyFileResult result = new FileSystemMyFileResult();
@@ -144,8 +139,8 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
-        DirectoryOrObject path = dooMap.get(f.object);
-        String containerName = param.conf.getSwiftContainer();
+        DirectoryOrObject path = dooMapget(f, param.str);
+        String containerName = param.str;
         FileSystemBooleanResult result = new FileSystemBooleanResult();
         result.bool = getExistInner(f, containerName);
         return result;
@@ -154,7 +149,7 @@ public class Swift extends FileSystemOperations {
     private boolean getExistInner(FileObject f, String containerName) {
         boolean exist;
         try {
-            DirectoryOrObject mydir = dooMap.get(f.object);
+            DirectoryOrObject mydir = new Directory(f.object, DELIMITER);
             String dirName = mydir.getName();
             Container container = conf.account.getContainer(containerName);
             StoredObject so = container.getObject(dirName);
@@ -182,7 +177,7 @@ public class Swift extends FileSystemOperations {
     }
 
     private String getAbsolutePathInner(FileObject f) {
-        DirectoryOrObject path = dooMap.get(f.object);
+        DirectoryOrObject path = new Directory(f.object, DELIMITER);
         String p = FileSystemConstants.SWIFT + path.getName();
         return p;
     }
@@ -199,7 +194,7 @@ public class Swift extends FileSystemOperations {
     private boolean isDirectoryInner(FileObject f) {
         boolean isDirectory;
         try {
-            DirectoryOrObject doo = dooMap.get(f.object);
+            DirectoryOrObject doo = new Directory(f.object, DELIMITER);
             isDirectory = doo.isDirectory();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -211,14 +206,14 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
         FileSystemByteResult result = new FileSystemByteResult();
-        result.bytes = getInputStreamInner(param.fo);
+        result.bytes = getInputStreamInner(param.fo, param.str);
         return result;
     }
 
-    private byte[] getInputStreamInner(FileObject f) {
+    private byte[] getInputStreamInner(FileObject f, String str) {
         byte[] bytes;
         try {
-            DirectoryOrObject doo = dooMap.get(f.object);
+            DirectoryOrObject doo = dooMapget(f, str);
             StoredObject so = doo.getAsObject();
             bytes = so.downloadObject();
         } catch (Exception e) {
@@ -230,11 +225,11 @@ public class Swift extends FileSystemOperations {
 
     @Override
     public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) {
-        String containerName = param.conf.getSwiftContainer();
+        String containerName = param.str;
         Map<String, MyFile> map = new HashMap<>();
         for (String filename : param.paths) {
             FileObject[] fo = getInner(filename, containerName);
-            MyFile my = getMyFile(containerName, fo, true);
+            MyFile my = getMyFile(containerName, fo, true, param.str);
             map.put(filename, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
@@ -242,7 +237,7 @@ public class Swift extends FileSystemOperations {
         return result;
     }
 
-    private MyFile getMyFile(String containerName, FileObject[] fo, boolean withBytes) {
+    private MyFile getMyFile(String containerName, FileObject[] fo, boolean withBytes, String str) {
         MyFile my = new MyFile();
         my.fileObject = fo;
         if (fo[0] != null) {
@@ -251,7 +246,7 @@ public class Swift extends FileSystemOperations {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = getAbsolutePathInner(fo[0]);
                 if (withBytes) {
-                    my.bytes = getInputStreamInner(fo[0]);
+                    my.bytes = getInputStreamInner(fo[0], str);
                 }
             }
         }
@@ -261,22 +256,28 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemFileObjectResult getParent(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
-        DirectoryOrObject doo = dooMap.get(f.object);
+        DirectoryOrObject doo = dooMapget(f, param.str);
         String name = doo.getName();
         File fi = new File(name);
         String parent = fi.getParent();
-        DirectoryOrObject pardoo = new Directory(parent, '/');
+        DirectoryOrObject pardoo = new Directory(parent, DELIMITER);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
         fo[0] = new FileObject(pardoo.getName(), this.getClass().getSimpleName());
         result.setFileObject(fo);
-        dooMap.put(pardoo.getName(), pardoo);
         return result;
+    }
+
+    private DirectoryOrObject dooMapget(FileObject f, String str) {
+        String containerName = str;
+        Container container = conf.account.getContainer(containerName);
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public FileSystemFileObjectResult get(FileSystemPathParam param) {
-        FileObject[] fos = getInner(param.path, param.conf.getSwiftContainer());
+        FileObject[] fos = getInner(param.path, param.str);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         result.setFileObject(fos);
         return result;
@@ -298,10 +299,8 @@ public class Swift extends FileSystemOperations {
             // if it exists, it is a file and not a dir
             if (so.exists()) {
                 fo = new FileObject(so.getName(), this.getClass().getSimpleName());
-                dooMap.put(string, so);
             } else {
                 fo = new FileObject(string, this.getClass().getSimpleName());
-                dooMap.put(string, new Directory(string, '/'));
             }
             fos[0] = fo;
         } catch (Exception e) {
@@ -321,7 +320,7 @@ public class Swift extends FileSystemOperations {
         byte[] bytes;
         String md5;
         try {
-            bytes  = getInputStreamInner(param.fo);
+            bytes  = getInputStreamInner(param.fo, param.str);
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
             } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
