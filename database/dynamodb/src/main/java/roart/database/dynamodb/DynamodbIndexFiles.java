@@ -790,7 +790,7 @@ public class DynamodbIndexFiles {
         }
        }
     public String getIndexFiles() {
-        return config.getTableprefix() + " " + TABLE_INDEXFILES_NAME;
+        return config.getTableprefix() + "_" + TABLE_INDEXFILES_NAME;
     }
 public String getFiles() {
     return config.getTableprefix() + "_" + TABLE_FILES_NAME;
