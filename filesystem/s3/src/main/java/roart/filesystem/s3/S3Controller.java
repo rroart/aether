@@ -19,7 +19,7 @@ public class S3Controller extends FileSystemAbstractController {
 	}
 
 	@Override
-	protected FileSystemOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new S3(nodename, nodeConf);
+	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
+		return new S3(nodename, configid, nodeConf);
 	}
 }

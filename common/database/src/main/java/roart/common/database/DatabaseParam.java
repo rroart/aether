@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class DatabaseParam {
     private String nodename;
     
+    private String configid;
+    
     private NodeConfig conf;
 
     public DatabaseParam() {
@@ -31,6 +33,14 @@ public abstract class DatabaseParam {
 
     public void setNodename(String nodename) {
         this.nodename = nodename;
+    }
+
+    public String getConfigid() {
+        return configid;
+    }
+
+    public void setConfigid(String configid) {
+        this.configid = configid;
     }
 
     public NodeConfig getConf() {

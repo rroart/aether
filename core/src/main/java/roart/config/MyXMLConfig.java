@@ -13,7 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -23,6 +23,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.io.FileLocator;
 import org.apache.commons.configuration2.io.FileLocator.FileLocatorBuilder;
 import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.commons.io.FileUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -84,6 +85,8 @@ public class MyXMLConfig {
             if (myConfigFile == null) {
                 myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
             }
+            // md5 myconfigfile 
+            ControlService.configMd5 = DigestUtils.md5Hex(FileUtils.openInputStream(new File(myConfigFile)));
             log.info("myconf " + myConfigFile);
             getConfigInstance(myConfigFile);
             configxml = new XMLConfiguration();

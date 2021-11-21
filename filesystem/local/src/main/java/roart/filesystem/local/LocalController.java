@@ -19,7 +19,7 @@ public class LocalController extends FileSystemAbstractController {
 	}
 
 	@Override
-	protected FileSystemOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new LocalFileSystem(nodename, nodeConf);
+	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
+		return new LocalFileSystem(nodename, configid, nodeConf);
 	}
 }

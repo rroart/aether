@@ -19,7 +19,7 @@ public class HDFSController extends FileSystemAbstractController {
 	}
 
 	@Override
-	protected FileSystemOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new HDFS(nodename, nodeConf);
+	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
+		return new HDFS(nodename, configid, nodeConf);
 	}
 }

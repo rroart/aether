@@ -54,6 +54,7 @@ public abstract class IndexFilesAccess {
     public String clear() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
         param.setNodename(ControlService.nodename);
+        param.setConfigid(ControlService.configMd5);
         param.setConf(MyConfig.conf);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
         return result.error;
@@ -62,6 +63,7 @@ public abstract class IndexFilesAccess {
     public String drop() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
         param.setNodename(ControlService.nodename);
+        param.setConfigid(ControlService.configMd5);
         param.setConf(MyConfig.conf);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
         return result.error;

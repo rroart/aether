@@ -44,6 +44,7 @@ public abstract class ClassifyAccess {
     public String classify( InmemoryMessage message, String language) {
     	MachineLearningClassifyParam param = new MachineLearningClassifyParam();
         param.nodename = ControlService.nodename;
+        param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
     	param.message = message;
     	param.language = language;

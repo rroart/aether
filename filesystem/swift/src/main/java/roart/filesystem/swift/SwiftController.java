@@ -19,7 +19,7 @@ public class SwiftController extends FileSystemAbstractController {
 	}
 
 	@Override
-	protected FileSystemOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new Swift(nodename, nodeConf);
+	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
+		return new Swift(nodename, configid, nodeConf);
 	}
 }

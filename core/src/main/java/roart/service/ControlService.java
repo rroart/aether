@@ -104,6 +104,8 @@ import roart.util.MySets;
     
         static public String nodename = "localhost";
         
+        public static String configMd5 = "md5";
+        
         // called from ui
         public List overlapping(ServiceParam e) {
         return ClientHandler.doClient(e);

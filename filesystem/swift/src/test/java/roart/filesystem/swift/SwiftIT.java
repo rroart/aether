@@ -4,12 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
+import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemFileObjectResult;
 import roart.common.filesystem.FileSystemParam;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.model.FileObject;
+import roart.common.model.Location;
 import roart.filesystem.swift.Swift;
 import roart.filesystem.swift.SwiftConfig;
 
@@ -45,7 +47,7 @@ public class SwiftIT {
            config.setAuthenticationMethod(AuthenticationMethod.BASIC);
            Account account = new AccountFactory(config).createAccount();
            conf.account = account;
-           swift = new Swift(null, null);
+           swift = new Swift(null, null, null);
            swift.conf = conf;
            //log.info("here");
        }
@@ -63,7 +65,7 @@ public class SwiftIT {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         getParamConf(param);
         paramp.path = "xiangqi";
-        param.fo = new FileObject("xiangqi", "Swift");
+        param.fo = new FileObject("xiangqi", new Location(null, FileSystemConstants.S3TYPE, param.str));
         FileSystemFileObjectResult get = swift.get(paramp);
         System.out.println("r " + get.getFileObject());
         param.fo = get.getFileObject()[0];
