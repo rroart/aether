@@ -6,10 +6,6 @@
  *
  */
 module servicemanager.mesos {
-    exports roart.util;
-    exports roart.config;
-    exports roart.controller;
-
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires docker.java;

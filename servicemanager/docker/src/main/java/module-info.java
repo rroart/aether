@@ -6,10 +6,6 @@
  *
  */
 module servicemanager.docker {
-    exports roart.util;
-    exports roart.config;
-    exports roart.controller;
-
     requires docker.java;
     requires java.logging;
     requires java.ws.rs;
