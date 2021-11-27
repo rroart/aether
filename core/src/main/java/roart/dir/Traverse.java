@@ -27,6 +27,7 @@ import roart.common.service.ServiceParam;
 import roart.common.service.ServiceParam.Function;
 import roart.common.synchronization.MyLock;
 import roart.common.util.ExecCommand;
+import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 
@@ -50,6 +51,7 @@ import roart.util.MySets;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.tika.metadata.Metadata;
+import roart.common.model.Location;
 
 public class Traverse {
 
@@ -60,17 +62,20 @@ public class Traverse {
     /**
      * Check if filename/directory is among excluded directories
      * 
-     * @param filename of file to be tested
-     * @param dirlistnot an array of excluded directories
+     * @param fileObject of file to be tested
+     * @param dirlistnot2 an array of excluded directories
      * @return whether excluded
      */
 
-    private static boolean indirlistnot(String filename, String[] dirlistnot) {
-        if (dirlistnot == null) {
+    private static boolean indirlistnot(FileObject fileObject, FileObject[] dirlistnot2) {
+        if (dirlistnot2 == null) {
             return false;
         }
-        for (int i = 0; i < dirlistnot.length; i++) {
-            if (!dirlistnot[i].isEmpty() && filename.indexOf(dirlistnot[i])>=0) {
+        for (int i = 0; i < dirlistnot2.length; i++) {
+            if (!fileObject.location.equals(dirlistnot2[i].location)) {
+                continue;
+            }
+            if (!dirlistnot2[i].object.isEmpty() && fileObject.object.indexOf(dirlistnot2[i].object)>=0) {
                 return true;
             }
         }
@@ -106,18 +111,18 @@ public class Traverse {
     // check gives fs for new with path, eventually also compute new md5
     // then index if new
 
-    public Set<String> doList(String dirname) throws Exception {
+    public Set<String> doList(FileObject fileObject) throws Exception {
         Set<String> retset = new HashSet<>();
         if (isMaxed(myid, element)) {
             return retset;
         }
 
-        if (indirlistnot(dirname, dirlistnot)) {
+        if (indirlistnot(fileObject, dirlistnot)) {
             return retset;
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
-        FileObject dir = FileSystemDao.get(dirname);
+        FileObject dir = FileSystemDao.get(fileObject);
         List<MyFile> listDir = FileSystemDao.listFilesFull(dir);
         long time1 = System.currentTimeMillis();
         log.info("Time0 {}", usedTime(time1, time0));
@@ -146,13 +151,13 @@ public class Traverse {
             //log.info("file " + filename);
             if (file.isDirectory) {
                 log.debug("isdir {}", filename);
-                retset.addAll(doList(filename));
+                retset.addAll(doList(fo));
             } else {
                 retset.add(filename);
                 if (!nomd5) {
                     String queueid = Constants.TRAVERSEQUEUE;
                     MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
-                    TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
+                    TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
                     MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                     total.addAndGet(1);
                     MyAtomicLong count = MyAtomicLongs.get(traversecountid);
@@ -182,7 +187,7 @@ public class Traverse {
         for (IndexFiles file : files) {
             String md5 = file.getMd5();
             for (FileLocation filename : file.getFilelocations()) {
-                FileObject tmpfile = FileSystemDao.get(filename.getFilename());
+                FileObject tmpfile = FileSystemDao.get(FsUtil.getFileObject(filename));
                 FileObject dir = FileSystemDao.getParent(tmpfile);
                 String dirname = FileSystemDao.getAbsolutePath(dir);
                 HashSet<String> md5set = dirset.get(dirname);
@@ -204,14 +209,14 @@ public class Traverse {
     }
 
     // old, probably oudated by overlapping?
-    public static Set<String> dupdir (String dirname) throws Exception {
+    public static Set<String> dupdir (FileObject fileObject) throws Exception {
         boolean onlyone = false;
         boolean error = false;
         int count = 0;
         long size = 0;
         Set<String> retset = new HashSet<>();
         HashSet<String> md5set = new HashSet<>();
-        FileObject dir = FileSystemDao.get(dirname);
+        FileObject dir = FileSystemDao.get(fileObject);
         List<FileObject> listDir = FileSystemDao.listFiles(dir);
         for (FileObject fo : listDir) {
             String filename = FileSystemDao.getAbsolutePath(fo);
@@ -221,12 +226,12 @@ public class Traverse {
                 continue;
             }
             if (FileSystemDao.isDirectory(fo)) {
-                retset.addAll(dupdir(filename));
+                retset.addAll(dupdir(fo));
             } else {
                 if (error) {
                     continue;
                 }
-                String md5 = IndexFilesDao.getMd5ByFilename(filename);
+                String md5 = IndexFilesDao.getMd5ByFilename(fo);
                 IndexFiles files = IndexFilesDao.getByMd5(md5);
                 if (files == null) {
                     error = true;
@@ -244,7 +249,7 @@ public class Traverse {
             }
         }
         if (!error && !onlyone && count>0) {
-            retset.add(dirname + " size " + size);
+            retset.add(fileObject + " size " + size);
         }
         return retset;
     }
@@ -274,7 +279,7 @@ public class Traverse {
             if (element.getClientQueueElement().suffix != null && !fl.isLocal(ControlService.nodename) && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
                 continue;
             }
-            FileObject file = FileSystemDao.get(fl.toString());
+            FileObject file = FileSystemDao.get(FsUtil.getFileObject(fl.toString()));
             if (!FileSystemDao.exists(file)) {
                 continue;
             }
@@ -373,10 +378,10 @@ public class Traverse {
             return null;
         }
         for (FileLocation filelocation : filelocations) {
-            String node = filelocation.getNode();
+            Location node = FsUtil.getLocation(filelocation.getNode());
             String filename = filelocation.getFilename();
             if (node == null || node.equals(ControlService.nodename)) {
-                FileObject file = FileSystemDao.get(filename);
+                FileObject file = FileSystemDao.get(new FileObject(filename, node));
                 if (file == null) {
                 log.error("try file {}", filename);
                 continue;
@@ -482,12 +487,14 @@ public class Traverse {
             }
             String md5 = index.getMd5();
             String name = getExistingLocalFile(index);
+            FileLocation fl = index.getaFilelocation();
+            FileObject filename = FsUtil.getFileObject(fl);
             if (name == null) {
                 log.error("filename should not be null {}", md5);
                 continue;
             }
             // TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, name, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
+            TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
             if (!filterindex(index, trav)) {
                 continue;
             }
@@ -524,12 +531,12 @@ public class Traverse {
                 return traversedb();
             }
             if (add != null) {
-                return doList(add);    
+                return doList(FsUtil.getFileObject(add));    
             } else {
                 Set<String> retList = new HashSet<>();
                 String[] dirlist = MyConfig.conf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
-                    retList.addAll(doList(dirlist[i]));
+                    retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));
                 }
             }
         } catch (Exception e) {
@@ -557,12 +564,12 @@ public class Traverse {
     String traversecountid;
     boolean nomd5;
 
-    String[] dirlistnot;
+    FileObject[] dirlistnot;
     SearchDisplay display;
 
     //Set<String> md5sdone = new HashSet<String>();
 
-    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnot, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
+    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
 
         this.myid = myid;
         this.element = element;
@@ -576,7 +583,12 @@ public class Traverse {
         this.traversecountid = traversecountid;
         this.nomd5 = nomd5;
 
-        this.dirlistnot = MyConfig.conf.getDirListNot();
+        dirlistnotarr = MyConfig.conf.getDirListNot();
+        dirlistnot = new FileObject[dirlistnotarr.length];
+        int i = 0;
+        for (String dir : dirlistnotarr) {
+            dirlistnot[i++] = FsUtil.getFileObject(dir);
+        }
         //UI ui = element.ui;
         //this.display = SearchService.getSearchDisplay(ui);
     }

@@ -8,6 +8,7 @@ import roart.util.MyList;
 import roart.util.MyLists;
 import roart.lang.LanguageDetect;
 import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineDeleteResult;
@@ -52,7 +53,7 @@ public class Search {
      	String md5 = el.md5;
     	//InputStream inputStream = el.inputStream;
     	IndexFiles dbindex = el.index;
-    	String dbfilename = el.dbfilename;
+    	FileObject dbfilename = el.dbfilename;
 	Map<String, String> metadata = el.metadata;
 	String lang = el.lang;
 	String content = getParam(el.message);

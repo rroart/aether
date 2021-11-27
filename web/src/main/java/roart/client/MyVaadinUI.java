@@ -1549,12 +1549,14 @@ public class MyVaadinUI extends UI implements ViewDisplay {
                         // TODO FIX
                         final FileObject fo = null;
                         //final FileObject fo = FileSystemDao.get(filename);
+                        /*
                         if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS)) {
                             filename = filename.substring(FileSystemConstants.FILELEN);
                         }
                         if (filename.startsWith(FileSystemConstants.SWIFT)) {
                             filename = filename.substring(FileSystemConstants.SWIFTLEN);
                         }
+                        */
                         int i = filename.lastIndexOf("/");
                         String fn = filename.substring(i + 1);
                         StreamResource resource = new StreamResource(new StreamSource() {

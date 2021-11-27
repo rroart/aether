@@ -21,4 +21,5 @@ module elastic {
     requires spring.boot;
     requires aether.shadow.elastic;
     requires org.apache.httpcomponents.httpcore;
+    requires common.model;
 }

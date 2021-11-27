@@ -18,6 +18,7 @@ import org.xml.sax.SAXException;
 
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.FileSystemConstants;
 import roart.common.config.ConfigConstants;
 import roart.common.config.Converter;
 import roart.common.config.MyConfig;
@@ -77,14 +78,15 @@ public class MyXMLConfig {
         map.put(ConfigConstants.SEARCHENGINESOLR, "aether-solr" + version);
         map.put(ConfigConstants.SEARCHENGINELUCENE, "aether-lucene" + version);
         map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
-        //map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
-        //map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
+        map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
+        map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
+        map.put(ConfigConstants.FILESYSTEMS3, "aether-s3" + version);
 
-        Map<String, FileSystemType> fsmap = new HashMap<>();
+        Map<String, String> fsmap = new HashMap<>();
         //fsmap.put(ConfigConstants.FILESYSTEMLOCAL, FileSystemType.HDFS);
-        fsmap.put(ConfigConstants.FILESYSTEMHDFS, FileSystemType.HDFS);
-        fsmap.put(ConfigConstants.FILESYSTEMSWIFT, FileSystemType.SWIFT);
-        fsmap.put(ConfigConstants.FILESYSTEMS3, FileSystemType.S3);
+        fsmap.put(ConfigConstants.FILESYSTEMHDFS, FileSystemConstants.HDFSTYPE);
+        fsmap.put(ConfigConstants.FILESYSTEMSWIFT, FileSystemConstants.SWIFTTYPE);
+        fsmap.put(ConfigConstants.FILESYSTEMS3, FileSystemConstants.S3TYPE);
 
         for (Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -99,7 +101,8 @@ public class MyXMLConfig {
                 // make this oo again
                 case ConfigConstants.FILESYSTEMHDFS:
                 case ConfigConstants.FILESYSTEMSWIFT:
-                    Set<FileSystemType> fileSystems = new HashSet<>();
+                case ConfigConstants.FILESYSTEMS3:
+                    Set<String> fileSystems = new HashSet<>();
                     fileSystems.add(fsmap.get(entry.getKey()));
                     String dirlist = (String) configInstance.getValueOrDefault(ConfigConstants.FSDIRLIST);
                     SimpleController.startFsServiceWithDirList(dirlist, fileSystems);

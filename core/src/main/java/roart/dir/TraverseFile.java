@@ -75,7 +75,7 @@ public class TraverseFile {
             count.addAndGet(-1);
             return;
         }
-        String filename = trav.getFilename();
+        FileObject filename = trav.getFileobject();
         FileObject fo = FileSystemDao.get(filename);
 
         //MyLock lock2 = MyLockFactory.create();
@@ -84,7 +84,7 @@ public class TraverseFile {
         String md5 = IndexFilesDao.getMd5ByFilename(filename);
         log.debug("info {} {}", md5, filename);
         MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
-        if (!filestodoset.add(filename)) {
+        if (!filestodoset.add(filename.toString())) {
             log.error("already added {}", filename);
         }
         IndexFiles files = null;
@@ -108,7 +108,7 @@ public class TraverseFile {
                     }
                     // modify write file
                     String nodename = ControlService.nodename;
-                    files.addFile(filename, nodename);
+                    files.addFile(filename.object, filename.location.toString());
                     IndexFilesDao.addTemp(files);
                     log.info("adding md5 file {}", filename);
                 }
@@ -116,7 +116,7 @@ public class TraverseFile {
                 if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
                         MySet<String> newset = (MySet<String>) MySets.get(trav.getNewsetid()); 
-                        newset.add(filename);
+                        newset.add(filename.toString());
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -126,7 +126,7 @@ public class TraverseFile {
                 count.addAndGet(-1);
                 log.error(Constants.EXCEPTION, e);
                 MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
-                notfoundset.add(filename);
+                notfoundset.add(filename.toString());
                 return;
             } catch (Exception e) {
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -150,7 +150,7 @@ public class TraverseFile {
             if (files.getFilelocations().isEmpty()) {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
-                files.addFile(filename, nodename);
+                files.addFile(filename.object, filename.location.toString());
                 IndexFilesDao.addTemp(files);
             }
             log.debug("info {} {}", md5, files);
@@ -196,7 +196,7 @@ public class TraverseFile {
                     files.setLock(null);
                 }
             }
-            if (!filestodoset.remove(filename)) {
+            if (!filestodoset.remove(filename.toString())) {
                 log.error("already removed {}", filename);
             }
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -207,7 +207,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Map<String, MyFile> fsMap, Map<String, String> md5Map, Map<String, IndexFiles> ifMap)
+    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -220,7 +220,7 @@ public class TraverseFile {
             count.addAndGet(-1);
             return;
         }
-        String filename = trav.getFilename();
+        FileObject filename = trav.getFileobject();
         FileObject fo = fsMap.get(filename).fileObject[0];
 
         //MyLock lock2 = MyLockFactory.create();
@@ -229,7 +229,7 @@ public class TraverseFile {
         String md5 = md5Map.get(filename);
         log.debug("info {} {}", md5, filename);
         MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
-        if (!filestodoset.add(filename)) {
+        if (!filestodoset.add(filename.toString())) {
             log.error("already added {}", filename);
         }
         IndexFiles files = null;
@@ -257,7 +257,7 @@ public class TraverseFile {
                         }
                     // modify write file
                     String nodename = ControlService.nodename;
-                    files.addFile(filename, nodename);
+                    files.addFile(filename.object, filename.location.toString());
                     IndexFilesDao.addTemp(files);
                     log.info("adding md5 file {}", filename);
                 }
@@ -265,7 +265,7 @@ public class TraverseFile {
                 if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
                         MySet<String> newset = (MySet<String>) MySets.get(trav.getNewsetid()); 
-                        newset.add(filename);
+                        newset.add(filename.toString());
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -275,7 +275,7 @@ public class TraverseFile {
                 count.addAndGet(-1);
                 log.error(Constants.EXCEPTION, e);
                 MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
-                notfoundset.add(filename);
+                notfoundset.add(filename.toString());
                 return;
             } catch (Exception e) {
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -299,7 +299,7 @@ public class TraverseFile {
             if (files.getFilelocations().isEmpty()) {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
-                files.addFile(filename, nodename);
+                files.addFile(filename.object, filename.location.toString());
                 IndexFilesDao.addTemp(files);
             }
             log.debug("info {} {}", md5, files);
@@ -345,7 +345,7 @@ public class TraverseFile {
                     files.setLock(null);
                 }
             }
-            if (!filestodoset.remove(filename)) {
+            if (!filestodoset.remove(filename.toString())) {
                 log.error("already removed {}", filename);
             }
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -356,9 +356,9 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Set<String> filenames)
+    public static void handleFo3(TraverseQueueElement trav, Set<FileObject> filenames)
             throws Exception {
-        String filename = trav.getFilename();
+        FileObject filename = trav.getFileobject();
         // ADD
         // fo=fsdao.get(fn) fsdao.exists(fo) fsdao.getfis()
         // md5=ifdao.getmd5(fn) ifdao.getbymd5(md5)
@@ -377,7 +377,7 @@ public class TraverseFile {
      */
     
     public static void indexsingle(TraverseQueueElement trav,
-            String md5, String filename, IndexFiles index, Map<String, MyFile> fsMap) {
+            String md5, FileObject filename, IndexFiles index, Map<FileObject, MyFile> fsMap) {
         int maxfailed = MyConfig.conf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
             int failed = index.getFailed();
@@ -404,13 +404,13 @@ public class TraverseFile {
         //size = doTika(filename, filename, md5, index, retlist);
     }
 
-    public static Map<String, MyFile> handleFo3(Set<String> filenames) {
-        Map<String, MyFile> result = FileSystemDao.getWithInputStream(filenames);
+    public static Map<FileObject, MyFile> handleFo3(Set<FileObject> filenames) {
+        Map<FileObject, MyFile> result = FileSystemDao.getWithInputStream(filenames);
         return result;
     }
 
-    public static Map<String, String> handleFo4(Set<String> filenames) throws Exception {
-        Map<String, String> result = IndexFilesDao.getMd5ByFilename(filenames);
+    public static Map<FileObject, String> handleFo4(Set<FileObject> filenames) throws Exception {
+        Map<FileObject, String> result = IndexFilesDao.getMd5ByFilename(filenames);
         return result;
     }
 

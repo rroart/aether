@@ -118,7 +118,6 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
                 String indexName = nodeConf.luceneIndex();
 		String md5 = index.md5; 
 		//InputStream inputStream, 
-		String dbfilename = index.dbfilename;
 		String[] metadata = index.metadata;
 		String lang = index.lang;
 		String classification = index.classification;

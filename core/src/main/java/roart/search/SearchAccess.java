@@ -6,6 +6,7 @@ import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineConstructorParam;
@@ -82,7 +83,7 @@ public abstract class SearchAccess {
         return result.error;
     }
     
-    public int indexme(String type, String md5, String dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
+    public int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
         Map<String, String> md = metadata;
         String[] str = new String[md.keySet().size()];
         int i = 0;

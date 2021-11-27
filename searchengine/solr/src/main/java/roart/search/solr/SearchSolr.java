@@ -102,7 +102,6 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		String type = index.type;
 		String md5 = index.md5; 
 		//InputStream inputStream,
-		String dbfilename = index.dbfilename;
 		String[] metadata = index.metadata;
 		String lang = index.lang;
 		String classification = index.classification;

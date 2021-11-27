@@ -38,6 +38,7 @@ import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
+import roart.common.util.FsUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -345,7 +346,7 @@ public class HbaseIndexFiles {
             if (result.isEmpty()) {
                 String fn = fl.getFilename();
                 if (fn != null) {
-                    fn = fn.substring(5);
+                    //fn = fn. substring(5);
                     get = new Get(Bytes.toBytes(fn));
                     get.addFamily(filescf);
                     result = filesTable.get(get);
@@ -414,7 +415,7 @@ public class HbaseIndexFiles {
         if (fl == null) {
             return null;
         }
-        return new FileLocation(fl, config.getNodename(), null);
+        return FsUtil.getFileLocation(fl);
     }
 
     private String convertNullNot(String s) {

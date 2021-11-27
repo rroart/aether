@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorParam;
@@ -23,6 +24,8 @@ import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
+import roart.common.model.FileObject;
+import roart.common.util.FsUtil;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -207,6 +210,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         String zookeeperConnectionString = System.getProperty("ZOO");
         CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
+        String nodename = System.getProperty("NODE");
         String ip = System.getProperty("IP");
         String fs = System.getProperty("FS");
         String path = System.getProperty("PATH");
@@ -223,17 +227,40 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         log.info("Whereami {}", whereami);
         byte[] bytes = whereami.getBytes();
         for (String aPath : paths) {
-            if (curatorClient.checkExists().forPath("/fs/" + fs + aPath) != null) {
-                curatorClient.delete().deletingChildrenIfNeeded().forPath("/fs/" + fs + aPath);
+            FileObject fo = FsUtil.getFileObject(aPath);
+            if (fo.location.fs == null || fo.location.fs.isEmpty()) {
+                fo.location.fs = FileSystemConstants.LOCALTYPE;
             }
-            curatorClient.create().creatingParentsIfNeeded().forPath("/fs/" + fs + aPath, bytes);
+            String str = "/fs" + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+            if (str.endsWith("/")) {
+                str = str.substring(0, str.length() - 1);
+            }
+            if (curatorClient.checkExists().forPath(str) != null) {
+                curatorClient.delete().deletingChildrenIfNeeded().forPath(str);
+            }
+            curatorClient.create().creatingParentsIfNeeded().forPath(str, bytes);
         }
         while (true) {
             Thread.sleep(10000);
             for (String aPath : paths) {
-                curatorClient.setData().forPath("/fs/" + fs + aPath, bytes);
+                FileObject fo = FsUtil.getFileObject(aPath);
+                if (fo.location.fs == null || fo.location.fs.isEmpty()) {
+                    fo.location.fs = FileSystemConstants.LOCALTYPE;
+                }
+                String str = "/fs" + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+                if (str.endsWith("/")) {
+                    str = str.substring(0, str.length() - 1);
+                }
+                curatorClient.setData().forPath(str, bytes);
             }
         }
     }
 
+    private static String stringOrNull(String string) {
+        if (string == null || string.isEmpty()) {
+            return "";
+        } else {
+            return "/" + string;
+        }
+    }
 }

@@ -20,9 +20,9 @@ public class RemoteFileSystemAccess extends FileSystemAccess {
 
     private static Logger log = LoggerFactory.getLogger(RemoteFileSystemAccess.class);
 
-    public static String copyFileToTmp(String filename){
-        int i = filename.lastIndexOf("/");
-        String fn = "/tmp/hdfs" + filename.substring(i + 1);
+    public static String copyFileToTmp(FileObject filename){
+        int i = filename.object.lastIndexOf("/");
+        String fn = "/tmp/hdfs" + filename.object.substring(i + 1);
         log.info("copy to local filenames {} {}",filename, fn);
         FileObject file = FileSystemDao.get(filename);
         InputStream in = FileSystemDao.getInputStream(file);
@@ -41,7 +41,7 @@ public class RemoteFileSystemAccess extends FileSystemAccess {
     }
 
     @Override
-    public String getLocalFilesystemFile(String filename) {
+    public String getLocalFilesystemFile(FileObject filename) {
         String tmpfn = copyFileToTmp(filename);
         String fn = tmpfn;
         return fn;

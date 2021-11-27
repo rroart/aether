@@ -12,6 +12,7 @@ module hibernate {
     requires common.constants;
     requires common.database;
     requires common.model;
+    requires common.util;
     requires database;
     requires java.persistence;
     requires java.sql;

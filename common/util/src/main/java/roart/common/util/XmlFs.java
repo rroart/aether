@@ -22,6 +22,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import roart.common.constants.FileSystemConstants.FileSystemType;
+import roart.common.model.FileObject;
+import roart.common.model.Location;
 
 public class XmlFs {
     public String[] getDirList(String file) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
@@ -41,23 +43,24 @@ public class XmlFs {
         return content.split(",");
     }
     
-    public Map<FileSystemType, List<String>> getDirListMap(File file) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+    public Map<Location, List<FileObject>> getDirListMap(File file) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
         String[] dirList = getDirList(file);
         return getDirListMap(dirList);
     }
 
-    public Map<FileSystemType, List<String>> getDirListMap(String dirList) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+    public Map<Location, List<FileObject>> getDirListMap(String dirList) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
         return getDirListMap(dirList.split(","));
     }
     
-    public Map<FileSystemType, List<String>> getDirListMap(String[] dirList) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
-        Map<FileSystemType, List<String>> retMap = new EnumMap<>(FileSystemType.class);
+    public Map<Location, List<FileObject>> getDirListMap(String[] dirList) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+        Map<Location, List<FileObject>> retMap = new HashMap<>();
         for (String dir : dirList) {
-            FileSystemType myType = FsUtil.getFileSystemType(dir);
-            if (myType != null) {
-                List<String> list = retMap.computeIfAbsent(myType, f -> new ArrayList<>());
-                dir = FsUtil.getFsPath(dir);
-                list.add(dir);
+            FileObject fok = FsUtil.getFileObject(dir);
+            FileObject fo = FsUtil.getFileObject(dir);
+            fok.location.extra = null;
+            if (true || fo != null) {
+                List<FileObject> list = retMap.computeIfAbsent(fok.location, f -> new ArrayList<>());
+                list.add(fo);
             } else {
                 System.out.println("MyType null");
             }

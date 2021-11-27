@@ -144,6 +144,11 @@
       <artifactId>aether-common-constants</artifactId>
       <version>${aether.version}</version>
     </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-util</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
     <!--dependency>
 	<groupId>org.hibernate</groupId>
 	<artifactId>hibernate</artifactId>

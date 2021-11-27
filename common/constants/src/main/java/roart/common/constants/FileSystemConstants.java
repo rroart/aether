@@ -4,6 +4,12 @@ public class FileSystemConstants {
 
     public enum FileSystemType { LOCAL, SWIFT, HDFS, S3 };
     
+    public static final String LOCALTYPE = "local";
+    public static final String HDFSTYPE = "hdfs";
+    public static final String SWIFTTYPE = "swift";
+    public static final String S3TYPE = "s3";
+    
+    /*
     public static final String LOCAL = "local:";
     public static final String FILE = "file:";
     public static final int FILELEN = 5;
@@ -20,4 +26,5 @@ public class FileSystemConstants {
     public static final int SWIFTSLASHLEN = 8;
     public static final String DOUBLESLASH = "//";
     public static final int DOUBLESLASHLEN = 2;
+    */
 }

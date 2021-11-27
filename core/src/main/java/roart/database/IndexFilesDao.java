@@ -15,6 +15,7 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.synchronization.MyLock;
 import roart.service.ControlService;
@@ -121,9 +122,9 @@ public class IndexFilesDao {
         }
     }
 
-    public static String getMd5ByFilename(String filename) throws Exception {
+    public static String getMd5ByFilename(FileObject filename) throws Exception {
         String nodename = ControlService.nodename;
-        FileLocation fl = new FileLocation(nodename, filename);
+        FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
         synchronized(IndexFilesDao.class) {
             return indexFiles.getMd5ByFilelocation(fl);
         }
@@ -352,15 +353,24 @@ public class IndexFilesDao {
         }
     }
 
-    public static Map<String, String> getMd5ByFilename(Set<String> filenames) throws Exception {
-        String nodename = ControlService.nodename;
+    public static Map<FileObject, String> getMd5ByFilename(Set<FileObject> filenames) throws Exception {
         Set<FileLocation> fls = new HashSet<>();
-        for (String filename : filenames) {
-            FileLocation fl = new FileLocation(nodename, filename);
+        for (FileObject filename : filenames) {
+            FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
             fls.add(fl);
+            if ("::".equals(filename.location.toString())) {
+                fls.add(new FileLocation(null, "file:" + filename.object));
+                fls.add(new FileLocation(null, "file://localhost" + filename.object));
+                fls.add(new FileLocation(null, "localhost:" + filename.object));
+            }
         }
         synchronized(IndexFilesDao.class) {
-            return indexFiles.getMd5ByFilelocation(fls);
+            Map<String, String> map = indexFiles.getMd5ByFilelocation(fls);
+            Map<FileObject, String> retMap = new HashMap<>();
+            for (Entry<String, String> entry : map.entrySet()) {
+                retMap.put(new FileObject(entry.getKey(), filenames.iterator().next().location), entry.getValue());
+            }
+            return retMap;
         }
     }
 

@@ -24,6 +24,7 @@ import org.javaswift.joss.client.factory.AccountFactory;
 import org.javaswift.joss.client.factory.AuthenticationMethod;
 import org.javaswift.joss.model.Account;
 import org.junit.jupiter.api.BeforeEach;
+//import roart.common.util.FsUtil;
 
 public class SwiftIT {
     
@@ -64,8 +65,8 @@ public class SwiftIT {
         getParamConf(paramp);
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         getParamConf(param);
-        paramp.path = "xiangqi";
-        param.fo = new FileObject("xiangqi", new Location(null, FileSystemConstants.S3TYPE, param.str));
+        paramp.path = null; // FsUtil.getFileObject(":swift:chess:xiangqi");
+        param.fo = new FileObject("xiangqi", new Location(null, FileSystemConstants.S3TYPE, "chess"));
         FileSystemFileObjectResult get = swift.get(paramp);
         System.out.println("r " + get.getFileObject());
         param.fo = get.getFileObject()[0];
@@ -79,7 +80,7 @@ public class SwiftIT {
         FileSystemPathParam paramp = new FileSystemPathParam();
         getParamConf(param);
         getParamConf(paramp);
-        paramp.path = ".";
+        paramp.path = null; // FsUtil.getFileObject(":swift:chess:.");
         FileSystemFileObjectResult res;
         FileSystemFileObjectResult resp;
         resp = swift.get(paramp);
@@ -88,7 +89,7 @@ public class SwiftIT {
         if (res != null) {
         System.out.println("l1 " + res.getFileObject().length);
         }
-        paramp.path = "/";
+        paramp.path = null; // FsUtil.getFileObject(":swift:chess:/");
         resp = swift.get(paramp);
         //param.fo = new FileObject("/");
         param.fo = resp.getFileObject()[0];
@@ -96,7 +97,7 @@ public class SwiftIT {
         if (res != null) {
         System.out.println("l2 " + res.getFileObject().length + " " + res.getFileObject()[0].object);
         }
-        paramp.path = "xiangqi";
+        paramp.path = null; // FsUtil.getFileObject(":swift:chess:xiangqi");
         resp = swift.get(paramp);
         //param.fo = new FileObject("xiangqi");
         param.fo = resp.getFileObject()[0];
@@ -104,7 +105,7 @@ public class SwiftIT {
         if (res != null) {
         System.out.println("l3 " + res.getFileObject().length);
         }
-        paramp.path = "swift:/chess/xiangqi/";
+        paramp.path = null; // FsUtil.getFileObject(":swift:chess:/xiangqi/");
         resp = swift.get(paramp);
         //param.fo = new FileObject("xiangqi");
         param.fo = resp.getFileObject()[0];

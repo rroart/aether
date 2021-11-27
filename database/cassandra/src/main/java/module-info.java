@@ -15,6 +15,7 @@ module cassandra {
     requires common.constants;
     requires common.database;
     requires common.model;
+    requires common.util;
     requires guava;
     requires org.slf4j;
     requires spring.boot.autoconfigure;

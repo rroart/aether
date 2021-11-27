@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.dir.TraverseFile;
 import roart.queue.TraverseQueueElement;
@@ -49,7 +50,7 @@ public class TraverseQueueRunner implements Runnable {
                     break;
                 }
                 traverseList.add(trav);
-                String filename = trav.getFilename();
+                FileObject filename = trav.getFileobject();
                 log.info("trav cli {}", filename);
             }
             if (traverseList.isEmpty()) {
@@ -85,14 +86,14 @@ public class TraverseQueueRunner implements Runnable {
     }
 
     private void handleList2(List<TraverseQueueElement> traverseList) throws Exception {
-        Set<String> filenames = new HashSet<>();
+        Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {
             TraverseFile.handleFo3(trav, filenames);
         }
         long time0 = System.currentTimeMillis();
-        Map<String, MyFile> fsMap = TraverseFile.handleFo3(filenames);
+        Map<FileObject, MyFile> fsMap = TraverseFile.handleFo3(filenames);
         long time1 = System.currentTimeMillis();
-        Map<String, String> md5Map = TraverseFile.handleFo4(filenames);
+        Map<FileObject, String> md5Map = TraverseFile.handleFo4(filenames);
         long time2 = System.currentTimeMillis();
         Map<String, IndexFiles> ifMap = TraverseFile.handleFo5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         long time3 = System.currentTimeMillis();

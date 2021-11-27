@@ -419,7 +419,7 @@ import roart.common.model.IndexFiles;
 
     public void clear(DatabaseConstructorParam param) {
         try {
-        HibernateUtil.currentSession(getH2Dir()).createQuery("DROP ALL OBJECTS DELETE FILES;");
+            HibernateUtil.currentSession(getH2Dir()).createQuery("delete from HibernateIndexFiles");
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
@@ -427,8 +427,10 @@ import roart.common.model.IndexFiles;
 
     public void drop(DatabaseConstructorParam param) {
  try {
-        HibernateUtil.currentSession(getH2Dir()).createQuery("delete from HibernateIndexFiles");
-
+     //HibernateUtil.currentSession(getH2Dir()).createQuery("DROP ALL OBJECTS DELETE FILES");
+     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP TABLE INDEX");
+     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP ALL OBJECTS DELETE FILES");
+ 
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }

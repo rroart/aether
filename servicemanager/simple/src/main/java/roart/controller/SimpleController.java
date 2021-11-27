@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -20,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.xml.sax.SAXException;
 
 import roart.common.config.ConfigConstants;
+import roart.common.constants.FileSystemConstants;
 import roart.common.constants.FileSystemConstants.FileSystemType;
+import roart.common.model.FileObject;
+import roart.common.model.Location;
 import roart.common.util.JarThread;
 import roart.common.util.XmlFs;
 
@@ -48,25 +52,29 @@ public class SimpleController implements CommandLineRunner {
             myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
         }
         Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", null, new String[] { myConfigFile });
-        new Thread(core).start();
-        Set<FileSystemType> fileSystems = new HashSet<>();
-        fileSystems.add(FileSystemType.LOCAL);
+        //new Thread(core).start();
+        Set<String> fileSystems = new HashSet<>();
+        fileSystems.add(FileSystemConstants.LOCALTYPE);
         startFsService(myConfigFile, fileSystems);
     }
     
-    public static void startFsService(String configFile, Set<FileSystemType> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        Map<FileSystemType, List<String>> filesystemMap = new XmlFs().getDirListMap(new File(configFile));
+    public static void startFsService(String configFile, Set<String> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+        Map<Location, List<FileObject>> filesystemMap = new XmlFs().getDirListMap(new File(configFile));
         startFsService(filesystemMap, fileSystems);
     } 
         
-    public static void startFsService(Map<FileSystemType, List<String>> filesystemMap, Set<FileSystemType> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        for (Entry<FileSystemType, List<String>> entry : filesystemMap.entrySet()) {
-            FileSystemType myType = entry.getKey();
-            if (!fileSystems.contains(myType)) {
+    public static void startFsService(Map<Location, List<FileObject>> filesystemMap, Set<String> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+        for (Entry<Location, List<FileObject>> entry : filesystemMap.entrySet()) {
+            Location loc = entry.getKey();
+            if (loc.fs == null) {
+                loc.fs = FileSystemConstants.LOCALTYPE;
+            }
+            if (!fileSystems.contains(loc.fs)) {
                 continue;
             }
             //  -DFS=hdfs -DPATH=/tmp -DZOO=localhost:2181.
-            List<String> paths = entry.getValue();
+            List<FileObject> fos = entry.getValue();
+            List<String> paths = fos.stream().map(e -> e.toString()).collect(Collectors.toList());
             String path = StringUtils.join(paths, ',');
             /*
             int index = entry.indexOf(':');
@@ -74,19 +82,20 @@ public class SimpleController implements CommandLineRunner {
                 path = path.substring(index + 1);
             }
             */
-            String[] myargs = new String[3];
-            myargs[0] = "-DFS=" + myType;
+            String[] myargs = new String[4];
+            myargs[0] = "-DFS=" + loc.fs;
             myargs[1] = "-DPATH=" + path;
             myargs[2] = "-DZOO=localhost:2181";
-            String myTypeStr = ("" + myType).toLowerCase();
+            myargs[3] = "-DNODE=" + (loc.nodename != null ? loc.nodename : "");
+            String myTypeStr = ("" + loc.fs).toLowerCase();
             Runnable local = new JarThread("aether-" + myTypeStr + "-0.10-SNAPSHOT.jar", myargs);
             new Thread(local).start();
         }
 
     }
 
-    public static void startFsServiceWithDirList(String dirlist, Set<FileSystemType> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        Map<FileSystemType, List<String>> filesystemMap = new XmlFs().getDirListMap(dirlist);
+    public static void startFsServiceWithDirList(String dirlist, Set<String> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+        Map<Location, List<FileObject>> filesystemMap = new XmlFs().getDirListMap(dirlist);
         startFsService(filesystemMap, fileSystems);        
     }
 }

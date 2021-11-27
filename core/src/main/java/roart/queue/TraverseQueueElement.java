@@ -7,7 +7,7 @@ import roart.common.service.ServiceParam;
 public class TraverseQueueElement {
 
 	private String myid;
-	private String filename;
+	private FileObject fileobject;
     private ServiceParam clientQueueElement;
         private String retlistid = null;
 	private String retnotlistid = null;
@@ -19,10 +19,10 @@ public class TraverseQueueElement {
     public TraverseQueueElement() {
 	}
 	
-	public TraverseQueueElement(String myid, String filename, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
+	public TraverseQueueElement(String myid, FileObject filename, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
 
 	    this.setMyid(myid);
-	    this.filename = filename;
+	    this.fileobject = filename;
 	    this.setClientQueueElement(element);
 		this.setRetlistid(retlistid);
 		this.setRetnotlistid(retnotlistid);
@@ -41,12 +41,12 @@ public class TraverseQueueElement {
         this.myid = myid;
     }
 
-    public String getFilename() {
-        return filename;
+    public FileObject getFileobject() {
+        return fileobject;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setFileobject(FileObject filename) {
+        this.fileobject = filename;
     }
 
     public String getRetlistid() {

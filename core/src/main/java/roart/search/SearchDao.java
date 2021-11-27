@@ -11,6 +11,7 @@ import java.util.HashSet;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineDeleteResult;
@@ -48,7 +49,7 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, String dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
+    public static int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
 	return search.indexme(type, md5, dbfilename, metadata, lang, content, classification, index, message);
     }
 

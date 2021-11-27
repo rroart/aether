@@ -16,7 +16,10 @@ public class FileLocation {
 	
 	public FileLocation() {
 	}
-	
+
+    public FileLocation(String filename) {
+    }
+
     public FileLocation(String mynode, String filename) {
 	if (mynode == null || mynode.length() == 0) {
 	    log.error("No nodename, no correcting");
@@ -28,7 +31,8 @@ public class FileLocation {
     public FileLocation(String filename, String csNodename, String dummy) {
     	String file = filename;
     	String prefix = "";
-    	// TODO redo this if system. make it oo.
+    	/*
+    	// TODO  redo this if system. make it oo.
     	if (filename.startsWith(FileSystemConstants.FILESLASH) || filename.startsWith(FileSystemConstants.HDFSSLASH) || filename.startsWith(FileSystemConstants.SWIFTSLASH)) {
     		int split;
     		if (filename.startsWith(FileSystemConstants.SWIFT)) {
@@ -53,6 +57,9 @@ public class FileLocation {
         }
 	    this.filename = filename;
 	}
+	*/
+    	this.filename = filename;
+    	this.node = csNodename;
     }
 
         public String getNode() {
@@ -76,6 +83,8 @@ public class FileLocation {
 	    log.error("No nodename");
 	    return "'" + filename + "'";
 	}
+	return null;
+	/*
 	// TODO make OO version
 	if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
 		if (filename.startsWith(FileSystemConstants.SWIFT)) {
@@ -88,15 +97,21 @@ public class FileLocation {
 	} else {
 		return "'" + FileSystemConstants.FILESLASH + node + filename + "'";
 	}
+	*/
     }
 
     @Override
     public String toString() {
+        if (true) {
+            return toPrintString();
+        }
+        // TODO
         if (node == null || node.length() == 0) {
             log.error("No nodename");
             return filename;
         }
-        // TODO make OO version
+        /*
+        // TODO  make OO version
         if (filename.startsWith(FileSystemConstants.FILE) || filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT)) {
                 if (filename.startsWith(FileSystemConstants.SWIFT)) {
                         String prefix = filename.substring(0, FileSystemConstants.SWIFTLEN);
@@ -108,6 +123,8 @@ public class FileLocation {
         } else {
                 return FileSystemConstants.FILESLASH + node + filename;
         }
+        */
+        return null;
     }
 
     public String toPrintString() {
@@ -127,7 +144,7 @@ public class FileLocation {
 }
 
     public boolean isLocal(String nodename) {
-    	if (node == null || node.length() == 0) {
+    	if (nodename == null || node == null || node.length() == 0) {
 	    log.error("No nodename");
     		return true;
     	}

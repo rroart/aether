@@ -104,6 +104,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 	    try {
 	    NodeConfig nodeConf = param.conf;
 	    String myindex = nodeConf.elasticIndex();
+	    log.info("myindex"+myindex);
 	    DeleteResponse response = conf.client.delete(new DeleteRequest(myindex), RequestOptions.DEFAULT);
             } catch (Exception e) {
                 log.error(roart.common.constants.Constants.EXCEPTION, e);
@@ -124,7 +125,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		NodeConfig nodeConf = index.conf;
 		String md5 = index.md5;  
 		//InputStream inputStream, 
-		String dbfilename = index.dbfilename;
 		String metadata[] = index.metadata;
 		String lang = index.lang;
 		String classification = index.classification;

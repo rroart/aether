@@ -122,7 +122,7 @@ public class FileSystemAccess {
 
     }
 
-    public Map<String, MyFile> getWithInputStream(Set<String> filenames) {
+    public Map<String, MyFile> getWithInputStream(Set<FileObject> filenames) {
         FileSystemPathParam param = new FileSystemPathParam();
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;
@@ -144,20 +144,21 @@ public class FileSystemAccess {
 
     }
 
-    public FileObject get(String string) {
+    public FileObject get(FileObject fo) {
         FileSystemPathParam param = new FileSystemPathParam();
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
-        param.path = string;
+        param.path = fo;
         FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GET);
         return result.getFileObject()[0];
 
     }
 
-    public String getLocalFilesystemFile(String filename) {
-        FileObject file = FileSystemDao.get(filename);  
+    public String getLocalFilesystemFile(FileObject fo) {
+        FileObject file = FileSystemDao.get(fo);  
         String fn = FileSystemDao.getAbsolutePath(file);
+        // TODO
         if (fn.charAt(4) == ':') {
             fn = fn.substring(5);
         }

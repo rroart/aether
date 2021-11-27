@@ -7,14 +7,15 @@ import org.apache.tika.metadata.Metadata;
 
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 
 public class ConvertQueueElement {
 
     public int size;
-    public String dbfilename;
-    public String filename;
+    public FileObject dbfilename;
+    public FileObject filename;
     public String md5;
     public volatile IndexFiles index;
     public String retlistid;
@@ -26,7 +27,7 @@ public class ConvertQueueElement {
     public MyFile fsData;
     public InmemoryMessage message;
 
-    public ConvertQueueElement(String dbfilename, String filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, MyFile fsData, InmemoryMessage message) {
+    public ConvertQueueElement(FileObject dbfilename, FileObject filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, MyFile fsData, InmemoryMessage message) {
         this.dbfilename = dbfilename;
         this.filename = filename;
         this.md5 = md5;

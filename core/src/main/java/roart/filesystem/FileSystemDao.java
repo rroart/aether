@@ -16,8 +16,10 @@ import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
+import roart.common.model.Location;
 import roart.common.util.FsUtil;
 import roart.service.ControlService;
+import java.util.Map.Entry;
 
 public class FileSystemDao {
 
@@ -54,13 +56,18 @@ public class FileSystemDao {
         return getFileSystemAccess(f).getInputStream(f);
     }
 
-    public static Map<String, MyFile> getWithInputStream(Set<String> filenames) {
-        String f = filenames.iterator().next();
-        return getFileSystemAccess(f).getWithInputStream(filenames);
+    public static Map<FileObject, MyFile> getWithInputStream(Set<FileObject> filenames) {
+        FileObject f = filenames.iterator().next();
+        Map<String, MyFile> map = getFileSystemAccess(f).getWithInputStream(filenames);
+        Map<FileObject, MyFile> retMap = new HashMap<>();
+        for (Entry<String, MyFile> entry : map.entrySet()) {
+            retMap.put(new FileObject(entry.getKey(), filenames.iterator().next().location), entry.getValue());
+        }
+        return retMap;
     }
 
-    public static FileObject get(String string) {
-        return getFileSystemAccess(string).get(string);
+    public static FileObject get(FileObject fo) {
+        return getFileSystemAccess(fo).get(fo);
     }
 
     public static FileObject getParent(FileObject f) {
@@ -90,14 +97,15 @@ public class FileSystemDao {
     		return new LocalFileSystemAccess();
     	}
          */
-        return getFileSystemAccess(f.fs, (String) f.object);
+        return getFileSystemAccess(f.location, f.object);
     }
     
-    private static FileSystemAccess getFileSystemAccess(String fs, String path) {
-        if ("LocalFileSystem".equals(fs)) {
-            fs = "LOCAL";
+    private static FileSystemAccess getFileSystemAccess(Location fs, String path) {
+        Location fs2 = new Location(fs.nodename, fs.fs, fs.extra);
+        if (fs2.fs == null || fs2.fs.isEmpty()) {
+            fs2.fs = FileSystemConstants.LOCALTYPE;
         }
-        String url = getUrl(ControlService.curatorClient, fs, path, "");
+        String url = getUrl(ControlService.curatorClient, fs2, path, "");
         if (url == null) {
             log.error("URL null for {} {}", fs, path);
         }
@@ -106,15 +114,20 @@ public class FileSystemDao {
         return access;
     }
 
-    static String getUrl(CuratorFramework curatorClient, String fs, String path, String s) {
+    static String getUrl(CuratorFramework curatorClient, Location fs, String path, String s) {
         // //fstype/path
         // node and openshift?
         // zk nodename type path
         //ControlServer.z
         String url = null;
         try {
-            String zPath = "/fs/" + fs + s;
+            String str = "/fs" + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
+            String zPath = "/fs" + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
             log.info("here" + zPath);
+            Stat b = curatorClient.checkExists().forPath(zPath);
+            if (b == null) {
+                return null;
+            }
             List<String> children = curatorClient.getChildren().forPath(zPath);
             log.info("ch " + children.size());
             if (children.isEmpty()) {
@@ -145,18 +158,11 @@ public class FileSystemDao {
         return url;
     }
 
-    // TODO make this OO
-    private static FileSystemAccess getFileSystemAccess(String s) {
-        String fs = "LocalFileSystem";
-        fs = "LOCAL";
-        String path = FsUtil.getFsPath(s);
-        if (s.startsWith(FileSystemConstants.HDFS)) {
-            fs = "HDFS";
+    private static String stringOrNull(String string) {
+        if (string == null || string.isEmpty()) {
+            return "";
+        } else {
+            return "/" + string;
         }
-        if (s.startsWith(FileSystemConstants.SWIFT)){
-            fs = "SWIFT";
-        }
-        log.info("getgrr " + s + " :: " + fs + " " + path);
-        return getFileSystemAccess(fs, path);
     }
 }

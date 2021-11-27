@@ -11,6 +11,7 @@ module hbase {
     requires common.constants;
     requires common.database;
     requires common.model;
+    requires common.util;
     requires database;
     requires hadoop.common;
     requires org.slf4j;

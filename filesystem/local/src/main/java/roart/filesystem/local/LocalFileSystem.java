@@ -13,6 +13,7 @@ import java.util.Map;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
+import roart.common.constants.FileSystemConstants.FileSystemType;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorResult;
@@ -28,6 +29,7 @@ import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileObject;
+import roart.common.model.Location;
 import roart.filesystem.FileSystemOperations;
 
 import org.apache.commons.io.IOUtils;
@@ -38,8 +40,8 @@ public class LocalFileSystem extends FileSystemOperations {
 
     private static final Logger log = LoggerFactory.getLogger(LocalFileSystem.class);
 
-    public LocalFileSystem(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);
+    public LocalFileSystem(String nodename, String configid, NodeConfig nodeConf) {
+        super(nodename, configid, nodeConf);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class LocalFileSystem extends FileSystemOperations {
         File[] listDir = dir.listFiles();
         if (listDir != null) {
             for (File file : listDir) {
-                FileObject fo = new FileObject(file.getAbsolutePath(), this.getClass().getSimpleName());
+                FileObject fo = new FileObject(file.getAbsolutePath(), f.location);
                 foList.add(fo);
             }
         }     
@@ -69,7 +71,7 @@ public class LocalFileSystem extends FileSystemOperations {
         if (listDir != null) {
             for (File file : listDir) {
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(file.getAbsolutePath(), this.getClass().getSimpleName());
+                fo[0] = new FileObject(file.getAbsolutePath(), f.location);
                 MyFile my = getMyFile(fo, false);
                 map.put(my.absolutePath, my);
             }
@@ -91,7 +93,7 @@ public class LocalFileSystem extends FileSystemOperations {
     public FileSystemPathResult getAbsolutePath(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
         FileSystemPathResult result = new FileSystemPathResult();
-        result.setPath(FileSystemConstants.FILE + objectToFile(f).getAbsolutePath());
+        result.setPath(objectToFile(f).getAbsolutePath());
         return result;
     }
 
@@ -125,10 +127,10 @@ public class LocalFileSystem extends FileSystemOperations {
     @Override
     public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) throws Exception {
         Map<String, MyFile> map = new HashMap<>();
-        for (String filename : param.paths) {
-            FileObject[] fo = getInner(filename);
+        for (FileObject filename : param.paths) {
+            FileObject[] fo = new FileObject[] { filename };
             MyFile my = getMyFile(fo, true);
-            map.put(filename, my);
+            map.put(filename.object, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
         result.map = map;
@@ -142,7 +144,7 @@ public class LocalFileSystem extends FileSystemOperations {
             my.exists = objectToFile(fo[0]).exists();
             if (my.exists) {
                 my.isDirectory = objectToFile(fo[0]).isDirectory();
-                my.absolutePath = FileSystemConstants.FILE + objectToFile(fo[0]).getAbsolutePath();
+                my.absolutePath = objectToFile(fo[0]).getAbsolutePath();
                 if (withBytes) {
                     my.bytes = getInputStreamInner(fo[0]);
                 }
@@ -159,12 +161,13 @@ public class LocalFileSystem extends FileSystemOperations {
         return result;
     }
 
-    private FileObject[] getInner(String string) {
-        if (string.startsWith(FileSystemConstants.FILE)) {
-            string = string.substring(5);
-        }
+    private FileObject[] getInner(FileObject filename) {
+        //if (filename.startsWith(FileSystemConstants.FILE)) {
+        //    filename = filename.substring(5);
+        //}
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(string, this.getClass().getSimpleName());
+        //fo[0] = new FileObject(filename, new Location(nodename, FileSystemConstants.LOCALTYPE));
+        fo[0] = filename;
         return fo;
     }
 
@@ -175,7 +178,7 @@ public class LocalFileSystem extends FileSystemOperations {
         File file = new File(parent);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(file.getAbsolutePath(), this.getClass().getSimpleName());
+        fo[0] = new FileObject(file.getAbsolutePath(), f.location);
         result.setFileObject(fo);
         return result;
     }

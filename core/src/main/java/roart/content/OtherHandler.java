@@ -54,9 +54,9 @@ public class OtherHandler {
     	String retlistnotid = el.retlistnotid;
 	Metadata metadata = el.metadata;
 
-	if (filename.startsWith(FileSystemConstants.FILE)) {
-	    filename = filename.substring(5);
-	}
+	//if (filename.startsWith(FileSystemConstants.FILE)) {
+	//    filename = filename.substring(5);
+	//}
 
 	String output = null;
 	boolean retry = false;

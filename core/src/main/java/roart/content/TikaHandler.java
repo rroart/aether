@@ -190,7 +190,7 @@ public class TikaHandler {
                     String tmpfn = null;
                     // TODO make OO version of this
                     FileSystemAccess fsAccess = FileSystemFactory.getFileSystem(filename);
-                    fn = fsAccess.getLocalFilesystemFile(filename);
+                    //fn = fsAccess.getLocalFilesystemFile(filename);
                     el.filename = fn;
                     /*
                     if (FsUtil.isRemote(filename)) {
@@ -268,7 +268,7 @@ public class TikaHandler {
                     String value = metadata.get(name);
                     metadatamap.put(name, value);
                 }                
-                IndexQueueElement elem = new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadatamap, null);
+                IndexQueueElement elem = null; //new IndexQueueElement("all", md5, index, el.retlistid, el.retlistnotid, dbfilename, metadatamap, null);
                 elem.lang = lang;
                 //elem.content = content;
                 //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
@@ -286,8 +286,8 @@ public class TikaHandler {
                 if (dbfilename.equals(filename)) {
                     // TODO make OO version of this
                     FileSystemAccess fsAccess = FileSystemFactory.getFileSystem(filename);
-                    String fn = fsAccess.getLocalFilesystemFile(filename);
-                    el.filename = fn;
+                    //String fn = fsAccess.getLocalFilesystemFile(filename);
+                    //el.filename = fn;
                     /*
                     if (FsUtil.isRemote(filename)) {
                         String fn = RemoteFileSystemAccess.copyFileToTmp(filename);

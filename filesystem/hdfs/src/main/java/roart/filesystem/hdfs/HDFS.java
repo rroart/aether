@@ -37,6 +37,7 @@ import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.model.FileObject;
+import roart.common.model.Location;
 import roart.filesystem.FileSystemOperations;
 
 import org.slf4j.Logger;
@@ -48,8 +49,8 @@ public class HDFS extends FileSystemOperations {
 
     private HDFSConfig conf;
 
-    public HDFS(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);
+    public HDFS(String nodename, String configid, NodeConfig nodeConf) {
+        super(nodename, configid, nodeConf);
         conf = new HDFSConfig();
         Configuration configuration = new Configuration();
         conf.configuration = configuration;
@@ -79,7 +80,7 @@ public class HDFS extends FileSystemOperations {
             FileStatus[] status = fs.listStatus(dir);
             Path[] listedPaths = FileUtil.stat2Paths(status);
             for (Path path : listedPaths) {
-                FileObject fo = new FileObject(path.getName(), this.getClass().getSimpleName());
+                FileObject fo = new FileObject(path.toUri().getPath(), f.location);
                 foList.add(fo);
             }
             result.setFileObject(foList.toArray(new FileObject[0]));
@@ -102,7 +103,7 @@ public class HDFS extends FileSystemOperations {
             Path[] listedPaths = FileUtil.stat2Paths(status);
             for (Path path : listedPaths) {
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(path.getName(), this.getClass().getSimpleName());
+                fo[0] = new FileObject(path.toUri().getPath(), f.location);
                 MyFile my = getMyFile(fo, false);
                 map.put(my.absolutePath, my);
             }
@@ -159,10 +160,10 @@ public class HDFS extends FileSystemOperations {
         Path path = new Path(f.object);
         //log.info("mypath " + path.getName() + " " + path.getParent().getName() + " " + path.toString());
         // this is hdfs://server/path
-        String p = path.toString();
-        p = p.substring(7);
-        int i = p.indexOf("/");
-        p = FileSystemConstants.HDFS + p.substring(i);
+        String p = path.toUri().getPath();
+        //p = p.substring(7);
+        //int i = p.indexOf("/");
+        //p = FileSystemConstants.HDFS + p.substring(i);
         //log.info("p " + p);
         return p;
     }
@@ -216,10 +217,10 @@ public class HDFS extends FileSystemOperations {
     @Override
     public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) {
         Map<String, MyFile> map = new HashMap<>();
-        for (String filename : param.paths) {
-            FileObject[] fo = getInner(filename);
+        for (FileObject filename : param.paths) {
+            FileObject[] fo = new FileObject[] { filename };
             MyFile my = getMyFile(fo, true);
-            map.put(filename, my);
+            map.put(filename.object, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
         result.map = map;
@@ -248,27 +249,28 @@ public class HDFS extends FileSystemOperations {
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
         Path parent = new Path(f.object).getParent();
-        fo[0] = new FileObject(parent.getName(), this.getClass().getSimpleName());
+        fo[0] = new FileObject(parent.toUri().getPath(), f.location);
         result.setFileObject(fo);
         return result;
     }
 
     @Override
     public FileSystemFileObjectResult get(FileSystemPathParam param) {
-        String string = param.path;
-        FileObject[] fo = getInner(string);
+        FileObject string = param.path;
+        FileObject[] fo = new FileObject[] { string };
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         result.setFileObject(fo);
         return result;
     }
 
+    @Deprecated
     private FileObject[] getInner(String string) {
         // TODO
-        if (string.startsWith(FileSystemConstants.HDFS)) {
-            string = string.substring(FileSystemConstants.HDFSLEN);
-        }
+        //if (string.startsWith(FileSystemConstants.HDFS)) {
+       //    string = string.substring(FileSystemConstants.HDFSLEN);
+        //}
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(string, this.getClass().getSimpleName());
+        //fo[0] = new FileObject(string, new Location(nodename, FileSystemConstants.HDFSTYPE));
         return fo;
     }
 

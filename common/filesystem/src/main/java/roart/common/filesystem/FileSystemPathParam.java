@@ -2,8 +2,10 @@ package roart.common.filesystem;
 
 import java.util.Set;
 
+import roart.common.model.FileObject;
+
 public class FileSystemPathParam extends FileSystemParam {
-    public String path;
+    public FileObject path;
     
-    public Set<String> paths;
+    public Set<FileObject> paths;
 }

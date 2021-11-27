@@ -20,6 +20,7 @@ import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.util.JsonUtil;
@@ -41,15 +42,15 @@ public class ConvertHandler {
     private Logger log = LoggerFactory.getLogger(ConvertHandler.class);
 
     public void doConvert(ConvertQueueElement el) {
-        String dbfilename = el.dbfilename;
-        String filename = el.filename;
+        FileObject dbfilename = el.dbfilename;
+        FileObject filename = el.filename;
         String md5 = el.md5;
         IndexFiles index = el.index;
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = el.metadata;
         log.info("incTikas {}", dbfilename);
-        Queues.tikaTimeoutQueue.add(dbfilename);
+        Queues.convertTimeoutQueue.add(dbfilename.toString());
         int size = 0;
 
         //String content = new TikaHandler().getString(el.fsData.getInputStream());
@@ -64,7 +65,7 @@ public class ConvertHandler {
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
         String origcontent = inmemory.read(message);
-        String mimetype = getMimetype(origcontent, Paths.get(filename).getFileName().toString());
+        String mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
         // null mime isbn
         InmemoryMessage str = null;
         for (int i = 0; i < converters.length; i++) {
@@ -75,14 +76,14 @@ public class ConvertHandler {
                 }
             }
             if (converter.getSuffixes().length > 0) {
-                String myfilename = el.filename.toLowerCase();
+                String myfilename = el.filename.object.toLowerCase();
                 if (!Arrays.asList(converter.getMimetypes()).stream().anyMatch(myfilename::endsWith)) {
                     continue;
                 }
             }
             // TODO error
 	    long now = System.currentTimeMillis();
-            str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename).getFileName().toString());
+            str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString());
 	    long time = System.currentTimeMillis() - now;
             if (str != null) {
                 el.convertsw = converter.getName();

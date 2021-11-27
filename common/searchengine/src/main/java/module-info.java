@@ -10,4 +10,5 @@ module common.searchengine {
 
     requires common.config;
     requires common.inmemory.model;
+    requires common.model;
 }

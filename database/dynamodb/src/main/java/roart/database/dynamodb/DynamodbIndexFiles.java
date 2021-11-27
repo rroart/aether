@@ -73,6 +73,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+
+import roart.common.util.FsUtil;
 import roart.common.util.JsonUtil;
 
 public class DynamodbIndexFiles {
@@ -557,6 +559,7 @@ public class DynamodbIndexFiles {
 
     public String getMd5ByFilelocation(FileLocation fl) {
         String name = getFile(fl);
+        log.info("NAME"+name);
         Item item = filesTable.getItem(filenameq, name);
         if (item == null) {
             return null;
@@ -643,7 +646,7 @@ public class DynamodbIndexFiles {
         if (fl == null) {
             return null;
         }
-        return new FileLocation(fl, config.getNodename(), null);
+        return FsUtil.getFileLocation(fl);
     }
 
     private String convertNullNot(String s) {

@@ -32,6 +32,7 @@ import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileObject;
+import roart.common.model.Location;
 import roart.filesystem.FileSystemOperations;
 
 import org.slf4j.Logger;
@@ -60,8 +61,8 @@ public class S3 extends FileSystemOperations {
 
     /*private*/ S3Config conf;
 
-    public S3(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);
+    public S3(String nodename, String configid, NodeConfig nodeConf) {
+        super(nodename, configid, nodeConf);
         try {
             
             AWSCredentials credentials = new BasicAWSCredentials(nodeConf.getS3AccessKey(), nodeConf.getS3SecretKey());
@@ -89,14 +90,14 @@ public class S3 extends FileSystemOperations {
     public FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
         List<FileObject> foList = new ArrayList<FileObject>();
-        String bucket = null;
-        String prefix = param.str;
+        String bucket = f.location.extra;
+        String prefix = f.object;
         ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucket).withPrefix(prefix).withDelimiter(DELIMITER);
         ListObjectsV2Result listing = conf.s3client.listObjectsV2(req);
         try {
             for (S3ObjectSummary summary: listing.getObjectSummaries()) {
                 System.out.println(summary.getKey());
-                FileObject fo = new FileObject(summary.getKey(), this.getClass().getSimpleName());
+                FileObject fo = new FileObject(summary.getKey(), f.location);
                 foList.add(fo);
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
@@ -115,7 +116,7 @@ public class S3 extends FileSystemOperations {
     public FileSystemMyFileResult listFilesFull(FileSystemFileObjectParam param) throws Exception {
         FileObject f = param.fo;
         Map<String, MyFile> map = new HashMap<>();
-        String bucket = param.str;
+        String bucket = f.location.extra;
         String prefix = f.object;
         ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucket).withPrefix(prefix).withDelimiter(DELIMITER);
         ListObjectsV2Result listing = conf.s3client.listObjectsV2(req);
@@ -123,15 +124,15 @@ public class S3 extends FileSystemOperations {
             for (S3ObjectSummary summary: listing.getObjectSummaries()) {
                 System.out.println(summary.getKey());
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(summary.getKey(), this.getClass().getSimpleName());
-                MyFile my = getMyFile(bucket, fo, false);
+                fo[0] = new FileObject(summary.getKey(), f.location);
+                MyFile my = getMyFile(fo, false);
                 map.put(summary.getKey(), my);
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
                 System.out.println(commonPrefix);
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(commonPrefix, commonPrefix.getClass().getSimpleName());
-                MyFile my = getMyFile(bucket, fo, false);
+                fo[0] = new FileObject(commonPrefix, new Location(nodename, FileSystemConstants.S3TYPE, bucket));
+                MyFile my = getMyFile(fo, false);
                 map.put(commonPrefix, my);
             }
             FileSystemMyFileResult result = new FileSystemMyFileResult();
@@ -146,13 +147,13 @@ public class S3 extends FileSystemOperations {
     @Override
     public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
          FileSystemBooleanResult result = new FileSystemBooleanResult();
-        result.bool = getExistInner(param.fo, param.str);
+        result.bool = getExistInner(param.fo);
         return result;
     }
 
-    private boolean getExistInner(FileObject f, String str) {
+    private boolean getExistInner(FileObject f) {
         boolean exist = false;
-        exist = conf.s3client.doesObjectExist(str, f.object);
+        exist = conf.s3client.doesObjectExist(f.location.extra, f.object);
         return exist;
     }
 
@@ -193,14 +194,14 @@ public class S3 extends FileSystemOperations {
     @Override
     public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
         FileSystemByteResult result = new FileSystemByteResult();
-        result.bytes = getInputStreamInner(param.fo, param.str);
+        result.bytes = getInputStreamInner(param.fo);
         return result;
     }
 
-    private byte[] getInputStreamInner(FileObject f, String str) {
+    private byte[] getInputStreamInner(FileObject f) {
         byte[] bytes;
         try {
-            S3Object s3object = conf.s3client.getObject(str, f.object);
+            S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
             S3ObjectInputStream inputStream = s3object.getObjectContent();
             bytes = IOUtils.toByteArray(inputStream);
         } catch (Exception e) {
@@ -212,28 +213,27 @@ public class S3 extends FileSystemOperations {
 
     @Override
     public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) {
-        String containerName = param.str;
         Map<String, MyFile> map = new HashMap<>();
-        for (String filename : param.paths) {
-            FileObject[] fo = getInner(filename, containerName);
-            MyFile my = getMyFile(containerName, fo, true);
-            map.put(filename, my);
+        for (FileObject filename : param.paths) {
+            FileObject[] fo = new FileObject[] { filename };
+            MyFile my = getMyFile(fo, true);
+            map.put(filename.object, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
         result.map = map;
         return result;
     }
 
-    private MyFile getMyFile(String containerName, FileObject[] fo, boolean withBytes) {
+    private MyFile getMyFile(FileObject[] fo, boolean withBytes) {
         MyFile my = new MyFile();
         my.fileObject = fo;
         if (fo[0] != null) {
-            my.exists = getExistInner(fo[0], containerName);
+            my.exists = getExistInner(fo[0]);
             if (my.exists) {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = fo[0].object;
                 if (withBytes) {
-                    my.bytes = getInputStreamInner(fo[0], containerName);
+                    my.bytes = getInputStreamInner(fo[0]);
                 }
             }
         }
@@ -248,30 +248,30 @@ public class S3 extends FileSystemOperations {
         String parent = fi.getParent();
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(parent, this.getClass().getSimpleName());
+        fo[0] = new FileObject(parent, f.location);
         result.setFileObject(fo);
         return result;
     }
 
     @Override
     public FileSystemFileObjectResult get(FileSystemPathParam param) {
-        FileObject[] fos = getInner(param.path, param.str);
+        FileObject[] fos = new FileObject[] { param.path };
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         result.setFileObject(fos);
         return result;
     }
 
-    private FileObject[] getInner(String string, String containerName) {
+    private FileObject[] getInner(FileObject filename, String containerName) {
         FileObject[] fos = new FileObject[1];
         try {
             FileObject fo;
             // if it exists, it is a file and not a dir
-            if (getExistInner(new FileObject(string, null), containerName)) {
-                fo = new FileObject(string, this.getClass().getSimpleName());
+            if (getExistInner(filename)) {
+                //fo = new FileObject(filename, new Location(nodename, FileSystemConstants.S3TYPE, containerName));
             } else {
-                fo = new FileObject(string, this.getClass().getSimpleName());
+               // fo = new FileObject(filename, new Location(nodename, FileSystemConstants.S3TYPE, containerName));
             }
-            fos[0] = fo;
+            fos[0] = filename;
         } catch (Exception e) {
             log.error("Exception", e);
             return null;
@@ -289,7 +289,7 @@ public class S3 extends FileSystemOperations {
         byte[] bytes;
         String md5;
         try {
-            bytes  = getInputStreamInner(param.fo, param.str);
+            bytes  = getInputStreamInner(param.fo);
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
             } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);

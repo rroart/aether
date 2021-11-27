@@ -5,15 +5,23 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.constants.FileSystemConstants;
 import roart.common.constants.FileSystemConstants.FileSystemType;
+import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
+import roart.common.model.Location;
 
 public class FsUtil {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Deprecated
     public static boolean isRemote(String filename) {
-        return filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT);
+        return false;
+        //return filename.startsWith(FileSystemConstants.HDFS) || filename.startsWith(FileSystemConstants.SWIFT);
     }
       
+    @Deprecated
     public static FileSystemType getFileSystemType(String filename) {
+        // TODO
+        /*
         System.out.println("FN "+ filename);
         if (filename.indexOf(':') < 0) {
            return FileSystemType.LOCAL; 
@@ -30,11 +38,13 @@ public class FsUtil {
         if (filename.startsWith(FileSystemConstants.SWIFT)) {
             return FileSystemType.SWIFT;
         }
+        */
         return null;
     }
     
     public static FileSystemType getFilenameType(String filename) {
         System.out.println("FN "+ filename);
+        /*
         if (filename.indexOf(':') < 0) {
            //return FileSystemType.LOCAL; 
         }
@@ -47,6 +57,7 @@ public class FsUtil {
         if (filename.startsWith(FileSystemConstants.SWIFTSLASH)) {
             return FileSystemType.SWIFT;
         }
+        */
         return null;
     }
     
@@ -88,4 +99,71 @@ public class FsUtil {
         }       
     }
     */
+
+    public static FileObject getFileObject(FileLocation fl) {
+        Location lo = getLocation(fl.getNode());
+        return new FileObject(fl.getFilename(), lo);
+    }
+
+    public static FileObject getFileObject(String s) {
+        s = transformOld(s);
+        String[] list = s.split(":");
+        int len = list.length;
+        String path = list[len - 1];
+        String nodename = null;
+        String fs = null;
+        String extra = null;
+        if (len > 3) {
+            extra = list[2];
+        }
+        if (len > 2) {
+            fs = list[1];
+        }
+        if (len > 1) {
+            nodename = list[0];
+        }
+        Location lo = new Location(nodename, fs, extra);
+        //lo = transformOld(lo);
+        return new FileObject(path, lo);
+    }
+    
+    public static Location getLocation(String s) {
+        String[] list = s.split(":");
+        int len = list.length;
+        String nodename = null;
+        String fs = null;
+        String extra = null;
+        if (len > 3) {
+            extra = list[2];
+        }
+        if (len > 2) {
+            fs = list[1];
+        }
+        if (len > 1) {
+            nodename = list[0];
+        }
+        return transformOld(new Location(nodename, fs, extra));
+    }
+
+    private static Location transformOld(Location location) {
+        if ("file".equals(location.nodename) && location.fs == null && location.extra == null) {
+            location.nodename = null;
+        }
+        return location;
+    }
+
+    private static String transformOld(String s) {
+        if (s.startsWith("file:")) {
+            return s.substring(5);
+        }
+        if (s.startsWith("file://localhost")) {
+            return s.substring(16);
+        }
+        return s;
+    }
+
+    public static FileLocation getFileLocation(String s) {
+        FileObject fo = getFileObject(s);
+        return new FileLocation(fo.object, fo.location.toString());
+    }
 }

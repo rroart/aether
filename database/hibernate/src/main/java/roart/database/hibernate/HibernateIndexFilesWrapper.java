@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -25,6 +26,7 @@ import roart.database.DatabaseOperations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import roart.common.util.FsUtil;
 
 public class HibernateIndexFilesWrapper extends DatabaseOperations {
 
@@ -123,7 +125,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
             hif.setNoindexreason(i.getNoindexreason());
             hif.setLanguage(i.getLanguage());
             hif.setIsbn(i.getIsbn());
-            hif.setFilenames(i.getFilenames());
+            hif.setFilenames(i.getFilelocations().stream().map(FileLocation::toString).collect(Collectors.toSet()));
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -152,7 +154,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         ifile.setIsbn(hif.getIsbn());
         Set<String> files = hif.getFilenames();
         for (String file : files) {
-            ifile.addFile(new FileLocation(file, nodename, null));
+            ifile.addFile(FsUtil.getFileLocation(file));
         }
         ifile.setUnchanged();
         return ifile;

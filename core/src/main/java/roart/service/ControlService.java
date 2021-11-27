@@ -23,6 +23,7 @@ import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
+import roart.common.util.FsUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.content.ClientHandler;
 import roart.content.OtherHandler;
@@ -303,6 +304,8 @@ import roart.util.MySets;
     	retList.add(IndexFiles.getHeader());
     	List<ResultItem> retTikaTimeoutList = new ArrayList<>();
     	retTikaTimeoutList.add(new ResultItem("Tika timeout"));
+        List<ResultItem> retConvertTimeoutList = new ArrayList<>();
+        retConvertTimeoutList.add(new ResultItem("Convert timeout"));
     	List<ResultItem> retNotList = new ArrayList<>();
     	retNotList.add(IndexFiles.getHeader());
     	List<ResultItem> retNewFilesList = new ArrayList<>();
@@ -362,7 +365,12 @@ import roart.util.MySets;
     	    retTikaTimeoutList.add(new ResultItem(ret));
     	}
     
+        for (String ret : Queues.convertTimeoutQueue) {
+            retConvertTimeoutList.add(new ResultItem(ret));
+        }
+    
     	Queues.resetTikaTimeoutQueue();
+        Queues.resetConvertTimeoutQueue();
     	//IndexFilesDao.commit();
     	while (IndexFilesDao.dirty() > 0) {
     	    TimeUnit.SECONDS.sleep(60);
@@ -416,7 +424,7 @@ import roart.util.MySets;
     	try {
     	    String[] dirlist = { dirname };
     	    for (int i = 0; i < dirlist.length; i ++) {
-    		Set<String> filesetnew2 = Traverse.dupdir(dirlist[i]);
+    		Set<String> filesetnew2 = Traverse.dupdir(FsUtil.getFileObject(dirlist[i]));
     		filesetnew.addAll(filesetnew2);
     	    }
     	} catch (Exception e) {
@@ -781,7 +789,7 @@ import roart.util.MySets;
     
                 convertRunnable = new ConvertRunner();
                 convertWorker = new Thread(convertRunnable);
-                convertWorker.setName("TikaWorker");
+                convertWorker.setName("ConvertWorker");
                 convertWorker.start();
                 log.info("starting convert worker");
         }
@@ -872,7 +880,7 @@ import roart.util.MySets;
     		ri = new ResultItem("Filename new");
     		newList.add(ri);
     
-    		Set<String> delfileset = new HashSet<String>();
+    		Set<FileObject> delfileset = new HashSet<>();
     
     		Set<String> filesetnew = new HashSet<String>(); // just a dir list
     		//Set<String> newset = new HashSet<String>();
@@ -899,10 +907,10 @@ import roart.util.MySets;
     			for (FileLocation fl : index.getFilelocations()) {
     				if (fl.isLocal(nodename)) {
     					String filename = fl.getFilename();
-    					FileObject fo = FileSystemDao.get(filename);
+    					FileObject fo = FileSystemDao.get(FsUtil.getFileObject(fl));
     					if (!FileSystemDao.exists(fo)) {
     						delList.add(new ResultItem(filename));
-    						delfileset.add(filename);
+    						delfileset.add(fo);
     					}
     				}
     			}
@@ -926,13 +934,13 @@ import roart.util.MySets;
     			}
     			Set<IndexFiles> ifs = new HashSet<>();
     		    //DbRunner.doupdate = false;
-    			for (String filename : delfileset) {
+    			for (FileObject filename : delfileset) {
     				String md5 = IndexFilesDao.getMd5ByFilename(filename);
     				if (md5 != null) {
     		            MyLock lock2 = MyLockFactory.create();
     		            lock2.lock(md5);
     					IndexFiles ifile = IndexFilesDao.getByMd5(md5);
-    					FileLocation fl = new FileLocation(filename, nodename, null);
+    					FileLocation fl = new FileLocation(filename.object, filename.location.toString(), null);
     					boolean removed = ifile.removeFilelocation(fl);
     					//log.info("fls2 size " + removed + ifile.getFilelocations().size());
     	                IndexFilesDao.add(ifile);
@@ -940,7 +948,7 @@ import roart.util.MySets;
     				} else {
     					log.info("trying the hard way, no md5 for " + filename);
     					for (IndexFiles index : indexes) {
-    					    FileLocation fl = new FileLocation(filename, nodename, null);
+    					    FileLocation fl = new FileLocation(filename.object, filename.location.toString(), null);
     					    if (index.getFilelocations().contains(fl)) {
     						boolean removed = index.removeFilelocation(fl);
     						//log.info("fls3 size " + removed + index.getFilelocations().size());

@@ -6,7 +6,7 @@
  *
  */
 module servicemanager.openshift {
-    exports roart.util;
+    exports roart.common.util;
     exports roart.config;
     exports roart.controller;
 

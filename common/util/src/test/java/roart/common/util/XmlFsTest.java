@@ -1,4 +1,4 @@
-package roart.util;
+package roart.common.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,8 +44,8 @@ public class XmlFsTest {
         System.out.println(getPath("test.xml").toUri());
         String[] f = new XmlFs().getDirList(new File(getPath("test.xml").toUri()));
         System.out.println(f[0] + " " + f[1]);
-        Map<FileSystemType, List<String>> m = new XmlFs().getDirListMap(new File(getPath("test.xml").toUri()));
-        System.out.println(m);
+        //Map<FileSystemType, List<String>> m = new XmlFs().getDirListMap(new File(getPath("test.xml").toUri()));
+        //System.out.println(m);
     }
     
     public Path getPath(String file) throws URISyntaxException {
