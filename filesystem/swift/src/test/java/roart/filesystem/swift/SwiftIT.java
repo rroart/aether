@@ -66,7 +66,7 @@ public class SwiftIT {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         getParamConf(param);
         paramp.path = null; // FsUtil.getFileObject(":swift:chess:xiangqi");
-        param.fo = new FileObject("xiangqi", new Location(null, FileSystemConstants.S3TYPE, "chess"));
+        param.fo = new FileObject(new Location(null, FileSystemConstants.S3TYPE, "chess"), "xiangqi");
         FileSystemFileObjectResult get = swift.get(paramp);
         System.out.println("r " + get.getFileObject());
         param.fo = get.getFileObject()[0];

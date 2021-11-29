@@ -28,7 +28,7 @@ public class FileLocation {
 	this.filename = filename;
     }
 
-    public FileLocation(String filename, String csNodename, String dummy) {
+    public FileLocation(String csNodename, String filename, String dummy) {
     	String file = filename;
     	String prefix = "";
     	/*
@@ -183,7 +183,7 @@ public class FileLocation {
 		public static Set<FileLocation> getFilelocations(Set<String> files, String nodename) {
 			Set<FileLocation> set = new HashSet<FileLocation>();
 			for (String fl : files) {
-				set.add(new FileLocation(fl, nodename, null));
+				set.add(new FileLocation(nodename, fl, null));
 			}
 			return set;
 		}

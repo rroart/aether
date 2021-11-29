@@ -368,7 +368,7 @@ public class IndexFilesDao {
             Map<String, String> map = indexFiles.getMd5ByFilelocation(fls);
             Map<FileObject, String> retMap = new HashMap<>();
             for (Entry<String, String> entry : map.entrySet()) {
-                retMap.put(new FileObject(entry.getKey(), filenames.iterator().next().location), entry.getValue());
+                retMap.put(new FileObject(filenames.iterator().next().location, entry.getKey()), entry.getValue());
             }
             return retMap;
         }

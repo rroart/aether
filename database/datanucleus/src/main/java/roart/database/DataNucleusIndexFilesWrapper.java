@@ -176,7 +176,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         Set<String> files = hif.getFilelocations();
         if (files != null) {
             for (String file : files) {
-                ifile.addFile(new FileLocation(file, nodename, null));
+                ifile.addFile(new FileLocation(nodename, file, null));
             }
         }
         ifile.setUnchanged();

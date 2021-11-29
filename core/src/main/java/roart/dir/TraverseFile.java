@@ -108,7 +108,7 @@ public class TraverseFile {
                     }
                     // modify write file
                     String nodename = ControlService.nodename;
-                    files.addFile(filename.object, filename.location.toString());
+                    files.addFile(filename.location.toString(), filename.object);
                     IndexFilesDao.addTemp(files);
                     log.info("adding md5 file {}", filename);
                 }
@@ -150,7 +150,7 @@ public class TraverseFile {
             if (files.getFilelocations().isEmpty()) {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
-                files.addFile(filename.object, filename.location.toString());
+                files.addFile(filename.location.toString(), filename.object);
                 IndexFilesDao.addTemp(files);
             }
             log.debug("info {} {}", md5, files);
@@ -257,7 +257,7 @@ public class TraverseFile {
                         }
                     // modify write file
                     String nodename = ControlService.nodename;
-                    files.addFile(filename.object, filename.location.toString());
+                    files.addFile(filename.location.toString(), filename.object);
                     IndexFilesDao.addTemp(files);
                     log.info("adding md5 file {}", filename);
                 }
@@ -299,7 +299,7 @@ public class TraverseFile {
             if (files.getFilelocations().isEmpty()) {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
-                files.addFile(filename.object, filename.location.toString());
+                files.addFile(filename.location.toString(), filename.object);
                 IndexFilesDao.addTemp(files);
             }
             log.debug("info {} {}", md5, files);

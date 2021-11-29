@@ -940,7 +940,7 @@ import roart.util.MySets;
     		            MyLock lock2 = MyLockFactory.create();
     		            lock2.lock(md5);
     					IndexFiles ifile = IndexFilesDao.getByMd5(md5);
-    					FileLocation fl = new FileLocation(filename.object, filename.location.toString(), null);
+    					FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
     					boolean removed = ifile.removeFilelocation(fl);
     					//log.info("fls2 size " + removed + ifile.getFilelocations().size());
     	                IndexFilesDao.add(ifile);
@@ -948,7 +948,7 @@ import roart.util.MySets;
     				} else {
     					log.info("trying the hard way, no md5 for " + filename);
     					for (IndexFiles index : indexes) {
-    					    FileLocation fl = new FileLocation(filename.object, filename.location.toString(), null);
+    					    FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
     					    if (index.getFilelocations().contains(fl)) {
     						boolean removed = index.removeFilelocation(fl);
     						//log.info("fls3 size " + removed + index.getFilelocations().size());

@@ -97,7 +97,7 @@ public class S3 extends FileSystemOperations {
         try {
             for (S3ObjectSummary summary: listing.getObjectSummaries()) {
                 System.out.println(summary.getKey());
-                FileObject fo = new FileObject(summary.getKey(), f.location);
+                FileObject fo = new FileObject(f.location, summary.getKey());
                 foList.add(fo);
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
@@ -124,14 +124,14 @@ public class S3 extends FileSystemOperations {
             for (S3ObjectSummary summary: listing.getObjectSummaries()) {
                 System.out.println(summary.getKey());
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(summary.getKey(), f.location);
+                fo[0] = new FileObject(f.location, summary.getKey());
                 MyFile my = getMyFile(fo, false);
                 map.put(summary.getKey(), my);
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
                 System.out.println(commonPrefix);
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(commonPrefix, new Location(nodename, FileSystemConstants.S3TYPE, bucket));
+                fo[0] = new FileObject(new Location(nodename, FileSystemConstants.S3TYPE, bucket), commonPrefix);
                 MyFile my = getMyFile(fo, false);
                 map.put(commonPrefix, my);
             }
@@ -248,7 +248,7 @@ public class S3 extends FileSystemOperations {
         String parent = fi.getParent();
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(parent, f.location);
+        fo[0] = new FileObject(f.location, parent);
         result.setFileObject(fo);
         return result;
     }

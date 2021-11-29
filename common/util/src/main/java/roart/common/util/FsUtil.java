@@ -102,7 +102,7 @@ public class FsUtil {
 
     public static FileObject getFileObject(FileLocation fl) {
         Location lo = getLocation(fl.getNode());
-        return new FileObject(fl.getFilename(), lo);
+        return new FileObject(lo, fl.getFilename());
     }
 
     public static FileObject getFileObject(String s) {
@@ -124,7 +124,7 @@ public class FsUtil {
         }
         Location lo = new Location(nodename, fs, extra);
         //lo = transformOld(lo);
-        return new FileObject(path, lo);
+        return new FileObject(lo, path);
     }
     
     public static Location getLocation(String s) {
@@ -133,13 +133,13 @@ public class FsUtil {
         String nodename = null;
         String fs = null;
         String extra = null;
-        if (len > 3) {
+        if (len >= 3) {
             extra = list[2];
         }
-        if (len > 2) {
+        if (len >= 2) {
             fs = list[1];
         }
-        if (len > 1) {
+        if (len >= 1) {
             nodename = list[0];
         }
         return transformOld(new Location(nodename, fs, extra));
@@ -164,6 +164,6 @@ public class FsUtil {
 
     public static FileLocation getFileLocation(String s) {
         FileObject fo = getFileObject(s);
-        return new FileLocation(fo.object, fo.location.toString());
+        return new FileLocation(fo.location.toString(), fo.object);
     }
 }

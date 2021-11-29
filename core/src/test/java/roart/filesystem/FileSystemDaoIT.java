@@ -25,7 +25,7 @@ public class FileSystemDaoIT {
     
     @Test
     public void testIT() {
-        FileObject f = new FileObject("/tmp/fakerepo/c/bla", "local");
+        FileObject f = null; //new FileObject("/tmp/fakerepo/c/bla", "local");
         //String url = FileSystemDao.getUrl(curatorClient, f, "");
         //System.out.println("URL " + url);
     }

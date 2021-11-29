@@ -92,7 +92,7 @@ public class Swift extends FileSystemOperations {
                 Directory dir = mydir.getAsDirectory();
                 Collection<DirectoryOrObject> list = container.listDirectory(dir);
                 for (DirectoryOrObject doo : list) {
-                    FileObject fo = new FileObject(doo.getName(), new Location(nodename, FileSystemConstants.SWIFTTYPE, containerName));
+                    FileObject fo = new FileObject(new Location(nodename, FileSystemConstants.SWIFTTYPE, containerName), doo.getName());
                     foList.add(fo);
                 }
             }
@@ -123,7 +123,7 @@ public class Swift extends FileSystemOperations {
                 Collection<DirectoryOrObject> list = container.listDirectory(dir);
                 for (DirectoryOrObject doo : list) {
                     FileObject[] fo = new FileObject[1];
-                    fo[0] = new FileObject(doo.getName(), f.location);
+                    fo[0] = new FileObject(f.location, doo.getName());
                     MyFile my = getMyFile(fo, false);
                     map.put(my.absolutePath, my);
                 }
@@ -262,7 +262,7 @@ public class Swift extends FileSystemOperations {
         DirectoryOrObject pardoo = new Directory(parent, DELIMITER);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(pardoo.getName(), f.location);
+        fo[0] = new FileObject(f.location, pardoo.getName());
         result.setFileObject(fo);
         return result;
     }

@@ -317,7 +317,7 @@ import roart.common.model.IndexFiles;
 	@ElementCollection	
 	@CollectionTable(name = "files", joinColumns = @JoinColumn(name = "md5"))
 
-	@Column(name = "filename", length = 511)
+	@Column(name = "filename", length = 511, nullable = false)
         public Set<String> getFilenames() {
 	    return filenames;
 	}
@@ -419,7 +419,10 @@ import roart.common.model.IndexFiles;
 
     public void clear(DatabaseConstructorParam param) {
         try {
-            HibernateUtil.currentSession(getH2Dir()).createQuery("delete from HibernateIndexFiles");
+            HibernateUtil.currentSession(getH2Dir()).createSQLQuery("delete from FILES").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createSQLQuery("delete from INDEX").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createQuery("delete from HibernateIndexFiles").executeUpdate();
+            //HibernateUtil.currentSession(getH2Dir());
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
@@ -428,8 +431,9 @@ import roart.common.model.IndexFiles;
     public void drop(DatabaseConstructorParam param) {
  try {
      //HibernateUtil.currentSession(getH2Dir()).createQuery("DROP ALL OBJECTS DELETE FILES");
-     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP TABLE INDEX");
-     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP ALL OBJECTS DELETE FILES");
+     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP TABLE INDEX").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP TABLE FILES").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP ALL OBJECTS DELETE FILES").executeUpdate();
  
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);

@@ -272,12 +272,12 @@ public class IndexFiles {
 	    //IndexFilesDao.ensureExistence(filelocation);
 	}
 
-	public void addFile(String filename, String nodename) {
+	public void addFile(String nodename, String filename) {
 	    FileLocation fl = new FileLocation(nodename, filename);
 	    addFile(fl);
 	}
 
-	public boolean removeFile(String filename, String nodename) {
+	public boolean removeFile(String nodename, String filename) {
 	    FileLocation fl = new FileLocation(nodename, filename);
 	    return removeFilelocation(fl);
 	}

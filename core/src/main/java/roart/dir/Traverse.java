@@ -255,6 +255,9 @@ public class Traverse {
     }
 
     public static int indexnoFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
+        if (true) {
+            return 1;
+        }
         String md5 = index.getMd5();
         String filename = null;
         try {
@@ -381,7 +384,7 @@ public class Traverse {
             Location node = FsUtil.getLocation(filelocation.getNode());
             String filename = filelocation.getFilename();
             if (node == null || node.equals(ControlService.nodename)) {
-                FileObject file = FileSystemDao.get(new FileObject(filename, node));
+                FileObject file = FileSystemDao.get(new FileObject(node, filename));
                 if (file == null) {
                 log.error("try file {}", filename);
                 continue;
@@ -486,13 +489,15 @@ public class Traverse {
                 break;
             }
             String md5 = index.getMd5();
-            String name = getExistingLocalFile(index);
+            //String name = getExistingLocalFile(index);
             FileLocation fl = index.getaFilelocation();
             FileObject filename = FsUtil.getFileObject(fl);
+            /*
             if (name == null) {
                 log.error("filename should not be null {}", md5);
                 continue;
             }
+            */
             // TODO check if fo needed
             TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
             if (!filterindex(index, trav)) {

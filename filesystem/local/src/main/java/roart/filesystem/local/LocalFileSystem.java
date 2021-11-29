@@ -52,7 +52,7 @@ public class LocalFileSystem extends FileSystemOperations {
         File[] listDir = dir.listFiles();
         if (listDir != null) {
             for (File file : listDir) {
-                FileObject fo = new FileObject(file.getAbsolutePath(), f.location);
+                FileObject fo = new FileObject(f.location, file.getAbsolutePath());
                 foList.add(fo);
             }
         }     
@@ -71,7 +71,7 @@ public class LocalFileSystem extends FileSystemOperations {
         if (listDir != null) {
             for (File file : listDir) {
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(file.getAbsolutePath(), f.location);
+                fo[0] = new FileObject(f.location, file.getAbsolutePath());
                 MyFile my = getMyFile(fo, false);
                 map.put(my.absolutePath, my);
             }
@@ -178,7 +178,7 @@ public class LocalFileSystem extends FileSystemOperations {
         File file = new File(parent);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(file.getAbsolutePath(), f.location);
+        fo[0] = new FileObject(f.location, file.getAbsolutePath());
         result.setFileObject(fo);
         return result;
     }

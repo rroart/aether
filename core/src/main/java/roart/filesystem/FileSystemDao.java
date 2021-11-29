@@ -61,7 +61,7 @@ public class FileSystemDao {
         Map<String, MyFile> map = getFileSystemAccess(f).getWithInputStream(filenames);
         Map<FileObject, MyFile> retMap = new HashMap<>();
         for (Entry<String, MyFile> entry : map.entrySet()) {
-            retMap.put(new FileObject(entry.getKey(), filenames.iterator().next().location), entry.getValue());
+            retMap.put(new FileObject(filenames.iterator().next().location, entry.getKey()), entry.getValue());
         }
         return retMap;
     }

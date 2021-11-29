@@ -80,7 +80,7 @@ public class HDFS extends FileSystemOperations {
             FileStatus[] status = fs.listStatus(dir);
             Path[] listedPaths = FileUtil.stat2Paths(status);
             for (Path path : listedPaths) {
-                FileObject fo = new FileObject(path.toUri().getPath(), f.location);
+                FileObject fo = new FileObject(f.location, path.toUri().getPath());
                 foList.add(fo);
             }
             result.setFileObject(foList.toArray(new FileObject[0]));
@@ -103,7 +103,7 @@ public class HDFS extends FileSystemOperations {
             Path[] listedPaths = FileUtil.stat2Paths(status);
             for (Path path : listedPaths) {
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(path.toUri().getPath(), f.location);
+                fo[0] = new FileObject(f.location, path.toUri().getPath());
                 MyFile my = getMyFile(fo, false);
                 map.put(my.absolutePath, my);
             }
@@ -249,7 +249,7 @@ public class HDFS extends FileSystemOperations {
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
         Path parent = new Path(f.object).getParent();
-        fo[0] = new FileObject(parent.toUri().getPath(), f.location);
+        fo[0] = new FileObject(f.location, parent.toUri().getPath());
         result.setFileObject(fo);
         return result;
     }

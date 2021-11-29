@@ -5,7 +5,7 @@ import java.util.Objects;
 public class FileObject {
     public FileObject() {
     }
-public FileObject(String file, Location fs) {
+public FileObject(Location fs, String file) {
 		this.object = file;
 		this.location = fs;
 	}
