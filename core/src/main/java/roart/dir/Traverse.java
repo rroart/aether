@@ -336,8 +336,8 @@ public class Traverse {
             if (indexed != null && indexed.booleanValue() == true) {
                 continue;
             }
-            FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-            ri = IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, maybeFl);
+            FileLocation aFl = index.getaFilelocation();
+            ri = IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, aFl);
             retlist.add(ri);
         }
         return retlist;
@@ -352,8 +352,8 @@ public class Traverse {
             for (FileLocation filename : index.getFilelocations()) {
                 if (indexed != null) {
                     if (indexed.booleanValue()) {
-                        FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, maybeFl));
+                        FileLocation aFl = index.getaFilelocation();
+                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, aFl));
                     }
                 }
             }
@@ -397,6 +397,7 @@ public class Traverse {
         return null;
     }
 
+    @Deprecated
     public static FileLocation getExistingLocalFilelocationMaybe(IndexFiles i) {
         // next up : locations
         FileLocation fl = getExistingLocalFilelocation(i);

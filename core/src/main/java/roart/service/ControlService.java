@@ -584,8 +584,8 @@ import roart.util.MySets;
     
     	IndexFiles index = IndexFilesDao.getByMd5(md5);
     	if (index != null) {
-    	    FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-    	    indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), nodename, maybeFl));
+    	    FileLocation aFl = index.getaFilelocation();
+    	    indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), nodename, aFl));
     	    Set<FileLocation> files = index.getFilelocations();
     	    if (files != null) {
     		for (FileLocation filename : files) {
@@ -683,8 +683,8 @@ import roart.util.MySets;
     		}
     	    }
     	    if (match) {
-    	        FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(index);
-    		indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), nodename, maybeFl));
+    	        FileLocation aFl = index.getaFilelocation();
+    		indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), nodename, aFl));
     	    }
     	}
     

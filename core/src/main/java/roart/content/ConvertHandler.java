@@ -88,7 +88,7 @@ public class ConvertHandler {
             if (str != null) {
                 el.convertsw = converter.getName();
 		el.index.setConverttime("" + time);
-                break;
+	        break;
             }
         }
         el.mimetype = mimetype;
@@ -135,8 +135,8 @@ public class ConvertHandler {
 
         } else {
             log.info("Too small " + dbfilename + " / " + filename + " " + md5 + " " + size);
-            FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
-            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, maybeFl);
+            FileLocation aFl = el.index.getaFilelocation();
+            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
             MyList<ResultItem> retlistnot = (MyList<ResultItem>) MyLists.get(el.retlistnotid); 
             retlistnot.add(ri);

@@ -80,8 +80,8 @@ public class Search {
 
     if (retsize < 0) {
 	//dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
-        FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
-	ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, maybeFl);
+        FileLocation aFl = el.index.getaFilelocation();
+	ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlistnot.add(ri);
     } else {
