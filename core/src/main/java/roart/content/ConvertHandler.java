@@ -88,6 +88,7 @@ public class ConvertHandler {
             if (str != null) {
                 el.convertsw = converter.getName();
 		el.index.setConverttime("" + time);
+	        inmemory.delete(el.message);
 	        break;
             }
         }
