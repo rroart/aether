@@ -38,6 +38,7 @@ import roart.filesystem.FileSystemOperations;
 import org.javaswift.joss.client.factory.AccountConfig;
 import org.javaswift.joss.client.factory.AccountFactory;
 import org.javaswift.joss.client.factory.AuthenticationMethod;
+import org.javaswift.joss.client.impl.StoredObjectImpl;
 import org.javaswift.joss.model.Account;
 import org.javaswift.joss.model.Container;
 import org.javaswift.joss.model.Directory;
@@ -82,7 +83,7 @@ public class Swift extends FileSystemOperations {
     public FileSystemFileObjectResult listFiles(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
         List<FileObject> foList = new ArrayList<FileObject>();
-        DirectoryOrObject mydir = new Directory(f.object, DELIMITER);
+        DirectoryOrObject mydir = new Directory(format(f.object), DELIMITER);
         try {
             String containerName = f.location.extra;
             Container container = conf.account.getContainer(containerName);
@@ -92,7 +93,7 @@ public class Swift extends FileSystemOperations {
                 Directory dir = mydir.getAsDirectory();
                 Collection<DirectoryOrObject> list = container.listDirectory(dir);
                 for (DirectoryOrObject doo : list) {
-                    FileObject fo = new FileObject(new Location(nodename, FileSystemConstants.SWIFTTYPE, containerName), doo.getName());
+                    FileObject fo = new FileObject(f.location, formatBack(doo.getName()));
                     foList.add(fo);
                 }
             }
@@ -109,7 +110,7 @@ public class Swift extends FileSystemOperations {
     public FileSystemMyFileResult listFilesFull(FileSystemFileObjectParam param) throws Exception {
         FileObject f = param.fo;
         Map<String, MyFile> map = new HashMap<>();
-        DirectoryOrObject mydir = new Directory(f.object, DELIMITER);
+        DirectoryOrObject mydir = new Directory(format(f.object), DELIMITER);
         try {
             String containerName = f.location.extra;
             Container container = conf.account.getContainer(containerName);
@@ -123,7 +124,7 @@ public class Swift extends FileSystemOperations {
                 Collection<DirectoryOrObject> list = container.listDirectory(dir);
                 for (DirectoryOrObject doo : list) {
                     FileObject[] fo = new FileObject[1];
-                    fo[0] = new FileObject(f.location, doo.getName());
+                    fo[0] = new FileObject(f.location, formatBack(doo.getName()));
                     MyFile my = getMyFile(fo, false);
                     map.put(my.absolutePath, my);
                 }
@@ -140,7 +141,6 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemBooleanResult exists(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
-        DirectoryOrObject path = dooMapget(f);
         FileSystemBooleanResult result = new FileSystemBooleanResult();
         result.bool = getExistInner(f);
         return result;
@@ -149,7 +149,7 @@ public class Swift extends FileSystemOperations {
     private boolean getExistInner(FileObject f) {
         boolean exist;
         try {
-            DirectoryOrObject mydir = new Directory(f.object, DELIMITER);
+            DirectoryOrObject mydir = new Directory(format(f.object), DELIMITER);
             String dirName = mydir.getName();
             Container container = conf.account.getContainer(f.location.extra);
             StoredObject so = container.getObject(dirName);
@@ -177,9 +177,9 @@ public class Swift extends FileSystemOperations {
     }
 
     private String getAbsolutePathInner(FileObject f) {
-        DirectoryOrObject path = new Directory(f.object, DELIMITER);
+        DirectoryOrObject path = new Directory(format(f.object), DELIMITER);
         String p = path.getName();
-        return p;
+        return formatBack(p);
     }
 
     @Override
@@ -194,8 +194,8 @@ public class Swift extends FileSystemOperations {
     private boolean isDirectoryInner(FileObject f) {
         boolean isDirectory;
         try {
-            DirectoryOrObject doo = new Directory(f.object, DELIMITER);
-            isDirectory = doo.isDirectory();
+            DirectoryOrObject doo = new Directory(format(f.object), DELIMITER);
+            isDirectory = f.object.endsWith("/");
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             isDirectory = false;
@@ -213,8 +213,8 @@ public class Swift extends FileSystemOperations {
     private byte[] getInputStreamInner(FileObject f) {
         byte[] bytes;
         try {
-            DirectoryOrObject doo = dooMapget(f);
-            StoredObject so = doo.getAsObject();
+            Container container = conf.account.getContainer(f.location.extra);
+            StoredObject so = new StoredObjectImpl(container, format(f.object), false);
             bytes = so.downloadObject();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -255,18 +255,18 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemFileObjectResult getParent(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
-        DirectoryOrObject doo = dooMapget(f);
-        String name = doo.getName();
+        String name = format(f.object);
         File fi = new File(name);
         String parent = fi.getParent();
         DirectoryOrObject pardoo = new Directory(parent, DELIMITER);
         FileSystemFileObjectResult result = new FileSystemFileObjectResult();
         FileObject[] fo = new FileObject[1];
-        fo[0] = new FileObject(f.location, pardoo.getName());
+        fo[0] = new FileObject(f.location, formatBack(pardoo.getName()));
         result.setFileObject(fo);
         return result;
     }
 
+    @Deprecated
     private DirectoryOrObject dooMapget(FileObject f) {
         String containerName = f.location.extra;
         Container container = conf.account.getContainer(containerName);
@@ -333,4 +333,19 @@ public class Swift extends FileSystemOperations {
         return result;
     }
 
+    private String format(String string) {
+        if (string.startsWith("/")) {
+            string = string.substring(1);
+        }
+        return string;
+
+    }
+
+    private String formatBack(String string) {
+        if (!string.startsWith("/")) {
+            string = "/" + string;
+        }
+        return string;
+
+    }
 }
