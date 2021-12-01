@@ -49,6 +49,9 @@ public class TraverseQueueRunner implements Runnable {
                 if (trav == null) {
                     break;
                 }
+                if (!traverseList.isEmpty() && !traverseList.get(0).getFileobject().location.equals(trav.getFileobject().location)) {
+                    break;
+                }
                 traverseList.add(trav);
                 FileObject filename = trav.getFileobject();
                 log.info("trav cli {}", filename);
