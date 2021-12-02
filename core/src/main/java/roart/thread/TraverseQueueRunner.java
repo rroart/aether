@@ -50,6 +50,7 @@ public class TraverseQueueRunner implements Runnable {
                     break;
                 }
                 if (!traverseList.isEmpty() && !traverseList.get(0).getFileobject().location.equals(trav.getFileobject().location)) {
+                    queue.offer(trav);
                     break;
                 }
                 traverseList.add(trav);
