@@ -97,7 +97,7 @@ public class S3 extends FileSystemOperations {
         try {
             for (S3ObjectSummary summary: listing.getObjectSummaries()) {
                 System.out.println(summary.getKey());
-                FileObject fo = new FileObject(f.location, summary.getKey());
+                FileObject fo = new FileObject(f.location, formatBack(summary.getKey()));
                 foList.add(fo);
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
@@ -124,16 +124,16 @@ public class S3 extends FileSystemOperations {
             for (S3ObjectSummary summary: listing.getObjectSummaries()) {
                 System.out.println(summary.getKey());
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(f.location, summary.getKey());
+                fo[0] = new FileObject(f.location, formatBack(summary.getKey()));
                 MyFile my = getMyFile(fo, false);
-                map.put(summary.getKey(), my);
+                map.put(formatBack(summary.getKey()), my);
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
                 System.out.println(commonPrefix);
                 FileObject[] fo = new FileObject[1];
-                fo[0] = new FileObject(new Location(nodename, FileSystemConstants.S3TYPE, bucket), commonPrefix);
+                fo[0] = new FileObject(f.location, formatBack(commonPrefix));
                 MyFile my = getMyFile(fo, false);
-                map.put(commonPrefix, my);
+                map.put(formatBack(commonPrefix), my);
             }
             FileSystemMyFileResult result = new FileSystemMyFileResult();
             result.map = map;
@@ -153,6 +153,9 @@ public class S3 extends FileSystemOperations {
 
     private boolean getExistInner(FileObject f) {
         boolean exist = false;
+        if (f.object.endsWith("/")) {
+            return true; //conf.s3client.doesBucketExist(f.location.extra + "/" + f.object);
+        }
         exist = conf.s3client.doesObjectExist(f.location.extra, f.object);
         return exist;
     }
@@ -302,4 +305,19 @@ public class S3 extends FileSystemOperations {
         return result;
     }
 
+    private String format(String string) {
+        if (string.startsWith("/")) {
+            string = string.substring(1);
+        }
+        return string;
+
+    }
+
+    private String formatBack(String string) {
+        if (!string.startsWith("/")) {
+            string = "/" + string;
+        }
+        return string;
+
+    }
 }
