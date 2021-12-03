@@ -94,8 +94,10 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
-        IndexFiles i = param.getIndexFiles();
-        cassandraIndexFiles.put(i);
+        Set<IndexFiles> is = param.getIndexFiles();
+        for (IndexFiles i : is) {
+            cassandraIndexFiles.put(i);
+        }
         return null;
     }
 
@@ -133,8 +135,10 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception {
-        IndexFiles index = param.getIndexFiles();
-        cassandraIndexFiles.delete(index);
+        Set<IndexFiles> indexes = param.getIndexFiles();
+        for (IndexFiles index : indexes) {
+            cassandraIndexFiles.delete(index);
+        }
         return null;
     }
 

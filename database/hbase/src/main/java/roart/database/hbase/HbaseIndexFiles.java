@@ -479,6 +479,12 @@ public class HbaseIndexFiles {
         return languages;
     }
 
+    public void delete(Set<IndexFiles> indexes) throws Exception {
+        for (IndexFiles index : indexes) {
+            delete(index);
+        }
+    }
+    
     public void delete(IndexFiles index) throws Exception {
         for (int i = -1; i < index.getMaxfilelocations(); i++) {
             Delete d = new Delete(Bytes.toBytes(index.getMd5()));

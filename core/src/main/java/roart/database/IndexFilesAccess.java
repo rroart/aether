@@ -118,10 +118,10 @@ public abstract class IndexFilesAccess {
 
     }
 
-    public void save(IndexFiles i) throws Exception {
+    public void save(Set<IndexFiles> saves) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
         param.setConf(MyConfig.conf);
-        param.setIndexFiles(i);
+        param.setIndexFiles(saves);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.SAVE);
     }
 
@@ -161,7 +161,9 @@ public abstract class IndexFilesAccess {
     public void delete(IndexFiles index) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
         param.setConf(MyConfig.conf);
-        param.setIndexFiles(index);
+        Set<IndexFiles> indexes = new HashSet<>();
+        indexes.add(index);
+        param.setIndexFiles(indexes);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.DELETE);
     }
 

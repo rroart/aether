@@ -110,8 +110,10 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
-        IndexFiles i = param.getIndexFiles();
-        hbaseIndexFiles.put(i);
+        Set<IndexFiles> is = param.getIndexFiles();
+        for (IndexFiles i : is) {
+            hbaseIndexFiles.put(i);
+        }
         return null;
     }
 
@@ -149,8 +151,10 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception {
-        IndexFiles index = param.getIndexFiles();
-        hbaseIndexFiles.delete(index);
+        Set<IndexFiles> indexes = param.getIndexFiles();
+        for (IndexFiles index : indexes) {
+            hbaseIndexFiles.delete(index);
+        }
         return null;
     }
 

@@ -179,11 +179,14 @@ public class IndexFilesDao {
         return null;
     }
 
-    public static void save(IndexFiles i) {
+    public static void save(Set<IndexFiles> saves, IndexFiles i) {
         if (i.hasChanged()) {
             try {
                 synchronized(IndexFilesDao.class) {
-                    indexFiles.save(i);
+                    boolean exist = !saves.add(i);
+                    if (exist) {
+                        log.error("Already double " + i.getPriority() + " " + i.getMd5());
+                    }
                 }
                 log.info("saving pri " + i.getPriority() + " " + i.getMd5());
                 i.setUnchanged();
@@ -226,14 +229,17 @@ public class IndexFilesDao {
 
     public static void commit() {
         int[] pris = getPris();
+        log.info("dbis {}", dbi.keySet());
+        log.info("dbitemps {}", dbitemp.keySet());
         log.info("pris levels {} {}", pris[0], pris[1]);
         if (pris[0] > 0) {
             log.info("saving finished");
         }
+        Set<IndexFiles> saves = new HashSet<>();
         for (Entry<String, IndexFiles> entry : dbi.entrySet()) {
             String key = entry.getKey();
             IndexFiles i = entry.getValue();
-            IndexFilesDao.save(i);
+            IndexFilesDao.save(saves, i);
             MyLock lock = i.getLock();
             if (lock != null) {
                 LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
@@ -253,12 +259,13 @@ public class IndexFilesDao {
         }
         for (Entry<String, IndexFiles> entry : dbitemp.entrySet()) {
             IndexFiles i = entry.getValue();
-            IndexFilesDao.save(i);
+            IndexFilesDao.save(saves, i);
             dbitemp.remove(entry.getKey());
         }
         //all.clear();
         try {
             synchronized(IndexFilesDao.class) {
+                indexFiles.save(saves);
                 indexFiles.commit();
             }
         } catch (Exception e) {

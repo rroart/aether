@@ -99,8 +99,10 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
-        IndexFiles i = param.getIndexFiles();
-        dynamodbIndexFiles.put(i);
+        Set<IndexFiles> is = param.getIndexFiles();
+        for (IndexFiles i : is) {
+            dynamodbIndexFiles.put(i);
+        }
         return null;
     }
 
@@ -138,8 +140,10 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception {
-        IndexFiles index = param.getIndexFiles();
-        dynamodbIndexFiles.delete(index);
+        Set<IndexFiles> indexes = param.getIndexFiles();
+        for (IndexFiles index : indexes) {
+            dynamodbIndexFiles.delete(index);
+        }
         return null;
     }
 
