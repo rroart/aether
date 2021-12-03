@@ -2,8 +2,6 @@ package roart.database.hibernate;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 //import org.hibernate.annotations.Index;
 
 import org.hibernate.Session;
@@ -15,6 +13,7 @@ import org.hibernate.cfg.Configuration;
 
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Column;
@@ -23,9 +22,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -260,6 +261,7 @@ import roart.common.model.IndexFiles;
 	    if (fi == null) {
 		fi = new HibernateIndexFiles(nodename, null);
 		fi.setMd5(md5);
+		log.info("Saving " + this.hashCode() + " " + md5);
 		HibernateUtil.currentSession(getH2Dir()).save(fi);
 	    }
 	    return fi;
@@ -312,13 +314,17 @@ import roart.common.model.IndexFiles;
 	       inverseJoinColumns = @JoinColumn(name = "filename", nullable = false))
 						@Cascade({ CascadeType.ALL })
 	*/
-	//@OneToMany(targetEntity=String.class, mappedBy="college", fetch=FetchType.EAGER)
-	//@Column
+	/*
+        @ManyToMany(targetEntity=String.class)
+        @JoinTable(name = "files",
+        joinColumns = @JoinColumn(name = "md5"),
+        inverseJoinColumns = @JoinColumn(name = "filename")
+        )
+        */
 	@ElementCollection	
-	@CollectionTable(name = "files", joinColumns = @JoinColumn(name = "md5"))
-
-	@Column(name = "filename", length = 511, nullable = false)
-        public Set<String> getFilenames() {
+	@CollectionTable(name = "files", joinColumns = @JoinColumn(name = "md5", unique = false), uniqueConstraints = {@UniqueConstraint(columnNames={"md5", "filename"})})
+	@Column(name = "filename", length = 511, nullable = false, unique = false)
+	public Set<String> getFilenames() {
 	    return filenames;
 	}
 
@@ -387,6 +393,7 @@ import roart.common.model.IndexFiles;
 
 	public void commit() throws Exception {
                 roart.database.hibernate.HibernateUtil.commit();
+                //HibernateUtil.currentSession(nodeconf.getH2dir()).clear();
 	}
 
 	public void close() throws Exception {
@@ -438,6 +445,5 @@ import roart.common.model.IndexFiles;
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
-    }
-    
+    }    
     }
