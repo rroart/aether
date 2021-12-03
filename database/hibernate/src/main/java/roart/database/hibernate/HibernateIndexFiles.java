@@ -445,5 +445,13 @@ import roart.common.model.IndexFiles;
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
+    }
+
+    public void save() {
+        try {
+        HibernateUtil.currentSession(getH2Dir()).saveOrUpdate(this);
+    } catch (Exception e) {
+        log.error(Constants.EXCEPTION, e);
+    }
     }    
     }
