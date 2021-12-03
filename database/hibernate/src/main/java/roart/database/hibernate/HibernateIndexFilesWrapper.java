@@ -35,9 +35,12 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
     private HibernateIndexFiles hibernateIndexFiles;
     private String nodename;
 
+    private NodeConfig nodeConf;
+
     public HibernateIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
         hibernateIndexFiles = new HibernateIndexFiles(nodename, nodeConf);
         this.nodename = nodename;
+        this.nodeConf = nodeConf;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
     public DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception {
         FileLocation fl = param.getFileLocation();
         String filename = fl.getFilename();
-        HibernateIndexFiles files = hibernateIndexFiles.getByFilename(filename);
+        HibernateIndexFiles files = hibernateIndexFiles.getByFilename(fl.toString());
         if (files == null) {
             return null;
         }
@@ -105,9 +108,23 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) {
-        IndexFiles i = param.getIndexFiles();
         try {
-            HibernateIndexFiles hif = hibernateIndexFiles.ensureExistence(i.getMd5());
+            HibernateUtil.currentSession(nodeConf.getH2dir()).clear();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        Set<IndexFiles> is = param.getIndexFiles();
+        for (IndexFiles i : is) {
+            save(i);
+        }
+        return null;
+    }
+    
+    public DatabaseResult save(IndexFiles i) {
+        log.info("Md5 {}", i.getMd5());
+        try {
+            HibernateIndexFiles hif = new HibernateIndexFiles(nodename, nodeConf); //hibernateIndexFiles.ensureExistence(i.getMd5());
+            hif.setMd5(i.getMd5());
             hif.setIndexed(i.getIndexed());
             hif.setTimeindex(i.getTimeindex());
             hif.setTimestamp(i.getTimestamp());
@@ -126,6 +143,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
             hif.setLanguage(i.getLanguage());
             hif.setIsbn(i.getIsbn());
             hif.setFilenames(i.getFilelocations().stream().map(FileLocation::toString).collect(Collectors.toSet()));
+            hif.save();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -194,8 +212,10 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception { 
-        IndexFiles index = param.getIndexFiles();
-        hibernateIndexFiles.delete(index);
+        Set<IndexFiles> indexes = param.getIndexFiles();
+        for (IndexFiles index : indexes) {
+            hibernateIndexFiles.delete(index);
+        }
         return null;
     }
 
