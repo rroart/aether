@@ -266,6 +266,7 @@ public class IndexFiles {
 	public void addFile(FileLocation filelocation) {
 	    changed |= true;
 	    filelocations.add(filelocation);
+	    log.info("fls {}", filelocations);
 	    if (filelocations.size() > maxfilelocations) {
 		maxfilelocations = filelocations.size();
 	    }

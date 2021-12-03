@@ -210,11 +210,21 @@ public class IndexFilesDao {
     }
 
     public static void add(IndexFiles i) {
+        synchronized(IndexFilesDao.class) {
         dbi.putIfAbsent(i.getMd5(), i);
+        }
     }
 
     public static void addTemp(IndexFiles i) {
+        synchronized(IndexFilesDao.class) {
         dbitemp.putIfAbsent(i.getMd5(), i);
+        }
+    }
+
+    public static IndexFiles getByTemp(String md5) {
+        synchronized(IndexFilesDao.class) {
+        return dbitemp.remove(md5);
+        }
     }
 
     public static void close() {
@@ -228,6 +238,7 @@ public class IndexFilesDao {
     }
 
     public static void commit() {
+        synchronized(IndexFilesDao.class) {
         int[] pris = getPris();
         log.info("dbis {}", dbi.keySet());
         log.info("dbitemps {}", dbitemp.keySet());
@@ -270,6 +281,7 @@ public class IndexFilesDao {
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
+        }
         }
     }
 

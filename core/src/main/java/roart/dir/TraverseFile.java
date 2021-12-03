@@ -73,6 +73,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
+            log.info("Count dec {}", trav.getFileobject());
             return;
         }
         FileObject filename = trav.getFileobject();
@@ -127,6 +128,7 @@ public class TraverseFile {
                 log.error(Constants.EXCEPTION, e);
                 MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
                 notfoundset.add(filename.toString());
+                log.info("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -135,6 +137,7 @@ public class TraverseFile {
                 count.addAndGet(-1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
+                log.info("Count dec {}", trav.getFileobject());
                 return;
             }
         } else {
@@ -203,6 +206,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
+            log.info("Count dec {}", trav.getFileobject());
         }
         //md5set.add(md5);
     }
@@ -218,11 +222,15 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
+            log.info("Count dec {}", trav.getFileobject());
             return;
         }
         FileObject filename = trav.getFileobject();
+        try {
         FileObject fo = fsMap.get(filename).fileObject[0];
-
+        } catch (Exception e) {
+            int jj = 0;
+        }
         //MyLock lock2 = MyLockFactory.create();
         //lock2.lock(fo.toString());
         log.debug("timer");
@@ -252,6 +260,12 @@ public class TraverseFile {
                         files = ifMap.get(md5);
                     //}
                         if (files == null) {
+                            files = IndexFilesDao.getByTemp(md5);
+                        }
+                        if (files == null) {
+                            files = IndexFilesDao.getByMd5(md5);
+                        }
+                        if (files == null) {
                             files = IndexFilesDao.getNewByMd5(md5);
                             //files = new IndexFiles(md5);
                         }
@@ -276,6 +290,7 @@ public class TraverseFile {
                 log.error(Constants.EXCEPTION, e);
                 MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
                 notfoundset.add(filename.toString());
+                log.info("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -284,6 +299,7 @@ public class TraverseFile {
                 count.addAndGet(-1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
+                log.info("Count dec {}", trav.getFileobject());
                 return;
             }
         } else {
@@ -313,17 +329,27 @@ public class TraverseFile {
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         try {
+            boolean doindex = true;
             if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
-                return;
+                /*
+                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+                total.addAndGet(-1);
+                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+                count.addAndGet(-1);
+                log.info("Count dec {}", trav.getFileobject());
+                */
+                doindex = false;
             }
             if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
-                return;
+                doindex = false;
             }
             if (!Traverse.filterindex(files, trav)) {
-                return;
+                doindex = false;
             }
             lockwait = true;
+            if (doindex) {
             indexsingle(trav, md5, filename, files, fsMap);
+            }
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
             log.error(Constants.EXCEPTION, e);
@@ -352,6 +378,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
+            log.info("Count dec {}", trav.getFileobject());
         }
         //md5set.add(md5);
     }
