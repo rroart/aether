@@ -152,7 +152,7 @@ public class ConvertHandler {
             IndexFilesDao.add(index);
 
         }
-        boolean success = Queues.tikaTimeoutQueue.remove(dbfilename);
+        boolean success = Queues.convertTimeoutQueue.remove(dbfilename);
         if (!success) {
             log.error("queue not having " + dbfilename);
         }
