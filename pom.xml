@@ -98,7 +98,8 @@
     <eurekaclient.version>1.10.16</eurekaclient.version>
     <jdk.version>16</jdk.version>
     <junit.version>5.7.2</junit.version>
-    <lucene.version>8.9.0</lucene.version>
+    <mahout.lucene.version>8.9.0</mahout.lucene.version>
+    <lucene.version>9.0.0</lucene.version>
     <solr.version>8.9.0</solr.version>
     <hbase.version>2.4.5</hbase.version>
     <cassandra.version>3.11.0</cassandra.version>
