@@ -14,10 +14,10 @@ module lucene {
     requires common.searchengine;
     requires common.inmemory.model;
     requires common.inmemory.factory;
-    requires lucene.core;
-    requires lucene.highlighter;
-    requires lucene.queries;
-    requires lucene.queryparser;
+    requires org.apache.lucene.core;
+    requires org.apache.lucene.highlighter;
+    requires org.apache.lucene.queries;
+    requires org.apache.lucene.queryparser;
     requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
