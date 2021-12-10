@@ -96,7 +96,7 @@
     <springcloudstarter.version>2020.0.3</springcloudstarter.version>
     <springcore.version>5.1.3.RELEASE</springcore.version>
     <eurekaclient.version>1.10.16</eurekaclient.version>
-    <jdk.version>16</jdk.version>
+    <jdk.version>17</jdk.version>
     <junit.version>5.7.2</junit.version>
     <mahout.lucene.version>8.9.0</mahout.lucene.version>
     <lucene.version>9.0.0</lucene.version>
