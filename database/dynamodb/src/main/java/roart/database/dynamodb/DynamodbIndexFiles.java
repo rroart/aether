@@ -452,9 +452,6 @@ public class DynamodbIndexFiles {
 
         // delete the files no longer associated to the md5
         for (FileLocation fl : curfls) {
-            if (!fl.isLocal(config.getNodename())) {
-                continue;
-            }
             String name = fl.toString();
             log.info("Dynamodb delete {}", name);
                 try {

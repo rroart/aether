@@ -280,7 +280,7 @@ public class Traverse {
         String md5 = index.getMd5();
         for (FileLocation fl : index.getFilelocations()) {
             // TODO check nodename
-            if (element.getClientQueueElement().suffix != null && !fl.isLocal(ControlService.nodename) && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
+            if (element.getClientQueueElement().suffix != null && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
                 continue;
             }
             FileObject file = FileSystemDao.get(FsUtil.getFileObject(fl.toString()));

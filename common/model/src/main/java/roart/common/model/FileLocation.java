@@ -143,6 +143,7 @@ public class FileLocation {
     return mynode;
 }
 
+    @Deprecated
     public boolean isLocal(String nodename) {
     	if (nodename == null || node == null || node.length() == 0) {
 	    log.error("No nodename");
