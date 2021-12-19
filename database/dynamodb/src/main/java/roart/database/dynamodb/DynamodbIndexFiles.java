@@ -620,8 +620,11 @@ public class DynamodbIndexFiles {
         for (Map<String, AttributeValue> itemMap : list){
             Item item = new Item();
             for (Entry<String, AttributeValue> entry : itemMap.entrySet()) {
-                System.out.println("key " + entry.getKey());
-                //item.with(entry.getKey(), entry.getValue());
+                if (entry.getKey().equals(filelocationq)) {
+                    item.with(entry.getKey(), entry.getValue().getL());
+                } else {
+                    item.with(entry.getKey(), entry.getValue().getS());
+                }
             }
             retlist.add(get(item));
         }
