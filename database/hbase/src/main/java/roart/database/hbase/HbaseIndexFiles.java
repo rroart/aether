@@ -506,10 +506,18 @@ public class HbaseIndexFiles {
     }
 
     public String getIndex() {
-        return config.getTableprefix() + "_" + getIndex();
+        return config.getTableprefix() + "_" + getIndexName();
     }
+private String getIndexName() {
+        return "index";
+    }
+
 public String getFiles() {
-    return config.getTableprefix() + "_" + getFiles();
+    return config.getTableprefix() + "_" + getFilesName();
+}
+
+private String getFilesName() {
+    return "files";
 }
 
 public DatabaseConstructorResult clear(DatabaseConstructorParam param) {
