@@ -135,11 +135,11 @@ public class FileSystemDao {
                 log.info("m " + System.currentTimeMillis() + " " + stat.getMtime());;
                 long time = System.currentTimeMillis() - stat.getMtime();
                 log.info("time " + time);
-                if (time < 10000) {
+                if (time < 20000) {
                     return new String(curatorClient.getData().forPath(zPath));
                 } else {
                     System.out.println("timeout");
-                    log.info("timeout");
+                    log.error("timeout");
                     return null;
                 }
             }
