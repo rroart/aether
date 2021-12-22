@@ -49,3 +49,68 @@ def searchP(search, type = "0"):
         table.auto_set_font_size(False)
         plt.show()
 
+
+def traverse(add = None):
+        import multiprocessing as mp
+        mp.Process(target=traverseP, args=(add,)).start()
+
+def traverseP(add):
+        #TraverseEngineTraverseParam param = TraverseEngineTraverseParam();
+        #param.conf = getConfig();
+        #param.str = traverse;
+        #param.traversetype = type;
+        param = { "function" : "FILESYSTEM", "add" : add }
+        response = request.request1(param, "traverse")
+        print(response)
+        print(response.json())
+        print(response.json()['list'])
+        l = response.json()['list']
+        val1 = l[0][0]['items']
+        val2 = [ 1 + i for i in range(len(l[0]) - 1 ) ]
+        #for i in l:
+        #    for j in i:
+        #        print(j['items'])
+        val3 = [ l[0][i]['items'] for i in range(1, len(l[0])) ]
+        fig, ax = plt.subplots() 
+        ax.set_axis_off()
+        table = ax.table( 
+                cellText = val3,  
+                rowLabels = val2,  
+                colLabels = val1, 
+                cellLoc ='left',  
+                loc ='upper left')
+        table.auto_set_font_size(False)
+        plt.show()
+
+def index(add = None, reindex = False):
+        import multiprocessing as mp
+        mp.Process(target=indexP, args=(add, reindex)).start()
+
+def indexP(add, reindex):
+        #IndexEngineIndexParam param = IndexEngineIndexParam();
+        #param.conf = getConfig();
+        #param.str = index;
+        #param.indextype = type;
+        param = { "function" : "INDEX", "add" : add, "reindex" : reindex }
+        response = request.request1(param, "index")
+        print(response)
+        print(response.json())
+        print(response.json()['list'])
+        l = response.json()['list']
+        val1 = l[0][0]['items']
+        val2 = [ 1 + i for i in range(len(l[0]) - 1 ) ]
+        #for i in l:
+        #    for j in i:
+        #        print(j['items'])
+        val3 = [ l[0][i]['items'] for i in range(1, len(l[0])) ]
+        fig, ax = plt.subplots() 
+        ax.set_axis_off()
+        table = ax.table( 
+                cellText = val3,  
+                rowLabels = val2,  
+                colLabels = val1, 
+                cellLoc ='left',  
+                loc ='upper left')
+        table.auto_set_font_size(False)
+        plt.show()
+
