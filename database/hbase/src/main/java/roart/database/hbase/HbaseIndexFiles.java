@@ -123,7 +123,7 @@ public class HbaseIndexFiles {
             }
             admin.enableTable(TableName.valueOf(getIndex()));
 
-            if (admin.tableExists(TableName.valueOf(getIndex()))) {
+            if (admin.tableExists(TableName.valueOf(getFiles()))) {
                 //admin.disableTable(table.getName());
                 //admin.deleteTable(table.getName());
             } else {
