@@ -73,7 +73,9 @@ public class LocalFileSystem extends FileSystemOperations {
                 FileObject[] fo = new FileObject[1];
                 fo[0] = new FileObject(f.location, file.getAbsolutePath());
                 MyFile my = getMyFile(fo, false);
-                map.put(my.absolutePath, my);
+                if (my.exists) {
+                    map.put(my.absolutePath, my);
+                }
             }
         }     
         FileSystemMyFileResult result = new FileSystemMyFileResult();
@@ -148,6 +150,8 @@ public class LocalFileSystem extends FileSystemOperations {
                 if (withBytes) {
                     my.bytes = getInputStreamInner(fo[0]);
                 }
+            } else {
+                log.info("File does not exist {}", fo[0]);            
             }
         }
         return my;

@@ -118,7 +118,9 @@ public class Swift extends FileSystemOperations {
                 FileObject[] fo = new FileObject[1];
                 fo[0] = f;
                 MyFile my = getMyFile(fo, false);
-                map.put(my.absolutePath, my);
+                if (my.exists) {
+                    map.put(my.absolutePath, my);
+                }
             } else {
                 Directory dir = mydir.getAsDirectory();
                 Collection<DirectoryOrObject> list = container.listDirectory(dir);
@@ -247,6 +249,8 @@ public class Swift extends FileSystemOperations {
                 if (withBytes) {
                     my.bytes = getInputStreamInner(fo[0]);
                 }
+            } else {
+                log.info("File does not exist {}", fo[0]);            
             }
         }
         return my;

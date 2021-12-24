@@ -219,7 +219,7 @@ public class S3 extends FileSystemOperations {
         Map<String, MyFile> map = new HashMap<>();
         for (FileObject filename : param.paths) {
             FileObject[] fo = new FileObject[] { filename };
-            MyFile my = getMyFile(fo, true);
+            MyFile my = getMyFile(fo);
             map.put(filename.object, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
@@ -238,6 +238,8 @@ public class S3 extends FileSystemOperations {
                 if (withBytes) {
                     my.bytes = getInputStreamInner(fo[0]);
                 }
+            } else {
+                log.info("File does not exist {}", fo[0]);            
             }
         }
         return my;
