@@ -126,14 +126,18 @@ public class S3 extends FileSystemOperations {
                 FileObject[] fo = new FileObject[1];
                 fo[0] = new FileObject(f.location, formatBack(summary.getKey()));
                 MyFile my = getMyFile(fo, false);
-                map.put(formatBack(summary.getKey()), my);
+                if (my.exists) {
+                    map.put(formatBack(summary.getKey()), my);
+                }
             }
             for (String commonPrefix : listing.getCommonPrefixes()) {
                 System.out.println(commonPrefix);
                 FileObject[] fo = new FileObject[1];
                 fo[0] = new FileObject(f.location, formatBack(commonPrefix));
                 MyFile my = getMyFile(fo, false);
-                map.put(formatBack(commonPrefix), my);
+                if (my.exists) {
+                    map.put(formatBack(commonPrefix), my);
+                }
             }
             FileSystemMyFileResult result = new FileSystemMyFileResult();
             result.map = map;
@@ -220,7 +224,9 @@ public class S3 extends FileSystemOperations {
         for (FileObject filename : param.paths) {
             FileObject[] fo = new FileObject[] { filename };
             MyFile my = getMyFile(fo, with);
-            map.put(filename.object, my);
+            if (my.exists) {
+                map.put(filename.object, my);
+            }
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
         result.map = map;

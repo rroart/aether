@@ -222,7 +222,9 @@ public class HDFS extends FileSystemOperations {
         for (FileObject filename : param.paths) {
             FileObject[] fo = new FileObject[] { filename };
             MyFile my = getMyFile(fo, with);
-            map.put(filename.object, my);
+            if (my.exists) {
+                map.put(filename.object, my);
+            }
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
         result.map = map;
