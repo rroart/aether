@@ -17,6 +17,9 @@ import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -249,9 +252,12 @@ public class TraverseFile {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
                 if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-                    InputStream fis = fsMap.get(filename).getInputStream();
-                    md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
-                    fis.close();
+                    InmemoryMessage message = FileSystemDao.readFile(filename);
+                    Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
+                    String content = inmemory.read(message);
+                    inmemory.delete(message);
+                    md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( content );
+               
                     //if (files == null) {
                         //z.lock(md5);
                         // get read file
@@ -432,7 +438,7 @@ public class TraverseFile {
     }
 
     public static Map<FileObject, MyFile> handleFo3(Set<FileObject> filenames) {
-        Map<FileObject, MyFile> result = FileSystemDao.getWithInputStream(filenames);
+        Map<FileObject, MyFile> result = FileSystemDao.getWithoutInputStream(filenames);
         return result;
     }
 

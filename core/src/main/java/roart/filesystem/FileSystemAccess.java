@@ -133,6 +133,17 @@ public class FileSystemAccess {
 
     }
 
+    public Map<String, MyFile> getWithoutInputStream(Set<FileObject> filenames) {
+        FileSystemPathParam param = new FileSystemPathParam();
+        param.nodename = ControlService.nodename;
+        param.configid = ControlService.configMd5;
+        param.conf = MyConfig.conf;
+        param.paths = filenames;
+        FileSystemMyFileResult result = EurekaUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHOUTINPUTSTREAM);
+        return result.map;
+
+    }
+
     public FileObject getParent(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         param.nodename = ControlService.nodename;

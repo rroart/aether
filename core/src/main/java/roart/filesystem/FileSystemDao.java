@@ -2,6 +2,7 @@ package roart.filesystem;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +60,16 @@ public class FileSystemDao {
     public static Map<FileObject, MyFile> getWithInputStream(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
         Map<String, MyFile> map = getFileSystemAccess(f).getWithInputStream(filenames);
+        Map<FileObject, MyFile> retMap = new HashMap<>();
+        for (Entry<String, MyFile> entry : map.entrySet()) {
+            retMap.put(new FileObject(filenames.iterator().next().location, entry.getKey()), entry.getValue());
+        }
+        return retMap;
+    }
+
+    public static Map<FileObject, MyFile> getWithoutInputStream(Set<FileObject> filenames) {
+        FileObject f = filenames.iterator().next();
+        Map<String, MyFile> map = getFileSystemAccess(f).getWithoutInputStream(filenames);
         Map<FileObject, MyFile> retMap = new HashMap<>();
         for (Entry<String, MyFile> entry : map.entrySet()) {
             retMap.put(new FileObject(filenames.iterator().next().location, entry.getKey()), entry.getValue());

@@ -80,6 +80,7 @@ public class EurekaConstants {
     public static final String ISDIRECTORY = "isdirectory";
     public static final String GETINPUTSTREAM = "getinputstream";
     public static final String GETWITHINPUTSTREAM = "getwithinputstream";
+    public static final String GETWITHOUTINPUTSTREAM = "getwithoutinputstream";
     public static final String GETPARENT = "getparent";
     public static final String GET = "get";
     public static final String READFILE = "readfile";
