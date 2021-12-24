@@ -156,7 +156,15 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
     public FileSystemMyFileResult processGetWithInputStream(@RequestBody FileSystemPathParam param)
             throws Exception {
         FileSystemOperations operations = getOperations(param.nodename, param.configid, param.conf);
-        FileSystemMyFileResult ret = operations.getWithInputStream(param);
+        FileSystemMyFileResult ret = operations.getWithInputStream(param, true);
+        return ret;
+    }
+
+    @PostMapping(value = "/" + EurekaConstants.GETWITHOUTINPUTSTREAM)
+    public FileSystemMyFileResult processGetWithoutInputStream(@RequestBody FileSystemPathParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.configid, param.conf);
+        FileSystemMyFileResult ret = operations.getWithInputStream(param, false);
         return ret;
     }
 

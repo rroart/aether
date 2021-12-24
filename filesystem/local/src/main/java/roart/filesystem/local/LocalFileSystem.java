@@ -127,11 +127,11 @@ public class LocalFileSystem extends FileSystemOperations {
     }
 
     @Override
-    public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) throws Exception {
+    public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param, boolean with) throws Exception {
         Map<String, MyFile> map = new HashMap<>();
         for (FileObject filename : param.paths) {
             FileObject[] fo = new FileObject[] { filename };
-            MyFile my = getMyFile(fo, true);
+            MyFile my = getMyFile(fo, with);
             map.put(filename.object, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();

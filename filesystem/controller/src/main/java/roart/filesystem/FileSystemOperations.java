@@ -37,7 +37,7 @@ public abstract class FileSystemOperations {
 
     public abstract FileSystemByteResult getInputStream(FileSystemFileObjectParam param) throws Exception;
     
-    public abstract FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) throws Exception;
+    public abstract FileSystemMyFileResult getWithInputStream(FileSystemPathParam param, boolean with) throws Exception;
     
     public abstract FileSystemFileObjectResult getParent(FileSystemFileObjectParam param);
     

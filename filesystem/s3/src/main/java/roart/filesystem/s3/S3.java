@@ -215,11 +215,11 @@ public class S3 extends FileSystemOperations {
     }
 
     @Override
-    public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param) {
+    public FileSystemMyFileResult getWithInputStream(FileSystemPathParam param, boolean with) {
         Map<String, MyFile> map = new HashMap<>();
         for (FileObject filename : param.paths) {
             FileObject[] fo = new FileObject[] { filename };
-            MyFile my = getMyFile(fo);
+            MyFile my = getMyFile(fo, with);
             map.put(filename.object, my);
         }
         FileSystemMyFileResult result = new FileSystemMyFileResult();
