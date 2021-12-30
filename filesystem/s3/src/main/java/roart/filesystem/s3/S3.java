@@ -16,6 +16,7 @@ import java.util.Map;
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
@@ -211,6 +212,7 @@ public class S3 extends FileSystemOperations {
             S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
             S3ObjectInputStream inputStream = s3object.getObjectContent();
             bytes = IOUtils.toByteArray(inputStream);
+            inputStream.close();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return null;
@@ -307,7 +309,7 @@ public class S3 extends FileSystemOperations {
             return null;
         }
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InmemoryMessage msg = inmemory.send(md5, InmemoryUtil.convertWithCharset(bytes));
+        InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes));
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = msg;
         return result;

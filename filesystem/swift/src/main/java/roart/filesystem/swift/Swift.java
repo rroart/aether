@@ -16,6 +16,7 @@ import java.util.Map;
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
@@ -333,7 +334,7 @@ public class Swift extends FileSystemOperations {
             return null;
         }
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InmemoryMessage msg = inmemory.send(md5, InmemoryUtil.convertWithCharset(bytes));
+        InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes));
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = msg;
         return result;
