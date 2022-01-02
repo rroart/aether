@@ -198,8 +198,8 @@ public class TraverseFile {
             if (files != null) {
                 MyLock unlock = files.getLock();
                 if (unlock != null) {
-                    unlock.unlock();
                     files.setLock(null);
+                    unlock.unlock();
                 }
             }
             if (!filestodoset.remove(filename.toString())) {
@@ -257,6 +257,9 @@ public class TraverseFile {
                     String content = inmemory.read(message);
                     inmemory.delete(message);
                     md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( content );
+                    if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
+                        int jj = 0;
+                    }
                
                     //if (files == null) {
                         //z.lock(md5);
@@ -275,6 +278,7 @@ public class TraverseFile {
                             files = IndexFilesDao.getNewByMd5(md5);
                             //files = new IndexFiles(md5);
                         }
+		    log.info("Files {}", files);
                     // modify write file
                     String nodename = ControlService.nodename;
                     files.addFile(filename.location.toString(), filename.object);
@@ -373,8 +377,9 @@ public class TraverseFile {
             if (files != null) {
                 MyLock unlock = files.getLock();
                 if (unlock != null) {
-                    unlock.unlock();
                     files.setLock(null);
+		    log.info("Files {}", files);
+                    unlock.unlock();
                 }
             }
             if (!filestodoset.remove(filename.toString())) {

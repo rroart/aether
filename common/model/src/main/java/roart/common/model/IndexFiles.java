@@ -17,6 +17,8 @@ import roart.common.synchronization.MyLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class IndexFiles {
 
 	public static final int FILENAMECOLUMN = 3;
@@ -45,7 +47,9 @@ public class IndexFiles {
 
     private int priority;
 
+    @JsonIgnore
     private MyLock lock;
+    @JsonIgnore
     private Object lockqueue;
     
     private IndexFiles() {
@@ -366,7 +370,7 @@ public class IndexFiles {
     }
 
     public void setLock(MyLock lock) {
-        // TODO disabled this.lock = lock;
+        this.lock = lock;
     }
 
     public MyLock getLock() {

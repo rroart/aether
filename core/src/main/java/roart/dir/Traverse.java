@@ -155,8 +155,7 @@ public class Traverse {
             } else {
                 retset.add(filename);
                 if (!nomd5) {
-                    String queueid = Constants.TRAVERSEQUEUE;
-                    MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
+                    MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
                     MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                     total.addAndGet(1);
@@ -483,8 +482,7 @@ public class Traverse {
     }
 
     public Set<String> traversedb() throws Exception {
-        String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
+        MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
         for (IndexFiles index : indexes) {
             if (isMaxed(myid, element)) {

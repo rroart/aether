@@ -1,12 +1,16 @@
 package roart.thread;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -19,6 +23,7 @@ import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.dir.TraverseFile;
+import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.util.MyQueue;
 import roart.util.MyQueues;
@@ -33,60 +38,160 @@ public class TraverseQueueRunner implements Runnable {
 
     @SuppressWarnings("squid:S2189")
     public void run() {
-
-        int cpu = 1;
-        int nThreads = (int) (Runtime.getRuntime().availableProcessors() * cpu);
+        Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
+        int nThreads = Runtime.getRuntime().availableProcessors() / 4;
+        if (nThreads == 0) {
+            nThreads = 1;
+        }
+        int running = 0;
         log.info("nthreads {}", nThreads);
-        ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
+        ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
+        if (Queues.getTraverses() > 0) {
+            log.info("resetting traverses");
+            Queues.resetTraverses();
+        }
 
         while (true) {
-            List<TraverseQueueElement> traverseList = new ArrayList<>();
-            for (int i = 0; i < LIMIT; i++) {
-                TraverseQueueElement trav = queue.poll();
-                if (trav == null) {
-                    break;
+            long now = System.currentTimeMillis();
+            List<Future> removes = new ArrayList<Future>();
+            for(Future<Object> task: map.keySet()) {
+                if (task.isCancelled()) {
+                    log.info("cancelled and removing " + task + " " + map.size());
+                    removes.add(task);   
+                    //FutureTask<Object> ft = (FutureTask<Object>) task;
+                    //ft.run();
+                    //ft.notify();
+                    continue;
                 }
-                if (!traverseList.isEmpty() && !traverseList.get(0).getFileobject().location.equals(trav.getFileobject().location)) {
-                    queue.offer(trav);
-                    break;
+                if (task.isDone()) {
+                    log.info("removing " + task);
+                    removes.add(task);                              
+                    Date d = map.get(task);
+                    if ( d != null) {
+                        log.info("timerStop " + (now - d.getTime()));
+                    }
+                    continue;
                 }
-                traverseList.add(trav);
-                FileObject filename = trav.getFileobject();
-                log.info("trav cli {}", filename);
+                Date d = map.get(task);
+                if (true) { continue; }
+                if ( d != null && (now - d.getTime()) < 100/*0*/ * 60 * 1/*0*/) {
+                    continue;
+                }
+
+                //Queues.decTraverses();
+                log.error("timeout and removing " + task + " " + map.size());
+                boolean ok = task.cancel(true);
+                if (!ok) {
+                    log.error("canceled error");
+                }
             }
-            if (traverseList.isEmpty()) {
+            for (Future<Object> key: removes) {
+                map.remove(key);
+                running--;
+                Queues.decTraverses();
+            }
+            if (false && removes.size() > 0) {
+                log.info("active 0 " + executorService.getActiveCount());
+                executorService.purge();
+                log.info("active 1 " + executorService.getActiveCount());
+            }
+            if (Queues.getTraverseQueue().size() == 0 || Queues.otherQueueHeavyLoaded() || Queues.indexQueueHeavyLoaded()) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
-                    continue;
                 } catch (InterruptedException e) {
-                    log.error(Constants.EXCEPTION, e); 
-                }    		    
+                    // TODO Auto-generated catch block
+                    log.error(Constants.EXCEPTION, e);
+                }
+                continue;
             }
-            log.info("Traverse list size {}", traverseList.size());
+            //Queues.queueStat();
 
+            for(int i = running; i < nThreads; i++) {
+                Callable<Object> callable = new Callable<Object>() {
+                    public Object call() /* throws Exception*/ {
+                        try {
+                            doTraverseTimeout();
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e);
+                        } catch (Error e) {
+                            System.gc();
+                            log.error("Error " + Thread.currentThread().getId());
+                            log.error(Constants.ERROR, e);
+                        }
+                        finally {
+                            //log.info("myend");
+                        }
+                        return null; //myMethod();
+                    }       
+                };      
+
+                Future<Object> task = executorService.submit(callable);
+                map.put(task, new Date());
+                Queues.queueStat();
+                Queues.incTraverses();
+                running++;
+                log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
+                log.info("queue " + executorService.getQueue());
+                /*
+                    int num = executorService.prestartAllCoreThreads();
+                    log.info("num " + num);
+                 */
+            }
             try {
-                //handleList(pool, traverseList);
-                handleList2(traverseList);
-            } catch (Exception e) {
+                //TimeUnit.SECONDS.sleep(60);
+            } catch (/*Interrupted*/Exception e) {
+                // TODO Auto-generated catch block
                 log.error(Constants.EXCEPTION, e);
-            } catch (Error e) {
-                System.gc();
-                log.error("Error " + Thread.currentThread().getId());
-                log.error(Constants.ERROR, e);
             }
-            finally {
-                log.info("myend");            
+        }
+    }
+
+    private void doTraverseTimeout() {
+        MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+        List<TraverseQueueElement> traverseList = new ArrayList<>();
+        for (int i = 0; i < LIMIT; i++) {
+            TraverseQueueElement trav = queue.poll();
+            if (trav == null) {
+                break;
             }
+            if (!traverseList.isEmpty() && !traverseList.get(0).getFileobject().location.equals(trav.getFileobject().location)) {
+                queue.offer(trav);
+                break;
+            }
+            traverseList.add(trav);
+            FileObject filename = trav.getFileobject();
+            log.info("trav cli {}", filename);
+        }
+        if (traverseList.isEmpty()) {
             try {
                 TimeUnit.SECONDS.sleep(1);
-                continue;
+                return;
             } catch (InterruptedException e) {
                 log.error(Constants.EXCEPTION, e); 
             }                   
         }
+        log.info("Traverse list size {}", traverseList.size());
+
+        try {
+            //handleList(pool, traverseList);
+            handleList2(traverseList);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        } catch (Error e) {
+            System.gc();
+            log.error("Error " + Thread.currentThread().getId());
+            log.error(Constants.ERROR, e);
+        }
+        finally {
+            log.info("myend");            
+        }
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            return;
+        } catch (InterruptedException e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
     }
 
     private void handleList2(List<TraverseQueueElement> traverseList) throws Exception {
@@ -111,7 +216,7 @@ public class TraverseQueueRunner implements Runnable {
     private int usedTime(long time2, long time1) {
         return (int) (time2 - time1); // 1000;
     }
-    
+
     private void handleList(ThreadPoolExecutor pool, List<TraverseQueueElement> traverseList) throws Exception {
         for (TraverseQueueElement trav : traverseList) {
             //TraverseFile.handleFo3(trav);
