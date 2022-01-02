@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import roart.common.constants.Constants;
+
 public class NodeConfig extends MyConfig {
     public enum Config { REINDEXLIMIT, INDEXLIMIT, FAILEDLIMIT, OTHERTIMEOUT, TIKATIMEOUT, MLTCOUNT, MLTMINTF, MLTMINDF }
 
@@ -121,7 +123,7 @@ public class NodeConfig extends MyConfig {
         if (getZookeeper() != null && !isLocalhost()) {
             return roart.common.constants.Constants.CURATOR;
         }
-        return null;
+        return Constants.LOCAL;
     }
     
     @JsonIgnore

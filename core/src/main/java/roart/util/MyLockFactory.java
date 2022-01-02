@@ -14,6 +14,8 @@ public class MyLockFactory {
             return new MyHazelcastLock();
         case Constants.CURATOR:
             return new MyCuratorLock();
+        case Constants.LOCAL:
+            return new MyLocalLock();
             /*
         case Constants.ZOOKEEPER:
             return new MyZookeeperLock();

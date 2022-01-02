@@ -1,5 +1,6 @@
 package roart.search;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import roart.common.config.MyConfig;
@@ -18,10 +19,62 @@ public class AnIT {
     public void myTest() {
         
     }
+    
     @Test
-    public void my2Test() throws Exception {
-        new Util(new Sender()).traverse("/home/roart/src/aethermicro/books");
+    @Order(0)
+    public void my0Test() throws Exception {
+        new Util(new Sender()).indexclean();
+        new Util(new Sender()).dbclear();
     }
     
+    @Test
+    @Order(1)
+    public void myDbTest() throws Exception {
+        new Util(new Sender()).dbclear();
+        Object o = new Util(new Sender()).traverse(null);
+        System.out.println(o);
+    }
     
+    @Test
+    @Order(1)
+    public void my1Test() throws Exception {
+        Object o = new Util(new Sender()).traverse(null);
+        System.out.println(o);
+        new Util(new Sender()).index(null, false);
+    }
+    
+    @Test
+    @Order(2)
+    public void my2Test() throws Exception {
+        Object o = new Util(new Sender()).traverse("/home/roart/src/aethermicro/books");
+        System.out.println(o);
+        new Util(new Sender()).index("/home/roart/src/aethermicro/books", false);
+    }
+    
+    @Test
+    @Order(3)
+    public void my3Test() throws Exception {
+        new Util(new Sender()).index("/home/roart/src/aethermicro/books", true);
+    }
+    
+    @Test
+    @Order(4)
+    public void my4Test() throws Exception {
+        Object l = new Util(new Sender()).search("amazon", "0");
+        System.out.println(l);
+    }
+    
+    @Test
+    @Order(5)
+    public void my5Test() throws Exception {
+        System.out.println("Ok");
+    }
+    
+    @Test
+    @Order(6)
+    public void my6Test() throws Exception {
+        new Util(new Sender()).index("/home/roart/src/aethermicro/books", true);
+    }
+    
+     
 }
