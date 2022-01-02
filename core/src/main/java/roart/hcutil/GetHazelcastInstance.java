@@ -9,6 +9,7 @@ public class GetHazelcastInstance {
     public static HazelcastInstance instance() {
 	if (hz == null) {
 	    Config config = HazelcastConfig.getHazelcastConfig();
+	    config.getCPSubsystemConfig().setCPMemberCount(3);
 	    hz = Hazelcast.newHazelcastInstance(config);
 	}
 	return hz;

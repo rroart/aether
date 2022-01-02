@@ -1,21 +1,18 @@
 package roart.util;
 
-import java.util.concurrent.locks.Lock;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.cp.lock.FencedLock;
 
 import roart.common.synchronization.MyLock;
 import roart.hcutil.GetHazelcastInstance;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
-
 public class MyHazelcastLock extends MyLock {
-    ILock lock;
+    FencedLock lock;
     
     @Override
     public void lock(String path) throws Exception {
         HazelcastInstance hz = GetHazelcastInstance.instance();
-        lock = hz.getLock(path);
+        lock = hz.getCPSubsystem().getLock(path);
         lock.lock();
     }
 
@@ -24,11 +21,11 @@ public class MyHazelcastLock extends MyLock {
         lock.unlock();
     }
 
-    public ILock getLock() {
+    public FencedLock getLock() {
         return lock;
     }
 
-    public void setLock(ILock lock) {
+    public void setLock(FencedLock lock) {
         this.lock = lock;
     }
 
