@@ -132,6 +132,7 @@ public class ConvertHandler {
             //Inmemory inmemory2 = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
             //InmemoryMessage message = inmemory2.send(el.md5, content);
             elem.message = str;
+            elem.convertsw = el.convertsw;
             Queues.indexQueue.add(elem);
 
         } else {
