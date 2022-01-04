@@ -334,7 +334,7 @@ public class Swift extends FileSystemOperations {
             return null;
         }
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes));
+        InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes), md5);
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = msg;
         return result;

@@ -20,6 +20,10 @@ public abstract class Inmemory {
     }
     
     public InmemoryMessage send(String id, Object data) {
+        return send(id, data, null);
+    }
+    
+    public InmemoryMessage send(String id, Object data, String md5) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         String string;
@@ -37,9 +41,9 @@ public abstract class Inmemory {
             count = (int) Math.ceil(((double) string.length()) / getLimit());
             limit = getLimit();
         }
-        InmemoryMessage message = new InmemoryMessage(getServer(), id, count);
+        InmemoryMessage message = new InmemoryMessage(getServer(), id, count, md5);
         for (int i = 0; i < count; i++) {
-            InmemoryMessage messageKey = new InmemoryMessage(getServer(), id, i);
+            InmemoryMessage messageKey = new InmemoryMessage(getServer(), id, i, md5);
             String messageKeyString = JsonUtil.convert(messageKey);
             int max = Math.min(string.length(), (i + 1) * limit);
             String value = string.substring(i * limit, max);
@@ -52,7 +56,7 @@ public abstract class Inmemory {
         StringBuilder stringBuilder = new StringBuilder("");
         int count = m.getCount();
         for (int i = 0; i < count; i++) {
-            InmemoryMessage messkageKey = new InmemoryMessage(m.getServer(), m.getId(), i);
+            InmemoryMessage messkageKey = new InmemoryMessage(m.getServer(), m.getId(), i, m.getMd5());
             String messageKeyString = JsonUtil.convert(messkageKey);
             String string = get(messageKeyString);
             stringBuilder.append(string);
@@ -64,7 +68,7 @@ public abstract class Inmemory {
         StringBuilder stringBuilder = new StringBuilder("");
         int count = m.getCount();
         for (int i = 0; i < count; i++) {
-            InmemoryMessage messkageKey = new InmemoryMessage(m.getServer(), m.getId(), i);
+            InmemoryMessage messkageKey = new InmemoryMessage(m.getServer(), m.getId(), i, m.getMd5());
             String messageKeyString = JsonUtil.convert(messkageKey);
             del(messageKeyString);
         }        

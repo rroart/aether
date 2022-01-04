@@ -130,7 +130,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 		String classification = index.classification;
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 String content = inmemory.read(index.message);
-                if (!InmemoryUtil.validate(index.message.getId(), content)) {
+                if (!InmemoryUtil.validate(index.message.getMd5(), content)) {
                     SearchEngineIndexResult result = new SearchEngineIndexResult();
                     result.noindexreason = "invalid";
                     result.size = -1;

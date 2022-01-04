@@ -40,7 +40,7 @@ public class Wvtext extends ConvertAbstract {
         ConvertResult result = new ConvertResult();
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         String content = inmemory.read(param.message);
-        if (!InmemoryUtil.validate(param.message.getId(), content)) {
+        if (!InmemoryUtil.validate(param.message.getMd5(), content)) {
             return result;
         }
         Converter converter = param.converter;
@@ -76,7 +76,7 @@ public class Wvtext extends ConvertAbstract {
             return result;
         }
         String md5 = DigestUtils.md5Hex(output );
-        InmemoryMessage msg = inmemory.send(md5, output);
+        InmemoryMessage msg = inmemory.send(md5, output, md5);
         result.message = msg;
         return result;
     }

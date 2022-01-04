@@ -188,7 +188,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             String content = inmemory.read(classify.message);
-            if (!InmemoryUtil.validate(classify.message.getId(), content)) {
+            if (!InmemoryUtil.validate(classify.message.getMd5(), content)) {
                 MachineLearningClassifyResult result = new MachineLearningClassifyResult();
                 return result;
             }
