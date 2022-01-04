@@ -36,9 +36,9 @@ module core {
     requires langdetect;
     requires language.detector;
     requires org.apache.commons.codec;
-    //requires org.apache.tika.core;
+    requires org.apache.tika.core;
     //requires org.apache.tika.parsers;
-    requires tika.core;
+    //requires tika.core;
     //requires tika.parsers;
     requires org.slf4j;
     requires spring.beans;
