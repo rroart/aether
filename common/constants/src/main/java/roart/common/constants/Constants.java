@@ -17,6 +17,7 @@ public static final String REFRESH = "refresh";
 public static final String RECONFIG = "reconfig";
 public static final String QUEUE = "queue";
 public static final String DB = "db";
+public static final String FS = "fs";
 
 public static final String ZKDELIMITER = "-";
 

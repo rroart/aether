@@ -132,8 +132,8 @@ public class FileSystemDao {
         //ControlServer.z
         String url = null;
         try {
-            String str = "/fs" + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
-            String zPath = "/fs" + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
+            String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
+            String zPath = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
             log.info("here" + zPath);
             Stat b = curatorClient.checkExists().forPath(zPath);
             if (b == null) {

@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
@@ -239,7 +240,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                 fo.location.fs = FileSystemConstants.LOCALTYPE;
             }
-            String str = "/fs" + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+            String str = "/aether/fs" + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
             if (str.endsWith("/")) {
                 str = str.substring(0, str.length() - 1);
             }
@@ -255,7 +256,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
                 if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                     fo.location.fs = FileSystemConstants.LOCALTYPE;
                 }
-                String str = "/fs" + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+                String str = "/" + Constants.AETHER + "/" + Constants.FS + " + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
                 if (str.endsWith("/")) {
                     str = str.substring(0, str.length() - 1);
                 }
