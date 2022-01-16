@@ -256,7 +256,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
                 if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                     fo.location.fs = FileSystemConstants.LOCALTYPE;
                 }
-                String str = "/" + Constants.AETHER + "/" + Constants.FS + " + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+                String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
                 if (str.endsWith("/")) {
                     str = str.substring(0, str.length() - 1);
                 }
