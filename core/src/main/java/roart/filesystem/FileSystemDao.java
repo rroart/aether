@@ -134,30 +134,30 @@ public class FileSystemDao {
         try {
             String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
             String zPath = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
-            log.info("here" + zPath);
+            log.debug("Path {}", zPath);
             Stat b = curatorClient.checkExists().forPath(zPath);
             if (b == null) {
                 return null;
             }
             List<String> children = curatorClient.getChildren().forPath(zPath);
-            log.info("ch " + children.size());
+            log.debug("Children {}", children.size());
             if (children.isEmpty()) {
                 Stat stat = curatorClient.checkExists().forPath(zPath);
-                log.info("m " + System.currentTimeMillis() + " " + stat.getMtime());;
+                log.debug("Time {} {}", System.currentTimeMillis(), stat.getMtime());;
                 long time = System.currentTimeMillis() - stat.getMtime();
-                log.info("time " + time);
+                log.debug("Time {}", time);
                 if (time < 20000) {
                     return new String(curatorClient.getData().forPath(zPath));
                 } else {
                     System.out.println("timeout");
-                    log.error("timeout");
+                    log.error("Timeout");
                     return null;
                 }
             }
             for (String child : children) {
-                log.info("child " + child);
+                log.debug("Child {}", child);
                 String newPath = s + "/" + child;
-                log.info("cmp " + path + " " + newPath);
+                log.debug("Compare {} {}", path, newPath);
                 if (path.startsWith(newPath)) {
                     return getUrl(curatorClient, fs, path, newPath);
                 }
