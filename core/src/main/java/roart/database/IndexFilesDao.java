@@ -377,7 +377,7 @@ public class IndexFilesDao {
         for (FileObject filename : filenames) {
             FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
             fls.add(fl);
-            if ("::".equals(filename.location.toString())) {
+            if (false && "::".equals(filename.location.toString())) {
                 fls.add(new FileLocation(null, "file:" + filename.object));
                 fls.add(new FileLocation(null, "file://localhost" + filename.object));
                 fls.add(new FileLocation(null, "localhost:" + filename.object));
