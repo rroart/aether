@@ -119,6 +119,7 @@ public class FileSystemDao {
         String url = getUrl(ControlService.curatorClient, fs2, path, "");
         if (url == null) {
             log.error("URL null for {} {}", fs, path);
+            return null;
         }
         FileSystemAccess access = new FileSystemAccess();
         access.constructor("http://" + url + "/");
