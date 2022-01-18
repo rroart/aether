@@ -184,6 +184,30 @@ import roart.common.model.IndexFiles;
             this.isbn = isbn;
         }
 
+        @Column(name = "created")
+        @Persistent     
+        private String created;
+        
+            public String getCreated() {
+            return created;
+        }
+
+        public void setCreated(String created) {
+            this.created = created;
+        }
+
+        @Column(name = "checked")
+        @Persistent     
+        private String checked;
+        
+            public String getChecked() {
+            return checked;
+        }
+
+        public void setChecked(String checked) {
+            this.checked = checked;
+        }
+
 	public DataNucleusIndexFiles ensureExistence(String md5) throws Exception {
 	    DataNucleusIndexFiles fi = getByMd5(md5);
 	    if (fi == null) {

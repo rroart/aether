@@ -120,6 +120,8 @@ public class CassandraIndexFiles {
                 .append("noindexreason text, ")
                 .append("language text, ")
                 .append("isbn text, ")
+                .append("created text, ")
+                .append("checked text, ")
                 .append("node text, ")
                 .append("filename text, ")
                 .append("filelocation set<frozen<filelocation>>);");
@@ -153,6 +155,8 @@ public class CassandraIndexFiles {
     private final String noindexreasonq = "noindexreason";
     private final String languageq = "language";
     private final String isbnq = "isbn";
+    private final String createdq = "created";
+    private final String checkedq = "checked";
     private final String nodeq = "node";
     private final String filenameq = "filename";
     private final String filelocationq = "filelocation";
@@ -238,6 +242,12 @@ public class CassandraIndexFiles {
         }
         if (ifile.getIsbn() != null) {
             sb.append(isbnq + " = '" +ifile.getIsbn() + "', ");
+        }
+        if (ifile.getCreated() != null) {
+            sb.append(createdq + " = '" +ifile.getCreated() + "', ");
+        }
+        if (ifile.getChecked() != null) {
+            sb.append(checkedq + " = '" +ifile.getChecked() + "', ");
         }
         if (ifile.getFilelocations() != null) {
             sb.append(filelocationq + " = ? ");	        
@@ -325,6 +335,8 @@ public class CassandraIndexFiles {
         ifile.setNoindexreason(row.getString(noindexreasonq));
         ifile.setLanguage(row.getString(languageq));
         ifile.setIsbn(row.getString(isbnq));
+        ifile.setCreated(row.getString(createdq));
+        ifile.setChecked(row.getString(checkedq));
         ifile.setFilelocations(row.getSet(filelocationq, FileLocation.class));
         ifile.setUnchanged();
         return ifile;

@@ -41,6 +41,8 @@ public class IndexFiles {
     private int maxfilelocations; // keep max count, for hbase deletions
     private String language;
     private String isbn;
+    private String created;
+    private String checked;
     
     private boolean changed = false;
     private boolean indb = false;
@@ -345,6 +347,22 @@ public class IndexFiles {
             this.isbn = isbn;
         }
 
+    public String getCreated() {
+            return created;
+        }
+
+        public void setCreated(String created) {
+            this.created = created;
+        }
+
+    public String getChecked() {
+            return checked;
+        }
+
+        public void setChecked(String checked) {
+            this.checked = checked;
+        }
+
     public boolean hasChanged() {
 	return changed;
     }
@@ -444,6 +462,8 @@ public class IndexFiles {
 	ri.add("Timeout reason");
 	ri.add("No indexing reason");
 	ri.add("Filenames");
+        ri.add("Created");
+        ri.add("Checked");
     ri.add("Metadata");
 	}
 	return ri;
@@ -491,6 +511,8 @@ public class IndexFiles {
 	ri.add(index.getTimeoutreason());
 	ri.add(index.getNoindexreason());
 	ri.add("" + index.getFilelocations().size());
+	ri.add(index.getCreated());
+	ri.add(index.getChecked());
 	String metadatastring = "";
 	if (metadata != null) {
 	    for (String md : metadata) {

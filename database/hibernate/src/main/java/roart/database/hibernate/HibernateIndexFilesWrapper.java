@@ -143,6 +143,8 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
             hif.setLanguage(i.getLanguage());
             hif.setIsbn(i.getIsbn());
             hif.setFilenames(i.getFilelocations().stream().map(FileLocation::toString).collect(Collectors.toSet()));
+            hif.setCreated(i.getCreated());
+            hif.setChecked(i.getChecked());
             hif.save();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -170,6 +172,8 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         ifile.setNoindexreason(hif.getNoindexreason());
         ifile.setLanguage(hif.getLanguage());
         ifile.setIsbn(hif.getIsbn());
+        ifile.setCreated(hif.getCreated());
+        ifile.setChecked(hif.getChecked());
         Set<String> files = hif.getFilenames();
         for (String file : files) {
             ifile.addFile(FsUtil.getFileLocation(file));

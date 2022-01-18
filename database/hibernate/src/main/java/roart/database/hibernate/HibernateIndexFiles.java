@@ -72,6 +72,8 @@ import roart.common.model.IndexFiles;
 	private Set<String> filenames;
 	private String language;
 	private String isbn;
+        private String created;
+        private String checked;
 	
 	private String nodename;
 	private NodeConfig nodeconf;
@@ -254,6 +256,34 @@ import roart.common.model.IndexFiles;
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    /**
+     * @hibernate.property
+     *  column="timestamp"
+     */
+    @Column(name = "created")
+    
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    /**
+     * @hibernate.property
+     *  column="timestamp"
+     */
+    @Column(name = "checked")
+    
+    public String getChecked() {
+        return checked;
+    }
+
+    public void setChecked(String checked) {
+        this.checked = checked;
     }
 
 	public HibernateIndexFiles ensureExistence(String md5) throws Exception {

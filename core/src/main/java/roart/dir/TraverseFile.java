@@ -259,6 +259,7 @@ public class TraverseFile {
                     md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( content );
                     if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
                         int jj = 0;
+                        // d41d8cd98f00b204e9800998ecf8427e
                     }
                
                     //if (files == null) {
@@ -279,6 +280,7 @@ public class TraverseFile {
                             //files = new IndexFiles(md5);
                         }
 		    log.info("Files {}", files);
+		    files.setChecked("" + System.currentTimeMillis());
                     // modify write file
                     String nodename = ControlService.nodename;
                     files.addFile(filename.location.toString(), filename.object);
