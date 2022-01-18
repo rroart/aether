@@ -1,0 +1,67 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>roart</groupId>
+    <artifactId>aether-common</artifactId>
+    <relativePath>../pom.xml</relativePath>
+    <version>0.10-SNAPSHOT</version>
+  </parent>
+  <groupId>roart</groupId>
+  <artifactId>aether-common-webflux</artifactId>
+  <packaging>jar</packaging>
+  <version>0.10-SNAPSHOT</version>
+  <name>Stock Statistics Common Webflux</name>
+  <dependencies>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-constants</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-util</artifactId>
+      <version>0.10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${springcore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webflux</artifactId>
+      <version>${springcore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${springcore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-commons</artifactId>
+      <version>${springcloud.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+<!-- https://mvnrepository.com/artifact/io.projectreactor/reactor-core -->
+<dependency>
+    <groupId>io.projectreactor</groupId>
+    <artifactId>reactor-core</artifactId>
+    <version>3.2.3.RELEASE</version>
+</dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>          
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+  </dependencies>
+</project>
