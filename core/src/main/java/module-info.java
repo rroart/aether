@@ -15,6 +15,7 @@ module core {
     requires common.convert;
     requires common.database;
     requires common.eureka;
+    requires common.webflux;
     requires common.filesystem;
     requires common.machinelearning;
     requires common.model;

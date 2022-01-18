@@ -52,6 +52,11 @@
       <artifactId>javax.inject</artifactId>
       <version>${javaxinject.version}</version>
     </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-webflux</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
   </dependencies>
 </project>
 

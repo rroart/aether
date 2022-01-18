@@ -10,7 +10,7 @@
   <artifactId>aether-common-webflux</artifactId>
   <packaging>jar</packaging>
   <version>0.10-SNAPSHOT</version>
-  <name>Stock Statistics Common Webflux</name>
+  <name>Aether Common Webflux</name>
   <dependencies>
     <dependency>
       <groupId>roart</groupId>

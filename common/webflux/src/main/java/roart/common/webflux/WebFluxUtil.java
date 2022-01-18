@@ -26,36 +26,13 @@ public class WebFluxUtil {
         String url = "http://" + host + ":" + port + "/" + path;
         return sendMeInner(myclass, param, url, objectMapper);
     }
-    
-    public static <T> T sendCMe(Class<T> myclass, Object param, String path) {
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String url = "http://" + getHostname() + ":" + getPort() + "/" + path;
-        return sendMeInner(myclass, param, url, objectMapper);
-    }
-    
-    public static <T> T sendIMe(Class<T> myclass, Object param, String path) {
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String url = "http://" + getIHostname() + ":" + getIPort() + "/" + path;
-        return sendMeInner(myclass, param, url, objectMapper);
-    }
-    
-    public static <T> T sendIMe(Class<T> myclass, Object param, String path, ObjectMapper objectMapper) {
-        String url = "http://" + getIHostname() + ":" + getIPort() + "/" + path;
-        return sendMeInner(myclass, param, url, objectMapper);
-    }
-    
-    public static <T> T sendAMe(Class<T> myclass, Object param, String path) {
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String url = "http://" + getAHostname() + ":" + getAPort() + "/" + path;
-        return sendMeInner(myclass, param, url, objectMapper);
-    }
-    
-    public static <T> T sendAMe(Class<T> myclass, Object param, String path, ObjectMapper objectMapper) {
-        String url = "http://" + getAHostname() + ":" + getAPort() + "/" + path;
-        return sendMeInner(myclass, param, url, objectMapper);
-    }
+        
     public static <T> T sendMe(Class<T> myclass, Object param, String url) {
         return sendMeInner(myclass, param, url, null);
+    }
+    
+    public static <T> T sendMe(Class<T> myclass, String url, Object param, String path) {
+        return sendMeInner(myclass, param, url + path, null);
     }
     
     public static <T> T sendMeInner(Class<T> myclass, Object param, String url, ObjectMapper objectMapper) {
@@ -90,72 +67,6 @@ public class WebFluxUtil {
         //log.info("resultme " + regr.getHeaders().size() + " " + regr.getHeaders().getContentLength() + " " + regr.toString());
         log.info("Rq time {}s for {} ", MathUtil.round((double) (System.currentTimeMillis() - time) / 1000, 1), url);
         return result;
-    }
-
-    public static String getAHostname() {
-        String hostname = System.getenv(EurekaConstants.MYASERVER.toUpperCase());
-        if (hostname == null) {
-            hostname = System.getProperty(EurekaConstants.MYASERVER);
-        }
-        if (hostname == null) {
-            hostname = EurekaConstants.LOCALHOST;
-        }
-        return hostname;
-    }
-    
-    public static String getAPort() {
-        String port = System.getenv(EurekaConstants.MYAPORT.toUpperCase());
-        if (port == null) {
-            port = System.getProperty(EurekaConstants.MYAPORT);
-        }
-        if (port == null) {
-            port = EurekaConstants.HTTP;
-        }
-        return port;
-    }
-
-    public static String getIHostname() {
-        String hostname = System.getenv(EurekaConstants.MYISERVER.toUpperCase());
-        if (hostname == null) {
-            hostname = System.getProperty(EurekaConstants.MYISERVER);
-        }
-        if (hostname == null) {
-            hostname = EurekaConstants.LOCALHOST;
-        }
-        return hostname;
-    }
-    
-    public static String getIPort() {
-        String port = System.getenv(EurekaConstants.MYIPORT.toUpperCase());
-        if (port == null) {
-            port = System.getProperty(EurekaConstants.MYIPORT);
-        }
-        if (port == null) {
-            port = EurekaConstants.HTTP;
-        }
-        return port;
-    }
-
-    public static String getHostname() {
-        String hostname = System.getenv(EurekaConstants.MYSERVER.toUpperCase());
-        if (hostname == null) {
-            hostname = System.getProperty(EurekaConstants.MYSERVER);
-        }
-        if (hostname == null) {
-            hostname = EurekaConstants.LOCALHOST;
-        }
-        return hostname;
-    }
-    
-    public static String getPort() {
-        String port = System.getenv(EurekaConstants.MYPORT.toUpperCase());
-        if (port == null) {
-            port = System.getProperty(EurekaConstants.MYPORT);
-        }
-        if (port == null) {
-            port = EurekaConstants.HTTP;
-        }
-        return port;
     }
 
 }

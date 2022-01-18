@@ -23,7 +23,7 @@ import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.model.FileObject;
-import roart.eureka.util.EurekaUtil;
+import roart.common.webflux.WebFluxUtil;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -43,8 +43,8 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
-        //FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
-        FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.CONSTRUCTOR);
+        //FileSystemConstructorResult result = WebFluxUtil.sendMe(FileSystemConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
+        FileSystemConstructorResult result = WebFluxUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.CONSTRUCTOR);
         return result.error;
     }
 
@@ -53,7 +53,7 @@ public class FileSystemAccess {
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
-        FileSystemConstructorResult result = EurekaUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.DESTRUCTOR);
+        FileSystemConstructorResult result = WebFluxUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.DESTRUCTOR);
         return result.error;
     }
     public List<FileObject> listFiles(FileObject f) {
@@ -62,7 +62,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.LISTFILES);
+        FileSystemFileObjectResult result = WebFluxUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.LISTFILES);
         return Arrays.asList(result.getFileObject());
 
     }
@@ -73,7 +73,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemMyFileResult result = EurekaUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.LISTFILESFULL);
+        FileSystemMyFileResult result = WebFluxUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.LISTFILESFULL);
         return new ArrayList<>(result.map.values());
 
     }
@@ -84,7 +84,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemBooleanResult result = EurekaUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.EXIST);
+        FileSystemBooleanResult result = WebFluxUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.EXIST);
         return result.bool;
 
     }
@@ -95,7 +95,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemPathResult result = EurekaUtil.sendMe(FileSystemPathResult.class, url, param, EurekaConstants.GETABSOLUTEPATH);
+        FileSystemPathResult result = WebFluxUtil.sendMe(FileSystemPathResult.class, url, param, EurekaConstants.GETABSOLUTEPATH);
         return result.getPath();
 
     }
@@ -106,7 +106,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemBooleanResult result = EurekaUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.ISDIRECTORY);
+        FileSystemBooleanResult result = WebFluxUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.ISDIRECTORY);
         return result.bool;
 
     }
@@ -117,7 +117,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemByteResult result = EurekaUtil.sendMe(FileSystemByteResult.class, url, param, EurekaConstants.GETINPUTSTREAM);
+        FileSystemByteResult result = WebFluxUtil.sendMe(FileSystemByteResult.class, url, param, EurekaConstants.GETINPUTSTREAM);
         return new ByteArrayInputStream(result.bytes);
 
     }
@@ -128,7 +128,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.paths = filenames;
-        FileSystemMyFileResult result = EurekaUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHINPUTSTREAM);
+        FileSystemMyFileResult result = WebFluxUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHINPUTSTREAM);
         return result.map;
 
     }
@@ -139,7 +139,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.paths = filenames;
-        FileSystemMyFileResult result = EurekaUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHOUTINPUTSTREAM);
+        FileSystemMyFileResult result = WebFluxUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHOUTINPUTSTREAM);
         return result.map;
 
     }
@@ -150,7 +150,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GETPARENT);
+        FileSystemFileObjectResult result = WebFluxUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GETPARENT);
         return result.getFileObject()[0];
 
     }
@@ -161,7 +161,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.path = fo;
-        FileSystemFileObjectResult result = EurekaUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GET);
+        FileSystemFileObjectResult result = WebFluxUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GET);
         return result.getFileObject()[0];
 
     }
@@ -182,7 +182,7 @@ public class FileSystemAccess {
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
         param.fo = f;
-        FileSystemMessageResult result = EurekaUtil.sendMe(FileSystemMessageResult.class, url, param, EurekaConstants.READFILE);
+        FileSystemMessageResult result = WebFluxUtil.sendMe(FileSystemMessageResult.class, url, param, EurekaConstants.READFILE);
         return result.message;
     }
 }

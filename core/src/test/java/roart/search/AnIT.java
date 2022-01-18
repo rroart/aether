@@ -58,6 +58,12 @@ public class AnIT {
     }
     
     @Test
+    @Order(3)
+    public void my33Test() throws Exception {
+        new Util(new Sender()).index(null, true);
+    }
+    
+    @Test
     @Order(4)
     public void my4Test() throws Exception {
         Object l = new Util(new Sender()).search("amazon", "0");

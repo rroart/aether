@@ -26,6 +26,8 @@ import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.Application;
 
+import roart.common.webflux.WebFluxUtil;
+
 @EnableDiscoveryClient
 public class EurekaUtil {
 
@@ -115,6 +117,9 @@ public class EurekaUtil {
 
         HttpEntity<?> request = new HttpEntity<>(param, headers);
         String url = homePageUrl;
+        if (true) {
+            return WebFluxUtil.sendMe(myclass, url, param, path);
+        }
         RestTemplate rt = new RestTemplate();
         /*
 		for (HttpMessageConverter<?> converter : rt.getMessageConverters()) {
