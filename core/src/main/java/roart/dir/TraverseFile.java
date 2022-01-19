@@ -76,7 +76,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
-            log.info("Count dec {}", trav.getFileobject());
+            log.debug("Count dec {}", trav.getFileobject());
             return;
         }
         FileObject filename = trav.getFileobject();
@@ -131,7 +131,7 @@ public class TraverseFile {
                 log.error(Constants.EXCEPTION, e);
                 MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
                 notfoundset.add(filename.toString());
-                log.info("Count dec {}", trav.getFileobject());
+                log.debug("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -140,7 +140,7 @@ public class TraverseFile {
                 count.addAndGet(-1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
-                log.info("Count dec {}", trav.getFileobject());
+                log.debug("Count dec {}", trav.getFileobject());
                 return;
             }
         } else {
@@ -209,7 +209,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
-            log.info("Count dec {}", trav.getFileobject());
+            log.debug("Count dec {}", trav.getFileobject());
         }
         //md5set.add(md5);
     }
@@ -225,7 +225,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
-            log.info("Count dec {}", trav.getFileobject());
+            log.debug("Count dec {}", trav.getFileobject());
             return;
         }
         FileObject filename = trav.getFileobject();
@@ -279,7 +279,7 @@ public class TraverseFile {
                             files = IndexFilesDao.getNewByMd5(md5);
                             //files = new IndexFiles(md5);
                         }
-		    log.info("Files {}", files);
+		    log.debug("Files {}", files);
 		    files.setChecked("" + System.currentTimeMillis());
                     // modify write file
                     String nodename = ControlService.nodename;
@@ -302,7 +302,7 @@ public class TraverseFile {
                 log.error(Constants.EXCEPTION, e);
                 MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
                 notfoundset.add(filename.toString());
-                log.info("Count dec {}", trav.getFileobject());
+                log.debug("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -311,7 +311,7 @@ public class TraverseFile {
                 count.addAndGet(-1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
-                log.info("Count dec {}", trav.getFileobject());
+                log.debug("Count dec {}", trav.getFileobject());
                 return;
             }
         } else {
@@ -380,7 +380,7 @@ public class TraverseFile {
                 MyLock unlock = files.getLock();
                 if (unlock != null) {
                     files.setLock(null);
-		    log.info("Files {}", files);
+		    log.debug("Files {}", files);
                     unlock.unlock();
                 }
             }
@@ -391,7 +391,7 @@ public class TraverseFile {
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(-1);
-            log.info("Count dec {}", trav.getFileobject());
+            log.debug("Count dec {}", trav.getFileobject());
         }
         //md5set.add(md5);
     }
