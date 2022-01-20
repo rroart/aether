@@ -7,6 +7,6 @@ import org.apache.commons.io.IOUtils;
 
 public class IOUtil {
     public static byte[] toByteArray(InputStream is) throws IOException {
-        return IOUtils.toByteArray(is, Integer.MAX_VALUE);
+        return is.readNBytes(Integer.MAX_VALUE - 8);
     }
 }
