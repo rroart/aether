@@ -162,7 +162,7 @@ public class Traverse {
                     MyAtomicLong count = MyAtomicLongs.get(traversecountid);
                     count.addAndGet(1);
                     queue.offer(trav);
-                    log.info("Count inc {}", trav.getFileobject());
+                    log.debug("Count inc {}", trav.getFileobject());
                     //TraverseFile.handleFo3(null, fo);
                 }
             }
