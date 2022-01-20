@@ -154,6 +154,11 @@
       <artifactId>aether-common-inmemory-model</artifactId>
       <version>${aether.version}</version>
     </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-util</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
     <!--dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk</artifactId>

@@ -16,4 +16,5 @@ module common.util {
     requires org.apache.commons.lang3;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
+    requires org.apache.commons.io;
 }

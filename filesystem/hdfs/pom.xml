@@ -155,6 +155,11 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-util</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-hdfs</artifactId>
       <version>${hadoop.version}</version>

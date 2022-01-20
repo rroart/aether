@@ -14,7 +14,6 @@ module hdfs {
     requires common.model;
     requires common.inmemory.model;
     requires common.inmemory.factory;
-    requires commons.io;
     requires filesystem;
     requires hadoop.common;
     requires org.slf4j;
@@ -23,4 +22,5 @@ module hdfs {
     requires spring.web;
     requires spring.boot;
     requires org.apache.commons.codec;
+    requires common.util;
 }

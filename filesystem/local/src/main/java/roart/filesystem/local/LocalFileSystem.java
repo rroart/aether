@@ -31,6 +31,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.util.IOUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.apache.commons.io.IOUtils;
@@ -119,7 +120,7 @@ public class LocalFileSystem extends FileSystemOperations {
         byte[] bytes;
         try {
             InputStream is = new FileInputStream( objectToFile(f) /*new File(getAbsolutePath(f))*/);
-            bytes  = IOUtils.toByteArray(is);
+            bytes  = IOUtil.toByteArray(is);
             is.close();
         } catch (FileNotFoundException e) {
             log.error(Constants.EXCEPTION, e);

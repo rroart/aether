@@ -48,6 +48,11 @@
       <version>${commons.lang3.version}</version>
     </dependency>
     <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>${commons.io.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>

@@ -23,4 +23,5 @@ module local {
     requires spring.context;
     requires spring.web;
     requires org.apache.commons.codec;
+    requires common.util;
 }

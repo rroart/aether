@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -39,6 +38,7 @@ import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.util.IOUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.slf4j.Logger;
@@ -208,7 +208,7 @@ public class HDFS extends FileSystemOperations {
         try {
             fs = FileSystem.get(conf.configuration);
             InputStream is = fs.open(new Path(f.object));
-            bytes = IOUtils.toByteArray(is);
+            bytes = IOUtil.toByteArray(is);
             is.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block

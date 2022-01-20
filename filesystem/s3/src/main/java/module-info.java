@@ -25,6 +25,7 @@ module s3 {
     //requires aws.java.sdk.core;
     //requires aws.java.sdk.s3;
     requires aether.shadow.s3;
+    requires common.util;
     //requires software.amazon.awssdk.protocols.core;
     //requires software.amazon.awssdk.services.s3;
 }

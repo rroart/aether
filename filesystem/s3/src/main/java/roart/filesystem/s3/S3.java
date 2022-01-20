@@ -34,6 +34,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.util.IOUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.slf4j.Logger;
@@ -211,7 +212,7 @@ public class S3 extends FileSystemOperations {
         try {
             S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
             S3ObjectInputStream inputStream = s3object.getObjectContent();
-            bytes = IOUtils.toByteArray(inputStream);
+            bytes = IOUtil.toByteArray(inputStream);
             inputStream.close();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
