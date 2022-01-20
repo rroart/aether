@@ -125,7 +125,7 @@ public class Traverse {
         FileObject dir = FileSystemDao.get(fileObject);
         List<MyFile> listDir = FileSystemDao.listFilesFull(dir);
         long time1 = System.currentTimeMillis();
-        log.info("Time0 {}", usedTime(time1, time0));
+        log.debug("Time0 {}", usedTime(time1, time0));
         //log.info("dir " + dirname);
         //log.info("listDir " + listDir.length);
         if (listDir == null) {
@@ -143,7 +143,7 @@ public class Traverse {
                 //throw new FileNotFoundException("File does not exist " + filename);
             }
             long time3 = System.currentTimeMillis();
-            log.info("Time2 {}", usedTime(time3, time2));
+            log.debug("Time2 {}", usedTime(time3, time2));
             if (filename.length() > MAXFILE) {
                 log.info("Too large filesize {}", filename);
                 continue;

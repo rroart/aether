@@ -89,12 +89,12 @@ public class EurekaUtil {
     public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path) {
 
         String homePageUrl = null;
-        log.info("homePagePre " + appName + " " + path);
-        log.info("clis" + eurekaClient + " " + discoveryClient);
+        log.debug("homePagePre " + appName + " " + path);
+        log.debug("clis" + eurekaClient + " " + discoveryClient);
         if (discoveryClient != null) {
             List<InstanceInfo> li = discoveryClient.getApplication(appName).getInstances();
             for (InstanceInfo ii : li) {
-                log.info("homePage " + ii.getHomePageUrl());
+                log.debug("homePage " + ii.getHomePageUrl());
             }
             if (!li.isEmpty()) {
                 homePageUrl = li.get(0).getHomePageUrl();
@@ -103,7 +103,7 @@ public class EurekaUtil {
         if (homePageUrl == null && eurekaClient != null) {
             List<InstanceInfo> li = eurekaClient.getApplication(appName).getInstances();
             for (InstanceInfo ii : li) {
-                log.info("homePage2 " + ii.getHomePageUrl());
+                log.debug("homePage2 " + ii.getHomePageUrl());
             }
             if (!li.isEmpty()) {
                 homePageUrl = li.get(0).getHomePageUrl();

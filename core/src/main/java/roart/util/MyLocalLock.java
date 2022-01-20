@@ -16,7 +16,7 @@ public class MyLocalLock extends MyLock {
     @SuppressWarnings("squid:S2222")
     @Override
     public void lock(String path) throws Exception {
-        log.info("before lock {}", path);
+        log.debug("before lock {}", path);
         //Lock lock = map.get(path);
         //synchronized (MyLocalLock.class) {
                  //if (lock == null) {
@@ -24,7 +24,7 @@ public class MyLocalLock extends MyLock {
        // }
         //}
         lock.lock();
-        log.info("after lock {}", path);
+        log.debug("after lock {}", path);
         this.path = path;
     }
 
@@ -51,7 +51,7 @@ public class MyLocalLock extends MyLock {
         }
         lock.unlock();
         }
-        log.info("after unlock {}", path);
+        log.debug("after unlock {}", path);
     }
 
 }

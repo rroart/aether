@@ -161,7 +161,7 @@ public class TraverseQueueRunner implements Runnable {
             }
             traverseList.add(trav);
             FileObject filename = trav.getFileobject();
-            log.info("trav cli {}", filename);
+            log.debug("Traverse file {}", filename);
         }
         if (traverseList.isEmpty()) {
             try {
@@ -171,7 +171,7 @@ public class TraverseQueueRunner implements Runnable {
                 log.error(Constants.EXCEPTION, e); 
             }                   
         }
-        log.info("Traverse list size {}", traverseList.size());
+        log.debug("Traverse list size {}", traverseList.size());
 
         try {
             //handleList(pool, traverseList);
@@ -184,7 +184,7 @@ public class TraverseQueueRunner implements Runnable {
             log.error(Constants.ERROR, e);
         }
         finally {
-            log.info("myend");            
+            log.debug("myend");            
         }
         try {
             TimeUnit.SECONDS.sleep(1);
