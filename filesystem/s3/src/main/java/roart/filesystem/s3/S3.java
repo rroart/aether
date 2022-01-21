@@ -37,6 +37,7 @@ import roart.common.model.Location;
 import roart.common.util.IOUtil;
 import roart.filesystem.FileSystemOperations;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,11 +204,11 @@ public class S3 extends FileSystemOperations {
     @Override
     public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
         FileSystemByteResult result = new FileSystemByteResult();
-        result.bytes = getInputStreamInner(param.fo);
+        result.bytes = getBytesInner(param.fo);
         return result;
     }
 
-    private byte[] getInputStreamInner(FileObject f) {
+    private byte[] getBytesInner(FileObject f) {
         byte[] bytes;
         try {
             S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
@@ -219,6 +220,11 @@ public class S3 extends FileSystemOperations {
             return null;
         }
         return bytes;
+    }
+
+    private InputStream getInputStreamInner(FileObject f) throws IOException {
+        S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
+        return s3object.getObjectContent();
     }
 
     @Override
@@ -245,7 +251,7 @@ public class S3 extends FileSystemOperations {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = fo[0].object;
                 if (withBytes) {
-                    my.bytes = getInputStreamInner(fo[0]);
+                    my.bytes = getBytesInner(fo[0]);
                 }
             } else {
                 log.info("File does not exist {}", fo[0]);            
@@ -303,8 +309,8 @@ public class S3 extends FileSystemOperations {
         byte[] bytes;
         String md5;
         try {
-            bytes  = getInputStreamInner(param.fo);
-            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
+            bytes  = getBytesInner(param.fo);
+            md5 = getMd5(param.fo);
             } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return null;
@@ -330,5 +336,18 @@ public class S3 extends FileSystemOperations {
         }
         return string;
 
+    }
+    
+    public String getMd5(FileObject fo) throws Exception {
+        String md5;
+        try {
+            InputStream is = getInputStreamInner(fo);
+            md5 = DigestUtils.md5Hex( is );
+            is.close();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+        return md5;
     }
 }

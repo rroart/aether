@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -34,6 +35,7 @@ import roart.common.model.Location;
 import roart.common.util.IOUtil;
 import roart.filesystem.FileSystemOperations;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,15 +114,19 @@ public class LocalFileSystem extends FileSystemOperations {
     @Override
     public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) throws Exception {
         FileSystemByteResult result = new FileSystemByteResult();
-        result.bytes = getInputStreamInner(param.fo);
+        result.bytes = getBytesInner(param.fo);
         return result;
     }
 
-    private byte[] getInputStreamInner(FileObject f) throws IOException {
+    private InputStream getInputStreamInner(FileObject f) throws IOException {
+        return new FileInputStream( objectToFile(f));
+    }
+    
+    private byte[] getBytesInner(FileObject f) throws IOException {
         byte[] bytes;
         try {
             InputStream is = new FileInputStream( objectToFile(f) /*new File(getAbsolutePath(f))*/);
-            bytes  = IOUtil.toByteArray(is);
+            bytes = IOUtil.toByteArray(is);
             is.close();
         } catch (FileNotFoundException e) {
             log.error(Constants.EXCEPTION, e);
@@ -153,7 +159,7 @@ public class LocalFileSystem extends FileSystemOperations {
                 my.isDirectory = objectToFile(fo[0]).isDirectory();
                 my.absolutePath = objectToFile(fo[0]).getAbsolutePath();
                 if (withBytes) {
-                    my.bytes = getInputStreamInner(fo[0]);
+                    my.bytes = getBytesInner(fo[0]);
                 }
             } else {
                 log.info("File does not exist {}", fo[0]);            
@@ -210,8 +216,8 @@ public class LocalFileSystem extends FileSystemOperations {
         byte[] bytes;
         String md5;
         try {
-            bytes  = getInputStreamInner(param.fo);
-            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
+            bytes = getBytesInner(param.fo);
+            md5 = getMd5(param.fo);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return null;
@@ -221,6 +227,19 @@ public class LocalFileSystem extends FileSystemOperations {
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = msg;
         return result;
+    }
+
+    public String getMd5(FileObject fo) throws Exception {
+        String md5;
+        try {
+            InputStream is = getInputStreamInner(fo);
+            md5 = DigestUtils.md5Hex( is );
+            is.close();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+        return md5;
     }
 
 }

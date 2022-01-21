@@ -36,6 +36,7 @@ import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.filesystem.FileSystemOperations;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.javaswift.joss.client.factory.AccountConfig;
 import org.javaswift.joss.client.factory.AccountFactory;
 import org.javaswift.joss.client.factory.AuthenticationMethod;
@@ -209,11 +210,11 @@ public class Swift extends FileSystemOperations {
     @Override
     public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
         FileSystemByteResult result = new FileSystemByteResult();
-        result.bytes = getInputStreamInner(param.fo);
+        result.bytes = getBytesInner(param.fo);
         return result;
     }
 
-    private byte[] getInputStreamInner(FileObject f) {
+    private byte[] getBytesInner(FileObject f) {
         byte[] bytes;
         try {
             Container container = conf.account.getContainer(f.location.extra);
@@ -224,6 +225,12 @@ public class Swift extends FileSystemOperations {
             return null;
         }
         return bytes;
+    }
+
+    private InputStream getInputStreamInner(FileObject f) throws IOException {
+        Container container = conf.account.getContainer(f.location.extra);
+        StoredObject so = new StoredObjectImpl(container, format(f.object), false);
+        return so.downloadObjectAsInputStream();
     }
 
     @Override
@@ -250,7 +257,7 @@ public class Swift extends FileSystemOperations {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = getAbsolutePathInner(fo[0]);
                 if (withBytes) {
-                    my.bytes = getInputStreamInner(fo[0]);
+                    my.bytes = getBytesInner(fo[0]);
                 }
             } else {
                 log.info("File does not exist {}", fo[0]);            
@@ -327,7 +334,7 @@ public class Swift extends FileSystemOperations {
         byte[] bytes;
         String md5;
         try {
-            bytes  = getInputStreamInner(param.fo);
+            bytes  = getBytesInner(param.fo);
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
             } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -354,5 +361,18 @@ public class Swift extends FileSystemOperations {
         }
         return string;
 
+    }
+    
+    public String getMd5(FileObject fo) throws Exception {
+        String md5;
+        try {
+            InputStream is = getInputStreamInner(fo);
+            md5 = DigestUtils.md5Hex( is );
+            is.close();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+        return md5;
     }
 }

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -198,11 +199,11 @@ public class HDFS extends FileSystemOperations {
     public FileSystemByteResult getInputStream(FileSystemFileObjectParam param) {
         FileObject f = param.fo;
         FileSystemByteResult result = new FileSystemByteResult();
-        result.bytes = getInputStreamInner(f);
+        result.bytes = getBytesInner(f);
         return result;
     }
 
-    private byte[] getInputStreamInner(FileObject f) {
+    private byte[] getBytesInner(FileObject f) {
         FileSystem fs;
         byte[] bytes;
         try {
@@ -216,6 +217,11 @@ public class HDFS extends FileSystemOperations {
             return null;
         }
         return bytes;
+    }
+
+    private InputStream getInputStreamInner(FileObject f) throws IOException {
+        FileSystem fs = FileSystem.get(conf.configuration);
+        return fs.open(new Path(f.object));
     }
 
     @Override
@@ -242,7 +248,7 @@ public class HDFS extends FileSystemOperations {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = getAbsolutePathInner(fo[0]);
                 if (withBytes) {
-                    my.bytes = getInputStreamInner(fo[0]);
+                    my.bytes = getBytesInner(fo[0]);
                 }
             } else {
                 log.info("File does not exist {}", fo[0]);            
@@ -287,8 +293,8 @@ public class HDFS extends FileSystemOperations {
         byte[] bytes;
         String md5;
         try {
-            bytes  = getInputStreamInner(param.fo);
-            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( bytes );
+            bytes = getBytesInner(param.fo);
+            md5 = getMd5(param.fo);
             } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return null;
@@ -298,6 +304,19 @@ public class HDFS extends FileSystemOperations {
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = msg;
         return result;
+    }
+
+    public String getMd5(FileObject fo) throws Exception {
+        String md5;
+        try {
+            InputStream is = getInputStreamInner(fo);
+            md5 = DigestUtils.md5Hex( is );
+            is.close();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+        return md5;
     }
 
 }
