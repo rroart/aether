@@ -34,7 +34,7 @@ public class TraverseQueueRunner implements Runnable {
 
     private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
 
-    private static final int LIMIT = 10;
+    private static final int LIMIT = 100;
 
     @SuppressWarnings("squid:S2189")
     public void run() {
@@ -196,18 +196,25 @@ public class TraverseQueueRunner implements Runnable {
 
     private void handleList2(List<TraverseQueueElement> traverseList) throws Exception {
         Set<FileObject> filenames = new HashSet<>();
+        // Create filenames set
         for (TraverseQueueElement trav : traverseList) {
             TraverseFile.handleFo3(trav, filenames);
         }
         long time0 = System.currentTimeMillis();
+        // Get MyFile data from filesystem
         Map<FileObject, MyFile> fsMap = TraverseFile.handleFo3(filenames);
         long time1 = System.currentTimeMillis();
+        // Get Md5s by fileobject from database
         Map<FileObject, String> md5Map = TraverseFile.handleFo4(filenames);
+        // Batch read content
+        Map<FileObject, String> contentMap = TraverseFile.readFiles(traverseList, fsMap, md5Map);
         long time2 = System.currentTimeMillis();
+        // Get IndexFiles by Md5 from database
         Map<String, IndexFiles> ifMap = TraverseFile.handleFo5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         long time3 = System.currentTimeMillis();
+        // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            TraverseFile.handleFo3(trav, fsMap, md5Map, ifMap);
+            TraverseFile.handleFo3(trav, fsMap, md5Map, ifMap, contentMap);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));

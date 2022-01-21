@@ -3,6 +3,7 @@ package roart.dir;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
@@ -214,7 +215,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap)
+    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> contentMap)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -252,10 +253,7 @@ public class TraverseFile {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
                 if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-                    InmemoryMessage message = FileSystemDao.readFile(filename);
-                    Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
-                    String content = inmemory.read(message);
-                    inmemory.delete(message);
+		    String content = contentMap.get(filename);
                     md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( content );
                     if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
                         int jj = 0;
@@ -459,4 +457,40 @@ public class TraverseFile {
         return result;
     }
 
+    public static Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap,
+            Map<FileObject, String> md5Map) {
+        Set<FileObject> filenames = new HashSet<>();
+        String md5 = "";
+        for (TraverseQueueElement trav : traverseList) {
+            if (trav.getClientQueueElement().md5change == true || md5 == null) {
+                FileObject filename = trav.getFileobject();
+                try {
+                    if (!fsMap.get(filename).exists) {
+                        throw new FileNotFoundException("File does not exist " + filename);
+                    }
+                    if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
+                        filenames.add(filename);
+                    }
+                } catch (FileNotFoundException e) {
+                    log.error(Constants.EXCEPTION, e);
+                    log.debug("Count dec {}", trav.getFileobject());
+                } catch (Exception e) {
+                    log.info("Error: {}", e.getMessage());
+                    log.error(Constants.EXCEPTION, e);
+                    log.debug("Count dec {}", trav.getFileobject());
+                }
+            }
+        }
+        Map<FileObject, String> contentMap = new HashMap<>();
+        Map<FileObject, InmemoryMessage> messageMap = FileSystemDao.readFile(filenames);
+        for (Entry<FileObject, InmemoryMessage> entry : messageMap.entrySet()) {
+            FileObject filename = entry.getKey();
+            InmemoryMessage message = entry.getValue();
+            Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
+            String content = inmemory.read(message);
+            inmemory.delete(message);
+            contentMap.put(filename, content);
+        }
+        return contentMap;
+    }
 }

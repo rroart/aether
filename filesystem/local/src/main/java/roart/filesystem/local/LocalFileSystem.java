@@ -211,21 +211,24 @@ public class LocalFileSystem extends FileSystemOperations {
         return result;
     }
 
-    @Override
     public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
-        byte[] bytes;
-        String md5;
-        try {
-            bytes = getBytesInner(param.fo);
-            md5 = getMd5(param.fo);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e);
-            return null;
+        Map<FileObject, InmemoryMessage> map = new HashMap<>();
+        for (FileObject filename : param.fos) {
+            byte[] bytes;
+            String md5;
+            try {
+                bytes = getBytesInner(filename);
+                md5 = getMd5(filename);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+                continue;
+            }
+            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes), md5);
+            map.put(filename, msg);
         }
-        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes), md5);
         FileSystemMessageResult result = new FileSystemMessageResult();
-        result.message = msg;
+        result.message = map;
         return result;
     }
 

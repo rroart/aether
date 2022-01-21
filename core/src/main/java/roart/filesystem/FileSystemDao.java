@@ -86,7 +86,15 @@ public class FileSystemDao {
     }
 
     public static InmemoryMessage readFile(FileObject f) {
-        return getFileSystemAccess(f).readFile(f);
+        Set<FileObject> filenames = new HashSet<>();
+        filenames.add(f);
+        Map<FileObject, InmemoryMessage> map = readFile(filenames);
+        return map.get(f);
+    }
+
+    public static Map<FileObject, InmemoryMessage> readFile(Set<FileObject> filenames) {
+        FileObject f = filenames.iterator().next();
+        return getFileSystemAccess(f).readFile(filenames);
     }
 
     // TODO make this OO

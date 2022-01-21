@@ -176,13 +176,14 @@ public class FileSystemAccess {
         return fn;
     }
 
-    public InmemoryMessage readFile(FileObject f) {
+    public Map<FileObject, InmemoryMessage> readFile(Set<FileObject> f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;
         param.conf = MyConfig.conf;
-        param.fo = f;
+        param.fos = f;
         FileSystemMessageResult result = WebFluxUtil.sendMe(FileSystemMessageResult.class, url, param, EurekaConstants.READFILE);
         return result.message;
     }
+
 }
