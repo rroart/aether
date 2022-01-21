@@ -20,7 +20,7 @@ public class InmemoryJedis extends Inmemory {
 
     @Override
     public int getLimit() {
-        return 512000000;
+        return 256000000;
     }
 
     @Override
