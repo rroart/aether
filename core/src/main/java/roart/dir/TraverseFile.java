@@ -215,7 +215,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> contentMap)
+    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -253,8 +253,11 @@ public class TraverseFile {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
                 if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-		    String content = contentMap.get(filename);
-                    md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( content );
+		    md5 = newMd5Map.get(filename);
+		    if (md5 == null) {
+		        log.error("Md5 null");
+		        throw new Exception("Md5 null");
+		    }
                     if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
                         int jj = 0;
                         // d41d8cd98f00b204e9800998ecf8427e
@@ -492,5 +495,32 @@ public class TraverseFile {
             contentMap.put(filename, content);
         }
         return contentMap;
+    }
+    
+    public static Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
+        Set<FileObject> filenames = new HashSet<>();
+        String md5 = "";
+        for (TraverseQueueElement trav : traverseList) {
+            if (trav.getClientQueueElement().md5change == true || md5 == null) {
+                FileObject filename = trav.getFileobject();
+                try {
+                    if (!fsMap.get(filename).exists) {
+                        throw new FileNotFoundException("File does not exist " + filename);
+                    }
+                    if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
+                        filenames.add(filename);
+                    }
+                } catch (FileNotFoundException e) {
+                    log.error(Constants.EXCEPTION, e);
+                    log.debug("Count dec {}", trav.getFileobject());
+                } catch (Exception e) {
+                    log.info("Error: {}", e.getMessage());
+                    log.error(Constants.EXCEPTION, e);
+                    log.debug("Count dec {}", trav.getFileobject());
+                }
+            }
+        }
+        Map<FileObject, String> contentMap = new HashMap<>();
+        return FileSystemDao.getMd5(filenames);
     }
 }

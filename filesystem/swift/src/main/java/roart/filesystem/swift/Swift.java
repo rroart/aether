@@ -27,6 +27,7 @@ import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
+import roart.common.filesystem.FileSystemStringResult;
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
@@ -378,5 +379,22 @@ public class Swift extends FileSystemOperations {
             return null;
         }
         return md5;
+    }
+
+    public FileSystemStringResult getMd5(FileSystemFileObjectParam param) {
+        Map<FileObject, String> map = new HashMap<>();
+        for (FileObject filename : param.fos) {
+            String md5;
+            try {
+                md5 = getMd5(filename);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+                continue;
+            }
+            map.put(filename, md5);
+        }
+        FileSystemStringResult result = new FileSystemStringResult();
+        result.map = map;
+        return result;
     }
 }

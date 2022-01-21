@@ -22,6 +22,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
+import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.FileObject;
 import roart.common.webflux.WebFluxUtil;
 import roart.service.ControlService;
@@ -184,6 +185,16 @@ public class FileSystemAccess {
         param.fos = f;
         FileSystemMessageResult result = WebFluxUtil.sendMe(FileSystemMessageResult.class, url, param, EurekaConstants.READFILE);
         return result.message;
+    }
+
+    public Map<FileObject, String> getMd5(Set<FileObject> f) {
+        FileSystemFileObjectParam param = new FileSystemFileObjectParam();
+        param.nodename = ControlService.nodename;
+        param.configid = ControlService.configMd5;
+        param.conf = MyConfig.conf;
+        param.fos = f;
+        FileSystemStringResult result = WebFluxUtil.sendMe(FileSystemStringResult.class, url, param, EurekaConstants.GETMD5);
+        return result.map;
     }
 
 }

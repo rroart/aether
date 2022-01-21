@@ -25,6 +25,7 @@ import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
+import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.FileObject;
 import roart.common.util.FsUtil;
 
@@ -193,6 +194,15 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             throws Exception {
         FileSystemOperations operations = getOperations(param.nodename, param.configid, param.conf);
         FileSystemMessageResult ret = operations.readFile(param);
+        return ret;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.GETMD5,
+            method = RequestMethod.POST)
+    public FileSystemStringResult processGetMd5(@RequestBody FileSystemFileObjectParam param)
+            throws Exception {
+        FileSystemOperations operations = getOperations(param.nodename, param.configid, param.conf);
+        FileSystemStringResult ret = operations.getMd5(param);
         return ret;
     }
 

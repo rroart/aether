@@ -10,6 +10,7 @@ import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
+import roart.common.filesystem.FileSystemStringResult;
 
 public abstract class FileSystemOperations {
     
@@ -44,5 +45,7 @@ public abstract class FileSystemOperations {
     public abstract FileSystemFileObjectResult get(FileSystemPathParam param);
 
     public abstract FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception;
+
+    public abstract FileSystemStringResult getMd5(FileSystemFileObjectParam param);
     
 }

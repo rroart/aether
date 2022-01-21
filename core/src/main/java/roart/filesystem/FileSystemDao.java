@@ -97,6 +97,11 @@ public class FileSystemDao {
         return getFileSystemAccess(f).readFile(filenames);
     }
 
+    public static Map<FileObject, String> getMd5(Set<FileObject> filenames) {
+        FileObject f = filenames.iterator().next();
+        return getFileSystemAccess(f).getMd5(filenames);
+    }
+
     // TODO make this OO
     private static FileSystemAccess getFileSystemAccess(FileObject f) {
         if (f == null) {
