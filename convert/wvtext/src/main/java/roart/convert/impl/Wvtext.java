@@ -39,17 +39,17 @@ public class Wvtext extends ConvertAbstract {
     public ConvertResult convert(ConvertParam param) {
         ConvertResult result = new ConvertResult();
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        String content = inmemory.read(param.message);
-        if (!InmemoryUtil.validate(param.message.getMd5(), content)) {
+        InputStream validateStream = inmemory.getInputStream(param.message);
+        if (!InmemoryUtil.validate(param.message.getMd5(), validateStream)) {
             return result;
         }
         Converter converter = param.converter;
         String output = null;
-        try {
+        try (InputStream contentStream = inmemory.getInputStream(param.message)) {
             Path myPath = Paths.get("/tmp", param.filename);
             Files.deleteIfExists(myPath);
             Path inPath = Files.createFile(myPath);
-            Files.write(inPath, InmemoryUtil.convertWithCharset(content));
+            Files.copy(contentStream, inPath);
             String in = inPath.toString();
             Path outPath = null;
             String out = null;

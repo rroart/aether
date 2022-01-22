@@ -16,6 +16,8 @@ import scala.collection.JavaConversions;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import org.apache.hadoop.conf.Configuration;
@@ -187,11 +189,12 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            String content = inmemory.read(classify.message);
-            if (!InmemoryUtil.validate(classify.message.getMd5(), content)) {
+            InputStream contentStream = inmemory.getInputStream(classify.message);
+            if (!InmemoryUtil.validate(classify.message.getMd5(), contentStream)) {
                 MachineLearningClassifyResult result = new MachineLearningClassifyResult();
                 return result;
             }
+            contentStream = inmemory.getInputStream(classify.message);
 		String language = classify.language;
 		try {
 			Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
@@ -202,7 +205,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 			int documentCount = conf.documentCountMap.get(language);
 			Multiset<String> words = ConcurrentHashMultiset.create();
 			// extract words from content
-			int wordCount = getWords(content, dictionary, words);
+			int wordCount = getWords(contentStream, dictionary, words);
 
 			// create vector wordId => weight using tfidf
 			Vector vector = new RandomAccessSparseVector(Integer.MAX_VALUE);
@@ -243,10 +246,10 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 		return null;
 	}
 
-	private static int getWords(String content, Map<String, Integer> dictionary, Multiset<String> words) {
+	private static int getWords(InputStream contentStream, Map<String, Integer> dictionary, Multiset<String> words) {
 		try {
 			StandardAnalyzer analyzer = new StandardAnalyzer();
-			TokenStream ts = analyzer.tokenStream("text", new StringReader(content));
+			TokenStream ts = analyzer.tokenStream("text", new InputStreamReader(contentStream));
 			CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
 			ts.reset();
 			int wordCount = 0;

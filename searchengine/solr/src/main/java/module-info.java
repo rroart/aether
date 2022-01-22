@@ -20,4 +20,5 @@ module solr {
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
     requires spring.web;
+    requires common.util;
 }

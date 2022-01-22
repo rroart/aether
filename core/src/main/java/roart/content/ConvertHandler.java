@@ -1,6 +1,7 @@
 package roart.content;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +24,7 @@ import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
+import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
 import roart.convert.ConvertDAO;
 import roart.database.IndexFilesDao;
@@ -64,7 +66,7 @@ public class ConvertHandler {
         String converterString = MyConfig.conf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
-        String origcontent = inmemory.read(message);
+        InputStream origcontent = inmemory.getInputStream(message);
         String mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
         // null mime isbn
         InmemoryMessage str = null;
@@ -98,7 +100,7 @@ public class ConvertHandler {
             metadata.put(Constants.FILESCONTENTTYPE, mimetype);
         }
         if (str != null) {
-            String content = inmemory.read(str);
+            String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(str)));
             String lang = null;
             try {
                 LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
@@ -160,13 +162,13 @@ public class ConvertHandler {
         log.info("ending " + el.md5 + " " + el.dbfilename);
     }
 
-    private String getMimetype(String content, String filename) {
+    private String getMimetype(InputStream content, String filename) {
         try {
 	    Path tempPath = Paths.get("/tmp", filename);
 	    Files.deleteIfExists(tempPath);
             Path tempFile = Files.createFile(Paths.get("/tmp", filename));
 	    log.info("File " + filename + " " + tempFile.toString());
-            Files.write(tempFile, content.getBytes());
+            Files.copy(content, tempFile);
             String mimetype = Files.probeContentType(tempFile);
             Files.delete(tempFile);
             return mimetype;

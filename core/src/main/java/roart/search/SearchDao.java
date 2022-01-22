@@ -49,8 +49,8 @@ public class SearchDao {
 	}
     }
 
-    public static int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
-	return search.indexme(type, md5, dbfilename, metadata, lang, content, classification, index, message);
+    public static int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
+	return search.indexme(type, md5, dbfilename, metadata, lang, classification, index, message);
     }
 
     public static ResultItem[] searchme(String str, String searchtype) {

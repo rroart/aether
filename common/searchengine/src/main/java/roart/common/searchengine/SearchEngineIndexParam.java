@@ -10,7 +10,6 @@ public class SearchEngineIndexParam extends SearchEngineParam {
     public FileObject dbfilename;
     public String[] metadata;
     public String lang;
-    public String content;
     public InmemoryMessage message;
     public String classification;
 }

@@ -83,7 +83,7 @@ public abstract class SearchAccess {
         return result.error;
     }
     
-    public int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String content, String classification, IndexFiles index, InmemoryMessage message) {
+    public int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
         Map<String, String> md = metadata;
         String[] str = new String[md.keySet().size()];
         int i = 0;
@@ -100,7 +100,6 @@ public abstract class SearchAccess {
         param.dbfilename = dbfilename;
         param.metadata = str;
         param.lang = lang;
-        param.content = content;
         param.message = message;
         param.classification = classification;
         

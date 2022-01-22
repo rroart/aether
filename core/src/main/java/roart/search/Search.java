@@ -56,7 +56,6 @@ public class Search {
     	FileObject dbfilename = el.dbfilename;
 	Map<String, String> metadata = el.metadata;
 	String lang = el.lang;
-	String content = getParam(el.message);
 	InmemoryMessage message = el.message;
 	String classification = el.index.getClassification();
     	MyList<ResultItem> retlist = MyLists.get(el.retlistid);
@@ -65,7 +64,7 @@ public class Search {
     	int retsize = 0;
 
     try {
-    retsize = SearchDao.indexme(type, md5, dbfilename, metadata, lang, content, classification, dbindex, message);
+    retsize = SearchDao.indexme(type, md5, dbfilename, metadata, lang, classification, dbindex, message);
     } catch (Exception e) {
 	    log.error(roart.common.constants.Constants.EXCEPTION, e);
 	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
@@ -140,12 +139,5 @@ public class Search {
     public static List<String> cleanup2() throws Exception {
 	return null;
     }//End of removeDuplicate method
-
-    private static String getParam(InmemoryMessage message) {
-        //InmemoryMessage message = JsonUtil.convert(message, InmemoryMessage.class);
-        //Inmemory inmemory = InmemoryFactory.get(instance.getInmemoryServer(), instance.getInmemoryHazelcast(), instance.getInmemoryRedis());
-        Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
-       return inmemory.read(message);
-    }
 
 }

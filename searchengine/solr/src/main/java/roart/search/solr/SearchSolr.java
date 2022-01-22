@@ -39,6 +39,7 @@ import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
+import roart.common.util.IOUtil;
 import roart.search.SearchEngineAbstractSearcher;
 
 public class SearchSolr extends SearchEngineAbstractSearcher {
@@ -106,13 +107,14 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		String lang = index.lang;
 		String classification = index.classification;
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-                String content = inmemory.read(index.message);
-                if (!InmemoryUtil.validate(index.message.getMd5(), content)) {
+                InputStream contentStream = inmemory.getInputStream(index.message);
+                if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
                     SearchEngineIndexResult result = new SearchEngineIndexResult();
                     result.noindexreason = "invalid";
                     result.size = -1;
                     return result;
                 }
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(index.message)));
 		int retsize = content.length();
 		// this to a method
 		log.info("indexing " + md5);

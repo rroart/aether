@@ -214,7 +214,7 @@ public class S3 extends FileSystemOperations {
         try {
             S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
             S3ObjectInputStream inputStream = s3object.getObjectContent();
-            bytes = IOUtil.toByteArray(inputStream);
+            bytes = IOUtil.toByteArrayMax(inputStream);
             inputStream.close();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -309,17 +309,17 @@ public class S3 extends FileSystemOperations {
     public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
         Map<FileObject, InmemoryMessage> map = new HashMap<>();
         for (FileObject filename : param.fos) {
-            byte[] bytes;
+            InputStream inputStream;
             String md5;
             try {
-                bytes  = getBytesInner(param.fo);
-                md5 = getMd5(param.fo);
+                inputStream  = getInputStreamInner(filename);
+                md5 = getMd5(filename);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;
             }
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes), md5);
+            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), inputStream, md5);
             map.put(filename, msg);
         }
         FileSystemMessageResult result = new FileSystemMessageResult();

@@ -127,7 +127,7 @@ public class LocalFileSystem extends FileSystemOperations {
         byte[] bytes;
         try {
             InputStream is = new FileInputStream( objectToFile(f) /*new File(getAbsolutePath(f))*/);
-            bytes = IOUtil.toByteArray(is);
+            bytes = IOUtil.toByteArrayMax(is);
             is.close();
         } catch (FileNotFoundException e) {
             log.error(Constants.EXCEPTION, e);
@@ -215,17 +215,17 @@ public class LocalFileSystem extends FileSystemOperations {
     public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
         Map<FileObject, InmemoryMessage> map = new HashMap<>();
         for (FileObject filename : param.fos) {
-            byte[] bytes;
+            InputStream inputStream;
             String md5;
             try {
-                bytes = getBytesInner(filename);
+                inputStream = getInputStreamInner(filename);
                 md5 = getMd5(filename);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 continue;
             }
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), InmemoryUtil.convertWithCharset(bytes), md5);
+            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), inputStream, md5);
             map.put(filename, msg);
         }
         FileSystemMessageResult result = new FileSystemMessageResult();

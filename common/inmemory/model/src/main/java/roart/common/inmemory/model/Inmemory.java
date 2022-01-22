@@ -1,13 +1,26 @@
 package roart.common.inmemory.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import roart.common.constants.Constants;
+import roart.common.util.BigBytes;
 import roart.common.util.JsonUtil;
 
 public abstract class Inmemory {
     
-    protected abstract int getLimit();
+    private static final Logger log = LoggerFactory.getLogger(Inmemory.class);
+
+    protected int getLimit() {
+        return 1024 * 1024 * 1024;
+    }
     
     protected abstract String getServer();
     
@@ -24,32 +37,49 @@ public abstract class Inmemory {
     }
     
     public InmemoryMessage send(String id, Object data, String md5) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        InputStream inputStream;
+        if (data instanceof InputStream) {
+            inputStream = (InputStream) data;
+        } else {
+            inputStream = getInputStream(data);
+        }
+        try {
+            int limit = getLimit();
+            int count = 0;
+            boolean doRead = true;
+            while (doRead) {
+                byte[] bytes = inputStream.readNBytes(limit);
+                if (bytes.length > 0) {
+                    InmemoryMessage messageKey = new InmemoryMessage(getServer(), id, count, md5);
+                    String messageKeyString = JsonUtil.convert(messageKey);
+                    String value = InmemoryUtil.convertWithCharset(bytes);
+                    set(messageKeyString, value);               
+                }
+                doRead = bytes.length == limit;
+                count++;
+            }
+            inputStream.close();
+            InmemoryMessage message = new InmemoryMessage(getServer(), id, count, md5);
+            return message;
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+    }
+
+    private InputStream getInputStream(Object data) {
         String string;
         if (data instanceof String) {
             string = (String) data;
         } else {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
             string = JsonUtil.convert(data, mapper);
         }
         if (string == null) {
             string = "";
         }
-        int count = 1;
-        int limit = string.length();
-        if (getLimit() > 0) {
-            count = (int) Math.ceil(((double) string.length()) / getLimit());
-            limit = getLimit();
-        }
-        InmemoryMessage message = new InmemoryMessage(getServer(), id, count, md5);
-        for (int i = 0; i < count; i++) {
-            InmemoryMessage messageKey = new InmemoryMessage(getServer(), id, i, md5);
-            String messageKeyString = JsonUtil.convert(messageKey);
-            int max = Math.min(string.length(), (i + 1) * limit);
-            String value = string.substring(i * limit, max);
-            set(messageKeyString, value);
-        }
-        return message;
+        return new ByteArrayInputStream(string.getBytes());
     }
 
     public String read(InmemoryMessage m) {
@@ -62,6 +92,23 @@ public abstract class Inmemory {
             stringBuilder.append(string);
         }        
         return stringBuilder.toString();
+    }
+    
+    public InputStream getInputStream(InmemoryMessage m) {
+        int count = m.getCount();
+        InputStream inputStream = null;
+        for (int i = 0; i < count; i++) {
+            InmemoryMessage messkageKey = new InmemoryMessage(m.getServer(), m.getId(), i, m.getMd5());
+            String messageKeyString = JsonUtil.convert(messkageKey);
+            String string = get(messageKeyString);
+            InputStream anInputStream = new ByteArrayInputStream(InmemoryUtil.convertWithCharset(string));
+            if (i == 0) {
+                inputStream = anInputStream;
+            } else {
+                inputStream = new SequenceInputStream(inputStream, anInputStream);
+            }
+        }        
+        return inputStream;
     }
     
     public void delete(InmemoryMessage m) {

@@ -9,8 +9,10 @@ import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorResult;
+import roart.common.util.IOUtil;
 
 import java.util.Map;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -98,11 +100,12 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            String content = inmemory.read(classify.message);
-            if (!InmemoryUtil.validate(classify.message.getMd5(), content)) {
+            InputStream validateStream = inmemory.getInputStream(classify.message);
+            if (!InmemoryUtil.validate(classify.message.getMd5(), validateStream)) {
                 MachineLearningClassifyResult result = new MachineLearningClassifyResult();
                 return result;
             }
+            String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(classify.message)));
 		String language = classify.language;
 		try {
 			SparkSession spark = conf.spark;

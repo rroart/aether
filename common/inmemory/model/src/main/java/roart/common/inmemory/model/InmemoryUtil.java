@@ -1,5 +1,7 @@
 package roart.common.inmemory.model;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +18,21 @@ public class InmemoryUtil {
 
     public static boolean validate(String md5, String content) {
         String contentMd5 = DigestUtils.md5Hex(content.getBytes(StandardCharsets.ISO_8859_1) );
+        if (!md5.equals(contentMd5)) {
+            log.error("Md5 differs {} {}", md5, contentMd5);
+            return false;
+        }
+        return true;
+    }
+    
+    public static boolean validate(String md5, InputStream content) {
+        String contentMd5;
+        try {
+            contentMd5 = DigestUtils.md5Hex(content);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return false;
+        }
         if (!md5.equals(contentMd5)) {
             log.error("Md5 differs {} {}", md5, contentMd5);
             return false;

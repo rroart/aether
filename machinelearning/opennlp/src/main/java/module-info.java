@@ -21,4 +21,5 @@ module opennlp {
     requires spring.web;
     requires spring.boot;
     requires org.apache.opennlp.tools;
+    requires common.util;
 }

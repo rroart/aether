@@ -22,4 +22,5 @@ module elastic {
     requires aether.shadow.elastic;
     requires org.apache.httpcomponents.httpcore;
     requires common.model;
+    requires common.util;
 }

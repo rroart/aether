@@ -10,6 +10,7 @@ import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
+import roart.common.util.IOUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,11 +57,12 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
 	
    public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-       String content = inmemory.read(classify.message);
-       if (!InmemoryUtil.validate(classify.message.getMd5(), content)) {
+       InputStream validateStream = inmemory.getInputStream(classify.message);
+       if (!InmemoryUtil.validate(classify.message.getMd5(), validateStream)) {
            MachineLearningClassifyResult result = new MachineLearningClassifyResult();
            return result;
        }
+       String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(classify.message)));
     		String language = classify.language;
     	         log.info("Detected language {}", language);
     	DocumentCategorizerME myCategorizer = conf.categorizerMap.get(language);

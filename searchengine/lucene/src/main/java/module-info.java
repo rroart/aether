@@ -23,4 +23,5 @@ module lucene {
     requires spring.cloud.commons;
     requires spring.web;
     requires spring.boot;
+    requires common.util;
 }

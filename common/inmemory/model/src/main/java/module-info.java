@@ -13,4 +13,5 @@ module common.inmemory.model {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires org.apache.commons.codec;
     requires common.constants;
+    requires org.slf4j;
 }

@@ -26,8 +26,9 @@ public class ConvertQueueElement {
     public String mimetype;
     public MyFile fsData;
     public InmemoryMessage message;
-
-    public ConvertQueueElement(FileObject dbfilename, FileObject filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, MyFile fsData, InmemoryMessage message) {
+    public String content;
+    
+    public ConvertQueueElement(FileObject dbfilename, FileObject filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, MyFile fsData, InmemoryMessage message, String content) {
         this.dbfilename = dbfilename;
         this.filename = filename;
         this.md5 = md5;
@@ -37,6 +38,7 @@ public class ConvertQueueElement {
         this.metadata = metadata;
         this.fsData = fsData;
         this.message = message;
+        this.content = content;
     }
 
 }

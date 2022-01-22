@@ -20,4 +20,5 @@ module spark.ml {
     requires common.inmemory.factory;
     requires classification;
     requires aether.shadow.spark;
+    requires common.util;
 }

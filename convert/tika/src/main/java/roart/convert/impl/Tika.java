@@ -103,10 +103,11 @@ public class Tika extends ConvertAbstract {
         ConvertResult result = new ConvertResult();
         ConvertParam param = (ConvertParam) param2[0];
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        String content = inmemory.read(param.message);
+        InputStream content = inmemory.getInputStream(param.message);
         if (!InmemoryUtil.validate(param.message.getMd5(), content)) {
             return result;
         }
+        content = inmemory.getInputStream(param.message);
         Converter converter = param.converter;
         String output = null;
         String md5 = null;
@@ -116,7 +117,7 @@ public class Tika extends ConvertAbstract {
             Map<String, String> metadata = new HashMap<>();
             result.metadata = metadata;
             String inmd5 = param.message.getId();
-            InputStream is = new ByteArrayInputStream(InmemoryUtil.convertWithCharset(content));
+            InputStream is = content;
             ByteArrayOutputStream outputStream = process(is, ret, metadata, inmd5);
             InputStream inputStream = null;
             if (outputStream != null) {
