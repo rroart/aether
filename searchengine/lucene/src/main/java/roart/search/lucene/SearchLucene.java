@@ -84,7 +84,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	private static Logger log = LoggerFactory.getLogger(SearchLucene.class);
 
 	public SearchLucene(String nodename, NodeConfig nodeConf) {
-		org.apache.lucene.search.BooleanQuery.setMaxClauseCount(16384);
+            IndexSearcher.setMaxClauseCount(16384);
 	}
 
 	public static void deconstruct(String nodename) {
