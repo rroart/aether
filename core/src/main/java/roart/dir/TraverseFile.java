@@ -493,7 +493,7 @@ public class TraverseFile {
             FileObject filename = entry.getKey();
             InmemoryMessage message = entry.getValue();
             Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
-            String content = inmemory.read(message);
+            String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(message)));
             inmemory.delete(message);
             contentMap.put(filename, content);
         }
