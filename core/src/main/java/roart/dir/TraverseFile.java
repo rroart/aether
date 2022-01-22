@@ -21,6 +21,7 @@ import roart.common.filesystem.MyFile;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.model.InmemoryUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -30,6 +31,7 @@ import roart.common.service.ServiceParam;
 import roart.common.service.ServiceParam.Function;
 import roart.common.synchronization.MyLock;
 import roart.common.util.ExecCommand;
+import roart.common.util.IOUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 
@@ -181,7 +183,7 @@ public class TraverseFile {
                 return;
             }
             lockwait = true;
-            indexsingle(trav, md5, filename, files, null);
+            indexsingle(trav, md5, filename, files, null, null);
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
             log.error(Constants.EXCEPTION, e);
@@ -215,7 +217,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map)
+    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map, Map<FileObject, String> contentMap)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -361,7 +363,7 @@ public class TraverseFile {
             }
             lockwait = true;
             if (doindex) {
-            indexsingle(trav, md5, filename, files, fsMap);
+            indexsingle(trav, md5, filename, files, fsMap, contentMap);
             }
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
@@ -415,10 +417,11 @@ public class TraverseFile {
      * @param md5 id
      * @param filename to be indexed
      * @param index db representation
+     * @param contentMap TODO
      */
     
     public static void indexsingle(TraverseQueueElement trav,
-            String md5, FileObject filename, IndexFiles index, Map<FileObject, MyFile> fsMap) {
+            String md5, FileObject filename, IndexFiles index, Map<FileObject, MyFile> fsMap, Map<FileObject, String> contentMap) {
         int maxfailed = MyConfig.conf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
             int failed = index.getFailed();
@@ -440,7 +443,8 @@ public class TraverseFile {
         }
         //TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), fsData);
         //Queues.tikaQueue.add(e);
-        ConvertQueueElement e2 = new ConvertQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), fsData, null);
+        String content = contentMap.get(filename);
+        ConvertQueueElement e2 = new ConvertQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), fsData, null, content);
         Queues.convertQueue.add(e2);
         //size = doTika(filename, filename, md5, index, retlist);
     }
@@ -460,31 +464,30 @@ public class TraverseFile {
         return result;
     }
 
-    public static Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap,
-            Map<FileObject, String> md5Map) {
+    public static Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
         Set<FileObject> filenames = new HashSet<>();
-        String md5 = "";
         for (TraverseQueueElement trav : traverseList) {
-            if (trav.getClientQueueElement().md5change == true || md5 == null) {
-                FileObject filename = trav.getFileobject();
-                try {
-                    if (!fsMap.get(filename).exists) {
-                        throw new FileNotFoundException("File does not exist " + filename);
-                    }
-                    if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-                        filenames.add(filename);
-                    }
-                } catch (FileNotFoundException e) {
-                    log.error(Constants.EXCEPTION, e);
-                    log.debug("Count dec {}", trav.getFileobject());
-                } catch (Exception e) {
-                    log.info("Error: {}", e.getMessage());
-                    log.error(Constants.EXCEPTION, e);
-                    log.debug("Count dec {}", trav.getFileobject());
+            FileObject filename = trav.getFileobject();
+            try {
+                if (!fsMap.get(filename).exists) {
+                    throw new FileNotFoundException("File does not exist " + filename);
                 }
+                if (trav.getClientQueueElement().function == ServiceParam.Function.INDEX) {
+                    filenames.add(filename);
+                }
+            } catch (FileNotFoundException e) {
+                log.error(Constants.EXCEPTION, e);
+                log.debug("Count dec {}", trav.getFileobject());
+            } catch (Exception e) {
+                log.info("Error: {}", e.getMessage());
+                log.error(Constants.EXCEPTION, e);
+                log.debug("Count dec {}", trav.getFileobject());
             }
         }
         Map<FileObject, String> contentMap = new HashMap<>();
+        if (filenames.isEmpty()) {
+            return contentMap;
+        }
         Map<FileObject, InmemoryMessage> messageMap = FileSystemDao.readFile(filenames);
         for (Entry<FileObject, InmemoryMessage> entry : messageMap.entrySet()) {
             FileObject filename = entry.getKey();
@@ -497,12 +500,12 @@ public class TraverseFile {
         return contentMap;
     }
     
-    public static Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
+    public static Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map) {
         Set<FileObject> filenames = new HashSet<>();
-        String md5 = "";
         for (TraverseQueueElement trav : traverseList) {
+            FileObject filename = trav.getFileobject();
+            String md5 = md5Map.get(filename);
             if (trav.getClientQueueElement().md5change == true || md5 == null) {
-                FileObject filename = trav.getFileobject();
                 try {
                     if (!fsMap.get(filename).exists) {
                         throw new FileNotFoundException("File does not exist " + filename);
@@ -520,7 +523,9 @@ public class TraverseFile {
                 }
             }
         }
-        Map<FileObject, String> contentMap = new HashMap<>();
+        if (filenames.isEmpty()) {
+            return new HashMap<>();
+        }
         return FileSystemDao.getMd5(filenames);
     }
 }

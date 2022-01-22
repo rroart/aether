@@ -206,15 +206,17 @@ public class TraverseQueueRunner implements Runnable {
         long time1 = System.currentTimeMillis();
         // Get Md5s by fileobject from database
         Map<FileObject, String> md5Map = TraverseFile.handleFo4(filenames);
+        // Batch read md5
+        Map<FileObject, String> newMd5Map = TraverseFile.getMd5(traverseList, fsMap, md5Map);
         // Batch read content
-        Map<FileObject, String> newMd5Map = TraverseFile.getMd5(traverseList, fsMap);
+        Map<FileObject, String> contentMap = TraverseFile.readFiles(traverseList, fsMap);
         long time2 = System.currentTimeMillis();
         // Get IndexFiles by Md5 from database
         Map<String, IndexFiles> ifMap = TraverseFile.handleFo5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            TraverseFile.handleFo3(trav, fsMap, md5Map, ifMap, newMd5Map);
+            TraverseFile.handleFo3(trav, fsMap, md5Map, ifMap, newMd5Map, contentMap);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));
