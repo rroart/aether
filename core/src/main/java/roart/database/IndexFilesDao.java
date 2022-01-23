@@ -74,6 +74,7 @@ public class IndexFilesDao {
             if (i != null) {
                 all.put(md5, i);
             }
+            i.setCreated("" + System.currentTimeMillis());
             return i;
         }
     }
