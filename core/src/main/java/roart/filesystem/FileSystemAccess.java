@@ -167,6 +167,7 @@ public class FileSystemAccess {
 
     }
 
+    @Deprecated
     public String getLocalFilesystemFile(FileObject fo) {
         FileObject file = FileSystemDao.get(fo);  
         String fn = FileSystemDao.getAbsolutePath(file);

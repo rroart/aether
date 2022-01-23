@@ -146,6 +146,7 @@ public class FsUtil {
     }
 
     private static Location transformOld(Location location) {
+        // deprecated
         if ("file".equals(location.nodename) && location.fs == null && location.extra == null) {
             location.nodename = null;
         }
@@ -153,6 +154,7 @@ public class FsUtil {
     }
 
     private static String transformOld(String s) {
+        // deprecated
         if (s.startsWith("file:")) {
             return s.substring(5);
         }
