@@ -55,7 +55,7 @@ public abstract class Inmemory {
                     String value = InmemoryUtil.convertWithCharset(bytes);
                     set(messageKeyString, value);               
                 }
-                doRead = bytes.length == limit;
+                doRead = bytes.length == limit || bytes.length == 0;
                 count++;
             }
             inputStream.close();

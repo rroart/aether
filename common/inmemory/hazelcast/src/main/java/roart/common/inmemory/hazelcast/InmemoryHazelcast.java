@@ -54,11 +54,6 @@ public class InmemoryHazelcast  extends Inmemory {
     }
 
     @Override
-    public int getLimit() {
-        return 0;
-    }
-
-    @Override
     protected void set(String key, String value) {
         map.put(key, value);
     }
