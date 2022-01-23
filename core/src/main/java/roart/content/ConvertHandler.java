@@ -164,9 +164,9 @@ public class ConvertHandler {
 
     private String getMimetype(InputStream content, String filename) {
         try {
-	    Path tempPath = Paths.get("/tmp", filename);
-	    Files.deleteIfExists(tempPath);
-            Path tempFile = Files.createFile(Paths.get("/tmp", filename));
+	    Path tempFile = Paths.get("/tmp", filename);
+	    Files.deleteIfExists(tempFile);
+            //Path tempFile = Files.createFile(Paths.get("/tmp", filename));
 	    log.info("File " + filename + " " + tempFile.toString());
             Files.copy(content, tempFile);
             String mimetype = Files.probeContentType(tempFile);
