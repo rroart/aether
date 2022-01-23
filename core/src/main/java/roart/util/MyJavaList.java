@@ -1,6 +1,7 @@
 package roart.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,14 +14,14 @@ import java.util.List;
  */
 
 public class MyJavaList<T> extends MyList<T> {
-    private volatile List<T> list;
+    private List<T> list;
 
     /**
      * Create a native Java list
      */
     
     public MyJavaList() {
-        list = new ArrayList<>();
+        list = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override

@@ -1,14 +1,13 @@
 package roart.util;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import roart.common.collections.MySet;
 
 public class MyJavaSet<T> extends MySet<T> {
-    public volatile Set set;
+    private Set<T> set;
 
     @Override
     public boolean add(T o) {
@@ -21,7 +20,7 @@ public class MyJavaSet<T> extends MySet<T> {
     }
     
     public MyJavaSet() {
-        set = new HashSet<T>();
+        set = Collections.synchronizedSet(new HashSet<>());
     }
 
     @Override

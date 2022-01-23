@@ -4,7 +4,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MyJavaQueue<T> extends MyQueue<T> {
-    public volatile Queue queue;
+    private Queue<T> queue;
 
     @Override
     public void offer(T o) {
