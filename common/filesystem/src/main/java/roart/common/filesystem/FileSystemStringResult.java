@@ -5,5 +5,5 @@ import java.util.Map;
 import roart.common.model.FileObject;
 
 public class FileSystemStringResult extends FileSystemResult {
-    public Map<FileObject, String> map;
+    public Map<String, String> map;
 }
