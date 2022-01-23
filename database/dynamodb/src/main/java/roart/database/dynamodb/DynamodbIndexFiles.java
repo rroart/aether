@@ -419,10 +419,10 @@ public class DynamodbIndexFiles {
             updatedvalues.put(isbnq, new AttributeValue(ifile.getIsbn()));
         }
         if (ifile.getCreated() != null && !ifile.getCreated().isEmpty()) {
-            updatedvalues.put(createdq, new AttributeValue(ifile.getIsbn()));
+            updatedvalues.put(createdq, new AttributeValue(ifile.getCreated()));
         }
         if (ifile.getChecked() != null && !ifile.getChecked().isEmpty()) {
-            updatedvalues.put(checkedq, new AttributeValue(ifile.getIsbn()));
+            updatedvalues.put(checkedq, new AttributeValue(ifile.getChecked()));
         }
         if (ifile.getFilelocations() != null && !ifile.getFilelocations().isEmpty()) {
             //updatedvalues.put(filelocationq, new AttributeValue(new ArrayList(ifile.getFilelocations())));              
