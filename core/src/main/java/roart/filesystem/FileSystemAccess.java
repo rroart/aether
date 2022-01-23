@@ -177,7 +177,7 @@ public class FileSystemAccess {
         return fn;
     }
 
-    public Map<FileObject, InmemoryMessage> readFile(Set<FileObject> f) {
+    public Map<String, InmemoryMessage> readFile(Set<FileObject> f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;
@@ -187,7 +187,7 @@ public class FileSystemAccess {
         return result.message;
     }
 
-    public Map<FileObject, String> getMd5(Set<FileObject> f) {
+    public Map<String, String> getMd5(Set<FileObject> f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         param.nodename = ControlService.nodename;
         param.configid = ControlService.configMd5;

@@ -213,7 +213,7 @@ public class LocalFileSystem extends FileSystemOperations {
     }
 
     public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
-        Map<FileObject, InmemoryMessage> map = new HashMap<>();
+        Map<String, InmemoryMessage> map = new HashMap<>();
         for (FileObject filename : param.fos) {
             InputStream inputStream;
             String md5;
@@ -225,8 +225,8 @@ public class LocalFileSystem extends FileSystemOperations {
                 continue;
             }
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + param.fo.toString(), inputStream, md5);
-            map.put(filename, msg);
+            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
+            map.put(filename.object, msg);
         }
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = map;
@@ -247,7 +247,7 @@ public class LocalFileSystem extends FileSystemOperations {
     }
 
     public FileSystemStringResult getMd5(FileSystemFileObjectParam param) {
-        Map<FileObject, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         for (FileObject filename : param.fos) {
             String md5;
             try {
@@ -256,7 +256,7 @@ public class LocalFileSystem extends FileSystemOperations {
                 log.error(Constants.EXCEPTION, e);
                 continue;
             }
-            map.put(filename, md5);
+            map.put(filename.object, md5);
         }
         FileSystemStringResult result = new FileSystemStringResult();
         result.map = map;

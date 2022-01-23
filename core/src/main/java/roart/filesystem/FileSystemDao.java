@@ -94,12 +94,22 @@ public class FileSystemDao {
 
     public static Map<FileObject, InmemoryMessage> readFile(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
-        return getFileSystemAccess(f).readFile(filenames);
+        Map<String, InmemoryMessage> map = getFileSystemAccess(f).readFile(filenames);
+        Map<FileObject, InmemoryMessage> retMap = new HashMap<>();
+        for (Entry<String, InmemoryMessage> entry : map.entrySet()) {
+            retMap.put(new FileObject(filenames.iterator().next().location, entry.getKey()), entry.getValue());
+        }
+        return retMap;
     }
 
     public static Map<FileObject, String> getMd5(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
-        return getFileSystemAccess(f).getMd5(filenames);
+        Map<String, String> map = getFileSystemAccess(f).getMd5(filenames);
+        Map<FileObject, String> retMap = new HashMap<>();
+        for (Entry<String, String> entry : map.entrySet()) {
+            retMap.put(new FileObject(filenames.iterator().next().location, entry.getKey()), entry.getValue());
+        }
+        return retMap;
     }
 
     // TODO make this OO
