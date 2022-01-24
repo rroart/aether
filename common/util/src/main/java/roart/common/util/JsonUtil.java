@@ -1,5 +1,7 @@
 package roart.common.util;
 
+import java.util.LinkedHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +98,30 @@ public class JsonUtil {
         if (object != null) {
             try {
                 return mapper.writeValueAsString(object);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
+        return null;
+    }
+
+    public static <T> T convert(LinkedHashMap map, Class<T> myclass) {
+        ObjectMapper mapper = new ObjectMapper();
+        if (map != null) {
+            try {
+                return mapper.convertValue(map, myclass);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
+        return null;
+    }
+
+    public static <T> T convert(LinkedHashMap[] map, Class<T> myclass) {
+        ObjectMapper mapper = new ObjectMapper();
+        if (map != null) {
+            try {
+                return mapper.convertValue(map, myclass);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }

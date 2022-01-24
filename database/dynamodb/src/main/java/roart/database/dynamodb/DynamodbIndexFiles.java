@@ -2,6 +2,7 @@ package roart.database.dynamodb;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -516,7 +517,7 @@ public class DynamodbIndexFiles {
         ifile.setIsbn(item.getString(isbnq));
         ifile.setCreated(item.getString(createdq));
         ifile.setChecked(item.getString(checkedq));
-        System.out.println("get fl " + item.getList(filelocationq) + " " + item.getString(filelocationq));
+        log.info("get fl " + item.getList(filelocationq).getClass().getName() + " " + item.getList(filelocationq));
         ifile.setFilelocations(item.getList(filelocationq) != null ? new HashSet<>(convert(item.getList(filelocationq))) : new HashSet<>());
         Set<FileLocation> fls;
         /*
@@ -531,10 +532,17 @@ public class DynamodbIndexFiles {
         return ifile;
     }
 
-    private List<FileLocation> convert(List<String> list) {
+    private List<FileLocation> convert(List list) {
         List<FileLocation> listnew = new ArrayList<>();
-        for (String str : list) {
-            listnew.addAll(Arrays.asList(JsonUtil.convert(str, FileLocation[].class)));
+        for (Object str : list) {
+            LinkedHashMap[] map;
+            if (str instanceof String string) {
+                map = JsonUtil.convert(string, LinkedHashMap[].class);
+            } else {
+                map = (LinkedHashMap[]) str;
+            }
+            FileLocation[] fl = JsonUtil.convert(map, FileLocation[].class);
+            listnew.addAll(Arrays.asList(fl));
         }
         return listnew;
     }
@@ -632,8 +640,10 @@ public class DynamodbIndexFiles {
         for (Map<String, AttributeValue> itemMap : list){
             Item item = new Item();
             for (Entry<String, AttributeValue> entry : itemMap.entrySet()) {
-                if (entry.getKey().equals(filelocationq)) {
-                    item.with(entry.getKey(), entry.getValue().getL());
+                if ( entry.getKey().equals(filelocationq)) {
+                    String value = entry.getValue().getS();
+                    List<FileLocation> unconverted = new FileLocationConverter().unconvert(value);
+                    item.with(entry.getKey(), unconverted);
                 } else {
                     item.with(entry.getKey(), entry.getValue().getS());
                 }
