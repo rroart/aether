@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
@@ -39,10 +40,7 @@ public class TraverseQueueRunner implements Runnable {
     @SuppressWarnings("squid:S2189")
     public void run() {
         Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
-        int nThreads = Runtime.getRuntime().availableProcessors() / 4;
-        if (nThreads == 0) {
-            nThreads = 1;
-        }
+        int nThreads = ControlRunner.getThreads();
         int running = 0;
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
@@ -148,9 +146,13 @@ public class TraverseQueueRunner implements Runnable {
     }
 
     private void doTraverseTimeout() {
+        int limit = MyConfig.instance().conf.getMPBatch();
+        if (limit < 1) {
+            limit = LIMIT;
+        }
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
         List<TraverseQueueElement> traverseList = new ArrayList<>();
-        for (int i = 0; i < LIMIT; i++) {
+        for (int i = 0; i < limit; i++) {
             TraverseQueueElement trav = queue.poll();
             if (trav == null) {
                 break;

@@ -23,6 +23,14 @@ public class NodeConfig extends MyConfig {
     public NodeConfig() {
         
     }
+ 
+    public double getMPCpu() {
+        return (Double) getValueOrDefault(ConfigConstants.MPCPU);       
+    }
+    
+    public int getMPBatch() {
+        return (Integer) getValueOrDefault(ConfigConstants.MPBATCH);       
+    }
     
     @JsonIgnore
     public String[] getLanguages() {

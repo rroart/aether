@@ -2,6 +2,8 @@ package roart.common.config;
 
 public class ConfigConstants {
 
+    public static final String MPCPU = "mp.cpu";
+    public static final String MPBATCH = "mp.batch";
     @Deprecated
     public static final String FS = "fs";
     @Deprecated

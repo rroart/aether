@@ -53,4 +53,12 @@ public class ControlRunner implements Runnable {
      	}
     }
 
+    public static int getThreads() {
+        double cpu = MyConfig.instance().conf.getMPCpu();
+        int nThreads = (int) (Runtime.getRuntime().availableProcessors() * cpu);
+        if (nThreads < 1) {
+            nThreads = 1;
+        }
+        return nThreads;
+    }
 }

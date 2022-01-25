@@ -16,6 +16,8 @@ public class ConfigConstantMaps {
             return;
         }
 
+        map.put(ConfigConstants.MPCPU, Double.class);
+        map.put(ConfigConstants.MPBATCH, Integer.class);
         map.put(ConfigConstants.FS, String.class);
         map.put(ConfigConstants.LOCAL, String.class);
         map.put(ConfigConstants.HADOOP, String.class);
@@ -129,6 +131,8 @@ public class ConfigConstantMaps {
             return;
         }
 
+        deflt.put(ConfigConstants.MPCPU, 0.25);
+        deflt.put(ConfigConstants.MPBATCH, 100);
         deflt.put(ConfigConstants.FS, null);
         deflt.put(ConfigConstants.LOCAL, null);
         deflt.put(ConfigConstants.HADOOP, null);
@@ -243,6 +247,8 @@ public class ConfigConstantMaps {
             return;
         }
 
+        text.put(ConfigConstants.MPCPU, "MP CPU");
+        text.put(ConfigConstants.MPBATCH, "MP batch");
         text.put(ConfigConstants.FS, "Filesystem");
         text.put(ConfigConstants.LOCAL, "");
         text.put(ConfigConstants.HADOOP, "");
@@ -351,6 +357,8 @@ public class ConfigConstantMaps {
 }
     public static Map<String, XMLType> mymap = new HashMap<>();
     public static void makeMap() {
+        mymap.put(ConfigConstants.MPCPU, new XMLType( Double.class, 0.25, "MP CPU"));
+        mymap.put(ConfigConstants.MPBATCH, new XMLType( Integer.class, 100, "MP batch"));
         mymap.put(ConfigConstants.FS, new XMLType( String.class, null, "Filesystem"));
         mymap.put(ConfigConstants.LOCAL, new XMLType( String.class, null, ""));
         mymap.put(ConfigConstants.HADOOP, new XMLType( String.class, null, ""));
