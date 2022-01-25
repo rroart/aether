@@ -128,9 +128,10 @@ public class ExecCommand {
             for (int i = 0; i < arg.length; i++) {
                 cmdarray[i + 1] = arg[i];
             }
-            String[] envarray = new String[2];
+            String[] envarray = new String[3];
             envarray[0] = "CALIBRE_WORKER_TEMP_DIR=/tmp";
             envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
+            envarray[2] = "LANG=en_US.UTF-8";
             proc = Runtime.getRuntime().exec(cmdarray, envarray);
             p = proc;
             if (pid != null) {
