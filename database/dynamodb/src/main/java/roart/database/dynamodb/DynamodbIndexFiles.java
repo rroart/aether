@@ -517,7 +517,7 @@ public class DynamodbIndexFiles {
         ifile.setIsbn(item.getString(isbnq));
         ifile.setCreated(item.getString(createdq));
         ifile.setChecked(item.getString(checkedq));
-        log.info("get fl " + item.getList(filelocationq).getClass().getName() + " " + item.getList(filelocationq));
+        log.info("get fl " + item.getList(filelocationq).getClass().getName() + " " + item.getList(filelocationq).get(0).getClass().getName() + " " + item.getList(filelocationq));
         ifile.setFilelocations(item.getList(filelocationq) != null ? new HashSet<>(convert(item.getList(filelocationq))) : new HashSet<>());
         Set<FileLocation> fls;
         /*
@@ -539,7 +539,7 @@ public class DynamodbIndexFiles {
             if (str instanceof String string) {
                 map = JsonUtil.convert(string, LinkedHashMap[].class);
             } else {
-                map = (LinkedHashMap[]) str;
+                map = new LinkedHashMap[] { (LinkedHashMap) str };
             }
             FileLocation[] fl = JsonUtil.convert(map, FileLocation[].class);
             listnew.addAll(Arrays.asList(fl));
