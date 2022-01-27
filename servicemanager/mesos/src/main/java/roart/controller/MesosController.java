@@ -19,11 +19,12 @@ public class MesosController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws InterruptedException {
-        Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar", null);
+        String str = null;
+        Runnable eureka = new JarThread("aether-eureka-0.10-SNAPSHOT.jar", null, str);
         new Thread(eureka).start();
-        Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", args);
+        Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", args, str);
         new Thread(core).start();
-        Runnable local = new JarThread("aether-local-0.10-SNAPSHOT.jar", null);
+        Runnable local = new JarThread("aether-local-0.10-SNAPSHOT.jar", null, str);
         new Thread(local).start();
     }
 }

@@ -119,7 +119,7 @@ public class ExecCommand {
         return value;
     }
 
-    public String execute(String filename, String[] arg, long[] pid) {
+    public String execute(String filename, String[] arg, long[] pid, String lang) {
         String res = null;
         Process proc = null;
         try {
@@ -131,7 +131,10 @@ public class ExecCommand {
             String[] envarray = new String[3];
             envarray[0] = "CALIBRE_WORKER_TEMP_DIR=/tmp";
             envarray[1] = "CALIBRE_TEMP_DIR=/tmp";
-            envarray[2] = "LANG=en_US.UTF-8";
+            if (lang == null) {
+                lang = "en_US.UTF-8";
+            }
+            envarray[2] = "LANG=" + lang;
             proc = Runtime.getRuntime().exec(cmdarray, envarray);
             p = proc;
             if (pid != null) {

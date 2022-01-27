@@ -88,7 +88,7 @@ public class SimpleController implements CommandLineRunner {
             myargs[2] = "-DZOO=localhost:2181";
             myargs[3] = "-DNODE=" + (loc.nodename != null ? loc.nodename : "");
             String myTypeStr = ("" + loc.fs).toLowerCase();
-            Runnable local = new JarThread("aether-" + myTypeStr + "-0.10-SNAPSHOT.jar", myargs);
+            Runnable local = new JarThread("aether-" + myTypeStr + "-0.10-SNAPSHOT.jar", myargs, "en_US.ISO8859-1");
             new Thread(local).start();
         }
 

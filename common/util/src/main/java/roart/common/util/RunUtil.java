@@ -10,11 +10,11 @@ public class RunUtil {
 
     private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
 
-    public static String execute(String filename, String[] arg) {
+    public static String execute(String filename, String[] arg, String lang) {
         String res = null;
 
         ExecCommand ec = new ExecCommand();
-        ec.execute(filename, arg, null);
+        ec.execute(filename, arg, null, lang);
 
         res = ec.getOutput() + ec.getError();
         log.info("output {}", res);

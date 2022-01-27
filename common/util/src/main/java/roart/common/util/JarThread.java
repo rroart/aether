@@ -7,9 +7,12 @@ public class JarThread implements Runnable {
     
     private String[] parameters;
     
-    public JarThread(Object parameter, String[] args) {
+    private String lang;
+    
+    public JarThread(Object parameter, String[] args, String lang) {
         this.parameter = parameter;
         this.args = args;
+        this.lang = lang;
     }
     
     public JarThread(Object parameter, String[] args, String[] params) {
@@ -41,6 +44,6 @@ public class JarThread implements Runnable {
                 params[2 + arglen + i] = parameters[i];
             }
         }
-        RunUtil.execute("/usr/bin/java", params);
+        RunUtil.execute("/usr/bin/java", params, lang);
     }
 }

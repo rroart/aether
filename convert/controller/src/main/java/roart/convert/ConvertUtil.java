@@ -18,7 +18,7 @@ public class ConvertUtil {
         String res = null;
 
         ExecCommand ec = new ExecCommand();
-        ec.execute(filename, arg, pid);
+        ec.execute(filename, arg, pid, null);
 
         res = ec.getOutput() + ec.getError();
         log.info("output " + res);
@@ -74,7 +74,7 @@ public class ConvertUtil {
                 return "end";
             }
         }
-        new ExecCommand().execute("/bin/kill", new String[] { "-9", "" + pid[0] }, null);
+        new ExecCommand().execute("/bin/kill", new String[] { "-9", "" + pid[0] }, null, null);
         //otherWorker.stop(); // .interrupt();
         el[0]= "othertimeout" + filename + " " + timeout + " ";
         log.info("Otherworker timeout " + otherWorker + " " + otherRunnable);

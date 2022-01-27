@@ -95,6 +95,7 @@ public class MyXMLConfig {
                 continue;
             }
             if (bool) {
+                String str = null;
                 String jar = entry.getValue();
                 log.info("Starting {}", jar);
                 switch (entry.getKey()) {
@@ -108,23 +109,23 @@ public class MyXMLConfig {
                     SimpleController.startFsServiceWithDirList(dirlist, fileSystems);
                     break;
                 case ConfigConstants.MACHINELEARNINGMAHOUTSPARK:
-                    Runnable def5 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED", "--add-opens", "java.base/java.nio=ALL-UNNAMED", "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED" });
+                    Runnable def5 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED", "--add-opens", "java.base/java.nio=ALL-UNNAMED", "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED" }, str);
                     new Thread(def5).start();
                     break;
                 case ConfigConstants.MACHINELEARNINGSPARKML:
-                    Runnable def4 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED", "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED" });
+                    Runnable def4 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED", "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED" }, str);
                     new Thread(def4).start();
                     break;
                 case ConfigConstants.DATABASEHBASE:
-                    Runnable def2 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED" });
+                    Runnable def2 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.nio=ALL-UNNAMED" }, str);
                     new Thread(def2).start();
                     break;
                 case ConfigConstants.DATABASEDYNAMODB:
-                    Runnable def3 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.lang=ALL-UNNAMED" });
+                    Runnable def3 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.lang=ALL-UNNAMED" }, str);
                     new Thread(def3).start();
                     break;
                 default:
-                    Runnable def = new JarThread(jar, null);
+                    Runnable def = new JarThread(jar, null, str);
                     new Thread(def).start();
                 }
             }
@@ -139,7 +140,8 @@ public class MyXMLConfig {
             log.info("convs"+name);
             if (jar != null) {
                 log.info("convs"+name);
-                Runnable def = new JarThread(jar, null);
+                String str = null;
+                Runnable def = new JarThread(jar, null, str);
                 new Thread(def).start();                
             }
         }

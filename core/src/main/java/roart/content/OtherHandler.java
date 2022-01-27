@@ -193,7 +193,7 @@ public class OtherHandler {
 	String res = null;
 
 	ExecCommand ec = new ExecCommand();
-	ec.execute(filename, arg, null);
+	ec.execute(filename, arg, null, null);
 
 	res = ec.getOutput() + ec.getError();
 	log.info("output " + res);
