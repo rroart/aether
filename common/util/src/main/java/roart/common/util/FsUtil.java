@@ -1,5 +1,6 @@
 package roart.common.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +110,8 @@ public class FsUtil {
         s = transformOld(s);
         String[] list = s.split(":");
         int len = list.length;
-        String path = list[len - 1];
+        int objectIndex = StringUtils.ordinalIndexOf(s, ":", 3);        
+        String path = s.substring(objectIndex + 1);
         String nodename = null;
         String fs = null;
         String extra = null;
