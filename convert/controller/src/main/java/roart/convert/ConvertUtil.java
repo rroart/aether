@@ -46,7 +46,7 @@ public class ConvertUtil {
 
         long[] pid = new long[1];
         
-        Object [] objs = new Object[2];
+        Object [] objs = new Object[3];
         objs[0] = filename;
         objs[1] = arg;
         objs[2] = pid;

@@ -1,6 +1,7 @@
 package roart.convert.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,42 +43,55 @@ public class Wvtext extends ConvertAbstract {
         InputStream validateStream = inmemory.getInputStream(param.message);
         if (!InmemoryUtil.validate(param.message.getMd5(), validateStream)) {
             return result;
-        }
-        Converter converter = param.converter;
+        }        
         String output = null;
+        Converter converter = param.converter;
+        Path inPath = Paths.get("/tmp", param.filename);
         try (InputStream contentStream = inmemory.getInputStream(param.message)) {
-            Path myPath = Paths.get("/tmp", param.filename);
-            Files.deleteIfExists(myPath);
-            Path inPath = Files.createFile(myPath);
+            Files.deleteIfExists(inPath);
             Files.copy(contentStream, inPath);
-            String in = inPath.toString();
-            Path outPath = null;
-            String out = null;
-            outPath = Files.createTempFile(null, ".txt");
-            out = outPath.toString();
-            String retlistid = null;
-
-            String[] arg = { in, out };
-            String[] ret = new String[1];
-            output = ConvertUtil.executeTimeout("/usr/bin/wvText", arg, retlistid, ret, converter.getTimeout());
-            if ("end".equals(output)) {
-                output = InmemoryUtil.convertWithCharset(outPath);
-            } else {
-                output = null;
-            }
-            Files.delete(inPath);
-            Files.delete(outPath);
-            result.error = ret[0];
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
+        String in = inPath.toString();
+        Path outPath = null;
+        String out = null;
+        try {
+            outPath = Files.createTempFile(null, ".txt");
+            out = outPath.toString();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        String retlistid = null;
+
+        String[] arg = { in, out };
+        String[] ret = new String[1];
+        output = ConvertUtil.executeTimeout("/usr/bin/wvText", arg, retlistid, ret, converter.getTimeout());
+        if ("end".equals(output)) {
+            String md5 = null;
+            try (InputStream md5is = new FileInputStream(out)) {
+                md5 = DigestUtils.md5Hex(md5is);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+            try (InputStream is = new FileInputStream(out)) {
+                InmemoryMessage msg = inmemory.send(md5, is, md5);
+                result.message = msg;
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+            try (InputStream is = new FileInputStream(outPath.toString())) {
+                Files.delete(inPath);
+                Files.delete(outPath);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
         if (output == null) {
-            log.info("Wvtext with no output");
+            log.info("Calibre with no output");
+            result.error = ret[0];
             return result;
         }
-        String md5 = DigestUtils.md5Hex(output );
-        InmemoryMessage msg = inmemory.send(md5, output, md5);
-        result.message = msg;
         return result;
     }
 }
