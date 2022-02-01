@@ -537,7 +537,7 @@ public class DynamodbIndexFiles {
         for (Object str : list) {
             LinkedHashMap[] map;
             if (str instanceof String string) {
-                map = JsonUtil.convert(string, LinkedHashMap[].class);
+                map = JsonUtil.convertnostrip(string, LinkedHashMap[].class);
             } else {
                 map = new LinkedHashMap[] { (LinkedHashMap) str };
             }
