@@ -79,7 +79,7 @@ public class ConvertHandler {
             }
             if (converter.getSuffixes().length > 0) {
                 String myfilename = el.filename.object.toLowerCase();
-                if (!Arrays.asList(converter.getMimetypes()).stream().anyMatch(myfilename::endsWith)) {
+                if (!Arrays.asList(converter.getSuffixes()).stream().anyMatch(myfilename::endsWith)) {
                     continue;
                 }
             }
