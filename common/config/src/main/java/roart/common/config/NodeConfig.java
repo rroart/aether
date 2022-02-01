@@ -176,6 +176,16 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public String getElasticUsername() {
+        return (String) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICELASTICUSERNAME);
+    }
+    
+    @JsonIgnore
+    public String getElasticPassword() {
+        return (String) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICELASTICPASSWORD);
+    }
+    
+    @JsonIgnore
     public String getHDFSDefaultName() {
         return (String) getValueOrDefault(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS);
     }

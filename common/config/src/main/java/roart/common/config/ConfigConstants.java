@@ -61,6 +61,8 @@ public class ConfigConstants {
     public static final String SEARCHENGINESOLRSOLRURL = "searchengine.solr.solrurl";
     public static final String SEARCHENGINEELASTICELASTICHOST = "searchengine.elastic.elastichost";
     public static final String SEARCHENGINEELASTICELASTICPORT = "searchengine.elastic.elasticport";
+    public static final String SEARCHENGINEELASTICELASTICUSERNAME = "searchengine.elastic.username";
+    public static final String SEARCHENGINEELASTICELASTICPASSWORD = "searchengine.elastic.password";
     public static final String FILESYSTEMHDFS = "filesystem.hdfs[@enable]";
     public static final String FILESYSTEMHDFSHDFSCONFFS = "filesystem.hdfs.hdfsconffs";
     public static final String FILESYSTEMSWIFT = "filesystem.swift[@enable]";
