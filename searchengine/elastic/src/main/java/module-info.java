@@ -23,4 +23,6 @@ module elastic {
     requires org.apache.httpcomponents.httpcore;
     requires common.model;
     requires common.util;
+    requires org.apache.httpcomponents.httpasyncclient;
+    requires org.apache.httpcomponents.httpclient;
 }

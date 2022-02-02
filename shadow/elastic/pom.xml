@@ -34,12 +34,13 @@
 		  <!--include>org.elasticsearch.client:elasticsearch-rest-client</include-->
 		  <!--include>org.elasticsearch.client:transport</include-->
 		  <!--include>org.elasticsearch.client:x-pack-transport</include-->
-		  <include>org.elasticsearch.plugin:transport-netty4-client</include>
-		  <include>org.elasticsearch.plugin:reindex-client</include>
-		  <include>org.elasticsearch.client:elasticsearch-rest-high-level-client</include>
+		  <!--include>org.elasticsearch.plugin:transport-netty4-client</include-->
+		  <!--include>org.elasticsearch.plugin:reindex-client</include-->
+		  <!--include>org.elasticsearch.client:elasticsearch-rest-high-level-client</include-->
 		  <include>org.elasticsearch.client:elasticsearch-rest-client</include>
-		  <include>org.elasticsearch.plugin:lang-mustache-client</include>
-		  <include>org.elasticsearch.plugin:rank-eval-client</include>
+		  <include>co.elastic.clients:elasticsearch-java</include>
+		  <!--include>org.elasticsearch.plugin:lang-mustache-client</include-->
+		  <!--include>org.elasticsearch.plugin:rank-eval-client</include-->
 		  <include>org.apache.lucene:lucene-core</include>
 		  <include>org.apache.lucene:lucene-suggest</include>
 		  <include>org.apache.lucene:lucene-highlighter</include>
@@ -72,60 +73,65 @@
       <artifactId>elasticsearch-rest-client</artifactId>
       <version>${elasticsearch.version}</version>
     </dependency-->
-    <dependency>
+    <!--dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>transport</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>x-pack-transport</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.elasticsearch.plugin</groupId>
       <artifactId>transport-netty4-client</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.elasticsearch.plugin</groupId>
       <artifactId>reindex-client</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>elasticsearch-rest-high-level-client</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>elasticsearch-rest-client</artifactId>
       <version>${elasticsearch.version}</version>
     </dependency>
     <dependency>
+      <groupId>co.elastic.clients</groupId>
+      <artifactId>elasticsearch-java</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency>
+    <!--dependency>
       <groupId>org.elasticsearch.plugin</groupId>
       <artifactId>lang-mustache-client</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.elasticsearch.plugin</groupId>
       <artifactId>rank-eval-client</artifactId>
       <version>${elasticsearch.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>8.9.0</version>
+      <version>9.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-suggest</artifactId>
-      <version>8.9.0</version>
+      <version>9.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-highlighter</artifactId>
-      <version>8.9.0</version>
+      <version>9.0.0</version>
     </dependency>
   </dependencies>
 </project>

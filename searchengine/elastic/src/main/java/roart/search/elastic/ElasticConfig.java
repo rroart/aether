@@ -1,8 +1,7 @@
 package roart.search.elastic;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.RestHighLevelClient;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 
 public class ElasticConfig {
-	public RestHighLevelClient client;
+    public ElasticsearchClient client;
 }
