@@ -30,6 +30,7 @@ import roart.common.util.ExecCommand;
 import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
+import roart.function.AbstractFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +162,7 @@ public class Traverse {
                     total.addAndGet(1);
                     MyAtomicLong count = MyAtomicLongs.get(traversecountid);
                     count.addAndGet(1);
+                    // save
                     queue.offer(trav);
                     log.debug("Count inc {}", trav.getFileobject());
                     //TraverseFile.handleFo3(null, fo);
@@ -254,77 +256,6 @@ public class Traverse {
         return retset;
     }
 
-    public static int indexnoFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
-        if (true) {
-            return 1;
-        }
-        String md5 = index.getMd5();
-        String filename = null;
-        try {
-            filename = getExistingLocalFile(index);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e);
-        }
-        if (filename == null) {
-            log.error("filename should not be null {}", md5);
-            return 0;
-        }
-        if (filename != null) {
-            return 1;
-        }
-        return 0;
-    }
-
-    public static int reindexsuffixFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
-        String md5 = index.getMd5();
-        for (FileLocation fl : index.getFilelocations()) {
-            // TODO check nodename
-            if (element.getClientQueueElement().suffix != null && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
-                continue;
-            }
-            FileObject file = FileSystemDao.get(FsUtil.getFileObject(fl.toString()));
-            if (!FileSystemDao.exists(file)) {
-                continue;
-            }
-            return 1;
-        }
-        return 0;
-    }
-
-    public static int reindexdateFilter(IndexFiles index, TraverseQueueElement element) throws Exception {
-        String lowerdate = element.getClientQueueElement().lowerdate;
-        String higherdate = element.getClientQueueElement().higherdate;
-        Long tslow = null;
-        if (lowerdate != null) {
-            tslow = new Long(lowerdate);
-        }
-        Long tshigh = null;
-        if (higherdate != null) {
-            tshigh = new Long(higherdate);
-        }
-
-        String timestamp = index.getTimestamp();
-        if (timestamp != null) {
-            if (tslow != null && new Long(timestamp).compareTo(tslow) >= 0) {
-                return 0;
-            }
-            if (tshigh != null && new Long(timestamp).compareTo(tshigh) <= 0) {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-        String md5 = index.getMd5();
-        String filename = getExistingLocalFile(index);
-
-        if (filename == null) {
-            log.error("md5 filename null {}", md5);
-            return 0;
-        }
-
-        return 1;
-    }
-
     public static List<ResultItem> notindexed(ServiceParam el) throws Exception {
         List<ResultItem> retlist = new ArrayList<>();
         ResultItem ri = new ResultItem();
@@ -414,74 +345,7 @@ public class Traverse {
         return null;
     }
 
-    public static int reindexlanguageFilter(IndexFiles index, TraverseQueueElement element) {
-        String mylanguage = index.getLanguage();
-        if (mylanguage != null && mylanguage.equals(element.getClientQueueElement().suffix)) { // stupid overload
-            String md5 = index.getMd5();
-            String filename = getExistingLocalFile(index);
-
-            if (filename == null) {
-                log.error("md5 filename null {}", md5);
-                return 0;
-            }
-
-            return 1;
-        }
-        return 0;
-
-    }
-
-    public static boolean filterindex(IndexFiles index, TraverseQueueElement trav)
-            throws Exception {
-        if (index == null) {
-            return false;
-        }
-        // skip if indexed already, and no reindex wanted
-        Boolean indexed = index.getIndexed();
-        if (indexed != null) {
-            if (!trav.getClientQueueElement().reindex && indexed.booleanValue()) {
-                return false;
-            }
-        }
-
-        String md5 = index.getMd5();
-
-        // if ordinary indexing (no reindexing)
-        // and a failed limit it set
-        // and the file has come to that limit
-
-        int maxfailed = MyConfig.conf.getFailedLimit();
-        if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
-            return false;
-        }
-
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid()); 
-
-        int indexinc = 0;
-        if (trav.getClientQueueElement().function == ServiceParam.Function.REINDEXDATE) {
-            indexinc = reindexdateFilter(index, trav);
-            indexcount.addAndGet(indexinc);
-            return indexinc > 0;
-        }
-        if (trav.getClientQueueElement().function == ServiceParam.Function.REINDEXSUFFIX) {
-            indexinc = reindexsuffixFilter(index, trav);
-            indexcount.addAndGet(indexinc);
-            return indexinc > 0;
-        }
-        if (trav.getClientQueueElement().function == ServiceParam.Function.INDEX || trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEMLUCENENEW) {
-            indexinc = indexnoFilter(index, trav);
-            indexcount.addAndGet(indexinc);
-            return indexinc > 0;
-        }
-        if (trav.getClientQueueElement().function == ServiceParam.Function.REINDEXLANGUAGE) {
-            indexinc = reindexlanguageFilter(index, trav);
-            indexcount.addAndGet(indexinc);
-            return indexinc > 0;
-        }
-        return false;
-    }
-
-    public Set<String> traversedb() throws Exception {
+    public Set<String> traversedb(AbstractFunction function) throws Exception {
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
         for (IndexFiles index : indexes) {
@@ -500,7 +364,7 @@ public class Traverse {
             */
             // TODO check if fo needed
             TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
-            if (!filterindex(index, trav)) {
+            if (!(function.indexFilter(index, trav) > 0)) {
                 continue;
             }
             // config with finegrained distrib
@@ -508,8 +372,13 @@ public class Traverse {
             total.addAndGet(1);
             MyAtomicLong count = MyAtomicLongs.get(traversecountid);
             count.addAndGet(1);
-            queue.offer(trav);
-            //TraverseFile.indexsingle(trav, md5, name, index);
+            // ?
+            //queue.offer(trav);
+            String md5sdoneid = "md5sdoneid"+trav.getMyid();
+            MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+            if (TraverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
+            TraverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null, null);
+            }
         }
 
         return null;
@@ -529,11 +398,12 @@ public class Traverse {
         return isMaxed;
     }
 
-    public Set<String> traverse(String add) throws Exception {
+    public Set<String> traverse(String add, AbstractFunction function) throws Exception {
         try {
             log.info("function: {}", element.function);
             if (element.function == ServiceParam.Function.REINDEXDATE || element.function == ServiceParam.Function.REINDEXLANGUAGE || element.function == ServiceParam.Function.REINDEXSUFFIX || (element.function == ServiceParam.Function.INDEX && add == null)) {
-                return traversedb();
+                // TODO use indexfiles
+                return traversedb(function);
             }
             if (add != null) {
                 return doList(FsUtil.getFileObject(add));    

@@ -34,6 +34,7 @@ import roart.common.util.ExecCommand;
 import roart.common.util.IOUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
+import roart.function.AbstractFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +180,7 @@ public class TraverseFile {
             if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
                 return;
             }
-            if (!Traverse.filterindex(files, trav)) {
+            if (true /*!Traverse.filterindex(files, trav)*/) {
                 return;
             }
             lockwait = true;
@@ -344,25 +345,9 @@ public class TraverseFile {
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         try {
-            boolean doindex = true;
-            if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
-                /*
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-                total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-                count.addAndGet(-1);
-                log.info("Count dec {}", trav.getFileobject());
-                */
-                doindex = false;
-            }
-            if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
-                doindex = false;
-            }
-            if (!Traverse.filterindex(files, trav)) {
-                doindex = false;
-            }
+            boolean doindex = getDoIndex(trav, md5, files, md5sdoneset, null);
             lockwait = true;
-            if (doindex) {
+            if (false && doindex) {
             indexsingle(trav, md5, filename, files, fsMap, contentMap);
             }
         } catch (Exception e) {
@@ -397,6 +382,28 @@ public class TraverseFile {
             log.debug("Count dec {}", trav.getFileobject());
         }
         //md5set.add(md5);
+    }
+
+    public static boolean getDoIndex(TraverseQueueElement trav, String md5, IndexFiles files,
+            MySet<String> md5sdoneset, AbstractFunction function) throws Exception {
+        boolean doindex = true;
+        if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
+            /*
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+            total.addAndGet(-1);
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+            count.addAndGet(-1);
+            log.info("Count dec {}", trav.getFileobject());
+            */
+            doindex = false;
+        }
+        if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
+            doindex = false;
+        }
+        if (function != null && function.indexFilter(files, trav) > 0) {
+            doindex = false;
+        }
+        return doindex;
     }
 
     public static void handleFo3(TraverseQueueElement trav, Set<FileObject> filenames)

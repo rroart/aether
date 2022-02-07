@@ -21,6 +21,7 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.service.ServiceParam;
 import roart.common.service.ServiceResult;
 import roart.config.MyXMLConfig;
+import roart.content.ClientHandler;
 import roart.eureka.util.EurekaUtil;
 import roart.service.ControlService;
 import roart.service.SearchService;
@@ -100,9 +101,9 @@ public class ServiceController implements CommandLineRunner {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-		result.list = getInstance().traverse(param);
+		result.list = ClientHandler.doClient(param);
 	    } else {
-	        result.list = getInstance().traverse(param);
+	        result.list = ClientHandler.doClient(param);
 	    }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -117,7 +118,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().overlapping(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -131,7 +132,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().indexsuffix(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -145,7 +146,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().index(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -159,7 +160,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().reindexdatelower(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -173,7 +174,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().reindexdatehigher(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -187,7 +188,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().reindexlanguage(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -215,7 +216,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().memoryusage(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -229,7 +230,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().notindexed(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -244,9 +245,9 @@ public class ServiceController implements CommandLineRunner {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-            result.list = getInstance().filesystemlucenenew(param);
+            result.list = ClientHandler.doClient(param);
 	    } else {
-		result.list = getInstance().filesystemlucenenew(param);
+		result.list = ClientHandler.doClient(param);
 	    }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -262,9 +263,9 @@ public class ServiceController implements CommandLineRunner {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-            result.list = getInstance().filesystemlucenenew(param);
+            result.list = ClientHandler.doClient(param);
 	    } else {
-		result.list = getInstance().dbindex(param);
+		result.list = ClientHandler.doClient(param);
 	    }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -280,9 +281,9 @@ public class ServiceController implements CommandLineRunner {
         ServiceResult result = new ServiceResult();
         try {
 	    if (param.add == null) {
-            result.list = getInstance().filesystemlucenenew(param);
+            result.list = ClientHandler.doClient(param);
 	    } else {
-		result.list = getInstance().dbsearch(param);
+		result.list = ClientHandler.doClient(param);
 	    }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -297,7 +298,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().consistentclean(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -311,7 +312,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().deletepathdb(param);
+            result.list = ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -325,7 +326,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            getInstance().dbclear();
+            ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -339,7 +340,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-             getInstance().dbdrop();
+            ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -353,7 +354,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            getInstance().indexclean();
+            ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -367,7 +368,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            getInstance().indexdelete();
+            ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
