@@ -251,8 +251,10 @@ public class S3 extends FileSystemOperations {
             if (my.exists) {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = fo[0].object;
-                my.mtime = getMtime(fo[0]);
-                my.ctime = my.mtime;
+                if (!my.isDirectory) {
+                    my.mtime = getMtime(fo[0]);
+                    my.ctime = my.mtime;
+                }
                 if (withBytes) {
                     my.bytes = getBytesInner(fo[0]);
                 }

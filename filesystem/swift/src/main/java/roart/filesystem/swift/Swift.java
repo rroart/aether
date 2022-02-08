@@ -257,8 +257,10 @@ public class Swift extends FileSystemOperations {
             if (my.exists) {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = getAbsolutePathInner(fo[0]);
-                my.mtime = getMtime(fo[0]);
-                my.ctime = my.mtime;
+                if (!my.isDirectory) {
+                    my.mtime = getMtime(fo[0]);
+                    my.ctime = my.mtime;
+                }
                 if (withBytes) {
                     my.bytes = getBytesInner(fo[0]);
                 }
