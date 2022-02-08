@@ -255,42 +255,40 @@ public class TraverseFile {
                 if (!fsMap.get(filename).exists) {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
-                if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-		    md5 = newMd5Map.get(filename);
-		    if (md5 == null) {
-		        log.error("Md5 null");
-		        throw new Exception("Md5 null");
-		    }
-                    if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
-                        int jj = 0;
-                        // d41d8cd98f00b204e9800998ecf8427e
-                    }
-               
-                    //if (files == null) {
-                        //z.lock(md5);
-                        // get read file
-                        lock = MyLockFactory.create();
-                        lock.lock(md5);
-                        files = ifMap.get(md5);
-                    //}
-                        if (files == null) {
-                            files = IndexFilesDao.getByTemp(md5);
-                        }
-                        if (files == null) {
-                            files = IndexFilesDao.getByMd5(md5);
-                        }
-                        if (files == null) {
-                            files = IndexFilesDao.getNewByMd5(md5);
-                            //files = new IndexFiles(md5);
-                        }
-		    log.debug("Files {}", files);
-		    files.setChecked("" + System.currentTimeMillis());
-                    // modify write file
-                    String nodename = ControlService.nodename;
-                    files.addFile(filename.location.toString(), filename.object);
-                    IndexFilesDao.addTemp(files);
-                    log.info("adding md5 file {}", filename);
+                md5 = newMd5Map.get(filename);
+                if (md5 == null) {
+                    log.error("Md5 null");
+                    throw new Exception("Md5 null");
                 }
+                if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
+                    int jj = 0;
+                    // d41d8cd98f00b204e9800998ecf8427e
+                }
+
+                //if (files == null) {
+                //z.lock(md5);
+                // get read file
+                lock = MyLockFactory.create();
+                lock.lock(md5);
+                files = ifMap.get(md5);
+                //}
+                if (files == null) {
+                    files = IndexFilesDao.getByTemp(md5);
+                }
+                if (files == null) {
+                    files = IndexFilesDao.getByMd5(md5);
+                }
+                if (files == null) {
+                    files = IndexFilesDao.getNewByMd5(md5);
+                    //files = new IndexFiles(md5);
+                }
+                log.debug("Files {}", files);
+                files.setChecked("" + System.currentTimeMillis());
+                // modify write file
+                String nodename = ControlService.nodename;
+                files.addFile(filename.location.toString(), filename.object);
+                IndexFilesDao.addTemp(files);
+                log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
@@ -479,9 +477,7 @@ public class TraverseFile {
                 if (!fsMap.get(filename).exists) {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
-                if (trav.getClientQueueElement().function == ServiceParam.Function.INDEX) {
-                    filenames.add(filename);
-                }
+                filenames.add(filename);
             } catch (FileNotFoundException e) {
                 log.error(Constants.EXCEPTION, e);
                 log.debug("Count dec {}", trav.getFileobject());
@@ -517,9 +513,7 @@ public class TraverseFile {
                     if (!fsMap.get(filename).exists) {
                         throw new FileNotFoundException("File does not exist " + filename);
                     }
-                    if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-                        filenames.add(filename);
-                    }
+                    filenames.add(filename);
                 } catch (FileNotFoundException e) {
                     log.error(Constants.EXCEPTION, e);
                     log.debug("Count dec {}", trav.getFileobject());

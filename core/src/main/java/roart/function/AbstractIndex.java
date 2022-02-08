@@ -4,6 +4,7 @@ import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
+import roart.dir.Traverse;
 import roart.queue.TraverseQueueElement;
 import roart.util.MyAtomicLong;
 import roart.util.MyAtomicLongs;
@@ -46,4 +47,12 @@ public abstract class AbstractIndex extends AbstractFunction {
         return indexinc > 0;
     }
 
+    @Override
+    protected void traverse(String filename, Traverse traverse) {
+        try {
+            traverse.traversedb(this, filename);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+    }
 }

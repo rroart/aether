@@ -103,7 +103,8 @@ public abstract class AbstractFunction {
                 // reindexdate
                 // filesystemlucenenew
 
-                traverse.traverse(filename, this);
+                traverse(filename, traverse);
+                //traverse.traverse(filename, this);
 
                 TimeUnit.SECONDS.sleep(5);
 
@@ -174,6 +175,9 @@ public abstract class AbstractFunction {
             }
         }
         return null;        
+    }
+
+    protected void traverse(String filename, Traverse traverse) {
     }
 
     public int indexFilter(IndexFiles index, TraverseQueueElement trav) {

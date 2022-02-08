@@ -2,8 +2,10 @@ package roart.function;
 
 import java.util.List;
 
+import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
+import roart.dir.Traverse;
 import roart.queue.TraverseQueueElement;
 
 public class FilesystemLucenenew extends AbstractIndex {
@@ -22,4 +24,12 @@ public class FilesystemLucenenew extends AbstractIndex {
         return 1;
     }
 
+    @Override
+    protected void traverse(String filename, Traverse traverse) {
+        try {
+            traverse.traverse(filename, this);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+    }
 }

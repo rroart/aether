@@ -24,7 +24,6 @@ import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.model.SearchDisplay;
 import roart.common.service.ServiceParam;
-import roart.common.service.ServiceParam.Function;
 import roart.common.synchronization.MyLock;
 import roart.common.util.ExecCommand;
 import roart.common.util.FsUtil;
@@ -345,7 +344,7 @@ public class Traverse {
         return null;
     }
 
-    public Set<String> traversedb(AbstractFunction function) throws Exception {
+    public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
         List<IndexFiles> indexes = IndexFilesDao.getAll();
         for (IndexFiles index : indexes) {
@@ -401,10 +400,6 @@ public class Traverse {
     public Set<String> traverse(String add, AbstractFunction function) throws Exception {
         try {
             log.info("function: {}", element.function);
-            if (element.function == ServiceParam.Function.REINDEXDATE || element.function == ServiceParam.Function.REINDEXLANGUAGE || element.function == ServiceParam.Function.REINDEXSUFFIX || (element.function == ServiceParam.Function.INDEX && add == null)) {
-                // TODO use indexfiles
-                return traversedb(function);
-            }
             if (add != null) {
                 return doList(FsUtil.getFileObject(add));    
             } else {
