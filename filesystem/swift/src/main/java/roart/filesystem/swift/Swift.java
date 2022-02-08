@@ -257,6 +257,8 @@ public class Swift extends FileSystemOperations {
             if (my.exists) {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = getAbsolutePathInner(fo[0]);
+                my.mtime = getMtime(fo[0]);
+                my.ctime = my.mtime;
                 if (withBytes) {
                     my.bytes = getBytesInner(fo[0]);
                 }
@@ -265,6 +267,12 @@ public class Swift extends FileSystemOperations {
             }
         }
         return my;
+    }
+
+    private long getMtime(FileObject f) {
+        Container container = conf.account.getContainer(f.location.extra);
+        StoredObject so = new StoredObjectImpl(container, format(f.object), false);
+        return so.getLastModifiedAsDate().getTime();
     }
 
     @Override

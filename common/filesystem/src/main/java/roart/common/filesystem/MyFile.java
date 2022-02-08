@@ -18,6 +18,10 @@ public class MyFile {
 
     public byte[] bytes;
 
+    public long mtime;
+    
+    public long ctime;
+    
     @JsonIgnore
     public InputStream getInputStream() {
         return new ByteArrayInputStream(bytes);

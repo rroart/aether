@@ -248,6 +248,8 @@ public class HDFS extends FileSystemOperations {
             if (my.exists) {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = getAbsolutePathInner(fo[0]);
+                my.mtime = getMtime(fo[0]);
+                my.ctime = my.mtime;
                 if (withBytes) {
                     my.bytes = getBytesInner(fo[0]);
                 }
@@ -256,6 +258,17 @@ public class HDFS extends FileSystemOperations {
             }
         }
         return my;
+    }
+
+    private long getMtime(FileObject f) {
+        FileSystem fs = null;
+        try {
+            fs = FileSystem.get(conf.configuration);
+            return fs.getFileStatus(new Path(f.object)).getModificationTime();
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+            return 0;
+        }
     }
 
     @Override

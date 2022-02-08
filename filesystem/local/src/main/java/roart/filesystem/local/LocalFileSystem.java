@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,6 +161,8 @@ public class LocalFileSystem extends FileSystemOperations {
             if (my.exists) {
                 my.isDirectory = objectToFile(fo[0]).isDirectory();
                 my.absolutePath = objectToFile(fo[0]).getAbsolutePath();
+                my.mtime = getMtime(fo[0]);
+                my.ctime = getCtime(fo[0]);
                 if (withBytes) {
                     my.bytes = getBytesInner(fo[0]);
                 }
@@ -167,6 +171,28 @@ public class LocalFileSystem extends FileSystemOperations {
             }
         }
         return my;
+    }
+
+    private long getMtime(FileObject f) {
+        try {
+            File file = objectToFile(f);
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            return attr.lastModifiedTime().toMillis();
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+            return 0;
+        }
+    }
+
+    private long getCtime(FileObject f) {
+        try {
+            File file = objectToFile(f);
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            return attr.creationTime().toMillis();
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+            return 0;
+        }
     }
 
     @Override

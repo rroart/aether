@@ -251,6 +251,8 @@ public class S3 extends FileSystemOperations {
             if (my.exists) {
                 my.isDirectory = isDirectoryInner(fo[0]);
                 my.absolutePath = fo[0].object;
+                my.mtime = getMtime(fo[0]);
+                my.ctime = my.mtime;
                 if (withBytes) {
                     my.bytes = getBytesInner(fo[0]);
                 }
@@ -259,6 +261,11 @@ public class S3 extends FileSystemOperations {
             }
         }
         return my;
+    }
+
+    private long getMtime(FileObject f) {
+        S3Object s3object = conf.s3client.getObject(f.location.extra, f.object);
+        return s3object.getObjectMetadata().getLastModified().getTime();
     }
 
     @Override
