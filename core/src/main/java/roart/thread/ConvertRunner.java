@@ -211,7 +211,7 @@ public class ConvertRunner implements Runnable {
         }
         convertWorker.stop(); // .interrupt();
         el.index.setTimeoutreason(el.index.getTimeoutreason() + "converttimeout" + timeout + " ");
-                log.info("Convertworker timeout " + el.dbfilename + " " + convertWorker + " " + convertRunnable);
+                log.info("Convertworker timeout " + el.filename + " " + convertWorker + " " + convertRunnable);
                 try {
                         Thread.sleep(1000);
                 } catch (InterruptedException e) {

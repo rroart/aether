@@ -14,7 +14,6 @@ import roart.common.model.ResultItem;
 public class ConvertQueueElement {
 
     public int size;
-    public FileObject dbfilename;
     public FileObject filename;
     public String md5;
     public volatile IndexFiles index;
@@ -24,19 +23,16 @@ public class ConvertQueueElement {
     public String convertsw;
   //  public UI ui;
     public String mimetype;
-    public MyFile fsData;
     public InmemoryMessage message;
     public String content;
     
-    public ConvertQueueElement(FileObject dbfilename, FileObject filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, MyFile fsData, InmemoryMessage message, String content) {
-        this.dbfilename = dbfilename;
+    public ConvertQueueElement(FileObject filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, InmemoryMessage message, String content) {
         this.filename = filename;
         this.md5 = md5;
         this.index = index;
         this.retlistid = retlistid;
         this.retlistnotid = retlistnotid;
         this.metadata = metadata;
-        this.fsData = fsData;
         this.message = message;
         this.content = content;
     }

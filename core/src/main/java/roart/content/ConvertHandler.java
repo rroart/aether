@@ -44,25 +44,23 @@ public class ConvertHandler {
     private Logger log = LoggerFactory.getLogger(ConvertHandler.class);
 
     public void doConvert(ConvertQueueElement el) {
-        FileObject dbfilename = el.dbfilename;
         FileObject filename = el.filename;
         String md5 = el.md5;
         IndexFiles index = el.index;
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = el.metadata;
-        log.info("incTikas {}", dbfilename);
-        Queues.convertTimeoutQueue.add(dbfilename.toString());
+        log.info("incTikas {}", filename);
+        Queues.convertTimeoutQueue.add(filename.toString());
         int size = 0;
 
         //String content = new TikaHandler().getString(el.fsData.getInputStream());
         //Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
         //InmemoryMessage message = inmemory.send(el.md5, content);
-        InmemoryMessage message = FileSystemDao.readFile(el.fsData.fileObject[0]);
+        InmemoryMessage message = FileSystemDao.readFile(el.filename);
         el.message = message;
 
-	log.info("file " + el.fsData.fileObject[0].object);
-	log.info("file " + el.fsData.absolutePath);
+	log.info("file {}", el.filename);
         String converterString = MyConfig.conf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
@@ -109,8 +107,7 @@ public class ConvertHandler {
                     long now = System.currentTimeMillis();
                     String classification = ClassifyDao.classify(str, lang);
                     long time = System.currentTimeMillis() - now;
-                    log.info("classtime " + dbfilename + " " + time);
-                    //System.out.println("classtime " + time);
+                    log.info("classtime {} {}", filename, time);
                     el.index.setTimeclass("" + time);
                     el.index.setClassification(classification);
                 }
@@ -127,7 +124,7 @@ public class ConvertHandler {
                 log.error(Constants.EXCEPTION, e);
             }
             //size = SearchLucene.indexme("all", md5, inputStream);
-            IndexQueueElement elem = new IndexQueueElement(null, md5, index, el.retlistid, el.retlistnotid, dbfilename, metadata, str);
+            IndexQueueElement elem = new IndexQueueElement(null, md5, index, el.retlistid, el.retlistnotid, filename, metadata, str);
             elem.lang = lang;
             //elem.content = content;
             //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
@@ -138,10 +135,10 @@ public class ConvertHandler {
             Queues.indexQueue.add(elem);
 
         } else {
-            log.info("Too small " + dbfilename + " / " + filename + " " + md5 + " " + size);
+            log.info("Too small {} {} {}", filename, md5, size);
             FileLocation aFl = el.index.getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
+            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             MyList<ResultItem> retlistnot = (MyList<ResultItem>) MyLists.get(el.retlistnotid); 
             retlistnot.add(ri);
             Boolean isIndexed = index.getIndexed();
@@ -155,11 +152,11 @@ public class ConvertHandler {
             IndexFilesDao.add(index);
 
         }
-        boolean success = Queues.convertTimeoutQueue.remove(dbfilename);
+        boolean success = Queues.convertTimeoutQueue.remove(filename);
         if (!success) {
-            log.error("queue not having " + dbfilename);
+            log.error("queue not having {}", filename);
         }
-        log.info("ending " + el.md5 + " " + el.dbfilename);
+        log.info("ending {} {}", el.md5, el.filename);
     }
 
     private String getMimetype(InputStream content, String filename) {
@@ -167,7 +164,7 @@ public class ConvertHandler {
 	    Path tempFile = Paths.get("/tmp", filename);
 	    Files.deleteIfExists(tempFile);
             //Path tempFile = Files.createFile(Paths.get("/tmp", filename));
-	    log.info("File " + filename + " " + tempFile.toString());
+	    log.info("File {} {}", filename, tempFile.toString());
             Files.copy(content, tempFile);
             String mimetype = Files.probeContentType(tempFile);
             Files.delete(tempFile);
