@@ -398,7 +398,7 @@ public class TraverseFile {
         if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
             doindex = false;
         }
-        if (function != null && function.indexFilter(files, trav) > 0) {
+        if (function != null && !(function.indexFilter(files, trav) > 0)) {
             doindex = false;
         }
         return doindex;
@@ -442,14 +442,10 @@ public class TraverseFile {
         index.setTimeoutreason("");
         index.setFailedreason("");
         index.setNoindexreason("");
-        MyFile fsData = null;
-        if (fsMap != null) {
-            fsData = fsMap.get(filename);
-        }
         //TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), fsData);
         //Queues.tikaQueue.add(e);
-        String content = contentMap.get(filename);
-        ConvertQueueElement e2 = new ConvertQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), fsData, null, content);
+        String content = null; //contentMap.get(filename);
+        ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
         Queues.convertQueue.add(e2);
         //size = doTika(filename, filename, md5, index, retlist);
     }

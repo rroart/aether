@@ -13,7 +13,6 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineSearchParam;
-import roart.common.service.ServiceParam.Function;
 import roart.database.IndexFilesDao;
 
 import org.slf4j.Logger;

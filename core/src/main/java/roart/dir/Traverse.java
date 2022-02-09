@@ -376,8 +376,12 @@ public class Traverse {
             String md5sdoneid = "md5sdoneid"+trav.getMyid();
             MySet<String> md5sdoneset = MySets.get(md5sdoneid);
             if (TraverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
-            TraverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null, null);
+                TraverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null, null);
             }
+            //MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+            total.addAndGet(-1);
+            //MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+            count.addAndGet(-1);
         }
 
         return null;
