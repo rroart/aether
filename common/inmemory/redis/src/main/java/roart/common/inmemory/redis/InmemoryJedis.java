@@ -11,6 +11,7 @@ public class InmemoryJedis extends Inmemory {
     public InmemoryJedis(String server) {
         super(server);
         jedis = new Jedis(server);
+        jedis.configSet("stop-writes-on-bgsave-error", "no");
     }
 
     @Override
