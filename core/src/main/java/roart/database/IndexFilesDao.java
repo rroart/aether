@@ -110,14 +110,6 @@ public class IndexFilesDao {
         }
     }
 
-    public static IndexFiles getByFilenameNot(String filename) throws Exception {
-        String nodename = ControlService.nodename;
-        FileLocation fl = new FileLocation(nodename, filename);
-        synchronized(IndexFilesDao.class) {
-            return indexFiles.getByFilelocation(fl);
-        }
-    }
-
     public static IndexFiles getByFilelocationNot(FileLocation fl) throws Exception {
         synchronized(IndexFilesDao.class) {
             return indexFiles.getByFilelocation(fl);
@@ -125,7 +117,6 @@ public class IndexFilesDao {
     }
 
     public static String getMd5ByFilename(FileObject filename) throws Exception {
-        String nodename = ControlService.nodename;
         FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
         synchronized(IndexFilesDao.class) {
             return indexFiles.getMd5ByFilelocation(fl);
