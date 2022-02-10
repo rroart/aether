@@ -15,14 +15,14 @@ public class ReindexSuffix extends Reindex {
     }
 
     @Override
-    public int indexFilter(IndexFiles index, TraverseQueueElement element) {
+    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
         for (FileLocation fl : index.getFilelocations()) {
             if (element.getClientQueueElement().suffix != null && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
                 continue;
             }
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
 }

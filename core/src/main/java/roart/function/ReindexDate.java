@@ -11,7 +11,7 @@ public class ReindexDate extends Reindex {
     }
 
     @Override
-    public int indexFilter(IndexFiles index, TraverseQueueElement element) {
+    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
         String lowerdate = element.getClientQueueElement().lowerdate;
         String higherdate = element.getClientQueueElement().higherdate;
         Long tslow = null;
@@ -26,15 +26,15 @@ public class ReindexDate extends Reindex {
         String timestamp = index.getTimestamp();
         if (timestamp != null) {
             if (tslow != null && new Long(timestamp).compareTo(tslow) >= 0) {
-                return 0;
+                return false;
             }
             if (tshigh != null && new Long(timestamp).compareTo(tshigh) <= 0) {
-                return 0;
+                return false;
             }
         } else {
-            return 0;
+            return false;
         }
-        return 1;
+        return true;
     }
 
 }

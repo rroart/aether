@@ -363,7 +363,7 @@ public class Traverse {
             */
             // TODO check if fo needed
             TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
-            if (!(function.indexFilter(index, trav) > 0)) {
+            if (!function.indexFilter(index, trav)) {
                 continue;
             }
             // config with finegrained distrib

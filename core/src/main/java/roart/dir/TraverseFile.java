@@ -115,7 +115,6 @@ public class TraverseFile {
                         files = IndexFilesDao.getByMd5(md5);
                     }
                     // modify write file
-                    String nodename = ControlService.nodename;
                     files.addFile(filename.location.toString(), filename.object);
                     IndexFilesDao.addTemp(files);
                     log.info("adding md5 file {}", filename);
@@ -285,7 +284,6 @@ public class TraverseFile {
                 log.debug("Files {}", files);
                 files.setChecked("" + System.currentTimeMillis());
                 // modify write file
-                String nodename = ControlService.nodename;
                 files.addFile(filename.location.toString(), filename.object);
                 IndexFilesDao.addTemp(files);
                 log.info("adding md5 file {}", filename);
@@ -398,7 +396,7 @@ public class TraverseFile {
         if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
             doindex = false;
         }
-        if (function != null && !(function.indexFilter(files, trav) > 0)) {
+        if (function != null && !function.indexFilter(files, trav)) {
             doindex = false;
         }
         return doindex;

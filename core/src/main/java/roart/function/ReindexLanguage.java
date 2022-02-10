@@ -11,12 +11,12 @@ public class ReindexLanguage extends Reindex {
     }
 
     @Override
-    public int indexFilter(IndexFiles index, TraverseQueueElement element) {
+    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
         String mylanguage = index.getLanguage();
         if (mylanguage != null && mylanguage.equals(element.getClientQueueElement().suffix)) { // stupid overload
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
 
     }
 

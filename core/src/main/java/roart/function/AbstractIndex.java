@@ -41,10 +41,11 @@ public abstract class AbstractIndex extends AbstractFunction {
 
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid()); 
 
-        int indexinc = 0;
-        indexinc = indexFilter(index, trav);
-        indexcount.addAndGet(indexinc);
-        return indexinc > 0;
+        boolean indexinc = indexFilter(index, trav);
+        if (indexinc) {
+            indexcount.addAndGet(1);
+        }
+        return indexinc;
     }
 
     @Override

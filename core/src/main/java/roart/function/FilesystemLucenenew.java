@@ -20,8 +20,8 @@ public class FilesystemLucenenew extends AbstractIndex {
     }
 
     @Override
-    public int indexFilter(IndexFiles index, TraverseQueueElement element) {
-        return 1;
+    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
+        return true;
     }
 
     @Override

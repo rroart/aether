@@ -19,8 +19,9 @@ public class Index extends AbstractIndex {
     }
 
     @Override
-    public int indexFilter(IndexFiles index, TraverseQueueElement element) {
-        return 1;
+    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
+        boolean reindex = element.getClientQueueElement().reindex;
+        return reindex == index.getIndexed();
     }
 
 }

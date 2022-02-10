@@ -180,7 +180,7 @@ public abstract class AbstractFunction {
     protected void traverse(String filename, Traverse traverse) {
     }
 
-    public int indexFilter(IndexFiles index, TraverseQueueElement trav) {
-        return 1;
+    public boolean indexFilter(IndexFiles index, TraverseQueueElement trav) {
+        return true;
     }
 }
