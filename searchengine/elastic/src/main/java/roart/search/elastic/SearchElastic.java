@@ -38,6 +38,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.search.HighlighterType;
 
 import roart.common.config.NodeConfig;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -224,7 +225,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .size(100)
                     .explain(true);
             if (search.conf.getHighlightmlt()) {
-                sr.highlight(h -> h.fields("cont", v -> null));
+                sr.highlight(h -> h.fields(Constants.CONTENT, v -> v.type(HighlighterType.Unified)));
             }
             SearchResponse<Appdata> response = conf.client.search(sr.build(), Appdata.class);
             HitsMetadata<Appdata> docs = response.hits();
