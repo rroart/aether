@@ -150,7 +150,7 @@
     <commons.version>2.1.1</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
     <joss.version>0.9.14</joss.version>
-    <elasticsearch.version>8.0.0-rc2</elasticsearch.version>
+    <elasticsearch.version>8.0.0</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
     <jaxb.version>2.3.0</jaxb.version>
