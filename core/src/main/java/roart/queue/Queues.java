@@ -183,7 +183,7 @@ public class Queues {
    public static String stat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + total() + " / " + traverses + " / " + work() + " c " + convertQueue.size() + " " + tikas + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
+       return "f " + total() + " / " + traverses + " / " + work() + " c " + convertQueue.size() + " " + converts + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
     }
 
    public static void queueStat() {
