@@ -40,6 +40,7 @@ import roart.convert.ConvertUtil;
 import roart.common.config.Converter;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
 import roart.common.convert.ConvertParam;
 import roart.common.convert.ConvertResult;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -48,6 +49,8 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
 
 import org.xml.sax.ContentHandler;
+
+import com.hazelcast.nio.IOUtil;
 
 //import roart.queue.TikaQueueElement;
 
@@ -111,17 +114,20 @@ public class Tika extends ConvertAbstract {
         Converter converter = param.converter;
         String output = null;
         String md5 = null;
-        try {
-            String[] ret = new String[1];
-            //output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret);
-            Map<String, String> metadata = new HashMap<>();
-            result.metadata = metadata;
-            String inmd5 = param.message.getId();
-            InputStream is = content;
-            ByteArrayOutputStream outputStream = process(is, ret, metadata, inmd5);
-            InputStream inputStream = null;
+        //try {
+        String[] ret = new String[1];
+        //output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret);
+        Map<String, String> metadata = new HashMap<>();
+        result.metadata = metadata;
+        String inmd5 = param.message.getId();
+        InputStream is = content;
+        ByteArrayOutputStream outputStream = process(is, ret, metadata, inmd5);
+        //InputStream inputStream = null;
+        if (outputStream != null) {
+            byte[] outputArray = outputStream.toByteArray();
+            /*
             if (outputStream != null) {
-                inputStream = new ByteArrayInputStream(((ByteArrayOutputStream) outputStream).toByteArray());
+                inputStream = new ByteArrayInputStream((outputStream.).toByteArray());
                 //size = ((ByteArrayOutputStream)outputStream).size();
                 log.info("size1 " + inmd5);
             } else {
@@ -132,26 +138,32 @@ public class Tika extends ConvertAbstract {
                 output = getString(inputStream);
                 md5 = DigestUtils.md5Hex(output );
             }
-            result.error = ret[0];
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e);
-        }
-        if (output == null) {
-            log.info("Tika with no output");
-        }
-        if (output != null) {
-            InmemoryMessage msg = inmemory.send(md5, output, md5);
+             */
+            md5 = DigestUtils.md5Hex(outputArray);
+            log.info("Size {} {} {}", inmd5, md5, outputArray.length);
+            //} catch (Exception e) {
+            //    log.error(Constants.EXCEPTION, e);
+            //}
+            //if (output == null) {
+            //    log.info("Tika with no output");
+            //}
+            //if (output != null) {
+            InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
             result.message = msg;
+            //}
+            param2[1] = result;
+        } else {
+            log.error("Tika with no output for {}", inmd5);
+            result.error = ret[0];
         }
-        param2[1] = result;
         return result;
     }
 
-    public ByteArrayOutputStream process(InputStream is, String[] error, Map<String, String> map, String filename) throws Exception {
-        InputStream input = TikaInputStream.get(is);
+    public ByteArrayOutputStream process(InputStream is, String[] error, Map<String, String> map, String filename) {
+        ByteArrayOutputStream output = null;
         Metadata metadata = new Metadata();
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
+        try (InputStream input = TikaInputStream.get(is)) {
+            output = new ByteArrayOutputStream();
             if (false) {
                 listConfig();
             }
@@ -186,9 +198,6 @@ public class Tika extends ConvertAbstract {
             log.error(Constants.ERROR, e);
             error[0] = "tika error " + e.getClass().getName() + " ";
             output = null;
-        } finally {
-            input.close();
-            System.out.flush();
         }
         for (String name : metadata.names()) {
             String value = metadata.get(name);
