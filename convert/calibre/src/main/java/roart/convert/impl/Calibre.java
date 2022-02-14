@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import roart.common.config.Converter;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
 import roart.common.convert.ConvertParam;
 import roart.common.convert.ConvertResult;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -69,7 +70,7 @@ public class Calibre extends ConvertAbstract {
                 log.error(Constants.EXCEPTION, e);
             }
             try (InputStream is = new FileInputStream(out)) {
-                InmemoryMessage msg = inmemory.send(md5, is, md5);
+                InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), is, md5);
                 result.message = msg;
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
