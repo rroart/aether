@@ -68,6 +68,9 @@ public class Wvtext extends ConvertAbstract {
         String[] arg = { in, out };
         String[] ret = new String[1];
         output = ConvertUtil.executeTimeout("/usr/bin/wvText", arg, retlistid, ret, converter.getTimeout());
+        if (new File(out).length() == 0) {
+            output = null;
+        }
         if ("end".equals(output)) {
             String md5 = null;
             try (InputStream md5is = new FileInputStream(out)) {
@@ -89,7 +92,7 @@ public class Wvtext extends ConvertAbstract {
             }
         }
         if (output == null) {
-            log.info("Calibre with no output");
+            log.info("Wvtext with no output");
             result.error = ret[0];
             return result;
         }

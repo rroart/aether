@@ -1,5 +1,6 @@
 package roart.convert.impl;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -62,6 +63,9 @@ public class Calibre extends ConvertAbstract {
         String[] arg = { in, out };
         String[] ret = new String[1];
         output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret, converter.getTimeout());
+        if (new File(out).length() == 0) {
+            output = null;
+        }
         if ("end".equals(output)) {
             String md5 = null;
             try (InputStream md5is = new FileInputStream(out)) {
