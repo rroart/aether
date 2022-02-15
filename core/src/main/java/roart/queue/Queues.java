@@ -199,7 +199,7 @@ public class Queues {
     public static int runSize() {
         String queueid = Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-    	return tikas.get() + others.get() + indexs.get();
+    	return converts.get() + tikas.get() + others.get() + indexs.get();
     }
     
     public static void resetTikaTimeoutQueue() {
