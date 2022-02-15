@@ -135,7 +135,7 @@ public class ConvertHandler {
             Queues.indexQueue.add(elem);
 
         } else {
-            log.info("Too small {} {} {}", filename, md5, size);
+            log.info("Not converted {} {} {}", filename, md5, size);
             FileLocation aFl = el.index.getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
