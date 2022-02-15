@@ -434,7 +434,7 @@ public class TraverseFile {
             }
         }
 
-        log.info("index {} {}", md5, filename);
+        log.debug("index {} {}", md5, filename);
         //InputStream stream = null;
         // file modify still
         index.setTimeoutreason("");
