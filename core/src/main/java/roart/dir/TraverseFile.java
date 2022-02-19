@@ -343,7 +343,7 @@ public class TraverseFile {
         try {
             boolean doindex = getDoIndex(trav, md5, files, md5sdoneset, null);
             lockwait = true;
-            if (false && doindex) {
+            if (doindex) {
             indexsingle(trav, md5, filename, files, fsMap, contentMap);
             }
         } catch (Exception e) {
