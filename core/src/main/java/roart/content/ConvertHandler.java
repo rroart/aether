@@ -150,6 +150,7 @@ public class ConvertHandler {
             // file unlock dbindex
             // config with finegrained distrib
             IndexFilesDao.add(index);
+            inmemory.delete(el.message);
 
         }
         boolean success = Queues.convertTimeoutQueue.remove(filename);
