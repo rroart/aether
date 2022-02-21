@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import roart.common.constants.Constants;
-import roart.common.util.BigBytes;
 import roart.common.util.JsonUtil;
 
 public abstract class Inmemory {
