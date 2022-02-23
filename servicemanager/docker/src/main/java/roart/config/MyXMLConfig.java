@@ -58,8 +58,10 @@ public class MyXMLConfig {
          map.put(ConfigConstants.SEARCHENGINESOLR, "aether-solr" + version);
          map.put(ConfigConstants.SEARCHENGINELUCENE, "aether-lucene" + version);
          map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
+         map.put(ConfigConstants.FILESYSTEMLOCAL, "aether-local" + version);
          map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
          map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
+         map.put(ConfigConstants.FILESYSTEMS3, "aether-s3" + version);
          String addr = System.getenv("EUREKA_SERVER_URI");
          for (Entry<String, String> entry : map.entrySet()) {
              String key = entry.getKey();

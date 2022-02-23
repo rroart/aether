@@ -21,12 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.xml.sax.SAXException;
 
 import roart.common.config.ConfigConstants;
+import roart.common.config.NodeConfig;
 import roart.common.constants.FileSystemConstants;
 import roart.common.constants.FileSystemConstants.FileSystemType;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.util.JarThread;
 import roart.common.util.XmlFs;
+import roart.config.MyXMLConfig;
 
 @RestController
 @SpringBootApplication
@@ -53,17 +55,19 @@ public class SimpleController implements CommandLineRunner {
         }
         Runnable core = new JarThread("aether-core-0.10-SNAPSHOT.jar", null, new String[] { myConfigFile });
         //new Thread(core).start();
-        Set<String> fileSystems = new HashSet<>();
-        fileSystems.add(FileSystemConstants.LOCALTYPE);
-        startFsService(myConfigFile, fileSystems);
+        //Set<String> fileSystems = new HashSet<>();
+        //fileSystems.add(FileSystemConstants.LOCALTYPE);
+        //startFsService(myConfigFile, fileSystems);
     }
     
+    /*
     public static void startFsService(String configFile, Set<String> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         Map<Location, List<FileObject>> filesystemMap = new XmlFs().getDirListMap(new File(configFile));
         startFsService(filesystemMap, fileSystems);
     } 
-        
-    public static void startFsService(Map<Location, List<FileObject>> filesystemMap, Set<String> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+      */
+    
+    public static void startFsService(Map<Location, List<FileObject>> filesystemMap, Set<String> fileSystems, NodeConfig configInstance) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         for (Entry<Location, List<FileObject>> entry : filesystemMap.entrySet()) {
             Location loc = entry.getKey();
             if (loc.fs == null) {
@@ -82,10 +86,11 @@ public class SimpleController implements CommandLineRunner {
                 path = path.substring(index + 1);
             }
             */
+            String zookeeperConnectionString = configInstance.getZookeeper();
             String[] myargs = new String[4];
             myargs[0] = "-DFS=" + loc.fs;
             myargs[1] = "-DPATH=" + path;
-            myargs[2] = "-DZOO=localhost:2181";
+            myargs[2] = "-DZOO=" + zookeeperConnectionString;
             myargs[3] = "-DNODE=" + (loc.nodename != null ? loc.nodename : "");
             String myTypeStr = ("" + loc.fs).toLowerCase();
             Runnable local = new JarThread("aether-" + myTypeStr + "-0.10-SNAPSHOT.jar", myargs, "en_US.ISO8859-1");
@@ -94,8 +99,8 @@ public class SimpleController implements CommandLineRunner {
 
     }
 
-    public static void startFsServiceWithDirList(String dirlist, Set<String> fileSystems) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+    public static void startFsServiceWithDirList(String dirlist, Set<String> fileSystems, NodeConfig configInstance) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         Map<Location, List<FileObject>> filesystemMap = new XmlFs().getDirListMap(dirlist);
-        startFsService(filesystemMap, fileSystems);        
+        startFsService(filesystemMap, fileSystems, configInstance);        
     }
 }

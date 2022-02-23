@@ -58,8 +58,10 @@ public class MyXMLConfig {
          map.put(ConfigConstants.SEARCHENGINESOLR, "aether-solr" + version);
          map.put(ConfigConstants.SEARCHENGINELUCENE, "aether-lucene" + version);
          map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
+         map.put(ConfigConstants.FILESYSTEMLOCAL, "aether-local" + version);
          map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
          map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
+         map.put(ConfigConstants.FILESYSTEMS3, "aether-s3" + version);
          String openshift = System.getenv("OPENSHIFT_SERVER");
         String eureka = System.getenv("EUREKA_SERVER_URI");
          String repo = System.getenv("DOCKER_REPO");

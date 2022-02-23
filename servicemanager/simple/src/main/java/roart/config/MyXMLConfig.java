@@ -78,12 +78,14 @@ public class MyXMLConfig {
         map.put(ConfigConstants.SEARCHENGINESOLR, "aether-solr" + version);
         map.put(ConfigConstants.SEARCHENGINELUCENE, "aether-lucene" + version);
         map.put(ConfigConstants.SEARCHENGINEELASTIC, "aether-elastic" + version);
+        map.put(ConfigConstants.FILESYSTEMLOCAL, "aether-local" + version);
         map.put(ConfigConstants.FILESYSTEMHDFS, "aether-hdfs" + version);
         map.put(ConfigConstants.FILESYSTEMSWIFT, "aether-swift" + version);
         map.put(ConfigConstants.FILESYSTEMS3, "aether-s3" + version);
 
         Map<String, String> fsmap = new HashMap<>();
         //fsmap.put(ConfigConstants.FILESYSTEMLOCAL, FileSystemType.HDFS);
+        fsmap.put(ConfigConstants.FILESYSTEMLOCAL, FileSystemConstants.LOCALTYPE);
         fsmap.put(ConfigConstants.FILESYSTEMHDFS, FileSystemConstants.HDFSTYPE);
         fsmap.put(ConfigConstants.FILESYSTEMSWIFT, FileSystemConstants.SWIFTTYPE);
         fsmap.put(ConfigConstants.FILESYSTEMS3, FileSystemConstants.S3TYPE);
@@ -100,13 +102,14 @@ public class MyXMLConfig {
                 log.info("Starting {}", jar);
                 switch (entry.getKey()) {
                 // make this oo again
+                case ConfigConstants.FILESYSTEMLOCAL:
                 case ConfigConstants.FILESYSTEMHDFS:
                 case ConfigConstants.FILESYSTEMSWIFT:
                 case ConfigConstants.FILESYSTEMS3:
                     Set<String> fileSystems = new HashSet<>();
                     fileSystems.add(fsmap.get(entry.getKey()));
                     String dirlist = (String) configInstance.getValueOrDefault(ConfigConstants.FSDIRLIST);
-                    SimpleController.startFsServiceWithDirList(dirlist, fileSystems);
+                    SimpleController.startFsServiceWithDirList(dirlist, fileSystems, configInstance);
                     break;
                 case ConfigConstants.MACHINELEARNINGMAHOUTSPARK:
                     Runnable def5 = new JarThread(jar, new String[] { "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED", "--add-opens", "java.base/java.nio=ALL-UNNAMED", "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED" }, str);

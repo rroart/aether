@@ -106,6 +106,10 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFT);
     }
     
+    public Boolean wantLocal() {
+        return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMLOCAL);
+    }
+    
     public Boolean wantHDFS() {
         return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMHDFS);
     }

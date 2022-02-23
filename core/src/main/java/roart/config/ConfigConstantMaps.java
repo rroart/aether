@@ -71,6 +71,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.SEARCHENGINEELASTICELASTICPORT, String.class);
         map.put(ConfigConstants.SEARCHENGINEELASTICELASTICUSERNAME, String.class);
         map.put(ConfigConstants.SEARCHENGINEELASTICELASTICPASSWORD, String.class);
+        map.put(ConfigConstants.FILESYSTEMLOCAL, Boolean.class);
         map.put(ConfigConstants.FILESYSTEMHDFS, Boolean.class);
         map.put(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS, String.class);
         map.put(ConfigConstants.FILESYSTEMSWIFT, Boolean.class);
@@ -188,6 +189,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.SEARCHENGINEELASTICELASTICPORT, "9200");
         deflt.put(ConfigConstants.SEARCHENGINEELASTICELASTICUSERNAME, "elastic");
         deflt.put(ConfigConstants.SEARCHENGINEELASTICELASTICPASSWORD, "changeme");
+        deflt.put(ConfigConstants.FILESYSTEMLOCAL, Boolean.TRUE);
         deflt.put(ConfigConstants.FILESYSTEMHDFS, Boolean.FALSE);
         deflt.put(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS, "");
         deflt.put(ConfigConstants.FILESYSTEMSWIFT, Boolean.FALSE);
@@ -306,6 +308,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.SEARCHENGINEELASTICELASTICPORT, "Elastic port");
         text.put(ConfigConstants.SEARCHENGINEELASTICELASTICUSERNAME, "Elastic username");
         text.put(ConfigConstants.SEARCHENGINEELASTICELASTICPASSWORD, "Elastic password");
+        text.put(ConfigConstants.FILESYSTEMLOCAL, "Use Local fs");
         text.put(ConfigConstants.FILESYSTEMHDFS, "Use HDFS");
         text.put(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS, "HDFS fs path");
         text.put(ConfigConstants.FILESYSTEMSWIFT, "Use Swift");
@@ -418,6 +421,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.SEARCHENGINEELASTICELASTICPORT, new XMLType( String.class, "9200", "Elastic port"));
         mymap.put(ConfigConstants.SEARCHENGINEELASTICELASTICUSERNAME, new XMLType( String.class, "elastic", "Elastic username"));
         mymap.put(ConfigConstants.SEARCHENGINEELASTICELASTICPASSWORD, new XMLType( String.class, "changeme", "Elastic password"));
+        mymap.put(ConfigConstants.FILESYSTEMLOCAL, new XMLType( Boolean.class, Boolean.TRUE, "Use Local fs"));
         mymap.put(ConfigConstants.FILESYSTEMHDFS, new XMLType( Boolean.class, Boolean.FALSE, "Use HDFS"));
         mymap.put(ConfigConstants.FILESYSTEMHDFSHDFSCONFFS, new XMLType( String.class, "", "HDFS fs path"));
         mymap.put(ConfigConstants.FILESYSTEMSWIFT, new XMLType( Boolean.class, Boolean.FALSE, "Use Swift"));
