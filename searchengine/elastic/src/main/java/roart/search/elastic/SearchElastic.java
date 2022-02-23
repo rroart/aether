@@ -72,21 +72,25 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         String port = nodeConf.getElasticPort(); 
         String username = nodeConf.getElasticUsername(); 
         String password = nodeConf.getElasticPassword(); 
-
+        boolean ssl = nodeConf.getElasticSsl();
+        
         try {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-            SSLContext sslContext = ssl();
             // Create the low-level client
             RestClient restclient = RestClient.builder(
-                    new HttpHost(host, Integer.valueOf(port), "https"))
+                    new HttpHost(host, Integer.valueOf(port), ssl ? "https" : "http"))
                     .setHttpClientConfigCallback(new HttpClientConfigCallback() {
                         @Override
                         public HttpAsyncClientBuilder customizeHttpClient(
                             HttpAsyncClientBuilder httpClientBuilder) {
-                            return httpClientBuilder
-                                    .setDefaultCredentialsProvider(credentialsProvider)
-                                    .setSSLContext(sslContext);
+                            HttpAsyncClientBuilder builder = httpClientBuilder
+                                    .setDefaultCredentialsProvider(credentialsProvider);
+                            if (ssl) {
+                                SSLContext sslContext = ssl();
+                                builder.setSSLContext(sslContext);
+                            }
+                            return builder;
                         }
                     }) 
                     .build();

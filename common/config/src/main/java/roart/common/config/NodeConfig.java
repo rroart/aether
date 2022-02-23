@@ -180,6 +180,11 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public boolean getElasticSsl() {
+        return (Boolean) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICSSL);
+    }
+    
+    @JsonIgnore
     public String getElasticUsername() {
         return (String) getValueOrDefault(ConfigConstants.SEARCHENGINEELASTICELASTICUSERNAME);
     }
