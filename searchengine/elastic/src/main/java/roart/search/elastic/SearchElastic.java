@@ -188,7 +188,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
         String cat = classification;
 
-        String indexName = nodeConf.elasticIndex();
+        SearchEngineIndexResult result = new SearchEngineIndexResult();
         try {
             String myindex = nodeConf.elasticIndex();
            Appdata appdata = new Appdata();
@@ -205,8 +205,10 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             // IndexResponse response = conf.client.index(new IndexRequest(indexName).id(md5).source(builder), RequestOptions.DEFAULT);
         } catch (Exception e) {
             log.error(roart.common.constants.Constants.EXCEPTION, e);
+            result.noindexreason = "index exception " + e.getClass().getName();
+            result.size = -1;
+            return result;
         }
-        SearchEngineIndexResult result = new SearchEngineIndexResult();
         result.size = retsize;
         return result;
     }
