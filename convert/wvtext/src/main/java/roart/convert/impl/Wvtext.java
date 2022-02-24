@@ -84,12 +84,12 @@ public class Wvtext extends ConvertAbstract {
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
-            try (InputStream is = new FileInputStream(outPath.toString())) {
-                Files.delete(inPath);
-                Files.delete(outPath);
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
-            }
+        }
+        try (InputStream is = new FileInputStream(outPath.toString())) {
+            Files.delete(inPath);
+            Files.delete(outPath);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
         if (output == null) {
             log.info("Wvtext with no output");

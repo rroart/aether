@@ -147,10 +147,12 @@ public class Tika extends ConvertAbstract {
             //if (output == null) {
             //    log.info("Tika with no output");
             //}
-            //if (output != null) {
-            InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
-            result.message = msg;
-            //}
+            if (outputArray.length > 0) {
+                InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
+                result.message = msg;
+            } else {
+                result.error = "Tika empty";
+            }
             param2[1] = result;
         } else {
             log.error("Tika with no output for {}", inmd5);
