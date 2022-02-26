@@ -153,7 +153,7 @@ public class ConvertHandler {
             inmemory.delete(el.message);
 
         }
-        boolean success = Queues.convertTimeoutQueue.remove(filename);
+        boolean success = Queues.convertTimeoutQueue.remove(filename.toString());
         if (!success) {
             log.error("queue not having {}", filename);
         }
