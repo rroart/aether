@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:17-jdk
 MAINTAINER <roart@nvg.ntnu.no>
 ADD files/aether-opennlp-0.10-SNAPSHOT.jar /usr/local/bin
 WORKDIR /usr/local/bin
