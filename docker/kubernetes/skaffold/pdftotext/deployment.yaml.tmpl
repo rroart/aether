@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aether-pdftotext
+  labels:
+    app: aether-pdftotext
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aether-pdftotext
+  template:
+    metadata:
+      labels:
+        app: aether-pdftotext
+    spec:
+      containers:
+      - name: aether-pdftotext
+        image: aether-pdftotext
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aether-pdftotext
+  labels:
+    app: aether-pdftotext
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aether-pdftotext
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+  name: aether-pdftotext
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "false"
+spec:
+  controller: k8s.io/ingress-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress-aether-pdftotext
+spec:
+  ingressClassName: aether-pdftotext
+  rules:
+  - host: aether-pdftotext.mini
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: aether-pdftotext
+            port:
+              number: 8080
