@@ -39,6 +39,7 @@ import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.search.HighlighterType;
+import co.elastic.clients.transport.endpoints.BooleanResponse;
 
 import roart.common.config.NodeConfig;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -100,7 +101,13 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
             // And create the API client
             conf.client = new ElasticsearchClient(transport);
-
+            
+            BooleanResponse response = conf.client.indices().exists(b -> b.index(myindex));
+            
+            if (response.value()) {
+                return;
+            }
+            
             conf.client.indices().create(c -> c.index(myindex)
                     .mappings(m -> m
                             .properties(Constants.CONTENT, p -> p
@@ -181,7 +188,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             result.size = -1;
             return result;
         }
-        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(index.message)));
+        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray(inmemory.getInputStream(index.message), 99 * 1024 * 1024));
         int retsize = content.length();
 
         log.info("indexing {}", md5);
