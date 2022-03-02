@@ -41,6 +41,7 @@ public class TraverseQueueRunner implements Runnable {
     public void run() {
         Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
         int nThreads = ControlRunner.getThreads();
+        nThreads = MyConfig.instance().conf.getMPThreadsFS();
         int running = 0;
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);

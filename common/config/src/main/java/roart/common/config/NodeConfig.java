@@ -32,6 +32,18 @@ public class NodeConfig extends MyConfig {
         return (Integer) getValueOrDefault(ConfigConstants.MPBATCH);       
     }
     
+    public int getMPThreadsFS() {
+        return (Integer) getValueOrDefault(ConfigConstants.MPTHREADSFS);       
+    }
+    
+    public int getMPThreadsConvert() {
+        return (Integer) getValueOrDefault(ConfigConstants.MPTHREADSCONVERT);       
+    }
+    
+    public int getMPThreadsIndex() {
+        return (Integer) getValueOrDefault(ConfigConstants.MPTHREADSINDEX);       
+    }
+    
     @JsonIgnore
     public String[] getLanguages() {
         String languages = (String) getValueOrDefault(ConfigConstants.NODELANGUAGES);

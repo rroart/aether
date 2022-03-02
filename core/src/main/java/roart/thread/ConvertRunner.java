@@ -19,6 +19,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.content.ConvertHandler;
 import roart.content.ConvertHandler;
@@ -37,6 +38,7 @@ public class ConvertRunner implements Runnable {
     public void run() {
         Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
         int nThreads = ControlRunner.getThreads();
+        nThreads = MyConfig.instance().conf.getMPThreadsConvert();
         int running = 0;
         log.info("nthreads " + nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);

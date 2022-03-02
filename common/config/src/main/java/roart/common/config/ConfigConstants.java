@@ -4,6 +4,9 @@ public class ConfigConstants {
 
     public static final String MPCPU = "mp.cpu";
     public static final String MPBATCH = "mp.batch";
+    public static final String MPTHREADSFS = "mp.threads.fs";
+    public static final String MPTHREADSCONVERT = "mp.threads.convert";
+    public static final String MPTHREADSINDEX = "mp.threads.index";
     @Deprecated
     public static final String FS = "fs";
     @Deprecated

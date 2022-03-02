@@ -18,6 +18,9 @@ public class ConfigConstantMaps {
 
         map.put(ConfigConstants.MPCPU, Double.class);
         map.put(ConfigConstants.MPBATCH, Integer.class);
+        map.put(ConfigConstants.MPTHREADSFS, Integer.class);
+        map.put(ConfigConstants.MPTHREADSCONVERT, Integer.class);
+        map.put(ConfigConstants.MPTHREADSINDEX, Integer.class);
         map.put(ConfigConstants.FS, String.class);
         map.put(ConfigConstants.LOCAL, String.class);
         map.put(ConfigConstants.HADOOP, String.class);
@@ -137,6 +140,9 @@ public class ConfigConstantMaps {
 
         deflt.put(ConfigConstants.MPCPU, 0.25);
         deflt.put(ConfigConstants.MPBATCH, 100);
+        deflt.put(ConfigConstants.MPTHREADSFS, 4);
+        deflt.put(ConfigConstants.MPTHREADSCONVERT, 4);
+        deflt.put(ConfigConstants.MPTHREADSINDEX, 4);
         deflt.put(ConfigConstants.FS, null);
         deflt.put(ConfigConstants.LOCAL, null);
         deflt.put(ConfigConstants.HADOOP, null);
@@ -257,6 +263,9 @@ public class ConfigConstantMaps {
 
         text.put(ConfigConstants.MPCPU, "MP CPU");
         text.put(ConfigConstants.MPBATCH, "MP batch");
+        text.put(ConfigConstants.MPTHREADSFS, "MP threads fs");
+        text.put(ConfigConstants.MPTHREADSCONVERT, "MP threads convert");
+        text.put(ConfigConstants.MPTHREADSFS, "MP threads index");
         text.put(ConfigConstants.FS, "Filesystem");
         text.put(ConfigConstants.LOCAL, "");
         text.put(ConfigConstants.HADOOP, "");
@@ -371,6 +380,9 @@ public class ConfigConstantMaps {
     public static void makeMap() {
         mymap.put(ConfigConstants.MPCPU, new XMLType( Double.class, 0.25, "MP CPU"));
         mymap.put(ConfigConstants.MPBATCH, new XMLType( Integer.class, 100, "MP batch"));
+        mymap.put(ConfigConstants.MPTHREADSFS, new XMLType( Integer.class, 4, "MP threads fs"));
+        mymap.put(ConfigConstants.MPTHREADSCONVERT, new XMLType( Integer.class, 4, "MP threads convert"));
+        mymap.put(ConfigConstants.MPTHREADSINDEX, new XMLType( Integer.class, 4, "MP threads index"));
         mymap.put(ConfigConstants.FS, new XMLType( String.class, null, "Filesystem"));
         mymap.put(ConfigConstants.LOCAL, new XMLType( String.class, null, ""));
         mymap.put(ConfigConstants.HADOOP, new XMLType( String.class, null, ""));

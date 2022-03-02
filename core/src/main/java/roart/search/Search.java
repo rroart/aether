@@ -39,8 +39,7 @@ public class Search {
     private static Logger log = LoggerFactory.getLogger(Search.class);
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
-    public static void indexme() {
-    	IndexQueueElement el = Queues.indexQueue.poll();
+    public static void indexme(IndexQueueElement el) {
     	if (el == null) {
     		log.error("empty queue");
     	    return;
