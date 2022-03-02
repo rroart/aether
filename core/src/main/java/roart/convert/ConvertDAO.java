@@ -37,7 +37,7 @@ public class ConvertDAO {
         if (connector.isEureka()) {
             result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT);
         } else {
-            String url = connector.getConnection();
+            String url = connector.getConnection() + "/";
             result = WebFluxUtil.sendMe(ConvertResult.class, url, param, EurekaConstants.CONVERT);            
         }
         if (result == null) {
