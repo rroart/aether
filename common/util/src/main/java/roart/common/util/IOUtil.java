@@ -27,4 +27,13 @@ public class IOUtil {
             return new byte[0];
         }
     }
+
+    public static byte[] toByteArray(InputStream is, int bytes) {
+        try {
+            return is.readNBytes(bytes);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return new byte[0];
+        }
+    }
 }
