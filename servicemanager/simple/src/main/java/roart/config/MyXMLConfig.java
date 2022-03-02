@@ -2,12 +2,15 @@ package roart.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -20,6 +23,7 @@ import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.config.ConfigConstants;
+import roart.common.config.Connector;
 import roart.common.config.Converter;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
@@ -133,16 +137,23 @@ public class MyXMLConfig {
                 }
             }
         }
+        String connectorString = configInstance.getConnectors();
+        Connector[] connectors = JsonUtil.convert(connectorString, Connector[].class);
+        Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
         String converterString = configInstance.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
-        log.info("convs"+converters.length);
+        log.info("Converters {}", converters.length);
         for (int i = 0; i < converters.length; i++) {
             Converter converter = converters[i];
             String name = converter.getName();
+            Connector connector = connectMap.get(name);
+            if (!connector.isEureka()) {
+                continue;
+            }
             String jar = map2.get(name.toUpperCase());
-            log.info("convs"+name);
+            log.info("Converter {}", name);
             if (jar != null) {
-                log.info("convs"+name);
+                log.info("Converter {}", name);
                 String str = null;
                 Runnable def = new JarThread(jar, null, str);
                 new Thread(def).start();                
