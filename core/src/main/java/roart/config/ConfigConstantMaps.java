@@ -114,6 +114,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.CONVERSIONTIKATIMEOUT, Integer.class);
         map.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, Integer.class);
         map.put(ConfigConstants.CONVERSION, String.class);
+        map.put(ConfigConstants.CONNECTOR, String.class);
         map.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.class);
         map.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, String.class);
         map.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.class);
@@ -236,6 +237,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSION, MYCONVERSION);
+        deflt.put(ConfigConstants.CONNECTOR, "{}");
         deflt.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "localhost:2181");
         deflt.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.TRUE);
@@ -359,6 +361,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.CONVERSIONTIKATIMEOUT, "Tika timeout");
         text.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, "Other conversion timeout");
         text.put(ConfigConstants.CONVERSION, "Conversion");
+        text.put(ConfigConstants.CONNECTOR, "Connectors");
         text.put(ConfigConstants.DATABASEDATANUCLEUS, "Use datanucleus");
         text.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "Zookeeper connection");
         text.put(ConfigConstants.GUIHIGHLIGHTMLT, "Highlight MLT");
@@ -476,6 +479,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.CONVERSIONTIKATIMEOUT, new XMLType( Integer.class, 600, "Tika timeout"));
         mymap.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, new XMLType( Integer.class, 600, "Other conversion timeout"));
         mymap.put(ConfigConstants.CONVERSION, new XMLType( String.class, MYCONVERSION, "Conversion"));
+        mymap.put(ConfigConstants.CONNECTOR, new XMLType( String.class, "{}", "Connectors"));
         mymap.put(ConfigConstants.DATABASEDATANUCLEUS, new XMLType( Boolean.class, Boolean.FALSE, "Use datanucleus"));
         mymap.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, new XMLType( String.class, null, "Use zookeeper"));
         mymap.put(ConfigConstants.GUIHIGHLIGHTMLT, new XMLType( Boolean.class, Boolean.TRUE, "Highlight MLT"));

@@ -477,6 +477,11 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public String getConnectors() {
+        return (String) getValueOrDefault(ConfigConstants.CONNECTOR);        
+    }
+    
+    @JsonIgnore
     public Integer getIndexLimit() {
         return (Integer) getValueOrDefault(ConfigConstants.INDEXINDEXLIMIT);        
     }

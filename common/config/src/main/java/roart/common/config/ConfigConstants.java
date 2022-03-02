@@ -114,6 +114,7 @@ public class ConfigConstants {
     public static final String SEARCHENGINEMLTMLTMINDF = "searchengine.mlt.mltmindf";
     public static final String SEARCHENGINEMLTMLTMINTF = "searchengine.mlt.mltmintf";	
     public static final String SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG = "synchronization.distributedlockmodebig[@enable]";
+    public static final String CONNECTOR = "connector";
     @Deprecated
     public static final String SMALL = "small";
     @Deprecated
