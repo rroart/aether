@@ -34,7 +34,7 @@ public class ConvertDAO {
         param.converter = converter;
         param.filename = filename;
         ConvertResult result;
-        if (connector.isEureka()) {
+        if (connector == null || connector.isEureka()) {
             result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT);
         } else {
             String url = connector.getConnection() + "/";

@@ -147,7 +147,7 @@ public class MyXMLConfig {
             Converter converter = converters[i];
             String name = converter.getName();
             Connector connector = connectMap.get(name);
-            if (!connector.isEureka()) {
+            if (connector != null && !connector.isEureka()) {
                 continue;
             }
             String jar = map2.get(name.toUpperCase());
