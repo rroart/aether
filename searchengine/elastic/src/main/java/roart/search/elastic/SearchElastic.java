@@ -188,10 +188,11 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             result.size = -1;
             return result;
         }
-        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray(inmemory.getInputStream(index.message), 99 * 1024 * 1024));
+        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray(inmemory.getInputStream(index.message), 49 * 1024 * 1024));
         int retsize = content.length();
 
         log.info("indexing {}", md5);
+        log.info("sizing {} {} {}", md5, content.length(), content.getBytes().length);
 
         String cat = classification;
 
