@@ -64,8 +64,14 @@ public class ConvertHandler {
         String converterString = MyConfig.conf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
-        InputStream origcontent = inmemory.getInputStream(message);
-        String mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
+        String mimetype = null;
+        try {
+            InputStream origcontent = inmemory.getInputStream(message);
+            mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            converters = new Converter[0];
+        }    
         // null mime isbn
         InmemoryMessage str = null;
         for (int i = 0; i < converters.length; i++) {
@@ -83,15 +89,20 @@ public class ConvertHandler {
             }
             // TODO error
 	    long now = System.currentTimeMillis();
-            str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString());
+            try {
+                str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString());
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
 	    long time = System.currentTimeMillis() - now;
             if (str != null) {
                 el.convertsw = converter.getName();
 		el.index.setConverttime("" + time);
-	        inmemory.delete(el.message);
 	        break;
             }
         }
+        inmemory.delete(message);
+        el.message = null;
         el.mimetype = mimetype;
         log.info("Mimetype {}", mimetype);
         if (mimetype != null) {
@@ -103,6 +114,9 @@ public class ConvertHandler {
             try {
                 LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
                 lang = languageDetect.detect(content);
+                if (lang != null) {
+                    el.index.setLanguage(lang);
+                }
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                     long now = System.currentTimeMillis();
                     String classification = ClassifyDao.classify(str, lang);
@@ -110,9 +124,6 @@ public class ConvertHandler {
                     log.info("classtime {} {}", filename, time);
                     el.index.setTimeclass("" + time);
                     el.index.setClassification(classification);
-                }
-                if (lang != null) {
-                    el.index.setLanguage(lang);
                 }
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
@@ -150,8 +161,6 @@ public class ConvertHandler {
             // file unlock dbindex
             // config with finegrained distrib
             IndexFilesDao.add(index);
-            inmemory.delete(el.message);
-
         }
         boolean success = Queues.convertTimeoutQueue.remove(filename.toString());
         if (!success) {
