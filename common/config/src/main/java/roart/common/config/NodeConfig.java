@@ -25,23 +25,23 @@ public class NodeConfig extends MyConfig {
     }
  
     public double getMPCpu() {
-        return (Double) getValueOrDefault(ConfigConstants.MPCPU);       
+        return (Double) getNotEmptyValueOrDefault(ConfigConstants.MPCPU);       
     }
     
     public int getMPBatch() {
-        return (Integer) getValueOrDefault(ConfigConstants.MPBATCH);       
+        return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPBATCH);       
     }
     
     public int getMPThreadsFS() {
-        return (Integer) getValueOrDefault(ConfigConstants.MPTHREADSFS);       
+        return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSFS);       
     }
     
     public int getMPThreadsConvert() {
-        return (Integer) getValueOrDefault(ConfigConstants.MPTHREADSCONVERT);       
+        return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSCONVERT);       
     }
     
     public int getMPThreadsIndex() {
-        return (Integer) getValueOrDefault(ConfigConstants.MPTHREADSINDEX);       
+        return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSINDEX);       
     }
     
     @JsonIgnore
@@ -136,7 +136,7 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public String getZookeeper() {
-        return (String) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONZOOKEEPER);
+        return (String) getNotEmptyValueOrDefault(ConfigConstants.SYNCHRONIZATIONZOOKEEPER);
     }
     
     @JsonIgnore
@@ -473,7 +473,7 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public String getConverters() {
-        return (String) getValueOrDefault(ConfigConstants.CONVERSION);        
+        return (String) getNotEmptyValueOrDefault(ConfigConstants.CONVERSION);        
     }
     
     @JsonIgnore
@@ -503,23 +503,36 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public String getInmemoryServer() {
-        return (String) getValueOrDefault(ConfigConstants.INMEMORYSERVER);
+        return (String) getNotEmptyValueOrDefault(ConfigConstants.INMEMORYSERVER);
     }
 
     @JsonIgnore
     public String getInmemoryHazelcast() {
-        return (String) getValueOrDefault(ConfigConstants.INMEMORYHAZELCAST);
+        return (String) getNotEmptyValueOrDefault(ConfigConstants.INMEMORYHAZELCAST);
     }
 
     @JsonIgnore
     public String getInmemoryRedis() {
-        return (String) getValueOrDefault(ConfigConstants.INMEMORYREDIS);
+        return (String) getNotEmptyValueOrDefault(ConfigConstants.INMEMORYREDIS);
     }
 
     @JsonIgnore
     public Object getValueOrDefault(String key) {
         Object retVal = configValueMap.get(key);
         //System.out.println("r " + retVal + " " + deflt.get(key));
+        return Optional.ofNullable(retVal).orElse(deflt.get(key));
+    }
+
+    @JsonIgnore
+    public Object getNotEmptyValueOrDefault(String key) {
+        Object retVal = configValueMap.get(key);
+        //System.out.println("r " + retVal + " " + deflt.get(key));
+        if (retVal instanceof String) {
+            String str = (String) retVal;
+            if (str.isEmpty()) {
+                retVal = null;
+            }
+        }
         return Optional.ofNullable(retVal).orElse(deflt.get(key));
     }
 
