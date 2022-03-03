@@ -21,7 +21,8 @@ public class Index extends AbstractIndex {
     @Override
     public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
         boolean reindex = element.getClientQueueElement().reindex;
-        return (!reindex && index.getIndexed() == null) || reindex == index.getIndexed();
+        boolean indexed = index.getIndexed() != null && index.getIndexed();
+        return reindex == indexed;
     }
 
 }
