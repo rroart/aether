@@ -1,5 +1,5 @@
 VERSION = 0.10-SNAPSHOT
-SUBDIRS = calibre djvutxt pdftotext tika wvtext
+SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr
 
 all: $(SUBDIRS)
 $(SUBDIRS):

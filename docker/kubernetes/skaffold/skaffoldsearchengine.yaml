@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: searchengine
+build:
+  artifacts:
+  - image: aether-elastic
+    context: ../../../docker/cloud/elastic
+  - image: aether-solr
+    context: ../../../docker/cloud/solr
+deploy:
+  kubectl:
+    manifests:
+    - elastic/deployment.yaml
+    - solr/deployment.yaml

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aether-solr
+  labels:
+    app: aether-solr
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aether-solr
+  template:
+    metadata:
+      labels:
+        app: aether-solr
+    spec:
+      containers:
+      - name: aether-solr
+        image: aether-solr
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aether-solr
+  labels:
+    app: aether-solr
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aether-solr
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+  name: aether-solr
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "false"
+spec:
+  controller: k8s.io/ingress-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress-aether-solr
+spec:
+  ingressClassName: aether-solr
+  rules:
+  - host: aether-solr.mini
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: aether-solr
+            port:
+              number: 8080
