@@ -29,14 +29,8 @@ public class ControlRunner implements Runnable {
     				log.error(Constants.EXCEPTION, e);
     			}
     			ControlService cs = new ControlService();
-    			if (!ControlService.tikaWorker.isAlive()) {
-    				cs.startTikaWorker();
-    			}
     			if (!ControlService.indexWorker.isAlive()) {
     				cs.startIndexWorker();
-    			}
-    			if (!ControlService.otherWorker.isAlive()) {
-    				cs.startOtherWorker();
     			}
     			if (!ControlService.dbWorker.isAlive()) {
     				cs.startDbWorker();

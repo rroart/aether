@@ -95,7 +95,7 @@ public class TraverseQueueRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (Queues.getTraverseQueue().size() == 0 || Queues.otherQueueHeavyLoaded() || Queues.indexQueueHeavyLoaded()) {
+            if (Queues.getTraverseQueue().size() == 0 || Queues.indexQueueHeavyLoaded()) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {

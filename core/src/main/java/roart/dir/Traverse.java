@@ -7,11 +7,9 @@ import java.io.InputStream;
 import java.util.Map;
 
 import roart.queue.Queues;
-import roart.queue.TikaQueueElement;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.service.SearchService;
-import roart.thread.TikaRunner;
 import roart.common.collections.MySet;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
@@ -50,7 +48,6 @@ import roart.util.MyQueues;
 import roart.util.MySets;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
-import org.apache.tika.metadata.Metadata;
 import roart.common.model.Location;
 
 public class Traverse {

@@ -9,7 +9,6 @@ import java.util.List;
 
 import java.io.InputStream;
 
-import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

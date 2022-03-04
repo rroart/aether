@@ -117,15 +117,10 @@ public abstract class AbstractFunction {
                     System.out.println("todo " + str);
                 }
 
-                for (String ret : Queues.tikaTimeoutQueue) {
-                    retTikaTimeoutList.add(new ResultItem(ret));
-                }
-
                 for (String ret : Queues.convertTimeoutQueue) {
                     retConvertTimeoutList.add(new ResultItem(ret));
                 }
 
-                Queues.resetTikaTimeoutQueue();
                 Queues.resetConvertTimeoutQueue();
                 //IndexFilesDao.commit();
                 while (IndexFilesDao.dirty() > 0) {

@@ -41,37 +41,24 @@ public class Queues {
     //public static Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
 
     public static volatile Deque<ConvertQueueElement> convertQueue = new ConcurrentLinkedDeque<ConvertQueueElement>();
-    public static volatile Deque<TikaQueueElement> tikaQueue = new ConcurrentLinkedDeque<TikaQueueElement>();
-    public static volatile Queue<TikaQueueElement> otherQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
     public static volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
     public static volatile Queue<TraverseQueueElement> traverseQueue = new ConcurrentLinkedQueue<TraverseQueueElement>();
 
     public static Set<MySet> workQueues = new HashSet();
     
-    public static volatile Queue<String> tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
     public static volatile Queue<String> convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
     
     private static volatile AtomicInteger converts = new AtomicInteger(0);
-    private static volatile AtomicInteger tikas = new AtomicInteger(0);
-    private static volatile AtomicInteger others = new AtomicInteger(0);
     private static volatile AtomicInteger indexs = new AtomicInteger(0);
     private static volatile AtomicInteger clients = new AtomicInteger(0);
     private static AtomicInteger traverses = new AtomicInteger(0);
 
-    public static int getTikas() {
-    	return tikas.get();
-    }
-    
     public static int getConverts() {
         return converts.get();
     }
     
     public static int getIndexs() {
     	return indexs.get();
-    }
-    
-    public static int getOthers() {
-    	return others.get();
     }
     
     public static int getClients() {
@@ -82,16 +69,8 @@ public class Queues {
         return traverses.get();
     }
     
-    public static void incTikas() {
-    	tikas.incrementAndGet();
-    }
-    
     public static void incConverts() {
         converts.incrementAndGet();
-    }
-    
-    public static void incOthers() {
-    	others.incrementAndGet();
     }
     
    public static void incIndexs() {
@@ -106,18 +85,10 @@ public class Queues {
        traverses.incrementAndGet();
    }
    
-   public static void decTikas() {
-   	tikas.decrementAndGet();
-   }
-   
    public static void decConverts() {
        converts.decrementAndGet();
   }
-  
-   public static void decOthers() {
-   	others.decrementAndGet();
-   }
-   
+     
   public static void decIndexs() {
    	indexs.decrementAndGet();
    }
@@ -130,16 +101,8 @@ public class Queues {
        traverses.decrementAndGet();
   }
   
-    public static void resetTikas() {
-    	tikas = new AtomicInteger(0);
-    }
-    
     public static void resetConverts() {
         converts = new AtomicInteger(0);
-    }
-    
-    public static void resetOthers() {
-    	others = new AtomicInteger(0);
     }
     
     public static void resetIndexs() {
@@ -154,20 +117,12 @@ public class Queues {
         traverses = new AtomicInteger(0);
     }
     
-    public static boolean tikaQueueHeavyLoaded() {
-	return tikaQueue.size() >= limit;
-    }
-    
-    public static boolean ConvertQueueHeavyLoaded() {
+    public static boolean convertQueueHeavyLoaded() {
         return convertQueue.size() >= limit;
     }
     
     public static boolean indexQueueHeavyLoaded() {
 	return indexQueue.size() >= limit;
-    }
-    
-    public static boolean otherQueueHeavyLoaded() {
-	return otherQueue.size() >= limit;
     }
     
     public static boolean traverseQueueHeavyLoaded() {
@@ -177,33 +132,29 @@ public class Queues {
    public static String webstat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + total() + " / " + traverses + " / " + work() + "\nc " + convertQueue.size() + " / " + converts + "\nt " + tikaQueue.size() + " / " + tikas + "\no " + otherQueue.size() + " / " + others + "\ni " + indexQueue.size() + " / " + indexs;
+       return "f " + total() + " / " + traverses + " / " + work() + "\nc " + convertQueue.size() + " / " + converts + "\ni " + indexQueue.size() + " / " + indexs;
     }
 
    public static String stat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + total() + " / " + traverses + " / " + work() + " c " + convertQueue.size() + " " + converts + " t " + tikaQueue.size() + " " + tikas + " o " + otherQueue.size() + " " + others + " i " + indexQueue.size() + " " + indexs;
+       return "f " + total() + " / " + traverses + " / " + work() + " c " + convertQueue.size() + " " + converts + " i " + indexQueue.size() + " " + indexs;
     }
 
    public static void queueStat() {
-       log.info("Queues " + stat());
+       log.info("Queues {}", stat());
     }
 
     public static int queueSize() {
         String queueid = Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-    	return traverseQueue.size() + convertQueue.size() + tikaQueue.size() + otherQueue.size() + indexQueue.size();
+    	return traverseQueue.size() + convertQueue.size() + indexQueue.size();
     }
     
     public static int runSize() {
         String queueid = Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-    	return converts.get() + tikas.get() + others.get() + indexs.get();
-    }
-    
-    public static void resetTikaTimeoutQueue() {
-    	tikaTimeoutQueue = new ConcurrentLinkedQueue<String>();
+    	return converts.get() + indexs.get();
     }
     
     public static void resetConvertTimeoutQueue() {

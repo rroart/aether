@@ -26,7 +26,6 @@ import roart.common.synchronization.MyLock;
 import roart.common.util.FsUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.content.ClientHandler;
-import roart.content.OtherHandler;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
@@ -37,8 +36,6 @@ import roart.thread.ControlRunner;
 import roart.thread.ConvertRunner;
 import roart.thread.DbRunner;
 import roart.thread.IndexRunner;
-import roart.thread.OtherRunner;
-import roart.thread.TikaRunner;
 import roart.thread.TraverseQueueRunner;
 import roart.thread.ZKRunner;
 import roart.util.MyAtomicLong;
@@ -107,14 +104,10 @@ import roart.util.MySets;
     	return new ArrayList<String>(filesetnew);
         }
     
-        private static TikaRunner tikaRunnable = null;
-        public static Thread tikaWorker = null;
         private static ConvertRunner convertRunnable = null;
         public static Thread convertWorker = null;
         private static IndexRunner indexRunnable = null;
         public static Thread indexWorker = null;
-        private static OtherRunner otherRunnable = null;
-        public static Thread otherWorker = null;
         private static DbRunner dbRunnable = null;
         public static Thread dbWorker = null;
         private static ControlRunner controlRunnable = null;
@@ -128,17 +121,11 @@ import roart.util.MySets;
     
         public static CuratorFramework curatorClient = null;
         public void startThreads() {
-        	if (tikaRunnable == null) {
-    	    startTikaWorker();
-        	}
                 if (convertRunnable == null) {
                     startConvertWorker();
                         }
                 	if (indexRunnable == null) {
         	startIndexWorker();
-        	}
-        	if (otherRunnable == null) {
-    	    startOtherWorker();
         	}
         	if (dbRunnable == null) {
         	startDbWorker();
@@ -187,18 +174,7 @@ import roart.util.MySets;
         	log.info("starting control worker");
     	}
     
-    	public void startTikaWorker() {
-    	    int timeout = MyConfig.conf.getTikaTimeout();
-    	    TikaRunner.timeout = timeout;
-    
-        	tikaRunnable = new TikaRunner();
-        	tikaWorker = new Thread(tikaRunnable);
-        	tikaWorker.setName("TikaWorker");
-        	tikaWorker.start();
-        	log.info("starting tika worker");
-    	}
-    
-        public void startConvertWorker() {
+    	public void startConvertWorker() {
             int timeout = MyConfig.conf.getTikaTimeout();
             ConvertRunner.timeout = timeout;
     
@@ -217,17 +193,6 @@ import roart.util.MySets;
         	log.info("starting index worker");
     	}
     
-    	public void startOtherWorker() {
-    	    int timeout = MyConfig.conf.getOtherTimeout();
-    	    OtherHandler.timeout = timeout;
-    
-        	otherRunnable = new OtherRunner();
-        	otherWorker = new Thread(otherRunnable);
-        	otherWorker.setName("OtherWorker");
-        	otherWorker.start();
-        	log.info("starting other worker");
-    	}
-    
     	public void startDbWorker() {
     		dbRunnable = new DbRunner();
         	dbWorker = new Thread(dbRunnable);
@@ -244,18 +209,7 @@ import roart.util.MySets;
         	log.info("starting zk worker");
     	}
     
-            public void startCamelWorker() {
-                int timeout = MyConfig.conf.getOtherTimeout();
-                OtherHandler.timeout = timeout;
-    
-            camelRunnable = new CamelRunner();
-            camelWorker = new Thread(camelRunnable);
-            camelWorker.setName("CamelWorker");
-            camelWorker.start();
-            log.info("starting camel worker");
-            }
-    
-        public void startTraversequeueWorker() {
+            public void startTraversequeueWorker() {
             traverseQueueRunnable = new TraverseQueueRunner();
             traverseQueueWorker = new Thread(traverseQueueRunnable);
             traverseQueueWorker.setName("TraverseWorker");

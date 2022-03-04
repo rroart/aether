@@ -83,7 +83,7 @@ public class IndexRunner implements Runnable {
                 running--;
                 Queues.decIndexs();
             }
-            if (Queues.indexQueue.isEmpty() || Queues.otherQueueHeavyLoaded() || Queues.indexQueueHeavyLoaded()) {
+            if (Queues.indexQueue.isEmpty() /*|| Queues.indexQueueHeavyLoaded()*/) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {

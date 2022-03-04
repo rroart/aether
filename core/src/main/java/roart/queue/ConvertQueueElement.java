@@ -3,8 +3,6 @@ package roart.queue;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tika.metadata.Metadata;
-
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;

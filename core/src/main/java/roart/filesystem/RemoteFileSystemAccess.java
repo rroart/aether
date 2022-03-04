@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 
 import roart.common.constants.Constants;
 import roart.common.model.FileObject;
-import roart.content.TikaHandler;
 
 public class RemoteFileSystemAccess extends FileSystemAccess {
 
@@ -40,6 +39,7 @@ public class RemoteFileSystemAccess extends FileSystemAccess {
         return fn;
     }
 
+    @Deprecated
     @Override
     public String getLocalFilesystemFile(FileObject filename) {
         String tmpfn = copyFileToTmp(filename);
