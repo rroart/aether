@@ -132,13 +132,13 @@ public class Queues {
    public static String webstat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + total() + " / " + traverses + " / " + work() + "\nc " + convertQueue.size() + " / " + converts + "\ni " + indexQueue.size() + " / " + indexs;
+       return "q " + total() + " f " + traverses + " " + work() + "\nc " + convertQueue.size() + " " + converts + "\ni " + indexQueue.size() + " " + indexs;
     }
 
    public static String stat() {
        String queueid = Constants.TRAVERSEQUEUE;
        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-       return "f " + total() + " / " + traverses + " / " + work() + " c " + convertQueue.size() + " " + converts + " i " + indexQueue.size() + " " + indexs;
+       return "q " + total() + " f " + traverses + " " + work() + " c " + convertQueue.size() + " " + converts + " i " + indexQueue.size() + " " + indexs;
     }
 
    public static void queueStat() {
