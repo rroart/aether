@@ -312,18 +312,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch-x-content</artifactId>
-      <version>7.14.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>7.14.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>co.elastic.clients</groupId>
       <artifactId>elasticsearch-java</artifactId>
       <version>${elasticsearch.version}</version>
