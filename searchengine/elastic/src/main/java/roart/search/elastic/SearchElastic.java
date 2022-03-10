@@ -22,6 +22,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
+import org.elasticsearch.client.RequestOptions;
 
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
@@ -40,6 +42,7 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.search.HighlighterType;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
+import co.elastic.clients.transport.rest_client.RestClientOptions;
 
 import roart.common.config.NodeConfig;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -63,6 +66,8 @@ import org.slf4j.LoggerFactory;
 
 public class SearchElastic extends SearchEngineAbstractSearcher {
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private static final Integer BUFFER_LIMIT = 1024 * 1024 * 1024;
 
     private ElasticConfig conf;
 
@@ -95,9 +100,18 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                         }
                     }) 
                     .build();
+            
             // Create the transport with a Jackson mapper
-            ElasticsearchTransport transport = new RestClientTransport(
+            RestClientTransport transport = new RestClientTransport(
                     restclient, new JacksonJsonpMapper());
+
+            // Hairy way to set the buffer limit
+            HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory factory = new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(BUFFER_LIMIT);
+            RestClientOptions restClientOptions = (RestClientOptions) transport.options();
+            RestClientOptions.Builder builder = restClientOptions.toBuilder();
+            builder.restClientRequestOptionsBuilder().setHttpAsyncResponseConsumerFactory(factory);
+            restClientOptions = builder.build();
+            transport = transport.withRequestOptions(restClientOptions);
 
             // And create the API client
             conf.client = new ElasticsearchClient(transport);
@@ -188,7 +202,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             result.size = -1;
             return result;
         }
-        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray(inmemory.getInputStream(index.message), 49 * 1024 * 1024));
+        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray(inmemory.getInputStream(index.message), BUFFER_LIMIT / 3));
         int retsize = content.length();
 
         log.info("indexing {}", md5);
