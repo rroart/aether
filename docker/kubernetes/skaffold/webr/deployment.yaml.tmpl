@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webr$APPID
+  labels:
+    app: webr$APPID
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webr$APPID
+  template:
+    metadata:
+      labels:
+        app: webr$APPID
+    spec:
+      containers:
+      - name: webr
+        image: webr
+        #imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webr$APPID
+  labels:
+    app: webr$APPID
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webr$APPID
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+  name: stockstat-webr$APPID
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "false"
+spec:
+  controller: k8s.io/ingress-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress-webr$APPID
+spec:
+  ingressClassName: stockstat-webr$APPID
+  rules:
+  - host: $MYWEB
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: webr$APPID
+            port:
+              number: 80

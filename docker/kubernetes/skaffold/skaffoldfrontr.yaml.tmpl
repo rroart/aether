@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+build:
+  artifacts:
+  - image: webr$IMGID
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/webr/Dockerfile
+      buildArgs:
+        docroot: '{{.WEBRDOCROOT}}'
+        myserver: '{{.MYSERVER}}'
+        myport: '{{.MYPORT}}'
+        mywebport: "80"
+deploy:
+  kubectl:
+    manifests:
+    - webr/deployment.yaml
