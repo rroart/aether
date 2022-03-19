@@ -237,7 +237,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSION, MYCONVERSION);
-        deflt.put(ConfigConstants.CONNECTOR, "{}");
+        deflt.put(ConfigConstants.CONNECTOR, "[]");
         deflt.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "localhost:2181");
         deflt.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.TRUE);
