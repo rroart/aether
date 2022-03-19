@@ -88,7 +88,7 @@ public class EurekaUtil {
     }
 
     public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path) {
-        String appid = System.getProperty(Constants.APPID);
+        String appid = System.getenv(Constants.APPID);
         if (appid != null) {
             appName = appName + appid; // can not handle domain, only eureka
         }
