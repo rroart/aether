@@ -478,7 +478,7 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public String getConnectors() {
-        return (String) getValueOrDefault(ConfigConstants.CONNECTOR);        
+        return (String) getNotEmptyValueOrDefault(ConfigConstants.CONNECTOR);        
     }
     
     @JsonIgnore
