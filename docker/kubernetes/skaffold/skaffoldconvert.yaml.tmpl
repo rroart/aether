@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: convert
+build:
+  artifacts:
+  - image: aether-calibre$IMGID
+    context: ../../../docker/cloud/calibre
+  - image: aether-djvutxt$IMGID
+    context: ../../../docker/cloud/djvutxt
+  - image: aether-pdftotext$IMGID
+    context: ../../../docker/cloud/pdftotext
+  - image: aether-tika$IMGID
+    context: ../../../docker/cloud/tika
+  - image: aether-wvtext$IMGID
+    context: ../../../docker/cloud/wvtext
+deploy:
+  kubectl:
+    manifests:
+    - calibre/deployment.yaml
+    - djvutxt/deployment.yaml
+    - pdftotext/deployment.yaml
+    - tika/deployment.yaml
+    - wvtext/deployment.yaml

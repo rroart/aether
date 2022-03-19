@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aether-calibre
+  name: aether-calibre$APPID
   labels:
-    app: aether-calibre
+    app: aether-calibre$APPID
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: aether-calibre
+      app: aether-calibre$APPID
   template:
     metadata:
       labels:
-        app: aether-calibre
+        app: aether-calibre$APPID
     spec:
       containers:
       - name: aether-calibre
@@ -23,9 +23,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: aether-calibre
+  name: aether-calibre$APPID
   labels:
-    app: aether-calibre
+    app: aether-calibre$APPID
 spec:
   type: NodePort
   ports:
@@ -33,7 +33,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: aether-calibre
+    app: aether-calibre$APPID
   sessionAffinity: None  
 status:
   loadBalancer: {}    
@@ -43,7 +43,7 @@ kind: IngressClass
 metadata:
   labels:
     app.kubernetes.io/component: controller
-  name: aether-calibre
+  name: aether-calibre$APPID
   annotations:
     ingressclass.kubernetes.io/is-default-class: "false"
 spec:
@@ -52,17 +52,17 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: name-virtual-host-ingress-aether-calibre
+  name: name-virtual-host-ingress-aether-calibre$APPID
 spec:
-  ingressClassName: aether-calibre
+  ingressClassName: aether-calibre$APPID
   rules:
-  - host: aether-calibre.mini
+  - host: $CALIBRE
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: aether-calibre
+            name: aether-calibre$APPID
             port:
               number: 8080
