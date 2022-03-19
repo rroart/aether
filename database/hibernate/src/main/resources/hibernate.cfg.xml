@@ -33,6 +33,7 @@
 
         <mapping package="roart.database" />
         <mapping class="roart.database.hibernate.HibernateIndexFiles"/>
+        <!--mapping class="roart.database.hibernate.Filename"/-->
 
     </session-factory>
 

@@ -40,4 +40,6 @@ public static final String REDIS = "redis";
 public static final String HAZELCAST = "hazelcast";
 public static final String HZ = "hz";
 
+public static final String APPID = "APPID";
+
 }

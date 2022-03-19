@@ -26,6 +26,7 @@ import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.Application;
 
+import roart.common.constants.Constants;
 import roart.common.webflux.WebFluxUtil;
 
 @EnableDiscoveryClient
@@ -87,6 +88,10 @@ public class EurekaUtil {
     }
 
     public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path) {
+        String appid = System.getProperty(Constants.APPID);
+        if (appid != null) {
+            appName = appName + appid; // can not handle domain, only eureka
+        }
 
         String homePageUrl = null;
         log.debug("homePagePre " + appName + " " + path);

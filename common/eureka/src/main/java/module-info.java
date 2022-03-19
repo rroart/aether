@@ -15,5 +15,6 @@ module common.eureka {
     requires spring.cloud.commons;
     requires spring.core;
     requires spring.web;
+    requires common.constants;
     requires common.webflux;
 }
