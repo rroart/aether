@@ -1,0 +1,54 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: searchengine
+build:
+  artifacts:
+  - image: aether-hbase$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.HBASEJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+	extras: "--add-opens java.base/java.nio=ALL-UNNAMED"
+  - image: aether-hibernatedata$APPID
+    context: ../../../docker/cloud/hibernatedata
+  - image: aether-hibernate$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.HIBERNATEJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+  - image: aether-cassandra$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.CASSANDRAJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+  - image: aether-dynamodb$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.DYNAMODBJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+	extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
+deploy:
+  kubectl:
+    manifests:
+    - hbase/deployment.yaml
+    - hibernate/deployment.yaml
+    - hibernatedata/deployment.yaml
+    - cassandra/deployment.yaml
+    - dynamodb/deployment.yaml

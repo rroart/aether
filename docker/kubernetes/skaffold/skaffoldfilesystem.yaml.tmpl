@@ -1,42 +1,45 @@
 apiVersion: skaffold/v2beta1
 kind: Config
 metadata:
-  name: searchengine
+  name: convert
 build:
   artifacts:
-  - image: aether-lucenedatadev2
-    context: ../../../docker/cloud/lucenedata
-  - image: aether-lucenedev2
+  #- image: aether-local$IMGID
+  #  context: ../../../docker/cloud/local
+  - image: aether-hdfs$IMGID
     context: ../../../docker/cloud/generic
     docker:
       buildArgs:
         distlib: '{{.DISTLIB}}'
-        distjar: '{{.LUCENEJAR}}'
+        distjar: '{{.HDFSJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-  - image: aether-elasticdev2
+	lang: "en_US.ISO8859-1"
+  - image: aether-s3$IMGID
     context: ../../../docker/cloud/generic
     docker:
       buildArgs:
         distlib: '{{.DISTLIB}}'
-        distjar: '{{.ELASTICJAR}}'
+        distjar: '{{.S3JAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-  - image: aether-solrdev2
+	lang: "en_US.ISO8859-1"
+  - image: aether-swift$IMGID
     context: ../../../docker/cloud/generic
     docker:
       buildArgs:
         distlib: '{{.DISTLIB}}'
-        distjar: '{{.SOLRJAR}}'
+        distjar: '{{.SWIFTJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+	lang: "en_US.ISO8859-1"
 deploy:
   kubectl:
     manifests:
-    - lucene/deployment.yaml
-    - lucenedata/deployment.yaml
-    - elastic/deployment.yaml
-    - solr/deployment.yaml
+    #- local/deployment.yaml
+    - hdfs/deployment.yaml
+    - s3/deployment.yaml
+    - swift/deployment.yaml

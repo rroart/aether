@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-ml$APPID
+  labels:
+    app: spark-ml$APPID
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-ml$APPID
+  template:
+    metadata:
+      labels:
+        app: spark-ml$APPID
+    spec:
+      initContainers:
+      - name: spark-mlinit
+        image: spark-mldata$APPID
+        command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
+        volumeMounts:
+        - name: spark-mldatavol
+          mountPath: /newdata
+      containers:
+      - name: spark-ml$APPID
+        image: spark-ml$IMGID
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: spark-mldatavol
+          mountPath: /data
+      volumes:
+      - name: spark-mldatavol
+        persistentVolumeClaim:
+          claimName: spark-mldatapv
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+  name: aether-spark-ml$APPID
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "false"
+spec:
+  controller: k8s.io/ingress-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress-aether-spark-ml$APPID
+spec:
+  ingressClassName: aether-spark-ml$APPID
+  rules:
+  - host: $LUCENE
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: aether-spark-ml$APPID
+            port:
+              number: 8080

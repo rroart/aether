@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lucene$APPID
+  labels:
+    app: lucene$APPID
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lucene$APPID
+  template:
+    metadata:
+      labels:
+        app: lucene$APPID
+    spec:
+      initContainers:
+      - name: luceneinit
+        image: lucenedata$APPID
+        command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
+        volumeMounts:
+        - name: lucenedatavol
+          mountPath: /newdata
+      containers:
+      - name: lucene$APPID
+        image: lucene$IMGID
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: lucenedatavol
+          mountPath: /data
+      volumes:
+      - name: lucenedatavol
+        persistentVolumeClaim:
+          claimName: lucenedatapv
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+  name: aether-lucene$APPID
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "false"
+spec:
+  controller: k8s.io/ingress-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress-aether-lucene$APPID
+spec:
+  ingressClassName: aether-lucene$APPID
+  rules:
+  - host: $LUCENE
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: aether-lucene$APPID
+            port:
+              number: 8080

@@ -1,0 +1,59 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: classify
+build:
+  artifacts:
+  - image: aether-opennlp-data$APPID
+    context: ../../../docker/cloud/opennlpdata
+    docker:
+      buildArgs:
+        mydata: '{{.MYOPENNLPDATA}}'
+  - image: aether-spark-ml-data$APPID
+    context: ../../../docker/cloud/sparkmldata
+    docker:
+      buildArgs:
+        mydata: '{{.MYSPARKMLDATA}}'
+  - image: aether-mahout-spark-data$APPID
+    context: ../../../docker/cloud/mahoutsparkdata
+    docker:
+      buildArgs:
+        mydata: '{{.MYMAHOUTSPARKDATA}}'
+  - image: aether-opennlp$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.OPENNLPJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+  - image: aether-mahout-spark$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.MAHOUTSPARKJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+	extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
+  - image: aether-spark-ml$IMGID
+    context: ../../../docker/cloud/generic
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.SPARKMLJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+	extras: "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED" 
+deploy:
+  kubectl:
+    manifests:
+    - opennlp/deployment.yaml
+    - opennlpdata/deployment.yaml
+    - sparkml/deployment.yaml
+    - sparkmldata/deployment.yaml
+    - mahoutspark/deployment.yaml
+    - mahoutsparkdata/deployment.yaml

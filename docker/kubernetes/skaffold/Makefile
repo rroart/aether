@@ -1,7 +1,8 @@
 VERSION = 0.10-SNAPSHOT
-SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr
+SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr lucene hbase hibernate cassandra dynamodb s3 swift hdfs opennlp mahoutspark sparkml core webr
 
-all: $(SUBDIRS) skaffoldconvert.yaml skaffoldfrontr.yaml
+all: $(SUBDIRS) skaffoldconvert.yaml skaffoldfrontr.yaml skaffoldsearchengine.yaml skaffoldclassify.yaml skaffolddatabase.yaml skaffoldfilesystem.yaml
+
 $(SUBDIRS):
 	$(MAKE) -C $@ -f ../Makefile deployment.yaml
 #%: %/deployment.yaml
@@ -17,5 +18,20 @@ skaffoldconvert.yaml: skaffoldconvert.yaml.tmpl
 
 skaffoldfrontr.yaml: skaffoldfrontr.yaml.tmpl
 	envsubst < skaffoldfrontr.yaml.tmpl > skaffoldfrontr.yaml
+
+skaffolddatabase.yaml: skaffolddatabase.yaml.tmpl
+	envsubst < skaffolddatabase.yaml.tmpl > skaffolddatabase.yaml
+
+skaffoldfilesystem.yaml: skaffoldfilesystem.yaml.tmpl
+	envsubst < skaffoldfilesystem.yaml.tmpl > skaffoldfilesystem.yaml
+
+skaffoldsearchengine.yaml: skaffoldsearchengine.yaml.tmpl
+	envsubst < skaffoldsearchengine.yaml.tmpl > skaffoldsearchengine.yaml
+
+skaffoldclassify.yaml: skaffoldclassify.yaml.tmpl
+	envsubst < skaffoldclassify.yaml.tmpl > skaffoldclassify.yaml
+
+skaffoldcore.yaml: skaffoldcore.yaml.tmpl
+	envsubst < skaffoldcore.yaml.tmpl > skaffoldcore.yaml
 
 .PHONY: all $(SUBDIRS)

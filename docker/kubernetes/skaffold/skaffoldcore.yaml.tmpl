@@ -1,0 +1,20 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: core
+build:
+  artifacts:
+  - image: aether-core$IMGID
+    context: ../../../docker/cloud/core
+    docker:
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.COREJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+
+deploy:
+  kubectl:
+    manifests:
+    - core/deployment.yaml

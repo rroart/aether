@@ -1,0 +1,11 @@
+all:
+ifneq ($(MYMAHOUTSPARKDATAEXTERN),)
+ifneq ($(MYMAHOUTSPARKDATA),)
+	rsync -a $$MYMAHOUTSPARKDATAEXTERN/ $$MYMAHOUTSPARKDATA
+endif
+else
+	mkdir -p $$MYMAHOUTSPARKDATA
+	touch $$MYMAHOUTSPARKDATA/empty
+endif
+
+.PHONY: all
