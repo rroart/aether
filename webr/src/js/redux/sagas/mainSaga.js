@@ -4,7 +4,7 @@ import { constants as mainConstants, actions as mainActions } from '../modules/m
 import { Tabs, Tab } from 'react-bootstrap';
 
 import { Client } from '../../common/components/util' 
-import type { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
+import { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
 import { MyTable } from '../../common/components/Table'
 
 export function* fetchMainData() {
