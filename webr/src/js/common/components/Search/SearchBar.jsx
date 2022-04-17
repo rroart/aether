@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { Client, ConvertToSelect } from '../util'
 import Select from 'react-select';
 import { DropdownButton, MenuItem, ButtonToolbar, Nav, Navbar, NavItem, Form, FormControl } from 'react-bootstrap';
-import type { SearchEngineSearchParam } from '../../types/main'
+import { SearchEngineSearchParam } from '../../types/main'
 
 class SearchBar extends PureComponent {
     type : string;

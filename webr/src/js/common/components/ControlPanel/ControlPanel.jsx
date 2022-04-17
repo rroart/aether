@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { Client, ConvertToSelect } from '../util'
 import Select from 'react-select';
 import { DropdownButton, MenuItem, Button, ButtonToolbar, Nav, Navbar, NavItem, Form, FormControl } from 'react-bootstrap';
-import type { ServiceParam } from '../../types/main'
+import { ServiceParam } from '../../types/main'
 import DatePicker from 'react-16-bootstrap-date-picker';
 
 class ControlPanel extends PureComponent {
