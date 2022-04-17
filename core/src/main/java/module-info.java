@@ -51,4 +51,6 @@ module core {
     requires common.inmemory.factory;
     requires org.apache.commons.io;
     requires commons.validator;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.databind;
 }

@@ -1,8 +1,11 @@
 package roart.eureka.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,11 @@ import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.Application;
 
+import roart.common.config.Connector;
+import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.EurekaConstants;
+import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 
 @EnableDiscoveryClient
@@ -88,6 +95,15 @@ public class EurekaUtil {
     }
 
     public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path) {
+        String connectorString = MyConfig.conf.getConnectors();
+        Connector[] connectors = JsonUtil.convert(connectorString, Connector[].class);
+        Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
+        Connector connector = connectMap.get(appName.toLowerCase());
+        if (connector != null && !connector.isEureka()) {
+            String url = connector.getConnection() + "/";
+            return WebFluxUtil.sendMe(myclass, url, param, path);            
+        }
+        
         String appid = System.getenv(Constants.APPID);
         if (appid != null) {
             appName = appName + appid; // can not handle domain, only eureka

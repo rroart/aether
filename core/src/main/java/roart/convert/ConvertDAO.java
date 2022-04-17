@@ -23,23 +23,13 @@ import roart.service.ControlService;
 public class ConvertDAO {
 
     public static InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename) {
-        String connectorString = MyConfig.conf.getConnectors();
-        Connector[] connectors = JsonUtil.convert(connectorString, Connector[].class);
-        Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
-        Connector connector = connectMap.get(converter.getName());
         ConvertParam param = new ConvertParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
         param.message = message;
         param.converter = converter;
         param.filename = filename;
-        ConvertResult result;
-        if (connector == null || connector.isEureka()) {
-            result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT);
-        } else {
-            String url = connector.getConnection() + "/";
-            result = WebFluxUtil.sendMe(ConvertResult.class, url, param, EurekaConstants.CONVERT);            
-        }
+        ConvertResult result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT);
         if (result == null) {
             return null;
         }

@@ -148,8 +148,10 @@ public class MyXMLConfig {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e); 
         }
+        if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
         Runnable confMe = new EurekaThread(configInstance);
         confMe.run();
+        }
         //new Thread(confMe).start();
 
     }
