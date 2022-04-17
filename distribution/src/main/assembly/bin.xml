@@ -227,13 +227,13 @@
       </includes>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
-    <fileSet>
+    <!--fileSet>
       <directory>${project.basedir}/../docker</directory>
       <includes>
 	<include>**</include>
       </includes>
       <outputDirectory>docker</outputDirectory>
-    </fileSet>
+    </fileSet-->
     <fileSet>
       <directory>${project.basedir}</directory>
       <includes>
