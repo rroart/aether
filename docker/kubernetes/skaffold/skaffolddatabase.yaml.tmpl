@@ -1,49 +1,57 @@
 apiVersion: skaffold/v2beta1
 kind: Config
 metadata:
-  name: searchengine
+  name: database
 build:
   artifacts:
   - image: aether-hbase$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.HBASEJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	extras: "--add-opens java.base/java.nio=ALL-UNNAMED"
+        extras: "--add-opens java.base/java.nio=ALL-UNNAMED"
+        appid: '{{.APPID}}'
   - image: aether-hibernatedata$APPID
     context: ../../../docker/cloud/hibernatedata
   - image: aether-hibernate$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.HIBERNATEJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+        appid: '{{.APPID}}'
   - image: aether-cassandra$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.CASSANDRAJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+        appid: '{{.APPID}}'
   - image: aether-dynamodb$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.DYNAMODBJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
+        extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
+        appid: '{{.APPID}}'
 deploy:
   kubectl:
     manifests:

@@ -1,41 +1,50 @@
 apiVersion: skaffold/v2beta1
 kind: Config
 metadata:
-  name: convert
+  name: filesystem
 build:
   artifacts:
   #- image: aether-local$IMGID
   #  context: ../../../docker/cloud/local
   - image: aether-hdfs$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.HDFSJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	lang: "en_US.ISO8859-1"
+        lang: "en_US.ISO8859-1"
+        appid: '{{.APPID}}'
+        extras: '{{.HDFSPATH}}'
   - image: aether-s3$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.S3JAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	lang: "en_US.ISO8859-1"
+        lang: "en_US.ISO8859-1"
+        appid: '{{.APPID}}'
+        extras: '{{.S3PATH}}'
   - image: aether-swift$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.SWIFTJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	lang: "en_US.ISO8859-1"
+        lang: "en_US.ISO8859-1"
+        appid: '{{.APPID}}'
+        extras: '{{.SWIFTPATH}}'
 deploy:
   kubectl:
     manifests:

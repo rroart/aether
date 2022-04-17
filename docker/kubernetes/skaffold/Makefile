@@ -1,7 +1,7 @@
 VERSION = 0.10-SNAPSHOT
-SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr lucene hbase hibernate cassandra dynamodb s3 swift hdfs opennlp mahoutspark sparkml core webr
+SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr lucene hbase hibernate cassandra dynamodb s3 swift hdfs opennlp mahoutspark sparkml core webr hibernatedata lucenedata mahoutsparkdata opennlpdata sparkmldata
 
-all: $(SUBDIRS) skaffoldconvert.yaml skaffoldfrontr.yaml skaffoldsearchengine.yaml skaffoldclassify.yaml skaffolddatabase.yaml skaffoldfilesystem.yaml
+all: $(SUBDIRS) skaffoldconvert.yaml skaffoldfrontr.yaml skaffoldsearchengine.yaml skaffoldclassify.yaml skaffolddatabase.yaml skaffoldfilesystem.yaml skaffoldcore.yaml conf
 
 $(SUBDIRS):
 	$(MAKE) -C $@ -f ../Makefile deployment.yaml
@@ -34,4 +34,7 @@ skaffoldclassify.yaml: skaffoldclassify.yaml.tmpl
 skaffoldcore.yaml: skaffoldcore.yaml.tmpl
 	envsubst < skaffoldcore.yaml.tmpl > skaffoldcore.yaml
 
-.PHONY: all $(SUBDIRS)
+conf:
+	$(MAKE) -C ../../cloud -B
+
+.PHONY: all $(SUBDIRS) conf

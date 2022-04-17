@@ -16,14 +16,14 @@ spec:
     spec:
       initContainers:
       - name: spark-mlinit
-        image: spark-mldata$APPID
+        image: aether-spark-mldata$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: spark-mldatavol
           mountPath: /newdata
       containers:
       - name: spark-ml$APPID
-        image: spark-ml$IMGID
+        image: aether-spark-ml$IMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -33,6 +33,24 @@ spec:
       - name: spark-mldatavol
         persistentVolumeClaim:
           claimName: spark-mldatapv
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aether-spark-ml$APPID
+  labels:
+    app: aether-spark-ml$APPID
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aether-spark-ml$APPID
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
@@ -52,7 +70,7 @@ metadata:
 spec:
   ingressClassName: aether-spark-ml$APPID
   rules:
-  - host: $LUCENE
+  - host: $SPARKMLHOST
     http:
       paths:
       - pathType: Prefix

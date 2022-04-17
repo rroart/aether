@@ -7,32 +7,38 @@ build:
   - image: aether-lucenedata$APPID
     context: ../../../docker/cloud/lucenedata
   - image: aether-lucene$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.LUCENEJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+        appid: '{{.APPID}}'
   - image: aether-elastic$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.ELASTICJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+        appid: '{{.APPID}}'
   - image: aether-solr$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.SOLRJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+        appid: '{{.APPID}}'
 deploy:
   kubectl:
     manifests:

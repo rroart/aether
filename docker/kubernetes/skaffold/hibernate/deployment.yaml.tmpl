@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hibernate$APPID
+  name: aether-hibernate$APPID
   labels:
-    app: hibernate$APPID
+    app: aether-hibernate$APPID
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hibernate$APPID
+      app: aether-hibernate$APPID
   template:
     metadata:
       labels:
-        app: hibernate$APPID
+        app: aether-hibernate$APPID
     spec:
       initContainers:
       - name: hibernateinit
-        image: hibernatedata$APPID
+        image: aether-hibernatedata$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: hibernatedatavol
           mountPath: /newdata
       containers:
-      - name: hibernate$APPID
-        image: hibernate$IMGID
+      - name: aether-hibernate$APPID
+        image: aether-hibernate$IMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -33,6 +33,24 @@ spec:
       - name: hibernatedatavol
         persistentVolumeClaim:
           claimName: hibernatedatapv
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aether-hibernate$APPID
+  labels:
+    app: aether-hibernate$APPID
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aether-hibernate$APPID
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
@@ -52,7 +70,7 @@ metadata:
 spec:
   ingressClassName: aether-hibernate$APPID
   rules:
-  - host: $HIBERNATE
+  - host: $HIBERNATEHOST
     http:
       paths:
       - pathType: Prefix

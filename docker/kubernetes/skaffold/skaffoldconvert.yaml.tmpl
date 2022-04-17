@@ -5,15 +5,45 @@ metadata:
 build:
   artifacts:
   - image: aether-calibre$IMGID
-    context: ../../../docker/cloud/calibre
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/calibre/Dockerfile
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.CALIBREJAR}}'
+        appid: '{{.APPID}}'
   - image: aether-djvutxt$IMGID
-    context: ../../../docker/cloud/djvutxt
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/djvutxt/Dockerfile
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.DJVUTXTJAR}}'
+        appid: '{{.APPID}}'
   - image: aether-pdftotext$IMGID
-    context: ../../../docker/cloud/pdftotext
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/pdftotext/Dockerfile
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.PDFTOTEXTJAR}}'
+        appid: '{{.APPID}}'
   - image: aether-tika$IMGID
-    context: ../../../docker/cloud/tika
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/tika/Dockerfile
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.TIKAJAR}}'
+        appid: '{{.APPID}}'
   - image: aether-wvtext$IMGID
-    context: ../../../docker/cloud/wvtext
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/wvtext/Dockerfile
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.WVTEXTJAR}}'
+        appid: '{{.APPID}}'
 deploy:
   kubectl:
     manifests:

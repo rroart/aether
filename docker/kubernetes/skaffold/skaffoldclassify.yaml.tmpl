@@ -28,6 +28,7 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
+        appid: '{{.APPID}}'
   - image: aether-mahout-spark$IMGID
     context: ../../../docker/cloud/generic
     docker:
@@ -37,7 +38,8 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
+        extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
+        appid: '{{.APPID}}'
   - image: aether-spark-ml$IMGID
     context: ../../../docker/cloud/generic
     docker:
@@ -47,7 +49,8 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-	extras: "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED" 
+        extras: "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED" 
+        appid: '{{.APPID}}'
 deploy:
   kubectl:
     manifests:

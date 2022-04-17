@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lucene$APPID
+  name: aether-lucene$APPID
   labels:
-    app: lucene$APPID
+    app: aether-lucene$APPID
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: lucene$APPID
+      app: aether-lucene$APPID
   template:
     metadata:
       labels:
-        app: lucene$APPID
+        app: aether-lucene$APPID
     spec:
       initContainers:
       - name: luceneinit
-        image: lucenedata$APPID
+        image: aether-lucenedata$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: lucenedatavol
           mountPath: /newdata
       containers:
-      - name: lucene$APPID
-        image: lucene$IMGID
+      - name: aether-lucene$APPID
+        image: aether-lucene$IMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -33,6 +33,24 @@ spec:
       - name: lucenedatavol
         persistentVolumeClaim:
           claimName: lucenedatapv
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aether-lucene$APPID
+  labels:
+    app: aether-lucene$APPID
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aether-lucene$APPID
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
@@ -52,7 +70,7 @@ metadata:
 spec:
   ingressClassName: aether-lucene$APPID
   rules:
-  - host: $LUCENE
+  - host: $LUCENEHOST
     http:
       paths:
       - pathType: Prefix

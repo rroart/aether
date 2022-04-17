@@ -16,14 +16,14 @@ spec:
     spec:
       initContainers:
       - name: mahout-sparkinit
-        image: mahout-sparkdata$APPID
+        image: aether-mahout-sparkdata$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: mahout-sparkdatavol
           mountPath: /newdata
       containers:
       - name: mahout-spark$APPID
-        image: mahout-spark$IMGID
+        image: aether-mahout-spark$IMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -33,6 +33,24 @@ spec:
       - name: mahout-sparkdatavol
         persistentVolumeClaim:
           claimName: mahout-sparkdatapv
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aether-mahout-spark$APPID
+  labels:
+    app: aether-mahout-spark$APPID
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aether-mahout-spark$APPID
+  sessionAffinity: None  
+status:
+  loadBalancer: {}    
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
@@ -52,7 +70,7 @@ metadata:
 spec:
   ingressClassName: aether-mahout-spark$APPID
   rules:
-  - host: $LUCENE
+  - host: $MAHOUTSPARKHOST
     http:
       paths:
       - pathType: Prefix

@@ -16,14 +16,14 @@ spec:
     spec:
       initContainers:
       - name: opennlpinit
-        image: opennlpdata$APPID
+        image: aether-opennlpdata$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: opennlpdatavol
           mountPath: /newdata
       containers:
       - name: opennlp$APPID
-        image: opennlp$IMGID
+        image: aether-opennlp$IMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -52,7 +52,7 @@ metadata:
 spec:
   ingressClassName: aether-opennlp$APPID
   rules:
-  - host: $LUCENE
+  - host: $OPENNLPHOST
     http:
       paths:
       - pathType: Prefix

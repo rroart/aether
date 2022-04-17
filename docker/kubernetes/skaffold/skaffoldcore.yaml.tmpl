@@ -5,15 +5,16 @@ metadata:
 build:
   artifacts:
   - image: aether-core$IMGID
-    context: ../../../docker/cloud/core
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/core/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.COREJAR}}'
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-
+        appid: '{{.APPID}}'
 deploy:
   kubectl:
     manifests:

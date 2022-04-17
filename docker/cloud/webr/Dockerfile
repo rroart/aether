@@ -3,7 +3,7 @@ MAINTAINER <rroart@gmail.com>
 ARG docroot
 ARG mywebport
 ARG myserver
-ARG myserver
+ARG myport
 ENV DOCROOT ${docroot}
 ENV MYWEBPORT ${mywebport}
 ENV REACT_APP_MYSERVER ${myserver}

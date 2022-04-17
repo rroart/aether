@@ -16,14 +16,14 @@ spec:
     spec:
       initContainers:
       - name: mahout-mrinit
-        image: mahout-mrdata$APPID
+        image: aether-mahout-mrdata$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: mahout-mrdatavol
           mountPath: /newdata
       containers:
       - name: mahout-mr$APPID
-        image: mahout-mr$IMGID
+        image: aether-mahout-mr$IMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -52,7 +52,7 @@ metadata:
 spec:
   ingressClassName: aether-mahout-mr$APPID
   rules:
-  - host: $LUCENE
+  - host: $MAHOUTMRHOST
     http:
       paths:
       - pathType: Prefix
