@@ -1,6 +1,7 @@
 package roart.filesystem.s3;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.FileSystemConstants;
 import roart.filesystem.FileSystemAbstractController;
 import roart.filesystem.FileSystemOperations;
 
@@ -22,4 +23,9 @@ public class S3Controller extends FileSystemAbstractController {
 	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
 		return new S3(nodename, configid, nodeConf);
 	}
+	
+        @Override
+        protected String getFs() {
+            return FileSystemConstants.S3TYPE;
+        }
 }

@@ -1,6 +1,7 @@
 package roart.filesystem.hdfs;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.FileSystemConstants;
 import roart.filesystem.FileSystemAbstractController;
 import roart.filesystem.FileSystemOperations;
 
@@ -21,5 +22,10 @@ public class HDFSController extends FileSystemAbstractController {
 	@Override
 	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
 		return new HDFS(nodename, configid, nodeConf);
+	}
+	
+	@Override
+	protected String getFs() {
+	    return FileSystemConstants.HDFSTYPE;
 	}
 }

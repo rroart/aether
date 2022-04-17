@@ -64,6 +64,8 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         return operations;
     }
 
+    protected abstract String getFs();
+    
     @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
             method = RequestMethod.POST)
     public FileSystemConstructorResult processConstructor(@RequestBody FileSystemConstructorParam param)
@@ -240,6 +242,9 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         String address = InetAddress.getLocalHost().getHostAddress();
         if (ip != null) {
             address = ip;
+        }
+        if (fs == null) {
+            fs = getFs();
         }
         String whereami = address + ":" + port;
         System.out.println("Whereami " + whereami);

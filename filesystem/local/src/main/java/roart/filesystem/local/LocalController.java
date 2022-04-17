@@ -1,6 +1,7 @@
 package roart.filesystem.local;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.FileSystemConstants;
 import roart.filesystem.FileSystemAbstractController;
 import roart.filesystem.FileSystemOperations;
 
@@ -22,4 +23,9 @@ public class LocalController extends FileSystemAbstractController {
 	protected FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf) {
 		return new LocalFileSystem(nodename, configid, nodeConf);
 	}
+
+        @Override
+        protected String getFs() {
+            return FileSystemConstants.LOCALTYPE;
+        }
 }
