@@ -5,23 +5,27 @@ metadata:
 build:
   artifacts:
   - image: aether-opennlp-data$APPID
-    context: ../../../docker/cloud/opennlpdata
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/opennlpdata/Dockerfile
       buildArgs:
         mydata: '{{.MYOPENNLPDATA}}'
   - image: aether-spark-ml-data$APPID
-    context: ../../../docker/cloud/sparkmldata
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/sparkmldata/Dockerfile
       buildArgs:
         mydata: '{{.MYSPARKMLDATA}}'
   - image: aether-mahout-spark-data$APPID
-    context: ../../../docker/cloud/mahoutsparkdata
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/mahoutsparkdata/Dockerfile
       buildArgs:
         mydata: '{{.MYMAHOUTSPARKDATA}}'
   - image: aether-opennlp$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.OPENNLPJAR}}'
@@ -29,9 +33,11 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        mydata: '{{.MYOPENNLPDATA}}'
   - image: aether-mahout-spark$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.MAHOUTSPARKJAR}}'
@@ -40,9 +46,11 @@ build:
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
         appid: '{{.APPID}}'
+        mydata: '{{.MYMAHOUTSPARKDATA}}'
   - image: aether-spark-ml$IMGID
-    context: ../../../docker/cloud/generic
+    context: ../../..
     docker:
+      dockerfile: docker/cloud/generic/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.SPARKMLJAR}}'
@@ -51,6 +59,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED" 
         appid: '{{.APPID}}'
+        mydata: '{{.MYSPARKMLDATA}}'
 deploy:
   kubectl:
     manifests:

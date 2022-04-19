@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: opennlp$APPID
+  name: aether-opennlp$APPID
   labels:
-    app: opennlp$APPID
+    app: aether-opennlp$APPID
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: opennlp$APPID
+      app: aether-opennlp$APPID
   template:
     metadata:
       labels:
-        app: opennlp$APPID
+        app: aether-opennlp$APPID
     spec:
       initContainers:
       - name: opennlpinit
-        image: aether-opennlpdata$APPID
+        image: aether-opennlp-data$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: opennlpdatavol
           mountPath: /newdata
       containers:
-      - name: opennlp$APPID
+      - name: aether-opennlp$APPID
         image: aether-opennlp$IMGID
         ports:
         - containerPort: 80

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mahout-spark$APPID
+  name: aether-mahout-spark$APPID
   labels:
-    app: mahout-spark$APPID
+    app: aether-mahout-spark$APPID
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mahout-spark$APPID
+      app: aether-mahout-spark$APPID
   template:
     metadata:
       labels:
-        app: mahout-spark$APPID
+        app: aether-mahout-spark$APPID
     spec:
       initContainers:
       - name: mahout-sparkinit
-        image: aether-mahout-sparkdata$APPID
+        image: aether-mahout-spark-data$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: mahout-sparkdatavol

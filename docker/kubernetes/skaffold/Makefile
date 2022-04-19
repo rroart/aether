@@ -35,6 +35,6 @@ skaffoldcore.yaml: skaffoldcore.yaml.tmpl
 	envsubst < skaffoldcore.yaml.tmpl > skaffoldcore.yaml
 
 conf:
-	$(MAKE) -C ../../cloud -B
+	$(MAKE) -C ../../cloud -B all
 
 .PHONY: all $(SUBDIRS) conf

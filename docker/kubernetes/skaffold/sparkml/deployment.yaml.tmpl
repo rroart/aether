@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spark-ml$APPID
+  name: aether-spark-ml$APPID
   labels:
-    app: spark-ml$APPID
+    app: aether-spark-ml$APPID
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spark-ml$APPID
+      app: aether-spark-ml$APPID
   template:
     metadata:
       labels:
-        app: spark-ml$APPID
+        app: aether-spark-ml$APPID
     spec:
       initContainers:
       - name: spark-mlinit
-        image: aether-spark-mldata$APPID
+        image: aether-spark-ml-data$APPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: spark-mldatavol

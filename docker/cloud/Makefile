@@ -1,7 +1,11 @@
 VERSION = 0.10-SNAPSHOT
 SUBDIRS = core datanucleus servicemanager-openshift servicemanager-simple elastic eureka hbase hdfs hibernate local lucene mahout-mr mahout-spark opennlp solr spark-ml swift web
+DATADIRS = opennlpdata sparkmldata mahoutsparkdata
 
-all: core
+$(DATADIRS):
+	$(MAKE) -C $@ 
+
+all: core $(DATADIRS)
 #calibre core datanucleus djvutxt elastic eureka hbase hdfs hibernate local lucene mahout-mr mahout-spark opennlp pdftotext solr spark-ml s3 swift tika web wvtext
 #servicemanager-openshift servicemanager-simple
 
@@ -18,4 +22,4 @@ endif
 %.xml: %.xml.tmpl
 	envsubst < $< > $@
 
-.PHONY: all $(SUBDIRS)
+.PHONY: all $(SUBDIRS) $(DATADIRS)
