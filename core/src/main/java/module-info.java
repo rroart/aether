@@ -53,4 +53,5 @@ module core {
     requires commons.validator;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires eureka.client;
 }

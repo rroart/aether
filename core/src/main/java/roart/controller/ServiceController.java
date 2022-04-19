@@ -2,15 +2,21 @@ package roart.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.EurekaClient;
 
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
@@ -29,10 +35,19 @@ import roart.service.SearchService;
 @CrossOrigin
 @RestController
 @SpringBootApplication
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
+//@ComponentScan(basePackages = { "roart.eureka.util" })
 public class ServiceController implements CommandLineRunner {
 
         private Logger log = LoggerFactory.getLogger(this.getClass());
+
+        @Lazy
+        @Autowired
+        public EurekaClient eurekaClient;
+        
+        //@Lazy
+        //@Autowired
+        public DiscoveryClient discoveryClient = null;
 
         private ControlService instance;
         private SearchService instance2;
@@ -484,6 +499,8 @@ public class ServiceController implements CommandLineRunner {
         @Override
         public void run(String... args) throws InterruptedException {
             EurekaUtil.initEurekaClient();
+            EurekaUtil.discoveryClient = discoveryClient;
+            EurekaUtil.eurekaClient = eurekaClient;
             String configFile = null;
             if (args != null && args.length > 0) {
             System.out.println("args " + args[0]);

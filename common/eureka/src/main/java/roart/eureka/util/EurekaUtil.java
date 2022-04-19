@@ -9,11 +9,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -21,9 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
-import com.netflix.appinfo.MyDataCenterInstanceConfig;
 import com.netflix.appinfo.providers.EurekaConfigBasedInstanceInfoProvider;
-import com.netflix.discovery.DefaultEurekaClientConfig;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
@@ -32,27 +27,30 @@ import com.netflix.discovery.shared.Application;
 import roart.common.config.Connector;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
-import roart.common.constants.EurekaConstants;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 
-@EnableDiscoveryClient
 public class EurekaUtil {
 
     private static Logger log = LoggerFactory.getLogger(EurekaUtil.class);
 
     private static ApplicationInfoManager applicationInfoManager;
+
     public static EurekaClient eurekaClient = null;
     
-    @Autowired
     public static DiscoveryClient discoveryClient;
 
     public static EurekaClient initEurekaClient() {
+        if (true) {
+            return null;
+        }
+        EurekaClient eurekaClient = null;
+        DiscoveryClient discoveryClient = null;
         log.info("here");
         if (discoveryClient == null) {
             // create the client
-            ApplicationInfoManager applicationInfoManager = initializeApplicationInfoManager(new MyDataCenterInstanceConfig());
-            initializeEurekaClient(applicationInfoManager, new DefaultEurekaClientConfig());
+            //ApplicationInfoManager applicationInfoManager = initializeApplicationInfoManager(new MyDataCenterInstanceConfig());
+            //initializeEurekaClient(applicationInfoManager, new DefaultEurekaClientConfig());
         } else {
             log.info("Got discovery client");
         }
@@ -106,7 +104,7 @@ public class EurekaUtil {
         
         String appid = System.getenv(Constants.APPID);
         if (appid != null) {
-            appName = appName + appid; // can not handle domain, only eureka
+            appName = appName + appid.toUpperCase(); // can not handle domain, only eureka
         }
 
         String homePageUrl = null;
@@ -122,12 +120,15 @@ public class EurekaUtil {
             }
         }
         if (homePageUrl == null && eurekaClient != null) {
-            List<InstanceInfo> li = eurekaClient.getApplication(appName).getInstances();
+            Application x = eurekaClient.getApplication(appName);
+            if (x != null) {
+            List<InstanceInfo> li = x.getInstances();
             for (InstanceInfo ii : li) {
                 log.debug("homePage2 " + ii.getHomePageUrl());
             }
             if (!li.isEmpty()) {
                 homePageUrl = li.get(0).getHomePageUrl();
+            }
             }
         }
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
@@ -177,6 +178,7 @@ public class EurekaUtil {
     }
 
     private static synchronized EurekaClient initializeEurekaClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig clientConfig) {
+        EurekaClient eurekaClient = null;
         if (eurekaClient == null) {
             eurekaClient = new DiscoveryClient(applicationInfoManager, clientConfig);
         }
