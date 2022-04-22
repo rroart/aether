@@ -49,6 +49,37 @@ def searchP(search, type = "0"):
         table.auto_set_font_size(False)
         plt.show()
 
+def searchmlt(search):
+        import multiprocessing as mp
+        mp.Process(target=searchmltP, args=(search)).start()
+
+def searchmltP(search):
+        #SearchEngineSearchParam param = SearchEngineSearchParam();
+        #param.conf = getConfig();
+        #param.str = search;
+        #param.searchtype = type;
+        param = { "str" : search }
+        response = request.request1(param, "searchmlt")
+        print(response)
+        print(response.json())
+        print(response.json()['list'])
+        l = response.json()['list']
+        val1 = l[0][0]['items']
+        val2 = [ 1 + i for i in range(len(l[0]) - 1 ) ]
+        #for i in l:
+        #    for j in i:
+        #        print(j['items'])
+        val3 = [ l[0][i]['items'] for i in range(1, len(l[0])) ]
+        fig, ax = plt.subplots() 
+        ax.set_axis_off()
+        table = ax.table( 
+                cellText = val3,  
+                rowLabels = val2,  
+                colLabels = val1, 
+                cellLoc ='left',  
+                loc ='upper left')
+        table.auto_set_font_size(False)
+        plt.show()
 
 def traverse(add = None):
         import multiprocessing as mp
@@ -114,3 +145,40 @@ def indexP(add, reindex):
         table.auto_set_font_size(False)
         plt.show()
 
+def filesystemlucenenew(add, md5checknew):
+        param = { "function" : "FILESYSTEMLUCENENEW", "add" : add, "md5checknew" : md5checknew }
+        response = request.request1(param, "filesystemlucenenew")
+
+def deletepathdb(path):
+        param = { "function" : "DELETEPATH", "file" : path }
+        response = request.request1(param, "deletepathdb")
+
+def overlapping():
+         response = request.request1({ "function" : "OVERLAPPING" }, "overlapping" )
+         
+def indexclean():
+        response = request.request1({ "function" : "INDEXCLEAN" }, "indexclean")
+
+def indexdelete():
+        response = request.request1({ "function" : "INDEXDELETE" }, "indexdelete")
+
+def dbclear():
+        response = request.request1({ "function" : "DBCLEAR" }, "dbclear")
+
+def dbdrop():
+        response = request.request1({ "function" : "DBDROP" }, "dbdrop")
+        
+def dbsearch(string = None):
+        response = request.request1({ "function" : "DBSEARCH", "file" : string }, "dbsearch")
+        print(response)
+        print(response.json())
+        
+def dbindex(string = None):
+        response = request.request1({ "function" : "DBINDEX", "file" : string }, "dbindex")
+        print(response)
+        print(response.json())
+        
+def notindexed():
+        response = request.request1({ "function" : "NOTINDEXED" }, "notindexed")
+        print(response)
+        print(response.json())
