@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: lucenedatavol
         persistentVolumeClaim:
-          claimName: lucenedatapv
+          claimName: lucenedatapv$APPID
 ---
 apiVersion: v1
 kind: Service

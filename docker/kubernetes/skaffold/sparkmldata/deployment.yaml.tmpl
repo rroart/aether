@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: spark-mldatapv
+  name: spark-mldatapv$APPID
 spec:
   storageClassName: manual
   capacity:
@@ -10,14 +10,14 @@ spec:
     - ReadWriteMany
   claimRef:
     namespace: default
-    name: spark-mldatapv
+    name: spark-mldatapv$APPID
   hostPath:
     path: "/data/sparkmldata"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: spark-mldatapv
+  name: spark-mldatapv$APPID
 spec:
   # Specify "" as the storageClassName so it matches the PersistentVolume's StorageClass.
   # A nil storageClassName value uses the default StorageClass. For details, see

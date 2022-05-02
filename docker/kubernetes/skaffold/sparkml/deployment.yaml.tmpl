@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: spark-mldatavol
         persistentVolumeClaim:
-          claimName: spark-mldatapv
+          claimName: spark-mldatapv$APPID
 ---
 apiVersion: v1
 kind: Service

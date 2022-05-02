@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: hibernatedatavol
         persistentVolumeClaim:
-          claimName: hibernatedatapv
+          claimName: hibernatedatapv$APPID
 ---
 apiVersion: v1
 kind: Service

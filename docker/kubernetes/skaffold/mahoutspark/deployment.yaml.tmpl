@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: mahout-sparkdatavol
         persistentVolumeClaim:
-          claimName: mahout-sparkdatapv
+          claimName: mahout-sparkdatapv$APPID
 ---
 apiVersion: v1
 kind: Service

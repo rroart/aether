@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: mahout-mrdatavol
         persistentVolumeClaim:
-          claimName: mahout-mrdatapv
+          claimName: mahout-mrdatapv$APPID
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
