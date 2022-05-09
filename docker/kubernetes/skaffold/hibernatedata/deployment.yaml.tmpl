@@ -12,7 +12,7 @@ spec:
     namespace: default
     name: hibernatedatapv$APPID
   hostPath:
-    path: "/data/hibernatedata"
+    path: "/data/hibernatedata$APPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

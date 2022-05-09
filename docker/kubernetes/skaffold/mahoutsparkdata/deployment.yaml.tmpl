@@ -12,7 +12,7 @@ spec:
     namespace: default
     name: mahout-sparkdatapv$APPID
   hostPath:
-    path: "/data/mahoutsparkdata"
+    path: "/data/mahoutsparkdata$APPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

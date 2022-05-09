@@ -12,7 +12,7 @@ spec:
     namespace: default
     name: spark-mldatapv$APPID
   hostPath:
-    path: "/data/sparkmldata"
+    path: "/data/sparkmldata$APPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

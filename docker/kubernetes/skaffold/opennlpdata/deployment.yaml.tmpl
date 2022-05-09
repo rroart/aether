@@ -12,7 +12,7 @@ spec:
     namespace: default
     name: opennlpdatapv$APPID
   hostPath:
-    path: "/data/opennlpdata"
+    path: "/data/opennlpdata$APPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

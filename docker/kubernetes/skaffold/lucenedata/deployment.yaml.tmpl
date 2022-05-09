@@ -12,7 +12,7 @@ spec:
     namespace: default
     name: lucenedatapv$APPID
   hostPath:
-    path: "/data/lucenedata"
+    path: "/data/lucenedata$APPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
