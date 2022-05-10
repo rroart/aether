@@ -15,6 +15,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        eurekaserver: '{{.EUREKA_SERVER_URI}}'
 deploy:
   kubectl:
     manifests:

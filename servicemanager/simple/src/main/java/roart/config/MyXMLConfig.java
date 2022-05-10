@@ -62,6 +62,9 @@ public class MyXMLConfig {
     }
 
     public void config() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+        String connectorString = configInstance.getConnectors();
+        Connector[] connectors = JsonUtil.convert(connectorString, Connector[].class);
+        Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
         String version = "-0.10-SNAPSHOT.jar";
         Map<String, String> map2 = new HashMap<>();
         map2.put(EurekaConstants.CALIBRE, "aether-calibre" + version);
@@ -101,6 +104,13 @@ public class MyXMLConfig {
                 continue;
             }
             if (bool) {
+                int lastidx = key.lastIndexOf(".");
+                int firstidx = key.indexOf("[");
+                String name = key.substring(lastidx + 1, firstidx);
+		Connector connector = connectMap.get(name);
+		if (connector != null && !connector.isEureka()) {
+		    continue;
+		}
                 String str = null;
                 String jar = entry.getValue();
                 log.info("Starting {}", jar);
@@ -137,9 +147,6 @@ public class MyXMLConfig {
                 }
             }
         }
-        String connectorString = configInstance.getConnectors();
-        Connector[] connectors = JsonUtil.convert(connectorString, Connector[].class);
-        Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
         String converterString = configInstance.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         log.info("Converters {}", converters.length);
