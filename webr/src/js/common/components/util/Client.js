@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { env } from '../../../../env'
+import fileDownload from 'js-file-download'
 
 function getPort() {
     if (typeof env.REACT_APP_MYPORT !== 'undefined') {
@@ -67,6 +68,10 @@ function parseJSON(response) {
   return response.json();
 }
 
+export const geturl = (query) => {
+    return "http://" + getHost() + ":" + getPort() + query;
+}
+
 const fetchApi = {
     search(query, serviceparam) {
         console.log(query);
@@ -81,6 +86,7 @@ const fetchApi = {
             .catch((error) => console.log(error.message))
             .then (data => data)
     }
+
 }
 
 function statusHelper (response) {
@@ -91,5 +97,5 @@ function statusHelper (response) {
   }
 }
 
-const Client = { search, fetchApi };
+const Client = { search, fetchApi, geturl };
 export default Client;

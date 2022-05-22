@@ -51,7 +51,17 @@ class Main extends React.Component {
 }
 
   render() {
-    const { main } = this.props;
+      const { main } = this.props;
+
+      var dolucene;
+      var dosolr;
+      var doelastic;
+      if (!!main.config) {
+	   dolucene = main.config.get('configValueMap').get("searchengine.lucene[@enable]");
+	   dosolr = main.config.get('configValueMap').get("searchengine.solr[@enable]");
+	   doelastic = main.config.get('configValueMap').get("searchengine.elastic[@enable]");
+      }
+      
     const result = main && main.result2 ? main.result2 : null;
     const result3 = main && main.result3 ? main.result3 : null;
     const count = main && main.count ? main.count : null;
@@ -80,7 +90,7 @@ var newtab = new Tab(map);
         <Tabs defaultActiveKey={1} id="maintabs">
           <Tab eventKey={1} title="Search">
             <h2>Any content 1</h2>
-            <Search  {...this.props}/>
+              <Search  dolucene={dolucene} dosolr={dosolr} doelastic={doelastic} props={this.props}/>
             <h3>Cont</h3>
           </Tab>
           <Tab eventKey={2} title="Control panel">

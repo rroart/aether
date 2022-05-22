@@ -3,6 +3,10 @@ import { Map } from 'immutable';
 
 import type { mainType } from '../../common/types/main'
 import { Tabs, Tab } from 'react-bootstrap';
+import { Client } from '../../common/components/util'
+import { MyTable } from '../../common/components/MyTable'
+
+import React, { useEffect } from "react";
 
 const GET_MAIN = 'app/main/GET_MAIN';
 const GET_R3 = 'app/main/GET_R3';
@@ -73,8 +77,33 @@ export const getConfig = createAction(GETCONFIG, () => ( {} ) );
 export const getLanguages = createAction(GETLANGUAGES, (l) => ( { l } ) );
 export const setLanguages = createAction(SETLANGUAGES, (l) => ( { l } ) );
 export const control = createAction(CONTROL, (config, param, props) => ( { config, param, props } ) );
-export const search = createAction(SEARCH, (config, param, props) => ( { config, param, props } ) );
-				      
+//export const search = createAction(SEARCH, (config, param, props) => ( { config, param, props } ) );
+export const search = (config, param, props) => {
+    console.log("xxxx");
+    useEffect((param) => {
+    console.log("xxxxyyyy");
+    const url = Client.geturl("/" + param.webpath);
+    const fetchData = async(url) => {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+            body: JSON.stringify(param),
+        });
+        const json = await response.json();
+        console.log(json.slip.advice);
+        //setAdvice(json.slip.advice);
+	const bla = MyTable.t("hei");
+
+    } catch (error) {
+        console.log("error", error);
+    }
+    };
+
+    fetchData(url);
+}, []);
+}
+
 export const actions = {
   getAwesomeCode,
   getAwesomeR3,

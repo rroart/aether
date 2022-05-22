@@ -2,10 +2,11 @@ import { put, fork, takeLatest, takeEvery, call } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { constants as mainConstants, actions as mainActions } from '../modules/main';
 import { Tabs, Tab } from 'react-bootstrap';
+import React, { PureComponent } from 'react';
 
 import { Client } from '../../common/components/util' 
 import { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
-import { MyTable } from '../../common/components/Table'
+import { MyTable } from '../../common/components/MyTable'
 
 export function* fetchMainData() {
   // pretend there is an api call
@@ -81,6 +82,7 @@ export function* fetchControl(action) {
     const config2 = result;
     console.log(config2);
     const list = result.list;
+    const bla = MyTable.t();
     const tab = MyTable.getTab(result.list, Date.now(), props);
     yield put(mainActions.newtabMain(tab));
 }
@@ -111,6 +113,8 @@ export function* fetchSearch(action) {
     let result = yield call(Client.fetchApi.search, "/search", serviceparam)
 ;
     console.log("herecontent2");
+    console.log(data2);
+    const bla = MyTable.t("hei");
     console.log(result);
     console.log(action);
     const config2 = result;
@@ -180,6 +184,7 @@ function* watchGetLanguages() {
     yield takeEvery(mainConstants.GETLANGUAGES, fetchLanguages);
 }
 
+/*
 function* watchSearch() {
     console.log("watchgetsearch");
     //console.log(action);
@@ -187,6 +192,7 @@ function* watchSearch() {
     //console.log(config);
     yield takeEvery(mainConstants.SEARCH, fetchSearch);
 }
+*/
 
 export const mainSaga = [
   fork(watchGetMain),
@@ -198,5 +204,5 @@ export const mainSaga = [
      fork(watchGetConfig),
   fork(watchGetLanguages),
   fork(watchControl),
-  fork(watchSearch),
+    //fork(watchSearch),
 ];
