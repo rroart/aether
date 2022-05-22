@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { useTable } from 'react-table'
 import ReactTooltip from "react-tooltip";
 
@@ -17,6 +17,9 @@ function Table({ hcolumns, hdata }) {
 	rows,
 	prepareRow,
     } = useTable({ columns: hcolumns, data: hdata });
+    useEffect(() => {
+        ReactTooltip.rebuild()
+    });
     //console.log("callme");
     return (
 	<div>

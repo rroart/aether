@@ -9,6 +9,7 @@ import { Table } from '../Table'
 import { constants as mainConstants, actions as mainActions } from '../../../redux/modules/main';
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTable } from 'react-table';
+import ReactTooltip from "react-tooltip";
 
 function Search({dolucene, dosolr, doelastic, props}) {
     const [ htm, setHtm ] = useState(<div><h1>No table</h1></div>);
@@ -109,6 +110,7 @@ const main = props;
       return (
 	  <div>
 	      { Searchbars }
+	       <ReactTooltip effect="solid" html="true"/>
 	      <Table hcolumns={hcolumns} hdata={hdata} />
 	      </div>
     );
