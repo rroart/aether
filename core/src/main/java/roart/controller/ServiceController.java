@@ -1,5 +1,8 @@
 package roart.controller;
 
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +12,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.netflix.discovery.DiscoveryClient;
@@ -22,13 +29,22 @@ import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.database.DatabaseLanguagesResult;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
+import roart.common.model.IndexFiles;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.service.ServiceParam;
 import roart.common.service.ServiceResult;
+import roart.common.util.FsUtil;
 import roart.config.MyXMLConfig;
 import roart.content.ClientHandler;
+import roart.database.IndexFilesDao;
 import roart.eureka.util.EurekaUtil;
+import roart.filesystem.FileSystemDao;
 import roart.service.ControlService;
 import roart.service.SearchService;
 
@@ -475,6 +491,31 @@ public class ServiceController implements CommandLineRunner {
             //result.error = e.getMessage();
         }
         return result;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.DOWNLOAD + "/{id}",
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE,
+            method = RequestMethod.GET)
+    public @ResponseBody byte[] getDownload(@PathVariable String id)
+            throws Exception {
+        InputStream result = null;
+        try {
+            String md5 = id;
+            IndexFiles index = IndexFilesDao.getByMd5(md5);
+            FileLocation fl = index.getaFilelocation();
+            FileObject f = FsUtil.getFileObject(fl);
+            Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
+            InmemoryMessage message = FileSystemDao.readFile(f);
+            result = inmemory.getInputStream(message);
+            inmemory.delete(message);
+            //result = FileSystemDao.getInputStream(f);
+            // delete inmem
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            // TODO fix
+            //result.error = e.getMessage();
+        }
+        return IOUtils.toByteArray(result);
     }
 
     // TODO move this
