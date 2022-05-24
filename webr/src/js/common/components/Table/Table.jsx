@@ -1,15 +1,20 @@
 /* eslint-disable no-undef */
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 import { useTable } from 'react-table'
 import ReactTooltip from "react-tooltip";
 
-function Table({ hcolumns, hdata }) {
-    //console.log("callme");
-    if (hcolumns == null || hdata == null || hcolumns.length == 0 || hdata.length == 0) {
+function Table({ columns, data }) {
+    console.log("callme");
+    console.log(columns);
+    console.log(data);
+    if (columns == null || data == null || columns.length == 0 || data.length == 0) {
+	console.log("callmein");
 	return (
 	    <h2>No table</h2>
 	);
     }
+    const hcolumns = useMemo( () => columns); //, [mycolumns] );
+    const hdata = useMemo( () => data);//, [mydata] );
     const {
 	getTableProps,
 	getTableBodyProps,

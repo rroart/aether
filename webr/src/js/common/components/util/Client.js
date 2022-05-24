@@ -85,9 +85,38 @@ const fetchApi = {
             .then(parseJSON)
             .catch((error) => console.log(error.message))
             .then (data => data)
+    },
+
+    download(query, serviceparam) {
+	console.log(serviceparam);
+	const path = require('path');
+	const filename = path.basename(serviceparam.filename);
+        console.log(query);
+        console.log(JSON.stringify(serviceparam));
+        return fetch("http://" + getHost() + ":" + getPort() + query + "/" + serviceparam.str, {
+            method: "GET",
+            //headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+            //body: JSON.stringify(serviceparam),
+        })
+            .then(statusHelper)
+            .then(response => response.blob())
+            .catch((error) => console.log(error.message))
+	    //.then (data => console.log(data))
+            .then (data => fileDownload(data, filename))
     }
 
 }
+
+export const fetchData = async (url) => {
+    try {
+        const response = await fetch(url);
+        const json = await response.json();
+        console.log(json.slip.advice);
+        setAdvice(json.slip.advice);
+    } catch (error) {
+        console.log("error", error);
+    }
+};
 
 function statusHelper (response) {
   if (response.status >= 200 && response.status < 300) {

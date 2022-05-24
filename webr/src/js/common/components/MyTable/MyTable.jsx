@@ -2,16 +2,32 @@
 import React, { PureComponent } from 'react';
 import { useTable } from 'react-table'
 import ReactTooltip from "react-tooltip";
+import { Client } from '../util' 
+import { constants as mainConstants, actions as mainActions } from '../../../redux/modules/main';
 
-function handleClick(props, e, value, value2) {
-    console.log("hhaha");
-    console.log(e);
-    console.log(value);
-    console.log(props);
-    props.download({ 'str' :  value, 'filename' : value2 });
+function handleMLT(value, callback) {
+    console.log("here1");
+    callback(value);
+    if (true) return;
+    const result = Client.fetchApi.search("/searchmlt", { str : value });
+    result.then(function(result) { callback(result); });
+    console.log("here1");
+    const htm=(<h2>hei</h2>);
+    console.log("call " , htm);
+mainActions.newtabMain(htm);
+    console.log("call ", htm);
 }
 
-function getcolumns(resultitemtable) {
+function handleDownload(value, filename) {
+    console.log("here2");
+    console.log(value);
+    console.log(value.original);
+    console.log(value.original['Md5/Id']);
+    Client.fetchApi.download("/download", { str : value.original['Md5/Id'], filename : filename });
+    console.log("here2");
+}
+
+function getcolumns(resultitemtable, baseurl, callback) {
     const array = resultitemtable;
     console.log(array);
     if (array.length == 0) {
@@ -20,23 +36,54 @@ function getcolumns(resultitemtable) {
     const columns = [];
     const head = array[0];
     for(var i = 0; i < head.items.length; i++) {
-	/*
-	  if (head.items[i] == "Md5/Id") {
+	if (head.items[i] == "Md5/Id") {
+	    /*
 	  var obj = row.value;
 	  console.log(obj);
 	  var id = obj["id"];
 	  console.log(id);
-	  columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleClick(props, e, row.value[0])}>{Object.keys(row.value)}</a>) });
+*/
+	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({value}) => (<a onClick = {(e) => handleMLT(value, callback)}>{value}</a>)});
+	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row, value}) => { const path = require('path'); const base = path.basename(row.original.Filename); const dl = baseurl + "download/" + value; return(<a href={dl} download={base}>{value}</a>)}});
+	  //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleClick(props, e, row.original.Filename)}>{row.value}</a>) });
 	  //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleButtonClick(props, e, row.value)}>{row.value}</a>) });
 	  //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
 
 	  continue;
 	  }
-	*/
+	if (head.items[i] == "Filename") {
+	    /*
+	  var obj = row.value;
+	  console.log(obj);
+	  var id = obj["id"];
+	  console.log(id);
+*/
+	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row, value}) => (<a onClick = { (e) => handleDownload(row, value)}>{value}</a>)});
+	  //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleClick(props, e, row.original.Filename)}>{row.value}</a>) });
+	  //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleButtonClick(props, e, row.value)}>{row.value}</a>) });
+	  //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
+
+	  continue;
+	  }
+	if (head.items[i].startsWith("Highlight2")) {
+	    /*
+	  var obj = row.value;
+	  console.log(obj);
+	  var id = obj["id"];
+	  console.log(id);
+*/
+	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row, value}) => 
+	  //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleButtonClick(props, e, row.value)}>{row.value}</a>) });
+	  //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
+
+	  continue;
+	  }
 	if (head.items[i] != "Score") {
 	    //columns.push({ accessor: head[i], Header: head[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={console.log('clicked value', value)}>Button</a>) });
 	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'button'+i, Cell: (row) => (<div><span title={row.value}>{row.value}</span></div>) });
 	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row) => (<span data-tip = {row.value}>{row.value}</span>) });
+	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row) => (<div class="tooltip">{row.value}<span class="tooltiptext">{row.value}</span>
+//</div>) });
 	    //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'button'+i, Cell: (row) => (<span id={head.items[i]} data-tip = {row.value} dangerouslySetInnerHTML={{__html: row.value }}/>) });
 	} else {
 	    columns.push({ accessor: head.items[i], Header: head.items[i], sort: true });
@@ -62,6 +109,7 @@ function getdata(resultitemtable) {
 	for(var i = 0; i < head.items.length; i++) {
 	    //console.log(i);
 	    newrow[head.items[i]] = row[i];
+	    console.log(newrow, head.items[i]);
 	    console.log(typeof(row[i]))
 	    //console.log(i);
 	}
@@ -77,9 +125,10 @@ function getdata(resultitemtable) {
 	  newrow[head[0]] = "bla";
 	  }
 	*/
-	//console.log(newrow);
+	console.log(newrow);
 	result.push(newrow);
     }
+    console.log(result);
     return result;
 }
 

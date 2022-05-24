@@ -59,8 +59,9 @@ function  search(searchnetstring, type, config) {
 	const tables = [];
 	//for(var i = 0; i < list.length; i++) {
 	const i = 0;
-	    const resultitemtable = list[i];
-	    const mycolumns = MyTable.getcolumns(resultitemtable);
+	const resultitemtable = list[i];
+	const baseurl = Client.geturl("/");
+	const mycolumns = MyTable.getcolumns(resultitemtable, baseurl);
 	    const mydata = MyTable.getdata(resultitemtable);
 	    const hcolumns = useMemo( () => mycolumns, [] );
 	    const hdata = useMemo( () => mydata, [] );
@@ -126,7 +127,7 @@ function     searchold(event, type) {
   
 
 
-function SearchBar({ text, type, config, parentCallback }) {
+function SearchBar({ text, type, config, parentCallback, parentCallback2 }) {
     console.log(text);
     console.log(type);
     //console.log(config);
@@ -184,17 +185,20 @@ function SearchBar({ text, type, config, parentCallback }) {
     //for(var i = 0; i < list.length; i++) {
     const i = 0;
     const resultitemtable = list[i];
-    const mycolumns = MyTable.getcolumns(resultitemtable);
+    const baseurl = Client.geturl("/");
+    const mycolumns = MyTable.getcolumns(resultitemtable, baseurl, parentCallback2);
+    console.log("calll");
     console.log(resultitemtable);
-    console.log(mycolumns);
     const mydata = MyTable.getdata(resultitemtable);
-    const hcolumns = useMemo( () => mycolumns); //, [mycolumns] );
-    console.log(hcolumns);
-    const hdata = useMemo( () => mydata);//, [mydata] );
-    console.log(hdata);
+    console.log(mycolumns);
+    console.log(mydata);
+    //const hcolumns = useMemo( () => mycolumns); //, [mycolumns] );
+    //const hdata = useMemo( () => mydata);//, [mydata] );
     if (searchnetstring !== undefined && searchnetstring.length > 0) {
 	console.log("call"+searchnetstring);
-	parentCallback(hcolumns, hdata);
+	//console.log(hcolumns);
+	//console.log(hdata);
+	parentCallback(mycolumns, mydata);
     }
     /*
     const {
