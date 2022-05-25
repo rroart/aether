@@ -104,7 +104,8 @@
     "redux": "^4.0.0",
     "redux-actions": "^2.3.0",
     "redux-saga": "^0.16.0",
-    "reselect": "^3.0.1"
+    "reselect": "^3.0.1",
+    "styled-components": "^4.3.2"
   },
   "jest": {
     "testURL": "http://www.SomeAwesome.com",
