@@ -6,24 +6,29 @@ import { DropdownButton, MenuItem, Button, ButtonToolbar, Nav, Navbar, NavItem, 
 import { ServiceParam } from '../../types/main'
 import DatePicker from 'react-16-bootstrap-date-picker';
 
-class ControlPanel extends PureComponent {
-  constructor() {
-      super();
-      this.indexnew = '';
-      this.indexmd5 = '';
-      this.fsnew = '';
-      this.nonindex = '';
-      this.suffixindex = '';
-      this.suffixindex = '';
-      this.startdate = '';
-      this.enddate = '';
-      this.reindex = '';
-      this.deletepath = '';
-      this.databasemd5 = '';
-      this.databasesearch = '';
-}
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useTable } from 'react-table';
+import ReactTooltip from "react-tooltip";
+import { MyTable } from '../MyTable'
+import { Table } from '../Table'
 
-    filesystemlucenenew(path, md5checknew, props) {
+function ControlPanel ({ props }) {
+    const [ indexnew, setIndexnew ] = useState('');
+    const [ indexmd5, setIndexmd5 ] = useState('');
+    const [ fsnew, setFsnew ] = useState('');
+    const [ nonindex, setNonindex ] = useState('');
+    const [ suffixindex, setSuffixindex ] = useState('');
+    const [ startdate, setStartdate ] = useState('');
+    const [ enddate, setEnddate ] = useState('');
+    const [ reindex, setReindex ] = useState('');
+    const [ deletepath, setDeletepath ] = useState('');
+    const [ databasemd5, setDatabasemd5 ] = useState('');
+    const [ databasesearch, setDatabasesearch ] = useState('');
+    const [ param, setParam ] = useState(null);
+    const [ hcolumns, setHcolumns ] = useState(null);
+    const [ hdata, setHdata ] = useState(null);
+
+    function filesystemlucenenew(path, md5checknew, props) {
 	console.log(path);
 	var param = new ServiceParam();
 	param.config = props.config;
@@ -31,346 +36,361 @@ class ControlPanel extends PureComponent {
 	param.add = path;
 	param.md5checknew = md5checknew;
 	param.webpath = "filesystemlucenenew";
-	this.props.control(param.config, param, this.props)
-    //props.control([ param ]);
-  }
+	setParam(param);
+    }
 
-    traverse(path, props) {
+    function traverse(path, props) {
 	console.log(path);
 	var param = new ServiceParam();
 	param.config = props.config;
 	param.function = "FILESYSTEM";
 	param.add = path;
 	param.webpath = "traverse";
-	console.log("h");
-	props.control(param.config, param, props);
-	console.log("h2");
-	this.props.control(param.config, param, this.props)
-    //props.control([ param ]);
-  }
+	setParam(param);
+    }
 
-    index(add, reindex, props) {
+    function index(add, reindex, props) {
         var param = new ServiceParam();
-            param.config = this.props.config;
+        param.config = props.config;
         param.function = "INDEX";
         param.add = add;
         param.reindex = reindex;
         param.webpath = "index";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-    indexsuffix(suffix, reindex, props) {
+    function indexsuffix(suffix, reindex, props) {
         var param = new ServiceParam();
-        param.config = this.props.config
+        param.config = props.config
         param.function = "REINDEXSUFFIX";
         param.suffix = suffix;
         param.reindex = reindex;
         param.webpath = "indexsuffix";
-	this.props.control(param.config, param, this.props)
-	}
+	setParam(param);
+    }
 
-        reindexdatelower(date, reindex) {
+    function reindexdatelower(date, reindex, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "REINDEXDATE";
         param.lowerdate = date;
         param.reindex = reindex;
         param.webpath = "reindexdatelower";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
- reindexdatehigher(date,  reindex) {
+    function reindexdatehigher(date,  reindex, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "REINDEXDATE";
         param.higherdate = date;
         param.reindex = reindex;
         param.webpath = "reindexdatehigher";
-	this.props.control(param.config, param, this.props)
-   }
- reindexlanguage(lang) {
+	setParam(param);
+    }
+    function reindexlanguage(lang, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "REINDEXLANGUAGE";
         param.lang = lang;
         param.webpath = "reindexlanguage";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-  cleanupfs(dirname) {
+    function cleanupfs(dirname, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "CONSISTENTCLEAN";
         param.dirname = dirname;
         param.webpath = "cleanupfs";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-    memoryusage() {
+    function memoryusage(props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "MEMORYUSAGE";
         param.webpath = "memoryusage";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-    notindexed() {
+    function notindexed(props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "NOTINDEXED";
         param.webpath = "notindexed";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-     consistentclean( clean) {
+    function consistentclean( clean, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "CONSISTENTCLEAN";
-	    param.clean = clean;
+	param.clean = clean;
         param.webpath = "consistentclean";
         Queues.clientQueue.add(param);
-	this.props.control(param.config, param, this.props)
+	setParam(param);
         return;           
-	    }
+    }
 
-        deletepathdb( path) {
-            var param = new ServiceParam();
-            param.config = this.props.config;
-            //param.function = Function.DELETEPATHDB;
-            param.path = path;
-            param.webpath = "deletepathdb";
-	this.props.control(param.config, param, this.props)
-       }
-
-     dbindex( md5) {
+    function deletepathdb( path, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
+        //param.function = Function.DELETEPATHDB;
+        param.path = path;
+        param.webpath = "deletepathdb";
+	setParam(param);
+    }
+
+    function dbindex( md5, props) {
+        var param = new ServiceParam();
+        param.config = props.config;
         param.function = "DBINDEX";
         param.md5 = md5;
         param.webpath = "dbindex";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-     dbsearch( md5)  {
+    function dbsearch( md5, props) {
         var param = new ServiceParam();
-        param.config = this.props.config;
+        param.config = props.config;
         param.function = "DBSEARCH";
         param.md5 = md5;
         param.webpath = "dbsearch";
-	this.props.control(param.config, param, this.props)
+	setParam(param);
     }
 
-    render() {
-	const { main } = this.props;
-	const languages = main && main.languages ? main.languages : null;
-	//this.bardvd = new SearchBar('dvd');
-	console.log(main);
-	console.log(languages);
-	console.log(Object.keys(main))
-	console.log(main.config);
-	//console.log(main.config.get("searchengine.lucene"));
-	//console.log(main.config.get("searchengine.lucene[@enable]"));
-	return (
+    const callback2 = useCallback((result2) => {
+    }, []);
+
+    const { main } = props;
+    useEffect(() => {
+	if (param === undefined || param == null) {
+	    return;
+	}
+	const result = Client.fetchApi.search("/" + param.webpath, param);
+	result.then(function(result) {
+	    const list = result.list;
+	    console.log(result);
+	    console.log(list);
+	    const tables = [];
+	    //for(var i = 0; i < list.length; i++) {
+	    const i = 0;
+	    const resultitemtable = list[i];
+	    const baseurl = Client.geturl("/");
+	    
+	    const mycolumns = MyTable.getcolumns(resultitemtable, baseurl, callback2);
+	    const mydata = MyTable.getdata(resultitemtable);
+	    setHcolumns(mycolumns);
+	    setHdata(mydata);
+	});
+	//console.log("callback2", result2);
+	// nei. const u = useMemo( () => []); //, [mycolumns] );
+	//console.log("callback2", result2);
+    }, [param]);
+    const languages = main && main.languages ? main.languages : null;
+    //this.bardvd = new SearchBar('dvd');
+    console.log(main);
+    console.log(languages);
+    console.log(Object.keys(main))
+    console.log(main.config);
+    //console.log(main.config.get("searchengine.lucene"));
+    //console.log(main.config.get("searchengine.lucene[@enable]"));
+    return (
+	<div>
+	    <h2>Hei</h2>
+	    <Navbar>
+		<Navbar.Header>
+		    <Navbar.Brand>
+			<a href="#home">Indexing new</a>
+		    </Navbar.Brand>
+		</Navbar.Header>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(null, false, props) }>Index filesystem new items</Button>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			<Form onSubmit={ (e) => filesystemlucenenew(indexnew, false, props)}>
+			    Index filesystem new items
+			    <FormControl
+				onChange = { (e) => setIndexnew(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		    <NavItem eventKey={3} href="#">
+			<Form onSubmit={ (e) => filesystemlucenenew(indexmd5, false, props)}>
+			    Filesystem index on changed md5 path
+			    <FormControl
+				onChange = { (e) => setIndexmd5(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Navbar.Header>
+		    <Navbar.Brand>
+			<a href="#home">Filesystem add new</a>
+		    </Navbar.Brand>
+		</Navbar.Header>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Button bsStyle="primary" onClick={ (e) => traverse(null, props) }>Filesystem add new</Button>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			<Form onSubmit={ (e) => traverse(fsnew, props)}>
+			    Filesystem add new
+			    <FormControl
+				onChange = { (e) => setFsnew(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Navbar.Header>
+		    <Navbar.Brand>
+			<a href="#home">Indexed non-indexed</a>
+		    </Navbar.Brand>
+		</Navbar.Header>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Button bsStyle="primary" onClick={ (e) => index(null, false, props) }>Index non-indexed items</Button>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			<Form onSubmit={ (e) => index(nonindex, false, props)}>
+			    Index non-indexed items
+			    <FormControl
+				onChange = { (e) => setNonindex(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Form onSubmit={ (e) => indexsuffix(suffixindex, false, props)}>
+			    Index on suffix
+			    <FormControl
+				onChange = { (e) => setSuffixindex(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			<Form onSubmit={ (e) => indexsuffix(suffixindex, true, props)}>
+			    Reindex on suffix
+			    <FormControl
+				onChange = { (e) => setSuffixindex(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Nav>
+		    <NavItem eventKey={2} href="#">
+			Reindex on before date
+			<DatePicker id="startdatepicker" onChange={e => reindexdatelower(e, null, props)}/>
+		    </NavItem>
+		    <NavItem eventKey={3} href="#">
+			Reindex on after date
+			<DatePicker id="enddatepicker" onChange={e => reindexdatehigher(e, null, props)}/>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Form onSubmit={ (e) => index(reindex, true, props)}>
+			    Reindex
+			    <FormControl
+				onChange = { (e) => setReindex(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			Reindex language
+			<Select options="[{size:'5'}]"
+				onChange={e => reindexlanguage(e, props)}
+				options={languages}
+			/>
+
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Form onSubmit={ (e) => deletepathdb(deletepath, props)}>
+			    Delete path from db
+			    <FormControl
+				onChange = { (e) => setDeletepath(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Navbar.Header>
+		    <Navbar.Brand>
+			<a href="#home">Consistency</a>
+		    </Navbar.Brand>
+		</Navbar.Header>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Button bsStyle="primary" onClick={ (e) => consistentclean(false, props) }>Get consistency</Button>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			<Button bsStyle="primary" onClick={ (e) => consistentclean(true, props) }>Get consistency and clean</Button>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Navbar.Header>
+		    <Navbar.Brand>
+			<a href="#home"></a>
+		    </Navbar.Brand>
+		</Navbar.Header>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Button bsStyle="primary" onClick={ (e) => notindexed(props) }>Get not yet indexed</Button>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Button bsStyle="primary" onClick={ (e) => memoryusage(props) }>Memory usage</Button>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
+	    <Navbar>
+		<Nav>
+		    <NavItem eventKey={1} href="#">
+			<Form onSubmit={ (e) => dbindex(databasemd5, props)}>
+			    Database md5 id
+			    <FormControl
+				onChange = { (e) => setDatabasemd5(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		    <NavItem eventKey={2} href="#">
+			<Form onSubmit={ (e) => dbsesearch(databasesearch, true, props)}>
+			    Database search
+			    <FormControl
+				onChange = { (e) => setDatabasesearch(e.target.value) }
+				type="text"/>
+			</Form>
+		    </NavItem>
+		</Nav>
+	    </Navbar>
 	    <div>
-		<h2>Hei</h2>
-		<Navbar>
-		    <Navbar.Header>
-			<Navbar.Brand>
-			    <a href="#home">Indexing new</a>
-			</Navbar.Brand>
-		    </Navbar.Header>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.filesystemlucenenew(null, false, this.props) }>Index filesystem new items</Button>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    <Form onSubmit={ (e) => this.filesystemlucenenew(this.indexnew, false, this.props)}>
-				Index filesystem new items
-				<FormControl
-				    onChange = { (e) => this.indexnew = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-			<NavItem eventKey={3} href="#">
-			    <Form onSubmit={ (e) => this.filesystemlucenenew(this.indexmd5, false, this.props)}>
-				Filesystem index on changed md5 path
-				<FormControl
-				    onChange = { (e) => this.indexmd5 = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Navbar.Header>
-			<Navbar.Brand>
-			    <a href="#home">Filesystem add new</a>
-			</Navbar.Brand>
-		    </Navbar.Header>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.traverse(null, this.props) }>Filesystem add new</Button>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    <Form onSubmit={ (e) => this.traverse(this.fsnew, this.props)}>
-				Filesystem add new
-				<FormControl
-				    onChange = { (e) => this.fsnew = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Navbar.Header>
-			<Navbar.Brand>
-			    <a href="#home">Indexed non-indexed</a>
-			</Navbar.Brand>
-		    </Navbar.Header>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.index(null, false, this.props) }>Index non-indexed items</Button>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    <Form onSubmit={ (e) => this.index(this.nonindex, false, this.props)}>
-				Index non-indexed items
-				<FormControl
-				    onChange = { (e) => this.nonindex = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Form onSubmit={ (e) => this.indexsuffix(this.suffixindex, false, this.props)}>
-				Index on suffix
-				<FormControl
-				    onChange = { (e) => this.suffixindex = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    <Form onSubmit={ (e) => this.indexsuffix(this.suffixindex, true, this.props)}>
-				Reindex on suffix
-				<FormControl
-				    onChange = { (e) => this.suffixindex = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Nav>
-			<NavItem eventKey={2} href="#">
-			    Reindex on before date
-			    <DatePicker id="startdatepicker" onChange={e => this.reindexdatelower(e, null)}/>
-			</NavItem>
-			<NavItem eventKey={3} href="#">
-			    Reindex on after date
-			    <DatePicker id="enddatepicker" onChange={e => this.reindexdatehigher(e, null)}/>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Form onSubmit={ (e) => this.index(this.reindex, true, this.props)}>
-				Reindex
-				<FormControl
-				    onChange = { (e) => this.reindex = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    Reindex language
-			    <Select options="[{size:'5'}]"
-				    onChange={e => this.reindexlanguage(e, this.props)}
-				    options={languages}
-			    />
-
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Form onSubmit={ (e) => this.deletepathdb(this.deletepath, this.props)}>
-				Delete path from db
-				<FormControl
-				    onChange = { (e) => this.deletepath = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Navbar.Header>
-			<Navbar.Brand>
-			    <a href="#home">Consistency</a>
-			</Navbar.Brand>
-		    </Navbar.Header>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.consistentclean(false, this.props) }>Get consistency</Button>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.consistentclean(true, this.props) }>Get consistency and clean</Button>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Navbar.Header>
-			<Navbar.Brand>
-			    <a href="#home"></a>
-			</Navbar.Brand>
-		    </Navbar.Header>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.notindexed(this.props) }>Get not yet indexed</Button>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Button bsStyle="primary" onClick={ (e) => this.memoryusage(this.props) }>Memory usage</Button>
-			</NavItem>
-		    </Nav>
-		</Navbar>
-		<Navbar>
-		    <Nav>
-			<NavItem eventKey={1} href="#">
-			    <Form onSubmit={ (e) => this.databasemd5(this.databasemd5, false, this.props)}>
-				Database md5 id
-				<FormControl
-				    onChange = { (e) => this.databasemd5 = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-			<NavItem eventKey={2} href="#">
-			    <Form onSubmit={ (e) => this.databasesearch(this.databasesearch, true, this.props)}>
-				Database search
-				<FormControl
-				    onChange = { (e) => this.databasesearch = e.target.value }
-				    type="text"/>
-			    </Form>
-			</NavItem>
-		    </Nav>
-		</Navbar>
+		<ReactTooltip effect="solid" html="true"/>
+		<Table columns={hcolumns} data={hdata} />
 	    </div>
-	);
-    }
-    /*
-    function search2(query, cb) {
-	return fetch(`http://localhost:8080/misc/cd/creator`, {
-	    accept: 'application/json',
-	}).then(checkStatus)
-	    .then(parseJSON)
-	    .then(cb);
-    }
-    */
+	</div>
+    );
 }
 
-export default ControlPanel;
+export default memo(ControlPanel);

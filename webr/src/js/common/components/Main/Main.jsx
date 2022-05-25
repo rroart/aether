@@ -95,7 +95,7 @@ var newtab = new Tab(map);
           </Tab>
           <Tab eventKey={2} title="Control panel">
               <h2>Any content 2</h2>
-	      <ControlPanel {...this.props}/>
+	      <ControlPanel props={this.props}/>
           </Tab>
           <Tab eventKey={3} title="Configuration">
               <h2>Any content 3</h2>
