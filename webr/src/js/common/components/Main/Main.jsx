@@ -12,6 +12,7 @@ import { ControlPanel } from '../ControlPanel'
 import { Test } from '../test'
 //import Misc from '../util'
 //import Client from '../util/Client'
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 const tablist = [];
 
@@ -19,14 +20,16 @@ function newtab() {   console.log("bla3")
 //main.watchNewTabMainnn
 }
 
-class Main extends React.Component {
-  newtab2() {
+function Main ({ props }) {
+    const [ tabs, setTabs ] = useState([]);
+
+    function newtab2() {
     console.log("bla4")
     const { main } = this.props;
     main.watchNewTabMain()
   }
 
-  newtab3() {
+  function newtab3() {
     console.log("bla4")
     //const { main } = this.props;
     console.log(this);
@@ -38,11 +41,13 @@ class Main extends React.Component {
     this.props.newtabMain(['bla']);
   }
 
+    /*
   onIncrementAsync() { this.props.incrementasync() }
   onIncrement() { this.props.increment() }
   onIncrement2() { this.props.increment2() }
-
-    getanewtab(data, num) {
+    */
+    
+    function getanewtab(data, num) {
   return(
           <Tab key={num} eventKey={num} title="Result">
               { data }
@@ -50,8 +55,14 @@ class Main extends React.Component {
 	  )
 }
 
-  render() {
-      const { main } = this.props;
+    function callback(data) {
+	tabs.push(data);
+	setTabs([...tabs]);
+	console.log("callb", tabs.length);
+	//main.tabs = tabs;
+    }
+    
+      const { main } = props;
 
       var dolucene;
       var dosolr;
@@ -65,14 +76,13 @@ class Main extends React.Component {
     const result = main && main.result2 ? main.result2 : null;
     const result3 = main && main.result3 ? main.result3 : null;
     const count = main && main.count ? main.count : null;
-    const tabs = main && main.tabs ? main.tabs : null;
+    //const tabs = main && main.tabs ? main.tabs : null;
 
 var mytabs = tabs;
 var map = new Object();
 map['title']='tit';
 var newtab = new Tab(map);
  console.log(tabs);
- //tabs.push('mytit');
  var arrayLength = tabs.length;
 	  console.log("arr");
 	  console.log(tabs);
@@ -82,7 +92,9 @@ var newtab = new Tab(map);
     //Do something
 }
 
+    console.log("callt", tabs.length);
     if (result && result.size && result.size > 0) {
+    console.log("callt", tabs.length);
       return (
         <Fragment>
           <h1>Aether search engine</h1>
@@ -90,23 +102,23 @@ var newtab = new Tab(map);
         <Tabs defaultActiveKey={1} id="maintabs">
           <Tab eventKey={1} title="Search">
             <h2>Any content 1</h2>
-              <Search  dolucene={dolucene} dosolr={dosolr} doelastic={doelastic} props={this.props}/>
+              <Search  dolucene={dolucene} dosolr={dosolr} doelastic={doelastic} props={props} callback = {callback} />
             <h3>Cont</h3>
           </Tab>
           <Tab eventKey={2} title="Control panel">
               <h2>Any content 2</h2>
-	      <ControlPanel props={this.props}/>
+	      <ControlPanel props={props} callback={callback}/>
           </Tab>
           <Tab eventKey={3} title="Configuration">
               <h2>Any content 3</h2>
-	      <Configuration {...this.props}/>
+	      <Configuration {...props}/>
           </Tab>
-	    { mytabs.map((item, index) => this.getanewtab(item, 4 + index)) }
+	    { mytabs.map((item, index) => getanewtab(item, 4 + index)) }
         </Tabs>
         <Button
        bsStyle="primary"
        onClick={
-         () => { this.newtab3() }
+         () => { newtab3() }
 	 }
      >
      New tab
@@ -114,7 +126,7 @@ var newtab = new Tab(map);
         <Button
        bsStyle="primary"
        onClick={
-         () => { this.onIncrementAsync() }
+         () => { onIncrementAsync() }
        }
      >
      Async
@@ -122,7 +134,7 @@ var newtab = new Tab(map);
         <Button
        bsStyle="primary"
        onClick={
-         () => { this.onIncrement() }
+         () => { onIncrement() }
        }
      >
      Inc
@@ -130,7 +142,7 @@ var newtab = new Tab(map);
         <Button
        bsStyle="primary"
        onClick={
-         () => { this.onIncrement2() }
+         () => { onIncrement2() }
        }
      >
      Inc2
@@ -147,6 +159,5 @@ var newtab = new Tab(map);
     }
     return <div />;
   }
-}
 
-export default Main;
+export default memo(Main);

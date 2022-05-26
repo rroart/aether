@@ -133,7 +133,7 @@ function SearchBar({ text, type, config, parentCallback, parentCallback2 }) {
     //console.log(config);
     const [ searchstring, setSearchstring ] = useState("");
     const [ searchnetstring, setSearchnetstring ] = useState("");
-    const [ result, setResult ] = useState({ list : [[]]});
+    //const [ result, setResult ] = useState({ list : [[]]});
     //console.log("bbb"+Object.keys(config));
     //console.log("bbb"+typeof text);
     console.log("searchnetstring" + searchnetstring);
@@ -169,20 +169,23 @@ function SearchBar({ text, type, config, parentCallback, parentCallback2 }) {
 		    body: JSON.stringify(param),
 		});
 		console.log("xxxxyyyyzzzz " + response);
-		const json = await response.json();
-		console.log(json);
-		setResult(json);
+		const result = await response.json();
+		console.log(result);
+		const tables = MyTable.getTabNew(result.list, Date.now(), parentCallback2);
+		parentCallback(tables);
+		//setResult(json);
 	    } catch (error) {
 		console.log("error", error);
 	    }
 	};
 	fetchData(url).catch(console.error);
     }, [searchnetstring]);
-    const list = result.list;
-    console.log(result);
-    console.log(list);
+    //const list = result.list;
+    //console.log(result);
+    //console.log(list);
     const tables = [];
     //for(var i = 0; i < list.length; i++) {
+    /*
     const i = 0;
     const resultitemtable = list[i];
     const baseurl = Client.geturl("/");
@@ -192,13 +195,14 @@ function SearchBar({ text, type, config, parentCallback, parentCallback2 }) {
     const mydata = MyTable.getdata(resultitemtable);
     console.log(mycolumns);
     console.log(mydata);
+*/
     //const hcolumns = useMemo( () => mycolumns); //, [mycolumns] );
     //const hdata = useMemo( () => mydata);//, [mydata] );
     if (searchnetstring !== undefined && searchnetstring.length > 0) {
 	console.log("call"+searchnetstring);
 	//console.log(hcolumns);
 	//console.log(hdata);
-	parentCallback(mycolumns, mydata);
+	//parentCallback(mycolumns, mydata);
     }
     /*
     const {

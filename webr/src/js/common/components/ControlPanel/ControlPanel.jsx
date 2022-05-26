@@ -12,7 +12,7 @@ import ReactTooltip from "react-tooltip";
 import { MyTable } from '../MyTable'
 import { Table } from '../Table'
 
-function ControlPanel ({ props }) {
+function ControlPanel ({ props, callback }) {
     const [ indexnew, setIndexnew ] = useState('');
     const [ indexmd5, setIndexmd5 ] = useState('');
     const [ fsnew, setFsnew ] = useState('');
@@ -173,16 +173,27 @@ function ControlPanel ({ props }) {
 	    const list = result.list;
 	    console.log(result);
 	    console.log(list);
-	    const tables = [];
-	    //for(var i = 0; i < list.length; i++) {
-	    const i = 0;
-	    const resultitemtable = list[i];
 	    const baseurl = Client.geturl("/");
-	    
-	    const mycolumns = MyTable.getcolumns(resultitemtable, baseurl, callback2);
-	    const mydata = MyTable.getdata(resultitemtable);
-	    setHcolumns(mycolumns);
-	    setHdata(mydata);
+	    const tables = MyTable.getTabNew(result.list, Date.now(), callback, props);
+	    callback(tables);
+	    for(var i = 0; i < 0 /*list.length*/; i++) {
+		const resultitemtable = list[i];
+		
+		const mycolumns = MyTable.getcolumns(resultitemtable, baseurl, callback2);
+		const mydata = MyTable.getdata(resultitemtable);
+		setHcolumns(mycolumns);
+		setHdata(mydata);
+		console.log("callb");
+		callback(<h1>blbl</h1>);
+		console.log("callb");
+		/*
+		callback(	    <div>
+		<ReactTooltip effect="solid" html="true"/>
+		<Table columns={hcolumns} data={hdata} />
+	    </div>
+			);
+*/
+	    }
 	});
 	//console.log("callback2", result2);
 	// nei. const u = useMemo( () => []); //, [mycolumns] );
@@ -385,10 +396,6 @@ function ControlPanel ({ props }) {
 		    </NavItem>
 		</Nav>
 	    </Navbar>
-	    <div>
-		<ReactTooltip effect="solid" html="true"/>
-		<Table columns={hcolumns} data={hdata} />
-	    </div>
 	</div>
     );
 }

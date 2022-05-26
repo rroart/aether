@@ -4,6 +4,7 @@ import { useTable } from 'react-table'
 import ReactTooltip from "react-tooltip";
 import { Client } from '../util' 
 import { constants as mainConstants, actions as mainActions } from '../../../redux/modules/main';
+import { Table } from '../Table'
 
 function handleMLT(value, callback) {
     console.log("here1");
@@ -352,6 +353,13 @@ function getTable(resultitemtable, date, props) {
     return convert(resultitemtable, date, props);
 }
 
+function getTableNew(hcolumns, hdata) {
+    return <div>
+	       <ReactTooltip effect="solid" html="true"/>
+	       <Table columns={hcolumns} data={hdata} />
+	   </div>;
+}
+
 function image(data, i) {
     const Example = ({ data }) => <img src={`data:image/svg+xml;base64,${data}`} width="1000" height="800"/>;
     return (
@@ -388,6 +396,23 @@ function getTab(list, date, props) {
     );
 }
 
-const MyTable = { convert, convert2, getTab, getcolumns, getdata, gethtable };
+function getTabNew(list, date, callback, props) {
+    const baseurl = Client.geturl("/");
+    const tables = [];
+    for(var i = 0; i < list.length; i++) {
+	const resultitemtable = list[i];
+	const mycolumns = getcolumns(resultitemtable, baseurl, callback);
+	const mydata = getdata(resultitemtable);
+	const tab = getTableNew(mycolumns, mydata);
+	tables.push(tab);
+    }
+    return(
+	<div>
+    	    { tables.map(item => item) }
+	</div>
+    );
+}
+
+const MyTable = { convert, convert2, getTab, getcolumns, getdata, gethtable, getTabNew };
 export default MyTable;
 //export default convert, t;

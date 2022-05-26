@@ -11,7 +11,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTable } from 'react-table';
 import ReactTooltip from "react-tooltip";
 
-function Search({dolucene, dosolr, doelastic, props}) {
+function Search({dolucene, dosolr, doelastic, props, callback}) {
     const [ htm, setHtm ] = useState(<div><h1>No table</h1></div>);
     const [ hcolumns, setHcolumns ] = useState(null);
     const [ hcolumns2, setHcolumns2 ] = useState(null);
@@ -20,7 +20,7 @@ function Search({dolucene, dosolr, doelastic, props}) {
     const [ result2, setResult2 ] = useState({ list : [[]]});
     const [ searchmlt, setSearchmlt ] = useState("");
     console.log(props);
-    const callback = useCallback((hcolumns, hdata) => {
+    const callbackNot = useCallback((hcolumns, hdata) => {
 	console.log("callback");
 	console.log(hcolumns);
 	console.log(hdata);
@@ -72,7 +72,11 @@ mainActions.newtabMain(htm);
 	}
 	const result = Client.fetchApi.search("/searchmlt", { str : searchmlt });
 	result.then(function(result) {
+	    console.log("callback2", result.list);
 	    const list = result.list;
+	    const tables = MyTable.getTabNew(result.list, Date.now(), callback);
+	    callback(tables);
+	    /*
 	    console.log(result);
 	    console.log(list);
 	    const tables = [];
@@ -85,6 +89,7 @@ mainActions.newtabMain(htm);
 	    const mydata = MyTable.getdata(resultitemtable);
 	    setHcolumns2(mycolumns);
 	    setHdata2(mydata);
+	    */
 	});
 	console.log("callback2", result2);
 	// nei. const u = useMemo( () => []); //, [mycolumns] );
@@ -176,14 +181,6 @@ const main = props;
       return (
 	  <div>
 	      { Searchbars }
-	      <div>
-	       <ReactTooltip effect="solid" html="true"/>
-		  <Table columns={hcolumns} data={hdata} />
-	      </div>
-	      <div>
-	       <ReactTooltip effect="solid" html="true"/>
-	  <Table columns={hcolumns2} data={hdata2} />
-	  </div>
 	      </div>
     );
 }
