@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.constants.FileSystemConstants.FileSystemType;
 import roart.common.model.FileObject;
@@ -87,11 +88,12 @@ public class SimpleController implements CommandLineRunner {
             }
             */
             String zookeeperConnectionString = configInstance.getZookeeper();
-            String[] myargs = new String[4];
+            String[] myargs = new String[5];
             myargs[0] = "-DFS=" + loc.fs;
             myargs[1] = "-DPATH=" + path;
             myargs[2] = "-DZOO=" + zookeeperConnectionString;
             myargs[3] = "-DNODE=" + (loc.nodename != null ? loc.nodename : "");
+            myargs[4] = "-DIP=" +  (System.getenv(Constants.LOCALIP) != null ? System.getenv(Constants.LOCALIP) : "");
             String myTypeStr = ("" + loc.fs).toLowerCase();
             Runnable local = new JarThread("aether-" + myTypeStr + "-0.10-SNAPSHOT.jar", myargs, "en_US.ISO8859-1");
             new Thread(local).start();

@@ -41,5 +41,6 @@ public static final String HAZELCAST = "hazelcast";
 public static final String HZ = "hz";
 
 public static final String APPID = "APPID";
+public static final String LOCALIP = "LOCALIP";
 
 }
