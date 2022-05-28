@@ -220,6 +220,7 @@
       <directory>${project.basedir}/../bin</directory>
       <includes>
 	<include>service-simple-debug.sh</include>
+	<include>service-common.sh</include>
 	<include>service-simple.sh</include>
 	<include>service-docker.sh</include>
 	<include>service-openshift.sh</include>
