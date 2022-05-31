@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONF=$1
+
 web=0
 core=0
 eureka=0
@@ -25,10 +27,10 @@ if [ $eureka -eq 1 ]; then
     $COMMAND "java -jar aether-eureka-0.10-SNAPSHOT.jar" &
 fi
 if [ $service -eq 1 ]; then
-    $COMMAND "java $SERVICEDEBUG -jar aether-servicemanager-simple-0.10-SNAPSHOT.jar $1" &
+    $COMMAND "java $SERVICEDEBUG -jar aether-servicemanager-simple-0.10-SNAPSHOT.jar $CONF" &
 fi
 if [ $core -eq 1 ]; then
-    $COMMAND "java $COREDEBUG -jar aether-core-0.10-SNAPSHOT.jar $1" &
+    $COMMAND "java $COREDEBUG -jar aether-core-0.10-SNAPSHOT.jar $CONF" &
 fi
 if [ $web -eq 1 ]; then
     $COMMAND "java $WEBDEBUG -jar aether-web-0.10-SNAPSHOT.jar" &
