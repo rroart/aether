@@ -6,7 +6,7 @@ ARG mywebport
 ARG myconfig
 ARG mydebug
 ARG extras
-ARG lang
+ARG lang=C.utf8
 ARG appid
 ENV DISTLIB ${distlib}
 ENV DISTJAR ${distjar}
@@ -16,7 +16,7 @@ ENV MYDEBUG ${mydebug}
 ENV EXTRAS ${extras}
 ENV LANG ${lang}
 ENV APPID ${appid}
-RUN microdnf install hostname
+#RUN microdnf install hostname
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 RUN mkdir /usr/local/conf
 WORKDIR /usr/local/bin

@@ -5,6 +5,7 @@ ARG distjar
 ARG mywebport
 ARG myconfig
 ARG mydebug
+ARG lang=C.utf8
 ARG appid
 ARG eurekaserver
 ENV DISTLIB ${distlib}
@@ -12,9 +13,10 @@ ENV DISTJAR ${distjar}
 ENV MYWEBPORT ${mywebport}
 ENV MYCONFIG ${myconfig}
 ENV MYDEBUG ${mydebug}
+ENV LANG ${lang}
 ENV APPID ${appid}
 ENV EUREKA_SERVER_URI ${eurekaserver}
-RUN microdnf install hostname
+#RUN microdnf install hostname
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 RUN mkdir /usr/local/conf
 ADD docker/cloud/core/$MYCONFIG /usr/local/conf

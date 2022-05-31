@@ -2,9 +2,11 @@ FROM debian:bullseye
 MAINTAINER <roart@nvg.ntnu.no>
 ARG distlib
 ARG distjar
+ARG lang=C.utf8
 ARG appid
 ENV DISTLIB ${distlib}
 ENV DISTJAR ${distjar}
+ENV LANG ${lang}
 ENV APPID ${appid}
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 WORKDIR /usr/local/bin
