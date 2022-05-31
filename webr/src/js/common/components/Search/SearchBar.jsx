@@ -63,14 +63,12 @@ function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
-          <NavItem eventKey={3} href="#">
             <Form onSubmit={ (e) => setSearchnetstring(searchstring) }>
               <FormControl
                 placeholder="Enter text"
                 onChange={ (e) => setSearchstring(e.target.value) }
                 type="text"/>
             </Form>
-          </NavItem>
         </Nav>
       </Navbar>
     </div>
