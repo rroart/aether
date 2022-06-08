@@ -189,14 +189,16 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InputStream contentStream = inmemory.getInputStream(classify.message);
-            if (!InmemoryUtil.validate(classify.message.getMd5(), contentStream)) {
-                MachineLearningClassifyResult result = new MachineLearningClassifyResult();
-                return result;
+            try (InputStream contentStream = inmemory.getInputStream(classify.message)) {
+                if (!InmemoryUtil.validate(classify.message.getMd5(), contentStream)) {
+                    MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+                    return result;
+                }
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
             }
-            contentStream = inmemory.getInputStream(classify.message);
-		String language = classify.language;
-		try {
+            try (InputStream contentStream = inmemory.getInputStream(classify.message)) {
+                        String language = classify.language;
 			Map<String, Integer> dictionary = conf.dictionaryMap.get(language);
 			Map<Integer, Long> documentFrequency = conf.documentFrequencyMap.get(language);
 			ComplementaryNBClassifier classifier2 = conf.classifier2Map.get(language);
@@ -247,9 +249,10 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	}
 
 	private static int getWords(InputStream contentStream, Map<String, Integer> dictionary, Multiset<String> words) {
-		try {
+		try (
 			StandardAnalyzer analyzer = new StandardAnalyzer();
-			TokenStream ts = analyzer.tokenStream("text", new InputStreamReader(contentStream));
+			TokenStream ts = analyzer.tokenStream("text", new InputStreamReader(contentStream))
+			        ) {
 			CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
 			ts.reset();
 			int wordCount = 0;
@@ -264,7 +267,6 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 					}
 				}
 			}
-			ts.close();
 			return wordCount;
 		} catch (Exception e) {
 			log.error(Constants.EXCEPTION, e);

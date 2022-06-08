@@ -41,10 +41,13 @@ public class Djvutxt extends ConvertAbstract {
     public ConvertResult convert(ConvertParam param) {
         ConvertResult result = new ConvertResult();
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InputStream validateStream = inmemory.getInputStream(param.message);
-        if (!InmemoryUtil.validate(param.message.getMd5(), validateStream)) {
-            return result;
-        }        
+        try (InputStream validateStream = inmemory.getInputStream(param.message)) {
+            if (!InmemoryUtil.validate(param.message.getMd5(), validateStream)) {
+                return result;
+            }        
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
         String output = null;
         Converter converter = param.converter;
         Path inPath = Paths.get("/tmp", param.filename);

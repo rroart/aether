@@ -100,10 +100,13 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InputStream validateStream = inmemory.getInputStream(classify.message);
-            if (!InmemoryUtil.validate(classify.message.getMd5(), validateStream)) {
-                MachineLearningClassifyResult result = new MachineLearningClassifyResult();
-                return result;
+            try (InputStream validateStream = inmemory.getInputStream(classify.message)) {
+                if (!InmemoryUtil.validate(classify.message.getMd5(), validateStream)) {
+                    MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+                    return result;
+                }
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
             }
             String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(classify.message)));
 		String language = classify.language;

@@ -1,10 +1,11 @@
 package roart.search.lucene;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryUtil;
-import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchConstants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -101,7 +102,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	        indexWriter.deleteAll();
 	        indexWriter.commit();                
 	    } catch (Exception e) {
-	        log.error(roart.common.constants.Constants.EXCEPTION, e);
+	        log.error(Constants.EXCEPTION, e);
 	    }
 	    return new SearchEngineConstructorResult();
 	}
@@ -123,12 +124,15 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		String lang = index.lang;
 		String classification = index.classification;
 		Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-		InputStream contentStream = inmemory.getInputStream(index.message);
-		if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
-                    SearchEngineIndexResult result = new SearchEngineIndexResult();
-                    result.noindexreason = "invalid";
-                    result.size = -1;
-                    return result;
+		try (InputStream contentStream = inmemory.getInputStream(index.message)) {
+		    if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
+		        SearchEngineIndexResult result = new SearchEngineIndexResult();
+		        result.noindexreason = "invalid";
+		        result.size = -1;
+		        return result;
+		    }
+		} catch (Exception e) {
+	            log.error(Constants.EXCEPTION, e);
 	        }
 
 		String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(index.message)));
@@ -136,12 +140,11 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		// create some index
 		// we could also create an index in our ram ...
 		// Directory index = new RAMDirectory();
-		try {
+		try (
 			Directory lindex = FSDirectory.open(getLucenePath(conf));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
-			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-			IndexWriter w = new IndexWriter(lindex, iwc);
-
+			IndexWriter w = new IndexWriter(lindex, new IndexWriterConfig(analyzer));
+		        ) {
 			retsize = content.length();
 
 			log.info("indexing " + md5);
@@ -149,12 +152,12 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			String cat = classification;
 
 			Document doc = new Document();
-			doc.add(new TextField(Constants.ID, md5, Field.Store.YES));
+			doc.add(new TextField(SearchConstants.ID, md5, Field.Store.YES));
 			if (cat != null) {
-				doc.add(new TextField(Constants.CAT, cat, Field.Store.YES));
+				doc.add(new TextField(SearchConstants.CAT, cat, Field.Store.YES));
 			}
 			if (lang != null) {
-				doc.add(new TextField(Constants.LANG, lang, Field.Store.YES));
+				doc.add(new TextField(SearchConstants.LANG, lang, Field.Store.YES));
 			}
 			Field.Store store = Field.Store.NO;
 			if (conf.getHighlightmlt()) {
@@ -163,10 +166,10 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 				fieldtype.setStoreTermVectorOffsets(true);
 				fieldtype.setStoreTermVectorPositions(true);
 				fieldtype.freeze();
-				Field mytextfield = new Field(Constants.CONTENT, content, fieldtype);
+				Field mytextfield = new Field(SearchConstants.CONTENT, content, fieldtype);
 				doc.add(mytextfield);
 			} else {
-				doc.add(new TextField(Constants.CONTENT, content, Field.Store.NO));
+				doc.add(new TextField(SearchConstants.CONTENT, content, Field.Store.NO));
 			}
 			if (metadata != null) {
 				log.info("with md {}", Arrays.asList(metadata));
@@ -174,22 +177,21 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 				String[] md = metadata;
 				for (String name : md) {
 					String value = name;
-					doc.add(new TextField(Constants.METADATA, name, Field.Store.YES));
+					doc.add(new TextField(SearchConstants.METADATA, name, Field.Store.YES));
 				}
 			}
 			//Term oldTerm = new Term(Constants.TITLE, md5); // remove after reindex
-			Term term = new Term(Constants.ID, md5);
+			Term term = new Term(SearchConstants.ID, md5);
 			//w.deleteDocuments(oldTerm); // remove after reindex
 			//doc.removeField(Constants.NAME);
 			//doc.removeField(Constants.TITLE);
 			w.updateDocument(term, doc);
 			//w.addDocument(doc);
 
-			w.close();
 			log.info("index generated " + md5);
 		} catch (Exception e) {
 			log.info("Error3: " + e.getMessage());
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 			SearchEngineIndexResult result = new SearchEngineIndexResult();
 			result.noindexreason = "index exception " + e.getClass().getName();
 			result.size = -1;
@@ -213,37 +215,38 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		String searchtype = search.searchtype;
 
 		int stype = new Integer(searchtype).intValue();
-		try {
+		try (
 			Directory index = FSDirectory.open(getLucenePath(search.conf));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
+		        ) {
 			// parse query over multiple fields
 			QueryParser cp = null;
 			Query tmpQuery = null;
 			switch (stype) {
 			case 0:
 				StandardQueryParser queryParserHelper = new StandardQueryParser();
-				tmpQuery = queryParserHelper.parse(str, Constants.CONTENT); 
+				tmpQuery = queryParserHelper.parse(str, SearchConstants.CONTENT); 
 				break;
 			case 1:
-				cp = new QueryParser(Constants.CONTENT, analyzer);
+				cp = new QueryParser(SearchConstants.CONTENT, analyzer);
 				break;
 			case 2:
-				cp = new ComplexPhraseQueryParser(Constants.CONTENT, analyzer);
+				cp = new ComplexPhraseQueryParser(SearchConstants.CONTENT, analyzer);
 				break;
 			case 3:
-				cp = new ExtendableQueryParser(Constants.CONTENT, analyzer);
+				cp = new ExtendableQueryParser(SearchConstants.CONTENT, analyzer);
 				break;
 			case 4:
-				cp = new MultiFieldQueryParser(new String[]{Constants.ID, Constants.CONTENT, Constants.CAT, Constants.LANG, Constants.METADATA}, analyzer);
+				cp = new MultiFieldQueryParser(new String[]{SearchConstants.ID, SearchConstants.CONTENT, SearchConstants.CAT, SearchConstants.LANG, SearchConstants.METADATA}, analyzer);
 				break;
 			case 5:
-				tmpQuery = org.apache.lucene.queryparser.surround.parser.QueryParser.parse(str).makeLuceneQueryField(Constants.CONTENT, new BasicQueryFactory());
+				tmpQuery = org.apache.lucene.queryparser.surround.parser.QueryParser.parse(str).makeLuceneQueryField(SearchConstants.CONTENT, new BasicQueryFactory());
 				break;
 			case 6:
-				cp = new QueryParser(Constants.CONTENT, analyzer);
+				cp = new QueryParser(SearchConstants.CONTENT, analyzer);
 				break;
 			case 7:
-				tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.CONTENT, str);
+				tmpQuery = new SimpleQueryParser(analyzer, SearchConstants.CONTENT).createPhraseQuery(SearchConstants.CONTENT, str);
 				break;
 			}
 			Query q = null;
@@ -266,7 +269,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			return result;
 		} catch (Exception e) {
 			log.info("Error3: " + e.getMessage());
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 
 		return null;
@@ -277,7 +280,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 		try {
 			Directory index = FSDirectory.open(getLucenePath(conf));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
-			Query tmpQuery = new SimpleQueryParser(analyzer, Constants.CONTENT).createPhraseQuery(Constants.ID, md5);
+			Query tmpQuery = new SimpleQueryParser(analyzer, SearchConstants.CONTENT).createPhraseQuery(SearchConstants.ID, md5);
 			Query q = tmpQuery;
 
 			// searching ...
@@ -292,7 +295,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			}
 		} catch (Exception e) {
 			log.info("Error4: " + e.getMessage());
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 		return -1;
 	}
@@ -313,9 +316,9 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			int docId = hits[i].doc;
 			float score = hits[i].score;
 			Document d = searcher.doc(docId);
-			String md5 = d.get(Constants.ID);
-			String lang = d.get(Constants.LANG);
-			String[] metadataArray = d.getValues(Constants.METADATA);
+			String md5 = d.get(SearchConstants.ID);
+			String lang = d.get(SearchConstants.LANG);
+			String[] metadataArray = d.getValues(SearchConstants.METADATA);
 			List<String> metadata = null;
 			if (metadataArray != null) {
 				metadata = Arrays.asList(metadataArray);
@@ -324,7 +327,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			String[] highlights = { "none" };
 			if (dohighlight && search.conf.getHighlightmlt()) {
 				FieldQuery fieldQuery  = highlighter.getFieldQuery( q, ind );
-				String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, Constants.CONTENT, 100, 1);
+				String[] bestFragments = highlighter.getBestFragments(fieldQuery, ind, docId, SearchConstants.CONTENT, 100, 1);
 				highlights = bestFragments;
 			}
 			SearchResult res = new SearchResult();
@@ -399,7 +402,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 
 			MoreLikeThis mlt = new MoreLikeThis(ind);
 			mlt.setAnalyzer(analyzer);
-			String[] fields = { Constants.CONTENT };
+			String[] fields = { SearchConstants.CONTENT };
 			mlt.setFieldNames(fields);
 			mlt.setMinDocFreq(mindf);
 			mlt.setMinTermFreq(mintf);
@@ -420,7 +423,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 			return result;
 		} catch (Exception e) {
 			log.info("Error3: " + e.getMessage());
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 
 		return null;
@@ -433,18 +436,17 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
 	 */
 
 	public SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
-		try {
+		try (
 			Directory index = FSDirectory.open(getLucenePath(delete.conf));
 			StandardAnalyzer analyzer = new StandardAnalyzer();
-			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-			IndexWriter iw = new IndexWriter(index, iwc);
+			IndexWriter iw = new IndexWriter(index, new IndexWriterConfig(analyzer));
+		        ) {
 			//IndexReader r = IndexReader.open(index, false);
 			//iw.deleteDocuments(new Term(Constants.TITLE, str));
-			iw.deleteDocuments(new Term(Constants.ID, delete.delete));
-			iw.close();
+			iw.deleteDocuments(new Term(SearchConstants.ID, delete.delete));
 		} catch (Exception e) {
 			log.info("Error3: " + e.getMessage());
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 		return null;
 	}

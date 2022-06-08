@@ -344,18 +344,15 @@ public class Swift extends FileSystemOperations {
     public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
         Map<String, InmemoryMessage> map = new HashMap<>();
         for (FileObject filename : param.fos) {
-            InputStream inputStream;
-            String md5;
-            try {
-                inputStream = getInputStreamInner(filename);
-                md5 = getMd5(filename);
+            String md5 = getMd5(filename);
+            try (InputStream inputStream = getInputStreamInner(filename)) {
+                Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
+                map.put(filename.object, msg);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;
             }
-            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
-            map.put(filename.object, msg);
         }
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = map;
@@ -379,16 +376,12 @@ public class Swift extends FileSystemOperations {
     }
     
     public String getMd5(FileObject fo) throws Exception {
-        String md5;
-        try {
-            InputStream is = getInputStreamInner(fo);
-            md5 = DigestUtils.md5Hex( is );
-            is.close();
+        try (InputStream is = getInputStreamInner(fo)) {
+            return DigestUtils.md5Hex( is );
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return null;
         }
-        return md5;
     }
 
     public FileSystemStringResult getMd5(FileSystemFileObjectParam param) {

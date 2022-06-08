@@ -127,10 +127,8 @@ public class LocalFileSystem extends FileSystemOperations {
     
     private byte[] getBytesInner(FileObject f) throws IOException {
         byte[] bytes;
-        try {
-            InputStream is = new FileInputStream( objectToFile(f) /*new File(getAbsolutePath(f))*/);
+        try (InputStream is = new FileInputStream( objectToFile(f) /*new File(getAbsolutePath(f))*/)) {
             bytes = IOUtil.toByteArrayMax(is);
-            is.close();
         } catch (FileNotFoundException e) {
             log.error(Constants.EXCEPTION, e);
             return null;
@@ -241,18 +239,15 @@ public class LocalFileSystem extends FileSystemOperations {
     public FileSystemMessageResult readFile(FileSystemFileObjectParam param) throws Exception {
         Map<String, InmemoryMessage> map = new HashMap<>();
         for (FileObject filename : param.fos) {
-            InputStream inputStream;
-            String md5;
-            try {
-                inputStream = getInputStreamInner(filename);
-                md5 = getMd5(filename);
+            String md5 = getMd5(filename);
+            try (InputStream inputStream = getInputStreamInner(filename)) {
+                Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
+                map.put(filename.object, msg);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 continue;
             }
-            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
-            map.put(filename.object, msg);
         }
         FileSystemMessageResult result = new FileSystemMessageResult();
         result.message = map;
@@ -261,10 +256,8 @@ public class LocalFileSystem extends FileSystemOperations {
 
     public String getMd5(FileObject fo) throws Exception {
         String md5;
-        try {
-            InputStream is = getInputStreamInner(fo);
+        try (InputStream is = getInputStreamInner(fo)) {
             md5 = DigestUtils.md5Hex( is );
-            is.close();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             return null;

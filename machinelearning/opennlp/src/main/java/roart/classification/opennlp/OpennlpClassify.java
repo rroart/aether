@@ -29,49 +29,52 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private OpenNLPConfig conf;
-    
+
     public OpennlpClassify(String nodename, NodeConfig nodeConf) {
         super(nodename, nodeConf);
-	try {
-	    conf = new OpenNLPConfig();
-		conf.categorizerMap = new HashMap<String, DocumentCategorizerME>();
-		String[] languages = nodeConf.getLanguages();
-	    String modelFilePath = nodeConf.getOpenNLPModelPath(); 
-	    log.info("Detected language {}", languages.length);
-	    for (String lang : languages) {
-	    	String path = new String(modelFilePath);
-	    	path = path.replaceFirst("LANG", lang);
-	    	InputStream is = new FileInputStream(path);
-	    	DoccatModel model = new DoccatModel(is);
-	    	DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
-	    	conf.categorizerMap.put(lang, myCategorizer);
-	    }
-	} catch (Exception e) {
-	    log.error(Constants.EXCEPTION, e);
-	}
+        try {
+            conf = new OpenNLPConfig();
+            conf.categorizerMap = new HashMap<String, DocumentCategorizerME>();
+            String[] languages = nodeConf.getLanguages();
+            String modelFilePath = nodeConf.getOpenNLPModelPath(); 
+            log.info("Detected language {}", languages.length);
+            for (String lang : languages) {
+                String path = new String(modelFilePath);
+                path = path.replaceFirst("LANG", lang);
+                InputStream is = new FileInputStream(path);
+                DoccatModel model = new DoccatModel(is);
+                DocumentCategorizerME myCategorizer = new DocumentCategorizerME(model);
+                conf.categorizerMap.put(lang, myCategorizer);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
     }
 
-	public MachineLearningConstructorResult destroy(String nodename) {
-		return null;
-	}
-	
-   public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
-       Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-       InputStream validateStream = inmemory.getInputStream(classify.message);
-       if (!InmemoryUtil.validate(classify.message.getMd5(), validateStream)) {
-           MachineLearningClassifyResult result = new MachineLearningClassifyResult();
-           return result;
-       }
-       String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(classify.message)));
-    		String language = classify.language;
-    	         log.info("Detected language {}", language);
-    	DocumentCategorizerME myCategorizer = conf.categorizerMap.get(language);
-	double[] outcomes = myCategorizer.categorize(new String[] { content });
-	String category = myCategorizer.getBestCategory(outcomes);
-	log.info("opennlp cat " + category);
-	MachineLearningClassifyResult result = new MachineLearningClassifyResult();
-	result.result = category;
-	return result;
+    public MachineLearningConstructorResult destroy(String nodename) {
+        return null;
+    }
+
+    public MachineLearningClassifyResult classify(MachineLearningClassifyParam classify) {
+        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+        try (InputStream validateStream = inmemory.getInputStream(classify.message)) {
+            if (!InmemoryUtil.validate(classify.message.getMd5(), validateStream)) {
+                MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+                return result;
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(classify.message)));
+        String language = classify.language;
+        log.info("Detected language {}", language);
+        DocumentCategorizerME myCategorizer = conf.categorizerMap.get(language);
+        double[] outcomes = myCategorizer.categorize(new String[] { content });
+        String category = myCategorizer.getBestCategory(outcomes);
+        log.info("opennlp cat " + category);
+        MachineLearningClassifyResult result = new MachineLearningClassifyResult();
+        result.result = category;
+        return result;
     }
 
 

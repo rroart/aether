@@ -52,6 +52,7 @@ import roart.util.MyAtomicLongs;
 import roart.util.MyLockFactory;
 import roart.util.MySets;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
 public class TraverseFile {
@@ -100,9 +101,11 @@ public class TraverseFile {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
                 if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-                    InputStream fis = FileSystemDao.getInputStream(fo);
-                    md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( fis );
-                    fis.close();
+                    try (InputStream fis = FileSystemDao.getInputStream(fo)) {
+                        md5 = DigestUtils.md5Hex( fis );
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
                     if (files == null) {
                         //z.lock(md5);
                         // get read file

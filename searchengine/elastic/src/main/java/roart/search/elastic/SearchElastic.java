@@ -45,10 +45,11 @@ import co.elastic.clients.transport.endpoints.BooleanResponse;
 import co.elastic.clients.transport.rest_client.RestClientOptions;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryUtil;
-import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchConstants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -124,14 +125,14 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             
             conf.client.indices().create(c -> c.index(myindex)
                     .mappings(m -> m
-                            .properties(Constants.CONTENT, p -> p
+                            .properties(SearchConstants.CONTENT, p -> p
                                     .text(t -> t.termVector(TermVectorOption.WithPositionsOffsets)
                                             .store(true))
                             )
                     )
             );
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
     }
 
@@ -142,7 +143,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                 context = SSLContext.getInstance("TLS");
                 context.init(null, new TrustManager[]{new MyTrustManager()}, null);
             } catch (Exception e) {
-                log.error(roart.common.constants.Constants.EXCEPTION, e);
+                log.error(Constants.EXCEPTION, e);
             }
         }
         return context;
@@ -156,7 +157,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             conf.client.indices().delete(d -> d.index(myindex));
             // BulkByScrollResponse response = conf.client.deleteByQuery(new DeleteByQueryRequest(myindex), RequestOptions.DEFAULT);
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return new SearchEngineConstructorResult();
     }
@@ -170,7 +171,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             conf.client.indices().delete(d -> d.index(myindex));
             // DeleteResponse response = conf.client.delete(new DeleteRequest(myindex), RequestOptions.DEFAULT);
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return new SearchEngineConstructorResult();	        
     }
@@ -183,7 +184,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             //conf.client.indices().close(c -> c.index(myindex));
                         throw new IOException();
         } catch (IOException e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }
@@ -195,12 +196,15 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         String lang = index.lang;
         String classification = index.classification;
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InputStream contentStream = inmemory.getInputStream(index.message);
-        if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
-            SearchEngineIndexResult result = new SearchEngineIndexResult();
-            result.noindexreason = "invalid";
-            result.size = -1;
-            return result;
+        try (InputStream contentStream = inmemory.getInputStream(index.message)) {
+            if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
+                SearchEngineIndexResult result = new SearchEngineIndexResult();
+                result.noindexreason = "invalid";
+                result.size = -1;
+                return result;
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
         String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray(inmemory.getInputStream(index.message), BUFFER_LIMIT / 3));
         int retsize = content.length();
@@ -226,7 +230,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
             // IndexResponse response = conf.client.index(new IndexRequest(indexName).id(md5).source(builder), RequestOptions.DEFAULT);
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
             result.noindexreason = "index exception " + e.getClass().getName();
             result.size = -1;
             return result;
@@ -247,13 +251,13 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .index(myindex)
                     .query(q -> q
                     .term(t -> t
-                            .field(Constants.CONTENT)
+                            .field(SearchConstants.CONTENT)
                             .value(v -> v.stringValue(str))))
                     .from(0)
                     .size(100)
                     .explain(true);
             if (search.conf.getHighlightmlt()) {
-                sr.highlight(h -> h.fields(Constants.CONTENT, v -> v.type(HighlighterType.Unified)));
+                sr.highlight(h -> h.fields(SearchConstants.CONTENT, v -> v.type(HighlighterType.Unified)));
             }
             SearchResponse<Appdata> response = conf.client.search(sr.build(), Appdata.class);
             HitsMetadata<Appdata> docs = response.hits();
@@ -261,7 +265,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             SearchEngineSearchResult result = handleDocs(search, response, docs, true);
             return result;
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }
@@ -289,7 +293,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                 if (dohighlight && search.conf.getHighlightmlt()) {
                     Map<String, List<String>> m = d.highlight();
                     log.info("m"+m);
-                    List<String> hlf = m.get(Constants.CONTENT);
+                    List<String> hlf = m.get(SearchConstants.CONTENT);
                     highlights = new String[1];
                     highlights[0] = "none";
                     if (hlf != null) {
@@ -310,7 +314,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                 result.results[i] = res;
             }
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return result;
     }
@@ -342,7 +346,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         try {
             response = conf.client.search(sr.build(), Appdata.class);
         } catch (IOException e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);            
+            log.error(Constants.EXCEPTION, e);            
         }
         HitsMetadata<Appdata> docs = response.hits();
         
@@ -350,7 +354,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             SearchEngineSearchResult result = handleDocs(search, response, docs, false);
             return result;
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }
@@ -367,7 +371,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .id(str)
                     );
         } catch (IOException e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }

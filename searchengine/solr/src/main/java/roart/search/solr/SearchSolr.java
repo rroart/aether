@@ -26,10 +26,11 @@ import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryUtil;
-import roart.common.searchengine.Constants;
+import roart.common.searchengine.SearchConstants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -88,7 +89,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 	        conf.server.deleteByQuery( "*:*" );
 	        conf.server.commit();
 	    } catch (Exception e) {
-	        log.error(roart.common.constants.Constants.EXCEPTION, e);
+	        log.error(Constants.EXCEPTION, e);
 	    }
 	    return new SearchEngineConstructorResult();
 	}
@@ -107,12 +108,15 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 		String lang = index.lang;
 		String classification = index.classification;
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-                InputStream contentStream = inmemory.getInputStream(index.message);
-                if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
-                    SearchEngineIndexResult result = new SearchEngineIndexResult();
-                    result.noindexreason = "invalid";
-                    result.size = -1;
-                    return result;
+                try (InputStream contentStream = inmemory.getInputStream(index.message)) {
+                    if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
+                        SearchEngineIndexResult result = new SearchEngineIndexResult();
+                        result.noindexreason = "invalid";
+                        result.size = -1;
+                        return result;
+                    }
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
                 }
                 String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(index.message)));
 		int retsize = content.length();
@@ -124,21 +128,21 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
 		try {
 			SolrInputDocument doc = new SolrInputDocument();
-			doc.addField(Constants.ID, md5);
+			doc.addField(SearchConstants.ID, md5);
 			if (lang != null) {
-				doc.addField(Constants.LANG, lang);
+				doc.addField(SearchConstants.LANG, lang);
 			}
 			if (cat != null) {
-				doc.addField(Constants.CAT, cat);
+				doc.addField(SearchConstants.CAT, cat);
 			}
-			doc.addField(Constants.CONTENT, content);
+			doc.addField(SearchConstants.CONTENT, content);
 			if (metadata != null) {
 				log.info("with md " + metadata);
 				//doc.addField(Constants.METADATA, metadata);
 				String[] md = metadata;
 				for (String name : md) {
 					String value = name;
-					doc.addField(Constants.METADATA, name);
+					doc.addField(SearchConstants.METADATA, name);
 				}
 			}
 
@@ -155,17 +159,17 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			req.add( docs );
 			UpdateResponse rsp = req.process( conf.server );
 		} catch (IOException e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);	    
+			log.error(Constants.EXCEPTION, e);	    
 			result.noindexreason = "index exception " + e.getClass().getName();
 			result.size = -1;
 			return result;
 		} catch (SolrServerException e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 			result.noindexreason = "index exception " + e.getClass().getName();
 			result.size = -1;
 			return result;
 		} catch (Exception e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 			result.noindexreason = "index exception " + e.getClass().getName();
 			result.size = -1;
 			return result;
@@ -210,7 +214,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
 			if (nodeConf.getHighlightmlt()) {
 				query.add("hl", "true");
-				query.add("hl.fl", Constants.CONTENT);
+				query.add("hl.fl", SearchConstants.CONTENT);
 				query.add("hl.method", "fastVector");
 			}
 			//    Query the server 
@@ -230,7 +234,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
                         if (nodeConf.getHighlightmlt()) {
                                 queryParamMap.put("hl", "true");
-                                queryParamMap.put("hl.fl", Constants.CONTENT);
+                                queryParamMap.put("hl.fl", SearchConstants.CONTENT);
                                 queryParamMap.put("hl.method", "fastVector");
                         }
 			MapSolrParams queryParams = new MapSolrParams(queryParamMap);			
@@ -242,9 +246,9 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			SearchEngineSearchResult result = handleDocs(search, rsp, docs, true);
 			return result;
 		} catch (SolrServerException e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		} catch (Exception e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 		return null;
 	}
@@ -259,14 +263,14 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			i++;
 			SolrDocument d = doc;
 			float score = (float) d.get("score"); 
-			String md5 = (String) d.getFieldValue(Constants.ID);
-			String lang = (String) d.getFieldValue(Constants.LANG);
-			List<String> metadata = (List<String>) d.getFieldValue(Constants.METADATA);
+			String md5 = (String) d.getFieldValue(SearchConstants.ID);
+			String lang = (String) d.getFieldValue(SearchConstants.LANG);
+			List<String> metadata = (List<String>) d.getFieldValue(SearchConstants.METADATA);
 			String[] highlights = null;
 			if (dohighlight && param.conf.getHighlightmlt()) {
 				Map<String,Map<String,List<String>>> map = rsp.getHighlighting();
 				Map<String,List<String>> map2 = map.get(md5);
-				List<String> list = map2.get(Constants.CONTENT);
+				List<String> list = map2.get(SearchConstants.CONTENT);
 				highlights = new String[1];
 				if (list != null && list.size() > 0) {
 					highlights[0] = list.get(0);
@@ -295,10 +299,10 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			int mindf = nodeConf.getMLTMinDF();
 			//Construct a SolrQuery 
 			SolrQuery query = new SolrQuery();
-			query.setQuery( Constants.ID + ":" + id);
+			query.setQuery( SearchConstants.ID + ":" + id);
 			query.setIncludeScore(true);
 			query.add("mlt", "true");
-			query.add("mlt.fl", Constants.CONTENT);
+			query.add("mlt.fl", SearchConstants.CONTENT);
 			query.add("mlt.count", "" + count);
 			query.add("mlt.mindf", "" + mindf);
 			query.add("mlt.mintf", "" + mintf);
@@ -327,9 +331,9 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			SearchEngineSearchResult result = handleDocs(search, rsp, docs, false);
 			return result;
 		} catch (SolrServerException e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		} catch (Exception e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 		return null;
 	}
@@ -344,11 +348,11 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 			req.deleteById(str);
 			UpdateResponse rsp = req.process( conf.server );
 		} catch (IOException e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		} catch (SolrServerException e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		} catch (Exception e) {
-			log.error(roart.common.constants.Constants.EXCEPTION, e);
+			log.error(Constants.EXCEPTION, e);
 		}
 		return null;
 	}

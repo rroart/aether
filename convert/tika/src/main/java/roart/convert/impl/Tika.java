@@ -94,78 +94,61 @@ public class Tika extends ConvertAbstract {
                 b = false;
             }
             if (!otherWorker.isAlive()) {
-                log.info("Otherworker finished " + " " + otherWorker + " " + otherRunnable);
+                log.info("Otherworker finished {} {}", otherWorker, otherRunnable);
                 return (ConvertResult) param2[1]; // "end"
             }
         }
         otherWorker.stop(); // .interrupt();
+        log.error("Otherworker killed {} {}", otherWorker, otherRunnable);
         return null;
     }
-    
+
     public ConvertResult convert2(Object[] param2) {
         ConvertResult result = new ConvertResult();
         ConvertParam param = (ConvertParam) param2[0];
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-        InputStream content = inmemory.getInputStream(param.message);
-        if (!InmemoryUtil.validate(param.message.getMd5(), content)) {
-            return result;
+        try (InputStream content = inmemory.getInputStream(param.message)) {
+            if (!InmemoryUtil.validate(param.message.getMd5(), content)) {
+                return result;
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
-        content = inmemory.getInputStream(param.message);
-        Converter converter = param.converter;
-        String output = null;
-        String md5 = null;
-        //try {
-        String[] ret = new String[1];
-        //output = ConvertUtil.executeTimeout("/usr/bin/ebook-convert", arg, retlistid, ret);
+        String inmd5 = param.message.getId();
         Map<String, String> metadata = new HashMap<>();
         result.metadata = metadata;
-        String inmd5 = param.message.getId();
-        InputStream is = content;
-        ByteArrayOutputStream outputStream = process(is, ret, metadata, inmd5);
-        //InputStream inputStream = null;
-        if (outputStream != null) {
-            byte[] outputArray = outputStream.toByteArray();
-            /*
+        String[] ret = new String[1];
+        try (
+                InputStream content = inmemory.getInputStream(param.message);
+                ByteArrayOutputStream outputStream = process(content, ret, metadata, inmd5);
+                ) {
             if (outputStream != null) {
-                inputStream = new ByteArrayInputStream((outputStream.).toByteArray());
-                //size = ((ByteArrayOutputStream)outputStream).size();
-                log.info("size1 " + inmd5);
+                byte[] outputArray = outputStream.toByteArray();
+                String md5 = DigestUtils.md5Hex(outputArray);
+                log.info("Size {} {} {}", inmd5, md5, outputArray.length);
+                if (outputArray.length > 0) {
+                    InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
+                    result.message = msg;
+                } else {
+                    result.error = "Tika empty";
+                }
+                param2[1] = result;
             } else {
-                //size = -1;
-                log.info("size1 " + inmd5 + " crash "); 
+                log.error("Tika with no output for {}", inmd5);
+                result.error = ret[0];
             }
-            if (inputStream != null) {
-                output = getString(inputStream);
-                md5 = DigestUtils.md5Hex(output );
-            }
-             */
-            md5 = DigestUtils.md5Hex(outputArray);
-            log.info("Size {} {} {}", inmd5, md5, outputArray.length);
-            //} catch (Exception e) {
-            //    log.error(Constants.EXCEPTION, e);
-            //}
-            //if (output == null) {
-            //    log.info("Tika with no output");
-            //}
-            if (outputArray.length > 0) {
-                InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
-                result.message = msg;
-            } else {
-                result.error = "Tika empty";
-            }
-            param2[1] = result;
-        } else {
-            log.error("Tika with no output for {}", inmd5);
-            result.error = ret[0];
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
         return result;
     }
 
     public ByteArrayOutputStream process(InputStream is, String[] error, Map<String, String> map, String filename) {
-        ByteArrayOutputStream output = null;
         Metadata metadata = new Metadata();
-        try (InputStream input = TikaInputStream.get(is)) {
-            output = new ByteArrayOutputStream();
+        try (
+                InputStream input = TikaInputStream.get(is);
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                ) {
             if (false) {
                 listConfig();
             }
@@ -175,6 +158,12 @@ public class Tika extends ConvertAbstract {
             context.set(Parser.class, parser);
             ContentHandler handler = new BodyContentHandler(getOutputWriter(output, null));
             parser.parse(input, handler, metadata, context);
+            for (String name : metadata.names()) {
+                String value = metadata.get(name);
+                map.put(name, value);
+            }
+            log.info("Metadata {}", map);
+            return output;
             /*
             //ParseContext context = new ParseContext();
             //Detector detector = new DefaultDetector();
@@ -188,25 +177,17 @@ public class Tika extends ConvertAbstract {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             error[0] = "tika exception " + e.getClass().getName() + " ";
-            output = null;
         } catch (java.lang.ThreadDeath e) {
             log.error("Error expected {} {}", Thread.currentThread().getId(), filename);
             log.error(Constants.ERROR, e);
             error[0] = "tika timeout " + e.getClass().getName() + " ";
-            output = null;
         } catch (Error e) {
             System.gc();
             log.error("Error {} {}", Thread.currentThread().getId(), filename);
             log.error(Constants.ERROR, e);
             error[0] = "tika error " + e.getClass().getName() + " ";
-            output = null;
         }
-        for (String name : metadata.names()) {
-            String value = metadata.get(name);
-            map.put(name, value);
-        }
-        log.info("Metadata {}", "" + map);
-        return output;
+        return null;
     }
 
     private void listConfig() {

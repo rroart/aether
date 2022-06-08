@@ -540,16 +540,14 @@ public DatabaseConstructorResult clear(DatabaseConstructorParam param) {
 }
 
 private void clear(Table table) {
-    try {
-        List<Delete> deleteList = new ArrayList<Delete>();
+        List<Delete> deleteList = new ArrayList<>();
         Scan scan = new Scan();
-        ResultScanner scanner = table.getScanner(scan);
+        try (ResultScanner scanner = table.getScanner(scan)) {
         for (Result rr : scanner) {
             Delete d = new Delete(rr.getRow());
             deleteList.add(d);
         }
         table.delete(deleteList);
-        scanner.close();    
     } 
     catch (IOException e) {
         log.error(Constants.EXCEPTION, e);
