@@ -31,6 +31,13 @@ public class Util {
         return sender.send(param, "search");
     }
 
+    public Object searchmlt(String search) {
+        SearchEngineSearchParam param = new SearchEngineSearchParam();
+        param.conf = getConfig();
+        param.str = search;
+        return sender.send(param, "searchmlt");
+    }
+
     public Object filesystemlucenenew(String add, boolean md5checknew) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
@@ -179,7 +186,7 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         //param.function = Function.DELETEPATHDB;
-        param.path = path;
+        param.file = path;
         param.webpath = EurekaConstants.DELETEPATHDB;
         return sender.send(param, param.webpath);
     }
