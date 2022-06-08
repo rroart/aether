@@ -70,23 +70,23 @@ public class ConvertUtil {
                 b = false;
             }
             if (!otherWorker.isAlive()) {
-                log.info("Otherworker finished " + filename + " " + arg[0] + " " + otherWorker + " " + otherRunnable);
+                log.info("Otherworker finished {} {} {} {}", filename, arg[0], otherWorker, otherRunnable);
                 return "end";
             }
         }
         new ExecCommand().execute("/bin/kill", new String[] { "-9", "" + pid[0] }, null, null);
         //otherWorker.stop(); // .interrupt();
         el[0]= "othertimeout" + filename + " " + timeout + " ";
-        log.info("Otherworker timeout " + otherWorker + " " + otherRunnable);
+        log.info("Otherworker timeout {} {} {}", otherWorker, otherRunnable, pid[0]);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             log.error(Constants.EXCEPTION, e);
             // TODO Auto-generated catch block
         }
-        log.info("Otherworker timeout " + otherWorker + " " + otherRunnable + " " + otherWorker.isAlive() + " " + otherWorker.isInterrupted() + " " + otherWorker.interrupted());
+        log.info("Otherworker timeout {} {} {} {} {}", otherWorker, otherRunnable, otherWorker.isAlive(), otherWorker.isInterrupted(), otherWorker.interrupted());
 
-        log.error("timeout running " + filename + " " + arg[0]);
+        log.error("timeout running {} {}", filename, arg[0]);
         //retlist.add(new ResultItem("timeout running " + filename + " " + arg[0]));
         return (String) null;
     }
