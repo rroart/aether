@@ -36,56 +36,17 @@ function getcolumns(resultitemtable, baseurl, callback) {
   }
   const columns = [];
   const head = array[0];
-  for(var i = 0; i < head.items.length; i++) {
+  for(let i = 0; i < head.items.length; i++) {
     if (head.items[i] == "Md5/Id") {
-      /*
-    var obj = row.value;
-    console.log(obj);
-    var id = obj["id"];
-    console.log(id);
-*/
       columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({value}) => (<a onClick = {(e) => handleMLT(value, callback)}>{value}</a>)});
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row, value}) => { const path = require('path'); const base = path.basename(row.original.Filename); const dl = baseurl + "download/" + value; return(<a href={dl} download={base}>{value}</a>)}});
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleClick(props, e, row.original.Filename)}>{row.value}</a>) });
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleButtonClick(props, e, row.value)}>{row.value}</a>) });
-      //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
-
       continue;
     }
     if (head.items[i] == "Filename") {
-      /*
-    var obj = row.value;
-    console.log(obj);
-    var id = obj["id"];
-    console.log(id);
-*/
       columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row, value}) => (<a onClick = { (e) => handleDownload(row, value)}>{value}</a>)});
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleClick(props, e, row.original.Filename)}>{row.value}</a>) });
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleButtonClick(props, e, row.value)}>{row.value}</a>) });
-      //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
-
-      continue;
-    }
-    if (head.items[i].startsWith("Highlight2")) {
-      /*
-    var obj = row.value;
-    console.log(obj);
-    var id = obj["id"];
-    console.log(id);
-*/
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row, value}) =>
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: ({row}) => (<a onClick={(e) => handleButtonClick(props, e, row.value)}>{row.value}</a>) });
-      //columns.push({ accessor: head.cols[i], Header: head.cols[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={(e) => handleButtonClick(props, e, value)}>{value}</a>) });
-
       continue;
     }
     if (head.items[i] != "Score") {
-      //columns.push({ accessor: head[i], Header: head[i], sort: true, id: 'button', Cell: ({value}) => (<a onClick={console.log('clicked value', value)}>Button</a>) });
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'button'+i, Cell: (row) => (<div><span title={row.value}>{row.value}</span></div>) });
       columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row) => (<span data-tip = {row.value}>{row.value}</span>) });
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row) => (<div class="tooltip">{row.value}<span class="tooltiptext">{row.value}</span>
-//</div>) });
-      //columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'button'+i, Cell: (row) => (<span id={head.items[i]} data-tip = {row.value} dangerouslySetInnerHTML={{__html: row.value }}/>) });
     } else {
       columns.push({ accessor: head.items[i], Header: head.items[i], sort: true });
     }
@@ -103,30 +64,14 @@ function getdata(resultitemtable) {
   const result = [];
   const head = array[0];
   const rest = array.slice(1);
-  for(var j = 0; j < rest.length; j++) {
+  for(let j = 0; j < rest.length; j++) {
     const row = rest[j].items;
     console.log(row);
     const newrow = [];
-    for(var i = 0; i < head.items.length; i++) {
-      //console.log(i);
+    for(let i = 0; i < head.items.length; i++) {
       newrow[head.items[i]] = row[i];
-      console.log(newrow, head.items[i]);
-      console.log(typeof(row[i]))
-      //console.log(i);
+      //console.log(newrow, head.items[i]);
     }
-    /*
-      {
-      var afilename = newrow["Filename"];
-      //newrow["Md5/Id"] = { id : newrow["Md5/Id"], filename : afilename };
-      newrow["Md5/Id"] = [ newrow["Md5/Id"], afilename ];
-      };
-    */
-    /*
-      if (head[0] == "Img") {
-      newrow[head[0]] = "bla";
-      }
-    */
-    console.log(newrow);
     result.push(newrow);
   }
   console.log(result);
