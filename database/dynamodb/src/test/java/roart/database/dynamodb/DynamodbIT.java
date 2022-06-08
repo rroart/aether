@@ -19,17 +19,18 @@ import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
 import roart.common.model.IndexFilesUtil;
 import roart.database.dynamodb.DynamodbIndexFiles;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class DynamodbIT {
     @RegisterExtension
     public static LocalDbCreationRule dynamoDB = new LocalDbCreationRule();
 
-    AmazonDynamoDB ddb;
+    DynamoDbClient ddb;
     DynamodbIndexFiles indexfiles;
 
     @BeforeEach
     public void setup() {
-        ddb = DynamoDBEmbedded.create().amazonDynamoDB();
+        ddb = null; //DynamoDBEmbedded.create().amazonDynamoDB();
         System.out.println("here");
         indexfiles = new DynamodbIndexFiles(ddb, "localhost", null);
         //indexfiles.setClient(ddb);
@@ -37,10 +38,10 @@ public class DynamodbIT {
 
     private void deleteTables() {
         DeleteTableRequest deleteTableRequest = new DeleteTableRequest().withTableName(DynamodbIndexFiles.TABLE_FILES_NAME);
-        boolean status = TableUtils.deleteTableIfExists(indexfiles.client, deleteTableRequest);
+        boolean status = false; // TableUtils.deleteTableIfExists(indexfiles.client, deleteTableRequest);
         System.out.println("res1 " + status);
         DeleteTableRequest deleteTableRequest2 = new DeleteTableRequest().withTableName(DynamodbIndexFiles.TABLE_INDEXFILES_NAME);
-        boolean status2 = TableUtils.deleteTableIfExists(indexfiles.client, deleteTableRequest2);
+        boolean status2 = false; //TableUtils.deleteTableIfExists(indexfiles.client, deleteTableRequest2);
         System.out.println("res1 " + status2);
     }
 
@@ -73,7 +74,7 @@ public class DynamodbIT {
     @AfterEach
     public void shutdown() {
         deleteTables();
-        ddb.shutdown();
+        //ddb.shutdown();
         System.out.println("shutdown");
         //dynamoDB.stopUnchecked(null);
     }

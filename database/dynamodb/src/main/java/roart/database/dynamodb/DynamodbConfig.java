@@ -1,12 +1,12 @@
 package roart.database.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class DynamodbConfig {
 
     private String nodename = null;
 
-    private AmazonDynamoDB client;
+    private DynamoDbClient client;
     
     private String tableprefix;
     
@@ -18,11 +18,11 @@ public class DynamodbConfig {
         this.nodename = nodename;
     }
 
-    public void setClient(AmazonDynamoDB client) {
+    public void setClient(DynamoDbClient client) {
         this.client = client;
     }
 
-    public AmazonDynamoDB getClient() {
+    public DynamoDbClient getClient() {
         return client;
     }
 

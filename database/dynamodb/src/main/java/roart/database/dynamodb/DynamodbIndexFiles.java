@@ -1,5 +1,6 @@
 package roart.database.dynamodb;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -20,60 +21,21 @@ import roart.common.model.IndexFiles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
-//import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.ItemCollection;
-import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
-import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
-import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
-import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
-import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
-import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec;
-import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
-import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
-import com.amazonaws.services.dynamodbv2.model.AttributeAction;
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.AttributeValueUpdate;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeEndpointsRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeEndpointsResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
-import com.amazonaws.services.dynamodbv2.model.Endpoint;
-import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-import com.amazonaws.services.dynamodbv2.model.KeyType;
-import com.amazonaws.services.dynamodbv2.model.Projection;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.amazonaws.services.dynamodbv2.util.TableUtils;
-import com.amazonaws.services.dynamodbv2.util.TableUtils.TableNeverTransitionedToStateException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.waiters.WaiterResponse;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 
 import roart.common.util.FsUtil;
 import roart.common.util.JsonUtil;
@@ -85,13 +47,13 @@ public class DynamodbIndexFiles {
     private DynamodbConfig config;
 
     public void amain() {
-        DynamoDB ddb = new DynamoDB(client);
+        DynamoDbClient ddb = client; //new DynamoDbClient(client);
         /* Read the name from command args */
 
         List<KeySchemaElement> indexfileskeyelements = new ArrayList<>();
         List<KeySchemaElement> fileskeyelements = new ArrayList<>();
-        KeySchemaElement md5keyelement = new KeySchemaElement("md5", KeyType.HASH);
-        KeySchemaElement fileskeyelement = new KeySchemaElement("filename", KeyType.HASH);
+        KeySchemaElement md5keyelement = KeySchemaElement.builder().attributeName("md5").keyType(KeyType.HASH).build();
+        KeySchemaElement fileskeyelement = KeySchemaElement.builder().attributeName("filename").keyType(KeyType.HASH).build();
         indexfileskeyelements.add(md5keyelement);
         fileskeyelements.add(fileskeyelement);
         //fileskeyelements.add(new KeySchemaElement("md5", KeyType.RANGE));
@@ -99,25 +61,25 @@ public class DynamodbIndexFiles {
         List<AttributeDefinition> indexfilesattributes = new ArrayList<>();
         List<AttributeDefinition> filesattributes = new ArrayList<>();
 
-        AttributeDefinition indexed = new AttributeDefinition(indexedq, ScalarAttributeType.S);
-        AttributeDefinition timestamp = new AttributeDefinition(timestampq, ScalarAttributeType.S);
-        AttributeDefinition timeindex = new AttributeDefinition(timeindexq, ScalarAttributeType.S);
-        AttributeDefinition timeclass = new AttributeDefinition(timeclassq, ScalarAttributeType.S);
-        AttributeDefinition classification = new AttributeDefinition(classificationq, ScalarAttributeType.S);
-        AttributeDefinition convertsw = new AttributeDefinition(convertswq, ScalarAttributeType.S);
-        AttributeDefinition converttime = new AttributeDefinition(converttimeq, ScalarAttributeType.S);
-        AttributeDefinition failed = new AttributeDefinition(failedq, ScalarAttributeType.S);
-        AttributeDefinition failedreason = new AttributeDefinition(failedreasonq, ScalarAttributeType.S);
-        AttributeDefinition timeoutreason = new AttributeDefinition(timeoutreasonq, ScalarAttributeType.S);
-        AttributeDefinition noindexreason = new AttributeDefinition(noindexreasonq, ScalarAttributeType.S);
-        AttributeDefinition language = new AttributeDefinition(languageq, ScalarAttributeType.S);
-        AttributeDefinition isbn = new AttributeDefinition(isbnq, ScalarAttributeType.S);
-        AttributeDefinition created = new AttributeDefinition(createdq, ScalarAttributeType.S);
-        AttributeDefinition checked = new AttributeDefinition(checkedq, ScalarAttributeType.S);
-        AttributeDefinition node = new AttributeDefinition(nodeq, ScalarAttributeType.S);
-        AttributeDefinition filename = new AttributeDefinition(filenameq, ScalarAttributeType.S);
-        AttributeDefinition filelocation = new AttributeDefinition(filelocationq, ScalarAttributeType.S);
-        AttributeDefinition md5 = new AttributeDefinition(md5q, ScalarAttributeType.S);
+        AttributeDefinition indexed = AttributeDefinition.builder().attributeName(indexedq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition timestamp = AttributeDefinition.builder().attributeName(timestampq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition timeindex = AttributeDefinition.builder().attributeName(timeindexq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition timeclass = AttributeDefinition.builder().attributeName(timeclassq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition classification = AttributeDefinition.builder().attributeName(classificationq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition convertsw = AttributeDefinition.builder().attributeName(convertswq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition converttime = AttributeDefinition.builder().attributeName(converttimeq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition failed = AttributeDefinition.builder().attributeName(failedq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition failedreason = AttributeDefinition.builder().attributeName(failedreasonq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition timeoutreason = AttributeDefinition.builder().attributeName(timeoutreasonq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition noindexreason = AttributeDefinition.builder().attributeName(noindexreasonq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition language = AttributeDefinition.builder().attributeName(languageq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition isbn = AttributeDefinition.builder().attributeName(isbnq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition created = AttributeDefinition.builder().attributeName(createdq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition checked = AttributeDefinition.builder().attributeName(checkedq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition node = AttributeDefinition.builder().attributeName(nodeq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition filename = AttributeDefinition.builder().attributeName(filenameq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition filelocation = AttributeDefinition.builder().attributeName(filelocationq).attributeType(ScalarAttributeType.S).build();
+        AttributeDefinition md5 = AttributeDefinition.builder().attributeName(md5q).attributeType(ScalarAttributeType.S).build();
 
         /*
         indexfilesattributes.add(timestamp);
@@ -144,24 +106,24 @@ public class DynamodbIndexFiles {
                 "Creating table \"%s\" with a simple primary key: \"Name\".\n",
                 getFiles());
 
-        ProvisionedThroughput ptIndex = new ProvisionedThroughput()
-                .withReadCapacityUnits(1L)
-                .withWriteCapacityUnits(1L);
-        GlobalSecondaryIndex md5Index = new GlobalSecondaryIndex() 
-                .withIndexName("Md5Index") 
-                .withProvisionedThroughput(ptIndex) 
-                .withKeySchema(new KeySchemaElement()  
-                        .withAttributeName("md5")  
-                        .withKeyType(KeyType.HASH))                 //Sort key 
-                .withProjection(new Projection() 
-                        .withProjectionType("KEYS_ONLY"));        
-        CreateTableRequest request = new CreateTableRequest()
-                .withTableName(getFiles())
-                .withAttributeDefinitions(filesattributes)
-                .withKeySchema(fileskeyelements)
-                //.withGlobalSecondaryIndexes(md5Index)
-                .withProvisionedThroughput(new ProvisionedThroughput(
-                        new Long(10), new Long(10)));
+        ProvisionedThroughput ptIndex = ProvisionedThroughput.builder()
+                .readCapacityUnits(1L)
+                .writeCapacityUnits(1L).build();
+        GlobalSecondaryIndex md5Index = GlobalSecondaryIndex.builder()
+                .indexName("Md5Index") 
+                .provisionedThroughput(ptIndex) 
+                .keySchema(KeySchemaElement.builder()
+                        .attributeName("md5")
+                        .keyType(KeyType.HASH).build())                 //Sort key
+                .projection(Projection.builder()
+                        .projectionType("KEYS_ONLY").build()).build();
+        CreateTableRequest request = CreateTableRequest.builder()
+                .tableName(getFiles())
+                .attributeDefinitions(filesattributes)
+                .keySchema(fileskeyelements)
+                //.globalSecondaryIndexes(md5Index)
+                .provisionedThroughput(ProvisionedThroughput.builder().readCapacityUnits(10L).writeCapacityUnits(10L).build())
+                        .build();
 
 
         //final AmazonDynamoDB ddb = AmazonDynamoDBClientBuilder.defaultClient();
@@ -183,12 +145,12 @@ public class DynamodbIndexFiles {
         createTable(request, ddb, getFiles());
         log.info("y12");
 
-        CreateTableRequest request2 = new CreateTableRequest()
-                .withTableName(getIndexFiles())
-                .withAttributeDefinitions(indexfilesattributes)
-                .withKeySchema(indexfileskeyelements)
-                .withProvisionedThroughput(new ProvisionedThroughput(
-                        new Long(10), new Long(10)));
+        CreateTableRequest request2 = CreateTableRequest.builder()
+                .tableName(getIndexFiles())
+                .attributeDefinitions(indexfilesattributes)
+                .keySchema(indexfileskeyelements)
+                .provisionedThroughput(ProvisionedThroughput.builder()
+                        .readCapacityUnits(10L).writeCapacityUnits(10L).build()).build();
         log.info("y123");
         createTable(request2, ddb, getIndexFiles());
         log.info("y1234");
@@ -227,10 +189,10 @@ public class DynamodbIndexFiles {
             e.printStackTrace();
         }
          */
-        for (Table res : ddb.listTables()) {
-            System.out.println("r1 " + res.getTableName());;
+        for (String res : ddb .listTables().tableNames()) {
+            System.out.println("r1 " + res);;
         }
-        for (String res : client.listTables().getTableNames()) {
+        for (String res : client.listTables() .tableNames()) {
             System.out.println("r2 " + res);;
 
         }
@@ -240,45 +202,46 @@ public class DynamodbIndexFiles {
 
     }
 
-    private void printEndpoints(AmazonDynamoDB cli) {
+    private void printEndpoints(DynamoDbClient cli) {
         try {
-        DescribeEndpointsRequest describeEndpointsRequest = new DescribeEndpointsRequest();
-        DescribeEndpointsResult res00 = cli.describeEndpoints(describeEndpointsRequest);
-        for (Endpoint endpoint : res00.getEndpoints()) {
-            log.info("endp " + endpoint.getAddress());
+        DescribeEndpointsRequest describeEndpointsRequest = DescribeEndpointsRequest.builder().build();
+        DescribeEndpointsResponse res00 = cli.describeEndpoints(describeEndpointsRequest);
+        for (Endpoint endpoint : res00.endpoints()) {
+            log.info("endp " + endpoint.address());
         }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
     }
 
-    private void createTable(CreateTableRequest request, DynamoDB ddb, String tableName) {
+    private void createTable(CreateTableRequest request, DynamoDbClient ddb, String tableName) {
         try {
             //AmazonDynamoDB ddb = new AmazonDynamoDB(client);
-            boolean created = TableUtils.createTableIfNotExists(client, request);
-            System.out.println("res1 " + created);
-            TableUtils.waitUntilActive(client, tableName);
-            TableUtils.waitUntilExists(client, tableName);
-            Table table = ddb.getTable(tableName);
-            System.out.println("res1 " + table);
-            DescribeTableRequest describeTableRequest = new DescribeTableRequest().withTableName(tableName);
-            TableDescription tableDescription = client.describeTable(describeTableRequest).getTable();
+            CreateTableResponse response = ddb.createTable(request);
+            System.out.println("res1 " + response);
+            DescribeTableRequest tableRequest = DescribeTableRequest.builder()
+                    .tableName(tableName)
+                    .build();
+            DynamoDbWaiter dbWaiter = ddb.waiter();
+            WaiterResponse<DescribeTableResponse> waiterResponse = dbWaiter.waitUntilTableExists(tableRequest);
+            waiterResponse.matched().response().ifPresent(System.out::println);
+            String newTable = response.tableDescription().tableName();
+            //return newTable;
+
+            //Table table = ddb.getTable(tableName);
+            //System.out.println("res1 " + table);
+            DescribeTableRequest describeTableRequest = DescribeTableRequest.builder().tableName(tableName).build();
+            TableDescription tableDescription = client.describeTable(describeTableRequest).table();
             System.out.println("Table Description: " + tableDescription);
             //CreateTableResult result = client.createTable(request);
             //System.out.println("res1 " + result.getTableDescription().getTableName());
-        } catch (AmazonServiceException e) {
+        } catch (ResourceInUseException e) {
             log.error(Constants.EXCEPTION, e);
             e.printStackTrace();
-            System.err.println("res7 " + e.getErrorMessage());
+        } catch (AwsServiceException e) {
+            log.error(Constants.EXCEPTION, e);
+            e.printStackTrace();
             System.exit(1);
-        } catch (TableNeverTransitionedToStateException e) {
-            log.error(Constants.EXCEPTION, e);
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            log.error(Constants.EXCEPTION, e);
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             // TODO Auto-generated catch block
@@ -313,18 +276,18 @@ public class DynamodbIndexFiles {
 
     static final String TABLE_FILES_NAME = "files";
     static final String TABLE_INDEXFILES_NAME = "indexfiles";
-    AmazonDynamoDB client;
-    Table filesTable;   
-    Table indexTable;
+    DynamoDbClient client;
+    //Table filesTable;
+    //Table indexTable;
     //DynamoDB ddb;
-    public DynamodbIndexFiles(AmazonDynamoDB ddb, String nodename, NodeConfig nodeConf) {
+    public DynamodbIndexFiles(DynamoDbClient ddb, String nodename, NodeConfig nodeConf) {
         config = new DynamodbConfig();
         String port = "8000";
         String host = "localhost";
         if (ddb != null) {
             this.client = ddb;
         } else {
-            this.client = AmazonDynamoDBClientBuilder.defaultClient();
+            this.client = DynamoDbClient.builder().build();
             //printEndpoints(this.client);
             log.info("Nodeconf {}", nodeConf);
             if (nodeConf != null) {
@@ -332,19 +295,30 @@ public class DynamodbIndexFiles {
                 host = nodeConf.getDynamodbHost();
                 log.info("Host port {} {}", host, port);
                 //new EndpointConfiguration();
-                EndpointConfiguration endpointConfiguration = new EndpointConfiguration("http://" + host + ":" + port, "us-east-1");
-                //this.client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(endpointConfiguration).
+                URI endpointConfiguration = null;
+                try {
+                    endpointConfiguration = new URI("http://" + host + ":" + port);
+                } catch (Exception e) {
+                    log.error(Constants.ERROR, e);
+                }
+                //this.client = AmazonDynamoDBClientBuilder.standard().endpointConfiguration(endpointConfiguration).
                 //printEndpoints(this.client);
-                this.client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(endpointConfiguration).build();
+                AwsBasicCredentials credentials = AwsBasicCredentials.create(nodeConf.getS3AccessKey(), nodeConf.getS3SecretKey());
+                this.client = DynamoDbClient.builder()
+                    .endpointOverride(endpointConfiguration)
+                    //.pathStyleAccessEnabled(true)
+                    //.clientConfiguration(clientConfiguration)
+                    .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                        .build();
                 //printEndpoints(this.client);
                 log.info("Client connected {}", this.client);
             }
         }
         /*
-	AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(
+	AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().endpointConfiguration(
 	        new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
 	        .build(); 
-	ddb = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(
+	ddb = AmazonDynamoDBClientBuilder.standard().endpointConfiguration(
 	        new AwsClientBuilder.EndpointConfiguration("http://" + host + ":" + port, "us-west-2"))
 	        .build(); 
          */
@@ -358,9 +332,9 @@ public class DynamodbIndexFiles {
 
         //ddb = new DynamoDB(new AmazonDynamoDBClient( 
         //     new ProfileCredentialsProvider()));  
-        DynamoDB ddb2 = new DynamoDB(this.client);
-        indexTable = ddb2.getTable(getIndexFiles());
-        filesTable = ddb2.getTable(getFiles());
+        //DynamoDbClient ddb2 = new DynamoDbClient(this.client);
+        //indexTable = ddb2 .getTable(getIndexFiles());
+        //filesTable = ddb2.getTable(getFiles());
         log.info("After");
     }
 
@@ -370,67 +344,67 @@ public class DynamodbIndexFiles {
     }
      */
 
-    public AmazonDynamoDB getClient() {
+    public DynamoDbClient getClient() {
         return client;
     }
 
     public void put(IndexFiles ifile) throws Exception {
         //HTable /*Interface*/ filesTable = new HTable(conf, "index");
-        Item item = new Item();
-        item.withPrimaryKey(md5q, ifile.getMd5());
+        Map<String, AttributeValue> item = new HashMap<>();
+        //item.primaryKey(md5q, ifile.getMd5());
         Map<String,AttributeValue/*Update*/> updatedvalues = new HashMap<>();
-        updatedvalues.put(md5q, new AttributeValue(ifile.getMd5()));
+        updatedvalues.put(md5q, AttributeValue.builder().s(ifile.getMd5()).build());
         if (ifile.getIndexed() != null) {
-            updatedvalues.put(indexedq, new AttributeValue("" + ifile.getIndexed())); //, AttributeAction.PUT));
+            updatedvalues.put(indexedq, AttributeValue.builder().s("" + ifile.getIndexed()).build()); //, AttributeAction.PUT));
         }
         if (ifile.getTimestamp() != null && !ifile.getTimestamp().isEmpty()) {
-            updatedvalues.put(timestampq, new AttributeValue(ifile.getTimestamp()));
+            updatedvalues.put(timestampq, AttributeValue.builder().s(ifile.getTimestamp()).build());
         }
         if (ifile.getTimeindex() != null && !ifile.getTimeindex().isEmpty()) {
-            updatedvalues.put(timeindexq, new AttributeValue(ifile.getTimeindex()));
+            updatedvalues.put(timeindexq, AttributeValue.builder().s(ifile.getTimeindex()).build());
         }
         if (ifile.getTimeclass() != null && !ifile.getTimeclass().isEmpty()) {
-            updatedvalues.put(timeclassq, new AttributeValue(ifile.getTimeclass()));
+            updatedvalues.put(timeclassq, AttributeValue.builder().s(ifile.getTimeclass()).build());
         }
         if (ifile.getClassification() != null && !ifile.getClassification().isEmpty()) {
-            updatedvalues.put(classificationq, new AttributeValue(ifile.getClassification()));
+            updatedvalues.put(classificationq, AttributeValue.builder().s(ifile.getClassification()).build());
         }
         if (ifile.getConvertsw() != null && !ifile.getConvertsw().isEmpty()) {
-            updatedvalues.put(convertswq, new AttributeValue(ifile.getConvertsw()));
+            updatedvalues.put(convertswq, AttributeValue.builder().s(ifile.getConvertsw()).build());
         }
         if (ifile.getConverttime() != null && !ifile.getConverttime().isEmpty()) {
-            updatedvalues.put(converttimeq, new AttributeValue(ifile.getConverttime()));
+            updatedvalues.put(converttimeq, AttributeValue.builder().s(ifile.getConverttime()).build());
         }
         if (ifile.getFailed() != null) {
-            updatedvalues.put(failedq, new AttributeValue("" + ifile.getFailed()));
+            updatedvalues.put(failedq, AttributeValue.builder().s("" + ifile.getFailed()).build());
         }
         if (ifile.getFailedreason() != null && !ifile.getFailedreason().isEmpty()) {
-            updatedvalues.put(failedreasonq, new AttributeValue(ifile.getFailedreason()));
+            updatedvalues.put(failedreasonq, AttributeValue.builder().s(ifile.getFailedreason()).build());
         }
         if (ifile.getTimeoutreason() != null && !ifile.getTimeoutreason().isEmpty()) {
-            updatedvalues.put(timeoutreasonq, new AttributeValue(ifile.getTimeoutreason()));
+            updatedvalues.put(timeoutreasonq, AttributeValue.builder().s(ifile.getTimeoutreason()).build());
         }
         if (ifile.getNoindexreason() != null && !ifile.getNoindexreason().isEmpty()) {
-            updatedvalues.put(noindexreasonq, new AttributeValue(ifile.getNoindexreason()));
+            updatedvalues.put(noindexreasonq, AttributeValue.builder().s(ifile.getNoindexreason()).build());
         }
         if (ifile.getLanguage() != null && !ifile.getLanguage().isEmpty()) {
-            updatedvalues.put(languageq, new AttributeValue(ifile.getLanguage()));
+            updatedvalues.put(languageq, AttributeValue.builder().s(ifile.getLanguage()).build());
         }
         if (ifile.getIsbn() != null && !ifile.getIsbn().isEmpty()) {
-            updatedvalues.put(isbnq, new AttributeValue(ifile.getIsbn()));
+            updatedvalues.put(isbnq, AttributeValue.builder().s(ifile.getIsbn()).build());
         }
         if (ifile.getCreated() != null && !ifile.getCreated().isEmpty()) {
-            updatedvalues.put(createdq, new AttributeValue(ifile.getCreated()));
+            updatedvalues.put(createdq, AttributeValue.builder().s(ifile.getCreated()).build());
         }
         if (ifile.getChecked() != null && !ifile.getChecked().isEmpty()) {
-            updatedvalues.put(checkedq, new AttributeValue(ifile.getChecked()));
+            updatedvalues.put(checkedq, AttributeValue.builder().s(ifile.getChecked()).build());
         }
         if (ifile.getFilelocations() != null && !ifile.getFilelocations().isEmpty()) {
-            //updatedvalues.put(filelocationq, new AttributeValue(new ArrayList(ifile.getFilelocations())));              
+            //updatedvalues.put(filelocationq, AttributeValue.builder().s(new ArrayList(ifile.getFilelocations())));              
             String str = null;
             System.out.println("put floc");
             str = new FileLocationConverter().convert(new ArrayList(ifile.getFilelocations()));
-            updatedvalues.put(filelocationq, new AttributeValue(str));	        
+            updatedvalues.put(filelocationq, AttributeValue.builder().s(str).build());	        
         }
         //item.with
         //log.info("hbase " + ifile.getMd5());
@@ -455,7 +429,7 @@ public class DynamodbIndexFiles {
         put(ifile.getMd5(), ifile.getFilelocations());
         //client.putI;
         log.info("grrrr"+updatedvalues.toString());
-        client.putItem(getIndexFiles(), updatedvalues);
+        client.putItem(PutItemRequest.builder().tableName(getIndexFiles()).item(updatedvalues).build());
 
         // or if still to slow, simply get current (old) indexfiles
         Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
@@ -467,7 +441,7 @@ public class DynamodbIndexFiles {
             log.info("Dynamodb delete {}", name);
                 try {
                     System.out.println("Attempting a conditional delete...");
-                    filesTable.deleteItem(filenameq, fl.toString());
+                    client.deleteItem(DeleteItemRequest.builder().key(Map.of(filenameq, AttributeValue.builder().s(fl.toString()).build())).build());
                     System.out.println("DeleteItem succeeded");
                 }
                 catch (Exception e) {
@@ -489,36 +463,36 @@ public class DynamodbIndexFiles {
             System.out.println("files put " + md5 + " " + file);
             String filename = getFile(file);
             Map<String,AttributeValue/*Update*/> updatedvalues = new HashMap<>();
-            updatedvalues.put(filenameq, new AttributeValue(filename)); //, AttributeAction.PUT));
-            updatedvalues.put(md5q, new AttributeValue(md5));
+            updatedvalues.put(filenameq, AttributeValue.builder().s(filename).build()); //, AttributeAction.PUT));
+            updatedvalues.put(md5q, AttributeValue.builder().s(md5).build());
             //Put put = new Put(filename));
             //put.addColumn(filescf, md5q, md5));
             //filesTable.put(put);
-            client.putItem(getFiles(), updatedvalues);
+            client.putItem(PutItemRequest.builder().tableName(getFiles()).item(updatedvalues).build());
         }
     }
 
-    public IndexFiles get(Item item) {
-        String md5 = item.getString(md5q);
+    public IndexFiles get(Map<String, AttributeValue> item) {
+        String md5 = item.get(md5q).s();
         IndexFiles ifile = new IndexFiles(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
-        ifile.setIndexed(new Boolean(item.getString(indexedq)));
-        ifile.setTimeindex(item.getString(timeindexq));
-        ifile.setTimestamp(item.getString(timestampq));
-        ifile.setTimeclass(item.getString(timeclassq));
-        ifile.setClassification(item.getString(classificationq));
-        ifile.setConvertsw(item.getString(convertswq));
-        ifile.setConverttime(item.getString(converttimeq));
-        ifile.setFailed(Integer.valueOf(item.getString(failedq) != null ? item.getString(failedq) : "0"));
-        ifile.setFailedreason(item.getString(failedreasonq));
-        ifile.setTimeoutreason(item.getString(timeoutreasonq));
-        ifile.setNoindexreason(item.getString(noindexreasonq));
-        ifile.setLanguage(item.getString(languageq));
-        ifile.setIsbn(item.getString(isbnq));
-        ifile.setCreated(item.getString(createdq));
-        ifile.setChecked(item.getString(checkedq));
-        log.info("get fl " + item.getList(filelocationq).getClass().getName() + " " + item.getList(filelocationq).get(0).getClass().getName() + " " + item.getList(filelocationq));
-        ifile.setFilelocations(item.getList(filelocationq) != null ? new HashSet<>(convert(item.getList(filelocationq))) : new HashSet<>());
+        ifile.setIndexed(new Boolean(itemgets(item.get(indexedq))));
+        ifile.setTimeindex(itemgets(item.get(timeindexq)));
+        ifile.setTimestamp(itemgets(item.get(timestampq)));
+        ifile.setTimeclass(itemgets(item.get(timeclassq)));
+        ifile.setClassification(itemgets(item.get(classificationq)));
+        ifile.setConvertsw(itemgets(item.get(convertswq)));
+        ifile.setConverttime(itemgets(item.get(converttimeq)));
+        ifile.setFailed(Integer.valueOf(itemgets(item.get(failedq)) != null ? itemgets(item.get(failedq)) : "0"));
+        ifile.setFailedreason(itemgets(item.get(failedreasonq)));
+        ifile.setTimeoutreason(itemgets(item.get(timeoutreasonq)));
+        ifile.setNoindexreason(itemgets(item.get(noindexreasonq)));
+        ifile.setLanguage(itemgets(item.get(languageq)));
+        ifile.setIsbn(itemgets(item.get(isbnq)));
+        ifile.setCreated(itemgets(item.get(createdq)));
+        ifile.setChecked(itemgets(item.get(checkedq)));
+        log.info("get fl " + item.get(filelocationq).getClass().getName() + " " + itemgets(item.get(filelocationq)).getClass().getName() + " " + item.get(filelocationq));
+        ifile.setFilelocations(item.get(filelocationq) != null ? new HashSet<>(convert(itemgets(item.get(filelocationq)))) : new HashSet<>());
         Set<FileLocation> fls;
         /*
         try {
@@ -532,9 +506,16 @@ public class DynamodbIndexFiles {
         return ifile;
     }
 
-    private List<FileLocation> convert(List list) {
+    private String itemgets(AttributeValue attributeValue) {
+        if (attributeValue != null) {
+            return attributeValue.s();
+        }
+        return null;
+    }
+
+    private List<FileLocation> convert(String list) {
         List<FileLocation> listnew = new ArrayList<>();
-        for (Object str : list) {
+        for (Object str : List.of(list)) {
             LinkedHashMap[] map;
             if (str instanceof String string) {
                 map = JsonUtil.convertnostrip(string, LinkedHashMap[].class);
@@ -559,8 +540,9 @@ public class DynamodbIndexFiles {
     }
 
     public IndexFiles get(String md5) {
-        Item item = indexTable.getItem(md5q, md5);
-        if (item == null) {
+        Map<String, AttributeValue> keyMap = Map.of(md5q, AttributeValue.builder().s(md5).build());
+        Map<String, AttributeValue> item = client.getItem(GetItemRequest.builder().tableName(getIndexFiles()).key(keyMap).build()).item();
+        if (item == null || item.isEmpty()) {
             return null;
         }
         return get(item);
@@ -577,36 +559,40 @@ public class DynamodbIndexFiles {
     public String getMd5ByFilelocation(FileLocation fl) {
         String name = getFile(fl);
         log.info("NAME"+name);
-        Item item = filesTable.getItem(filenameq, name);
-        if (item == null) {
+        GetItemResponse item = client.getItem(GetItemRequest.builder().tableName(getFiles()).key(Map.of(filenameq, AttributeValue.builder().s(name).build())).build());
+        if (item == null || item.item().isEmpty()) {
             return null;
         }
-        return item.getString(md5q);
+        log.info("" + item.item());
+        return item.item().get(md5q).s();
     }
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
-        System.out.println("smd5 " + md5);
+        log.info("Search md5 {}", md5);
         Set<FileLocation> flset = new HashSet<>();
-        ScanSpec scanSpec = new ScanSpec()
-                .withFilterExpression("#md5 = :md5")
-                .withNameMap(new NameMap()
-                        .with("#md5", "md5"))
-                .withValueMap(new ValueMap()
-                        .withString(":md5", md5));
+
+        Map<String, AttributeValue> expressionAttributeValues = Map.of(":md5", AttributeValue.builder().s(md5).build());
+
+        ScanRequest scanSpec = ScanRequest.builder()
+                .tableName(getFiles())
+                .filterExpression("md5 = :md5")
+                .expressionAttributeValues(expressionAttributeValues)
+                .build();
+        /*
         QuerySpec spec = new QuerySpec()
-                .withKeyConditionExpression("#md5 = :md5")
-                .withNameMap(new NameMap()
+                .keyConditionExpression("#md5 = :md5")
+                .nameMap(new NameMap()
                         .with("#md5", "md5"))
-                .withValueMap(new ValueMap()
-                        .withString(":md5", md5));
+                .valueMap(new ValueMap()
+                        .string(":md5", md5));
         RangeKeyCondition rangeKeyCondition = new RangeKeyCondition("md5")
                 .eq(md5);
-
         spec = new QuerySpec()
-                .withRangeKeyCondition(rangeKeyCondition);
+                .rangeKeyCondition(rangeKeyCondition);
+*/
         // filesTable.query(spec)
         //ItemCollection<QueryOutcome> items = filesTable.query(spec);
-        ItemCollection<ScanOutcome> scans = filesTable.scan(scanSpec);
+        ScanResponse scans = client.scan(scanSpec);
         //System.out.println("cnt " + items.getTotalCount());
         //List<Map<String, AttributeValue>> items = client.query(queryRequest ).getItems();
         /*
@@ -618,9 +604,9 @@ public class DynamodbIndexFiles {
         }
         */
         System.out.println("h0");
-        for (Item item : scans) {
+        for (Map<String, AttributeValue> item : scans.items()) {
             System.out.println("h1");
-            FileLocation fl = getFileLocation(item.getString(filenameq));
+            FileLocation fl = getFileLocation(item.get(filenameq).s());
             System.out.println("h1 " + fl);
             if (fl != null) {
                 flset.add(fl);
@@ -632,20 +618,20 @@ public class DynamodbIndexFiles {
 
     public List<IndexFiles> getAll() throws Exception {
         List<IndexFiles> retlist = new ArrayList<>();
-        ScanRequest scanRequest = new ScanRequest()
-                .withTableName(getIndexFiles());
+        ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(getIndexFiles()).build();
 
-        ScanResult result = client.scan(scanRequest);
-        List<Map<String, AttributeValue>> list = result.getItems();
+        ScanResponse result = client.scan(scanRequest);
+        List<Map<String, AttributeValue>> list = result.items();
         for (Map<String, AttributeValue> itemMap : list){
-            Item item = new Item();
+            Map<String, AttributeValue> item = new HashMap<>();
             for (Entry<String, AttributeValue> entry : itemMap.entrySet()) {
                 if ( entry.getKey().equals(filelocationq)) {
-                    String value = entry.getValue().getS();
+                    String value = entry.getValue().s();
                     List<FileLocation> unconverted = new FileLocationConverter().unconvert(value);
-                    item.with(entry.getKey(), unconverted);
+                    item.put(entry.getKey(), entry.getValue());
                 } else {
-                    item.with(entry.getKey(), entry.getValue().getS());
+                    item.put(entry.getKey(), entry.getValue());
                 }
             }
             retlist.add(get(item));
@@ -705,32 +691,32 @@ public class DynamodbIndexFiles {
 
     public Set<String> getAllMd5() throws Exception {
         Set<String> md5s = new HashSet<>();
-        ScanRequest scanRequest = new ScanRequest()
-                .withTableName(getIndexFiles());
+        ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(getIndexFiles()).build();
 
-        ScanResult result = client.scan(scanRequest);
-        for (Map<String, AttributeValue> itemMap : result.getItems()){
+        ScanResponse result = client.scan(scanRequest);
+        for (Map<String, AttributeValue> itemMap : result.items()){
 
-            md5s.add(itemMap.get(md5q).getS());
+            md5s.add(itemMap.get(md5q).s());
         }
         return md5s;
     }
 
     public Set<String> getLanguages() throws Exception {
         Set<String> languages = new HashSet<String>();
-        ScanRequest scanRequest = new ScanRequest()
-                .withTableName(getIndexFiles());
+        ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(getIndexFiles()).build();
 
-        ScanResult result = client.scan(scanRequest);
-        for (Map<String, AttributeValue> itemMap : result.getItems()){
+        ScanResponse result = client.scan(scanRequest);
+        for (Map<String, AttributeValue> itemMap : result.items()){
 
-            languages.add(itemMap.get(languageq).getS());
+            languages.add(itemgets(itemMap.get(languageq)));
         }
         return languages;
     }
 
     public void delete(IndexFiles index) throws Exception {
-            indexTable.deleteItem(md5q, index.getMd5());
+            client.deleteItem(DeleteItemRequest.builder().tableName(getIndexFiles()).key(Map.of(md5q, AttributeValue.builder().s(index.getMd5()).build())).build());
 
         Set<FileLocation> curfls = getFilelocationsByMd5(index.getMd5());
         System.out.println("curfls " + curfls.size());
@@ -740,7 +726,7 @@ public class DynamodbIndexFiles {
         // delete the files no longer associated to the md5
         for (FileLocation fl : curfls) {
             String name = fl.toString();
-            filesTable.deleteItem(filenameq, name);
+            client.deleteItem(DeleteItemRequest.builder().tableName(getFiles()).key(Map.of(filenameq, AttributeValue.builder().s(name).build())).build());
         }
     }
 
@@ -748,7 +734,7 @@ public class DynamodbIndexFiles {
         //config.getConnection().close();
     }
 
-    static public class FileLocationConverter implements DynamoDBTypeConverter<String, List<FileLocation>> {
+    static public class FileLocationConverter /*implements DynamoDBTypeConverter<String, List<FileLocation>>*/ {
 /*
         @Override
         public String convert(FileLocation object) {
@@ -785,7 +771,7 @@ public class DynamodbIndexFiles {
             return itemDimension;
         }
         */
-        @Override
+        //@Override
         public String convert(List<FileLocation> objects) {
             //Jackson object mapper
             ObjectMapper objectMapper = new ObjectMapper();
@@ -798,7 +784,7 @@ public class DynamodbIndexFiles {
             return null;
         }
 
-        @Override
+        //@Override
         public List<FileLocation> unconvert(String objectsString) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
@@ -823,27 +809,28 @@ public String getFiles() {
 
 public void clear(DatabaseConstructorParam param) {
     try {
-    clear(indexTable, "md5");
-    clear(filesTable, "filename");
+    clear(getIndexFiles(), "md5");
+    clear(getFiles(), "filename");
 } catch (Exception e) {
     log.info(Constants.EXCEPTION, e);
 }
 }
 
 public void drop(DatabaseConstructorParam param) {
-    client.deleteTable(getIndexFiles());
-    client.deleteTable(getFiles());
+    client.deleteTable(DeleteTableRequest.builder().tableName(getIndexFiles()).build());
+    client.deleteTable(DeleteTableRequest.builder().tableName(getFiles()).build());
 }
-private void clear(Table table, String hashKeyName) throws Exception {
-    ScanSpec spec = new ScanSpec();
-    ItemCollection<ScanOutcome> items = table.scan(spec);
-    Iterator<Item> it = items.iterator();
-    while (it.hasNext()) {
-        Item item = it.next();
-        String hashKey = item.getString(hashKeyName);
-        PrimaryKey key = new PrimaryKey(hashKeyName, hashKey);
-        table.deleteItem(key);
-        System.out.printf("Deleted item with key: %s\n", hashKey);
+
+private void clear(String table, String hashKeyName) throws Exception {
+    ScanRequest spec = ScanRequest.builder().tableName(table).build();
+    ScanResponse items = client.scan(spec);
+    for(Map<String, AttributeValue> item : items.items()) {
+        //String hashKey = item.get(hashKeyName);
+        //PrimaryKey key = new PrimaryKey(hashKeyName, hashKey);
+        client.deleteItem(DeleteItemRequest.builder().tableName(table).key(Map.of(hashKeyName, item.get(hashKeyName))).build());
+        System.out.printf("Deleted item with key: %s\n", hashKeyName);
     }
-}}
+}
+
+}
 
