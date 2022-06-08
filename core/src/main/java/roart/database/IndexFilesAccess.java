@@ -102,9 +102,12 @@ public abstract class IndexFilesAccess {
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
         DatabaseMd5Param param = new DatabaseMd5Param();
         param.setConf(MyConfig.conf);
+        /*
         Set<String> md5s = new HashSet<>();
         md5s.add(md5);
         param.setMd5s(md5s);
+        */
+        param.setMd5(md5);
         DatabaseFileLocationResult result = EurekaUtil.sendMe(DatabaseFileLocationResult.class, param, getAppName(), EurekaConstants.GETFILELOCATIONSBYMD5);
         return new HashSet(Arrays.asList(result.fileLocation));
 
