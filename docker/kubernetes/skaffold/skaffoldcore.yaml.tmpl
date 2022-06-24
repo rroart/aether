@@ -16,6 +16,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
         eurekaserver: '{{.EUREKA_SERVER_URI}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:
     manifests:

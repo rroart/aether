@@ -34,6 +34,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
         mydata: '{{.MYOPENNLPDATA}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-mahout-spark$IMGID
     context: ../../..
     docker:
@@ -47,6 +48,7 @@ build:
         extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
         appid: '{{.APPID}}'
         mydata: '{{.MYMAHOUTSPARKDATA}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-spark-ml$IMGID
     context: ../../..
     docker:
@@ -60,6 +62,7 @@ build:
         extras: "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED" 
         appid: '{{.APPID}}'
         mydata: '{{.MYSPARKMLDATA}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:
     manifests:

@@ -12,6 +12,7 @@ build:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.CALIBREJAR}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-djvutxt$IMGID
     context: ../../..
     docker:
@@ -20,6 +21,7 @@ build:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.DJVUTXTJAR}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-pdftotext$IMGID
     context: ../../..
     docker:
@@ -28,6 +30,7 @@ build:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.PDFTOTEXTJAR}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-tika$IMGID
     context: ../../..
     docker:
@@ -36,6 +39,7 @@ build:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.TIKAJAR}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-wvtext$IMGID
     context: ../../..
     docker:
@@ -44,6 +48,7 @@ build:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.WVTEXTJAR}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:
     manifests:

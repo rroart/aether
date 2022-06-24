@@ -17,6 +17,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-elastic$IMGID
     context: ../../..
     docker:
@@ -28,6 +29,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-solr$IMGID
     context: ../../..
     docker:
@@ -39,6 +41,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:
     manifests:
