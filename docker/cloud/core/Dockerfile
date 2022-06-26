@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debianjdk:latest
 MAINTAINER <roart@nvg.ntnu.no>
 ARG distlib
 ARG distjar
@@ -24,7 +24,6 @@ RUN mkdir /usr/local/conf
 ADD docker/cloud/core/$MYCONFIG /usr/local/conf
 WORKDIR /usr/local/bin
 RUN apt update -y
-RUN apt install -y procps openjdk-17-jdk-headless
 RUN ln -s /tmp /usr/local/logs
 CMD java $MYDEBUG -Dserver.port=${MYWEBPORT} -jar /usr/local/bin/$DISTJAR ../conf/$MYCONFIG --spring.profiles.active=docker
 #-Deureka.client.enabled=false 

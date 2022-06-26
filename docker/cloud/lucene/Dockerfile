@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk
+FROM debianjre:latest
 MAINTAINER <roart@nvg.ntnu.no>
 ARG distlib
 ARG distjar
@@ -12,7 +12,6 @@ ENV MYWEBPORT ${mywebport}
 ENV MYCONFIG ${myconfig}
 ENV MYDEBUG ${mydebug}
 ENV APPID ${appid}
-RUN microdnf install hostname
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 RUN mkdir /usr/local/conf
 WORKDIR /usr/local/bin

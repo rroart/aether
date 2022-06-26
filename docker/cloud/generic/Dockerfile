@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debianjre:latest
 MAINTAINER <roart@nvg.ntnu.no>
 ARG distlib
 ARG distjar
@@ -18,11 +18,8 @@ ENV EXTRAS ${extras}
 ENV LANG ${lang}
 ENV APPID ${appid}
 ENV JDK_JAVA_OPTIONS ${jdk_java_options}
-#RUN microdnf install hostname
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 RUN mkdir /usr/local/conf
 WORKDIR /usr/local/bin
-RUN apt update -y
-RUN apt install -y procps openjdk-17-jdk-headless
 RUN ln -s /tmp /usr/local/logs
 CMD java $EXTRAS $MYDEBUG -Dserver.port=$MYWEBPORT -Deureka.client.enabled=false -jar /usr/local/bin/$DISTJAR --spring.profiles.active=docker
