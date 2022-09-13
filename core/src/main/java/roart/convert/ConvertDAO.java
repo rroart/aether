@@ -15,6 +15,7 @@ import roart.common.convert.ConvertResult;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.model.IndexFiles;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
@@ -22,7 +23,7 @@ import roart.service.ControlService;
 
 public class ConvertDAO {
 
-    public static InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename) {
+    public static InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
         ConvertParam param = new ConvertParam();
         param.nodename = ControlService.nodename;
         param.conf = MyConfig.conf;
@@ -36,6 +37,13 @@ public class ConvertDAO {
         // get md from Tika and use it, even if Tika fails
         if (result.metadata != null) {
             metadata.putAll(result.metadata);
+        }
+        if (result.error != null) {
+            if (index.getFailedreason() != null) {
+                index.setFailedreason(result.error);
+            } else {
+                index.setFailedreason(index.getFailedreason() + " " + result.error);
+            }
         }
         if (result.message == null) {
             return null;

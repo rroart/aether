@@ -51,6 +51,9 @@ public class Calibre extends ConvertAbstract {
             Files.copy(contentStream, inPath);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
+            log.error("File copy error");
+            result.error = e.getMessage();
+            return result;
         }
         String in = inPath.toString();
         Path outPath = null;

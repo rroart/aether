@@ -59,17 +59,19 @@ public class ConvertHandler {
         //InmemoryMessage message = inmemory.send(el.md5, content);
         InmemoryMessage message = FileSystemDao.readFile(el.filename);
         el.message = message;
+        el.index.setFailedreason(null);
 
 	log.info("file {}", el.filename);
         String converterString = MyConfig.conf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
         String mimetype = null;
-        try {
-            InputStream origcontent = inmemory.getInputStream(message);
+        try (InputStream origcontent = inmemory.getInputStream(message)) {
             mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
+            log.error("File copy error");
+            el.index.setFailedreason("File copy error");
             converters = new Converter[0];
         }    
         // null mime isbn
@@ -90,7 +92,7 @@ public class ConvertHandler {
             // TODO error
 	    long now = System.currentTimeMillis();
             try {
-                str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString());
+                str = ConvertDAO.convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), el.index);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -99,6 +101,7 @@ public class ConvertHandler {
                 el.convertsw = converter.getName();
 		el.index.setConverttime("" + time);
 	        break;
+            } else {
             }
         }
         inmemory.delete(message);
@@ -169,8 +172,8 @@ public class ConvertHandler {
         log.info("ending {} {}", el.md5, el.filename);
     }
 
-    private String getMimetype(InputStream content, String filename) {
-        try {
+    private String getMimetype(InputStream content, String filename) throws IOException {
+        //try {
 	    Path tempFile = Paths.get("/tmp", filename);
 	    Files.deleteIfExists(tempFile);
             //Path tempFile = Files.createFile(Paths.get("/tmp", filename));
@@ -179,9 +182,9 @@ public class ConvertHandler {
             String mimetype = Files.probeContentType(tempFile);
             Files.delete(tempFile);
             return mimetype;
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e);
-        }
-        return null;
+        //} catch (Exception e) {
+        //    log.error(Constants.EXCEPTION, e);
+        //}
+        //return null;
     }
 }
