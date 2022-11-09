@@ -23,16 +23,14 @@ import com.netflix.discovery.util.EurekaUtils;
 
 import roart.common.util.JarThread;
 
-import javax.ws.rs.core.Response;
-
 public class MarathonUtilTest {
 
     @BeforeEach
     public void setUp() {
         try {
-        Response r = null;
+        //Response r = null;
         // compile canary
-        r.close();
+        //r.close();
         } catch (Exception e) {
             
         }

@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import javax.ws.rs.core.Response;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,9 +28,9 @@ public class DockerTest {
 	@BeforeEach
     public void setUp() {
 	    try {
-	    Response r = null;
+	    //Response r = null;
 	    // compile canary
-	    r.close();
+	    //r.close();
 	    } catch (Exception e) {
 	        
 	    }

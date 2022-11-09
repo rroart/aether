@@ -8,7 +8,6 @@
 module servicemanager.docker {
     requires docker.java;
     requires java.logging;
-    requires java.ws.rs;
     requires org.slf4j;
     requires spring.boot;
     requires spring.boot.autoconfigure;

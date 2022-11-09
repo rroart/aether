@@ -92,10 +92,10 @@
     <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>9.4.12.v20180830</jetty.version>
     <springboot.version>3.0.0-RC1</springboot.version>
-    <springcloud.version>3.0.3</springcloud.version>
-    <springcloudstarter.version>2020.0.3</springcloudstarter.version>
+    <springcloud.version>4.0.0-RC1</springcloud.version>
+    <springcloudstarter.version>2022.0.0-RC1</springcloudstarter.version>
     <springcore.version>6.0.0-RC3</springcore.version>
-    <eurekaclient.version>1.10.16</eurekaclient.version>
+    <eurekaclient.version>2.0.0-rc.3</eurekaclient.version>
     <jdk.version>17</jdk.version>
     <junit.version>5.7.2</junit.version>
     <mahout.lucene.version>8.9.0</mahout.lucene.version>
@@ -127,7 +127,7 @@
     <jackson.version>2.12.5</jackson.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
-    <hibernate.version>5.5.7.Final</hibernate.version>
+    <hibernate.version>6.1.5.Final</hibernate.version>
     <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
     <hibernate.hbm2ddl.auto>create</hibernate.hbm2ddl.auto>
     <h2.version>1.4.200</h2.version>
@@ -143,7 +143,7 @@
     <gwt.version>2.3.0</gwt.version>
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
     <slf4j.version>1.7.32</slf4j.version>
-    <ehcache.version>2.6.11</ehcache.version>
+    <ehcache.version>5.6.14.Final</ehcache.version>
     <servlet.version>3.1.0</servlet.version>
     <!-- must keep at old version for some time -->
     <guava.version>16.0.1</guava.version>
@@ -153,7 +153,7 @@
     <elasticsearch.version>8.5.0</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.7.Final</netty.version>
-    <jaxb.version>2.3.0</jaxb.version>
+    <jaxb.version>2.3.1</jaxb.version>
     <javaxinject.version>1</javaxinject.version>
     <kafka.version>2.6.0</kafka.version>
     <pulsar.version>2.6.1</pulsar.version>
@@ -163,8 +163,8 @@
     <log4j.version>1.2.17</log4j.version>
     <camel.version>3.6.0</camel.version>
     <camelactivemq.version>5.16.0</camelactivemq.version>
-    <springintegration.version>5.4.0</springintegration.version>
-    <springrabbit.version>2.3.1</springrabbit.version>
+    <springintegration.version>6.0.0-RC2</springintegration.version>
+    <springrabbit.version>3.0.0-RC1</springrabbit.version>
     <redisclient.version>3.5.1</redisclient.version>
     <chill.version>0.9.3</chill.version>
     <jersey.version>2.22.2</jersey.version>
@@ -185,23 +185,19 @@
       </snapshots>
     </repository>
   </repositories-->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>vaadin-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-      <releases>
-	<enabled>false</enabled>
-      </releases>
-      <snapshots>
-	<enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
   <repositories>
     <repository>
         <id>repository.spring.milestone</id>
         <name>Spring Milestone Repository</name>
         <url>https://repo.spring.io/milestone</url>
+    </repository>
+    <repository>
+      <id>netflix-candidates</id>
+      <name>Netflix Candidates</name>
+      <url>https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates</url>
+      <snapshots>
+	<enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
   <pluginRepositories>
