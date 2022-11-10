@@ -14,7 +14,7 @@ module hibernate {
     requires common.model;
     requires common.util;
     requires database;
-    requires java.persistence;
+    requires jakarta.persistence;
     requires java.sql;
     requires org.hibernate.orm.core;
     requires org.slf4j;

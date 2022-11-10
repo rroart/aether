@@ -29,7 +29,7 @@
         <property name="hibernate.cache.region.factory_class">org.hibernate.cache.EhCacheRegionFactory</property>
         <property name="hibernate.cache.use_query_cache">false</property-->
 
-        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+        <!--property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property-->
 
         <mapping package="roart.database" />
         <mapping class="roart.database.hibernate.HibernateIndexFiles"/>

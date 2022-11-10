@@ -5,28 +5,27 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 //import org.hibernate.annotations.Index;
 
 import org.hibernate.Session;
-import org.hibernate.SQLQuery;
 import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Configuration;
 
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -292,7 +291,7 @@ import roart.common.model.IndexFiles;
 		fi = new HibernateIndexFiles(nodename, null);
 		fi.setMd5(md5);
 		log.info("Saving " + this.hashCode() + " " + md5);
-		HibernateUtil.currentSession(getH2Dir()).save(fi);
+		HibernateUtil.currentSession(getH2Dir()).persist(fi);
 	    }
 	    return fi;
 	}
@@ -380,7 +379,7 @@ import roart.common.model.IndexFiles;
     @Transient
 	public String getMd5ByFilenameNot(String filename) {
 	    try {
-			HibernateIndexFiles hif = (HibernateIndexFiles) HibernateUtil.getHibernateSession(getH2Dir()).getNamedQuery("idxByFile").setParameter("file", filename).uniqueResult();
+			HibernateIndexFiles hif = (HibernateIndexFiles) HibernateUtil.getHibernateSession(getH2Dir()).createNamedQuery("idxByFile", HibernateIndexFiles.class).setParameter("file", filename).uniqueResult();
 			if (hif == null) {
 				return null;
 			}
@@ -395,7 +394,7 @@ import roart.common.model.IndexFiles;
     @Transient
 	public String getMd5ByFilename(String filename) {
 	    try {
-		String md5 = (String) HibernateUtil.getHibernateSession(getH2Dir()).createSQLQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
+		String md5 = (String) HibernateUtil.getHibernateSession(getH2Dir()).createSelectionQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
 		return md5;
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
@@ -432,17 +431,17 @@ import roart.common.model.IndexFiles;
 
     @Transient
 	public Set<String> getAllMd5() throws Exception {
-		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createQuery("select md5 from HibernateIndexFiles").list(), String.class);
+		return (Set<String>) HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createSelectionQuery("select md5 from HibernateIndexFiles").list(), String.class);
 	}
 
     @Transient
 	public Set<String> getLanguages() throws Exception {
-		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createQuery("select distinct language from HibernateIndexFiles").list(), String.class));
+		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createSelectionQuery("select distinct language from HibernateIndexFiles").list(), String.class));
 	}
 
     public void delete(IndexFiles index) throws Exception {
         HibernateIndexFiles hif = getByMd5(index.getMd5());
-        roart.database.hibernate.HibernateUtil.currentSession(getH2Dir()).delete(hif);
+        roart.database.hibernate.HibernateUtil.currentSession(getH2Dir()).remove(hif);
     }
 
     public void destroy() throws Exception {
@@ -456,9 +455,9 @@ import roart.common.model.IndexFiles;
 
     public void clear(DatabaseConstructorParam param) {
         try {
-            HibernateUtil.currentSession(getH2Dir()).createSQLQuery("delete from FILES").executeUpdate();
-            HibernateUtil.currentSession(getH2Dir()).createSQLQuery("delete from INDEX").executeUpdate();
-            HibernateUtil.currentSession(getH2Dir()).createQuery("delete from HibernateIndexFiles").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createMutationQuery("delete from FILES").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createMutationQuery("delete from INDEX").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createMutationQuery("delete from HibernateIndexFiles").executeUpdate();
             //HibernateUtil.currentSession(getH2Dir());
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
@@ -468,9 +467,9 @@ import roart.common.model.IndexFiles;
     public void drop(DatabaseConstructorParam param) {
  try {
      //HibernateUtil.currentSession(getH2Dir()).createQuery("DROP ALL OBJECTS DELETE FILES");
-     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP TABLE INDEX").executeUpdate();
-     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP TABLE FILES").executeUpdate();
-     HibernateUtil.currentSession(getH2Dir()).createSQLQuery("DROP ALL OBJECTS DELETE FILES").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createMutationQuery("DROP TABLE INDEX").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createMutationQuery("DROP TABLE FILES").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createMutationQuery("DROP ALL OBJECTS DELETE FILES").executeUpdate();
  
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
@@ -479,7 +478,7 @@ import roart.common.model.IndexFiles;
 
     public void save() {
         try {
-        HibernateUtil.currentSession(getH2Dir()).saveOrUpdate(this);
+        HibernateUtil.currentSession(getH2Dir()).persist(this);
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
