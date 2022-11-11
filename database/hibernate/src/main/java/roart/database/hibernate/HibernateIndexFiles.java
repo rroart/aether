@@ -394,7 +394,7 @@ import roart.common.model.IndexFiles;
     @Transient
 	public String getMd5ByFilename(String filename) {
 	    try {
-		String md5 = (String) HibernateUtil.getHibernateSession(getH2Dir()).createSelectionQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
+		String md5 = (String) HibernateUtil.getHibernateSession(getH2Dir()).createNativeQuery("select md5 from files where filename = :file").setParameter("file", filename).uniqueResult();
 		return md5;
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);
@@ -455,9 +455,9 @@ import roart.common.model.IndexFiles;
 
     public void clear(DatabaseConstructorParam param) {
         try {
-            HibernateUtil.currentSession(getH2Dir()).createMutationQuery("delete from FILES").executeUpdate();
-            HibernateUtil.currentSession(getH2Dir()).createMutationQuery("delete from INDEX").executeUpdate();
-            HibernateUtil.currentSession(getH2Dir()).createMutationQuery("delete from HibernateIndexFiles").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createNativeMutationQuery("delete from FILES").executeUpdate();
+            HibernateUtil.currentSession(getH2Dir()).createNativeMutationQuery("delete from INDEX").executeUpdate();
+            //HibernateUtil.currentSession(getH2Dir()).createNativeMutationQuery("delete from HibernateIndexFiles").executeUpdate();
             //HibernateUtil.currentSession(getH2Dir());
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
@@ -467,9 +467,9 @@ import roart.common.model.IndexFiles;
     public void drop(DatabaseConstructorParam param) {
  try {
      //HibernateUtil.currentSession(getH2Dir()).createQuery("DROP ALL OBJECTS DELETE FILES");
-     HibernateUtil.currentSession(getH2Dir()).createMutationQuery("DROP TABLE INDEX").executeUpdate();
-     HibernateUtil.currentSession(getH2Dir()).createMutationQuery("DROP TABLE FILES").executeUpdate();
-     HibernateUtil.currentSession(getH2Dir()).createMutationQuery("DROP ALL OBJECTS DELETE FILES").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createNativeMutationQuery("DROP TABLE FILES").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createNativeMutationQuery("DROP TABLE INDEX").executeUpdate();
+     HibernateUtil.currentSession(getH2Dir()).createNativeMutationQuery("DROP ALL OBJECTS DELETE FILES").executeUpdate();
  
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
@@ -478,7 +478,7 @@ import roart.common.model.IndexFiles;
 
     public void save() {
         try {
-        HibernateUtil.currentSession(getH2Dir()).persist(this);
+        HibernateUtil.currentSession(getH2Dir()).saveOrUpdate(this);
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
