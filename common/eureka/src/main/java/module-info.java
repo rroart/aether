@@ -19,4 +19,7 @@ module common.eureka {
     requires common.webflux;
     requires common.config;
     requires common.util;
+    requires spring.cloud.netflix.eureka.client;
+    //requires eureka.client.jersey3;
+    requires spring.webflux;
 }

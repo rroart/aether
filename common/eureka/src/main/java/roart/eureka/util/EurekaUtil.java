@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.netflix.discovery.shared.transport.jersey.TransportClientFactories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.cloud.netflix.eureka.http.WebClientTransportClientFactories;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
@@ -23,6 +26,7 @@ import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.Application;
+//import com.netflix.discovery.shared.transport.jersey3.Jersey3TransportClientFactories;
 
 import roart.common.config.Connector;
 import roart.common.config.MyConfig;
@@ -180,7 +184,10 @@ public class EurekaUtil {
     private static synchronized EurekaClient initializeEurekaClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig clientConfig) {
         EurekaClient eurekaClient = null;
         if (eurekaClient == null) {
-            eurekaClient = new DiscoveryClient(applicationInfoManager, clientConfig);
+            //TransportClientFactories j = new Jersey3TransportClientFactories();
+            TransportClientFactories transportClientFactories = new WebClientTransportClientFactories(() ->  WebClient.builder());
+            //transportClientFactories = Jersey2TransportClientFactories.getInstance();
+            eurekaClient = new DiscoveryClient(applicationInfoManager, clientConfig, transportClientFactories);
         }
         return eurekaClient;
     }

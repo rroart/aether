@@ -17,6 +17,11 @@
       <artifactId>eureka-client</artifactId>
       <version>${eurekaclient.version}</version>
     </dependency>
+    <!--dependency>
+      <groupId>com.netflix.eureka</groupId>
+      <artifactId>eureka-client-jersey3</artifactId>
+      <version>${eurekaclient.version}</version>
+    </dependency-->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
@@ -27,11 +32,16 @@
       <artifactId>spring-core</artifactId>
       <version>${springcore.version}</version>
     </dependency>
-    <!--dependency>
-	<groupId>org.springframework.cloud</groupId>
-	<artifactId>spring-cloud-netflix-core</artifactId>
-	<version>1.0.0.RELEASE</version>
-	</dependency-->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-netflix-eureka-client</artifactId>
+      <version>${springcloud.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webflux</artifactId>
+      <version>${springcore.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-commons</artifactId>
