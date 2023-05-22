@@ -24,6 +24,7 @@
     <module>web</module>
     <module>webr</module>
     <module>servicemanager</module>
+    <module>testdata</module>
     <module>distribution</module>
   </modules>
   <build>
