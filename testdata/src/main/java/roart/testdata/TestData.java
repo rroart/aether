@@ -30,12 +30,18 @@ public class TestData {
         FileLocation f2 = new FileLocation(fo2.location.toString(), fo2.object);
         FileObject fo3 = new FileObject(new Location(null, FileSystemConstants.S3TYPE, "chess"), "/tmp/t3.txt");
         FileLocation f3 = new FileLocation(fo3.location.toString(), fo3.object);
-        fileLocations = List.of(f1, f2, f3);
-        fileLocationSet = Set.of(f1, f2, f3);
+        FileObject fo4 = new FileObject(new Location(), "/home/t4.txt");
+        FileLocation f4 = new FileLocation(fo4.location.toString(), fo4.object);
+        fileLocations = List.of(f1, f2, f3, f4);
+        fileLocationSet = Set.of(f1, f2, f3, f4);
         
         IndexFiles i1 = new IndexFiles("123");
-        IndexFiles i2 = new IndexFiles("1234");
-        IndexFiles i3 = new IndexFiles("12345");
+        i1.addFile(f1);
+        IndexFiles i2 = new IndexFiles("234");
+        i2.addFile(f2);
+        IndexFiles i3 = new IndexFiles("345");
+        i3.addFile(f3);
+        i3.addFile(f4);
         indexFiles = List.of(i1, i2, i3);
     }
 }
