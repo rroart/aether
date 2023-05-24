@@ -103,7 +103,7 @@ public class Search {
     dbindex.setPriority(1);
     // file unlock dbindex
     // config with finegrained distrib
-    IndexFilesDao.add(dbindex);
+    new IndexFilesDao().add(dbindex);
     Queues.decIndexs();
     
     if (el.message != null) {
@@ -126,7 +126,7 @@ public class Search {
     }
 
     public static void deleteme(String str) {
-		SearchDao.deleteme(str);
+	new SearchDao().deleteme(str);
     }
 
     // outdated, did run once, had a bug which made duplicates

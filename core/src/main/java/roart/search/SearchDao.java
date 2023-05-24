@@ -69,7 +69,7 @@ public class SearchDao {
     }
     */
 
-    public static void deleteme(String str) {
+    public void deleteme(String str) {
         search.delete(str);
     }
 

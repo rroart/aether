@@ -34,7 +34,7 @@ public class DbSearch extends AbstractFunction {
             List<ResultItem> indexList = new ArrayList<>();
             indexList.add(IndexFiles.getHeader());
 
-            List<IndexFiles> indexes = IndexFilesDao.getAll();
+            List<IndexFiles> indexes = new IndexFilesDao().getAll();
             for (IndexFiles index : indexes) {
                 boolean match = false;
 

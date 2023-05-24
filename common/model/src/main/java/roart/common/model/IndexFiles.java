@@ -563,4 +563,9 @@ public class IndexFiles {
 	return ri;
 	}
 
+	@Override
+	public String toString() {
+	    return md5 + " " + filelocations;
+	}
+	
     }

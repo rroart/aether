@@ -41,7 +41,7 @@ public class FileSystemDao {
         return getFileSystemAccess(f).listFilesFull(f);
     }
 
-    public static boolean exists(FileObject f) {
+    public boolean exists(FileObject f) {
         return getFileSystemAccess(f).exists(f);
     }
 
@@ -77,7 +77,7 @@ public class FileSystemDao {
         return retMap;
     }
 
-    public static FileObject get(FileObject fo) {
+    public FileObject get(FileObject fo) {
         return getFileSystemAccess(fo).get(fo);
     }
 

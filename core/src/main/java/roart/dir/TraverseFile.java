@@ -81,7 +81,7 @@ public class TraverseFile {
             return;
         }
         FileObject filename = trav.getFileobject();
-        FileObject fo = FileSystemDao.get(filename);
+        FileObject fo = new FileSystemDao().get(filename);
 
         //MyLock lock2 = MyLockFactory.create();
         //lock2.lock(fo.toString());
@@ -97,7 +97,7 @@ public class TraverseFile {
         boolean lockwait = false;
         if (trav.getClientQueueElement().md5change == true || md5 == null) {
             try {
-                if (!FileSystemDao.exists(fo)) {
+                if (!new FileSystemDao().exists(fo)) {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
                 if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {

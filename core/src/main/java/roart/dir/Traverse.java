@@ -119,7 +119,7 @@ public class Traverse {
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
-        FileObject dir = FileSystemDao.get(fileObject);
+        FileObject dir = new FileSystemDao().get(fileObject);
         List<MyFile> listDir = FileSystemDao.listFilesFull(dir);
         long time1 = System.currentTimeMillis();
         log.debug("Time0 {}", usedTime(time1, time0));
@@ -180,12 +180,12 @@ public class Traverse {
     public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
         Set<String> retset = new HashSet<>();
 
-        List<IndexFiles> files = IndexFilesDao.getAll();
+        List<IndexFiles> files = new IndexFilesDao().getAll();
         log.info("size {}", files.size());
         for (IndexFiles file : files) {
             String md5 = file.getMd5();
             for (FileLocation filename : file.getFilelocations()) {
-                FileObject tmpfile = FileSystemDao.get(FsUtil.getFileObject(filename));
+                FileObject tmpfile = new FileSystemDao().get(FsUtil.getFileObject(filename));
                 FileObject dir = FileSystemDao.getParent(tmpfile);
                 String dirname = FileSystemDao.getAbsolutePath(dir);
                 HashSet<String> md5set = dirset.get(dirname);
@@ -214,7 +214,7 @@ public class Traverse {
         long size = 0;
         Set<String> retset = new HashSet<>();
         HashSet<String> md5set = new HashSet<>();
-        FileObject dir = FileSystemDao.get(fileObject);
+        FileObject dir = new FileSystemDao().get(fileObject);
         List<FileObject> listDir = FileSystemDao.listFiles(dir);
         for (FileObject fo : listDir) {
             String filename = FileSystemDao.getAbsolutePath(fo);
@@ -256,7 +256,7 @@ public class Traverse {
         List<ResultItem> retlist = new ArrayList<>();
         ResultItem ri = new ResultItem();
         retlist.add(IndexFiles.getHeader());
-        List<IndexFiles> indexes = IndexFilesDao.getAll();
+        List<IndexFiles> indexes = new IndexFilesDao().getAll();
         log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
@@ -272,7 +272,7 @@ public class Traverse {
 
     public static List<ResultItem> indexed(ServiceParam el) throws Exception {
         List<ResultItem> retlist = new ArrayList<ResultItem>();
-        List<IndexFiles> indexes = IndexFilesDao.getAll();
+        List<IndexFiles> indexes = new IndexFilesDao().getAll();
         log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
@@ -311,12 +311,12 @@ public class Traverse {
             Location node = FsUtil.getLocation(filelocation.getNode());
             String filename = filelocation.getFilename();
             if (node == null || node.equals(ControlService.nodename)) {
-                FileObject file = FileSystemDao.get(new FileObject(node, filename));
+                FileObject file = new FileSystemDao().get(new FileObject(node, filename));
                 if (file == null) {
                 log.error("try file {}", filename);
                 continue;
                 }
-                if (FileSystemDao.exists(file)) {
+                if (new FileSystemDao().exists(file)) {
                     return filelocation;			
                 }
             }
@@ -343,7 +343,7 @@ public class Traverse {
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
-        List<IndexFiles> indexes = IndexFilesDao.getAll();
+        List<IndexFiles> indexes = new IndexFilesDao().getAll();
         for (IndexFiles index : indexes) {
             if (isMaxed(myid, element)) {
                 break;
@@ -474,7 +474,7 @@ public class Traverse {
     // ?
     @Deprecated
     public static boolean isLocal(FileObject fo) {
-        return FileSystemDao.exists(fo);
+        return new FileSystemDao().exists(fo);
     }
 
     private int usedTime(long time2, long time1) {

@@ -20,14 +20,45 @@ import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
+import roart.search.SearchDao;
 import roart.service.ControlService;
 import roart.util.MyLockFactory;
 import roart.util.MySets;
 
 public class ConsistentClean extends AbstractFunction {
 
+    private FileSystemDao fileSystemDao = new FileSystemDao();
+    
+    private IndexFilesDao indexFilesDao = new IndexFilesDao();
+    
+    private SearchDao searchDao = new SearchDao();
+    
     public ConsistentClean(ServiceParam param) {
         super(param);
+    }
+
+    public FileSystemDao getFileSystemDao() {
+        return fileSystemDao;
+    }
+
+    public void setFileSystemDao(FileSystemDao fileSystemDao) {
+        this.fileSystemDao = fileSystemDao;
+    }
+
+    public IndexFilesDao getIndexFilesDao() {
+        return indexFilesDao;
+    }
+
+    public void setIndexFilesDao(IndexFilesDao indexFilesDao) {
+        this.indexFilesDao = indexFilesDao;
+    }
+
+    public SearchDao getSearchDao() {
+        return searchDao;
+    }
+
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
     }
 
     @Override
@@ -47,102 +78,115 @@ public class ConsistentClean extends AbstractFunction {
 
         Set<String> filesetnew = new HashSet<String>(); // just a dir list
         //Set<String> newset = new HashSet<String>();
-        
-    String myid = ControlService.getMyId();
-    String newsetid = "newsetid"+myid;
-    MySet<String> newset = MySets.get(newsetid);
-    //MySets.put(newsetid, newset);
 
-    String notfoundsetid = "notfoundsetid"+myid;
-    MySet<String> notfoundset = MySets.get(notfoundsetid);
-    //MySets.put(notfoundsetid, notfoundset);
+        String myid = ControlService.getMyId();
+        String newsetid = "newsetid"+myid;
+        MySet<String> newset = MySets.get(newsetid);
+        //MySets.put(newsetid, newset);
 
-    String md5sdoneid = "md5sdoneid"+myid;
-    MySet<String> md5sdoneset = MySets.get(md5sdoneid);
-    
-    Traverse traverse = new Traverse(myid, param, null, null, newsetid, MyConfig.conf.getDirListNot(), notfoundsetid, null, null, true);
-                    
+        String notfoundsetid = "notfoundsetid"+myid;
+        MySet<String> notfoundset = MySets.get(notfoundsetid);
+        //MySets.put(notfoundsetid, notfoundset);
+
+        String md5sdoneid = "md5sdoneid"+myid;
+        MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+
+        //Traverse traverse = new Traverse(myid, param, null, null, newsetid, MyConfig.conf.getDirListNot(), notfoundsetid, null, null, true);
+        String path = param.file;
+
         List<IndexFiles> indexes;
-        try {
-                indexes = IndexFilesDao.getAll();
-        log.info("size " + indexes.size());
-        for (IndexFiles index : indexes) {
-                for (FileLocation fl : index.getFilelocations()) {
-                        if (fl.isLocal(ControlService.nodename)) {
-                                String filename = fl.getFilename();
-                                FileObject fo = FileSystemDao.get(FsUtil.getFileObject(fl));
-                                if (!FileSystemDao.exists(fo)) {
-                                        delList.add(new ResultItem(filename));
-                                        delfileset.add(fo);
-                                }
-                        }
-                }
-        }
-        
-        traverse.traverse(null, this);
-        
-        for (String file : newset.getAll()) {
-                newList.add(new ResultItem(file));
-        }
-        for (String file : notfoundset.getAll()) {
-                nonexistList.add(new ResultItem(file));
-        }
-        
-        if (clean) {
-            synchronized (ControlService.writelock) {
+        synchronized (ControlService.writelock) {
+            try {
                 MyLock lock = null;
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
-             lock = MyLockFactory.create();
-                lock.lock(Constants.GLOBALLOCK);
+                    lock = MyLockFactory.create();
+                    lock.lock(Constants.GLOBALLOCK);
                 }
                 Set<IndexFiles> ifs = new HashSet<>();
-            //DbRunner.doupdate = false;
-                for (FileObject filename : delfileset) {
-                        String md5 = IndexFilesDao.getMd5ByFilename(filename);
-                        if (md5 != null) {
-                    MyLock lock2 = MyLockFactory.create();
-                    lock2.lock(md5);
-                                IndexFiles ifile = IndexFilesDao.getByMd5(md5);
-                                FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
-                                boolean removed = ifile.removeFilelocation(fl);
-                                //log.info("fls2 size " + removed + ifile.getFilelocations().size());
-                IndexFilesDao.add(ifile);
-                ifs.add(ifile);
-                        } else {
-                                log.info("trying the hard way, no md5 for " + filename);
-                                for (IndexFiles index : indexes) {
-                                    FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
-                                    if (index.getFilelocations().contains(fl)) {
-                                        boolean removed = index.removeFilelocation(fl);
-                                        //log.info("fls3 size " + removed + index.getFilelocations().size());
-                    IndexFilesDao.add(index);
-                    ifs.add(index);
-                                    }
-                                }
-                        }
-                }
-                //DbRunner.doupdate = true;
-                //IndexFilesDao.commit();
+                indexes = indexFilesDao.getAll();
+                extracted(delList, delfileset, path, indexes, ifs, true, clean);
+
                 while (IndexFilesDao.dirty() > 0) {
                     TimeUnit.SECONDS.sleep(60);
                 }
+
+                // TODO why copied from below?
+                // TODO or indexes?
                 for (IndexFiles i : ifs) {
                     MyLock filelock = i.getLock();
                     if (filelock != null) {
                         filelock.unlock();
                         i.setLock(null);
+                    } else {
+                        System.out.println("locknull");
                     }
                 }
-                
+
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
-                        ZKMessageUtil.dorefresh(ControlService.nodename);
+                    ZKMessageUtil.dorefresh(ControlService.nodename);
                     lock.unlock();
+                    //ClientRunner.notify("Sending refresh request");
                 }
-            }
-        }
-        
-        } catch (Exception e) {
+                /*
+                traverse.traverse(null, this);
+
+                for (String file : newset.getAll()) {
+                    newList.add(new ResultItem(file));
+                }
+                for (String file : notfoundset.getAll()) {
+                    nonexistList.add(new ResultItem(file));
+                }
+                */
+
+                if (false && clean) {
+                    //DbRunner.doupdate = false;
+                    for (FileObject filename : delfileset) {
+                        String md5 = IndexFilesDao.getMd5ByFilename(filename);
+                        // common3?
+                        if (md5 != null) {
+                            MyLock lock2 = MyLockFactory.create();
+                            lock2.lock(md5);
+                            IndexFiles ifile = IndexFilesDao.getByMd5(md5);
+                            FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
+                            boolean removed = ifile.removeFilelocation(fl);
+                            //log.info("fls2 size " + removed + ifile.getFilelocations().size());
+                            //IndexFilesDao.add(ifile);
+                            ifs.add(ifile);
+                        } else {
+                            log.info("trying the hard way, no md5 for " + filename);
+                            for (IndexFiles index : indexes) {
+                                FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
+                                if (index.getFilelocations().contains(fl)) {
+                                    boolean removed = index.removeFilelocation(fl);
+                                    //log.info("fls3 size " + removed + index.getFilelocations().size());
+                                    //IndexFilesDao.add(index);
+                                    ifs.add(index);
+                                }
+                            }
+                        }
+                    }
+                    //DbRunner.doupdate = true;
+                    //IndexFilesDao.commit();
+                    while (IndexFilesDao.dirty() > 0) {
+                        TimeUnit.SECONDS.sleep(60);
+                    }
+                    for (IndexFiles i : ifs) {
+                        MyLock filelock = i.getLock();
+                        if (filelock != null) {
+                            filelock.unlock();
+                            i.setLock(null);
+                        }
+                    }
+
+                    if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                        ZKMessageUtil.dorefresh(ControlService.nodename);
+                        lock.unlock();
+                    }
+                }
+
+            } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
+            }
         }
 
         List<List> retlistlist = new ArrayList<>();
@@ -150,6 +194,55 @@ public class ConsistentClean extends AbstractFunction {
         retlistlist.add(nonexistList);
         retlistlist.add(newList);
         return retlistlist;
+    }
+
+    void extracted(List<ResultItem> delList, Set<FileObject> delfileset, final String path, final List<IndexFiles> indexes,
+            Set<IndexFiles> ifs, boolean checkexist, boolean clean) throws Exception {
+        log.info("size {}", indexes.size());
+        for (IndexFiles index : indexes) {
+            MyLock lock = MyLockFactory.create();
+            lock.lock(index.getMd5());               
+            // if last deletepathdb
+            // common 2
+            // find out if to be deleted
+            Set<FileLocation> deletes = new HashSet<>();
+            for (FileLocation fl : index.getFilelocations()) {
+                //System.out.println("cont2 " + fl.toString() + " " + path);
+                // path is nonnull AND checkexist false
+                // path is null AND checkexist true
+                if (path == null || fl.toString().contains(path)) {
+                    if (checkexist) {
+                        String filename = fl.getFilename();
+                        FileObject fo = fileSystemDao.get(FsUtil.getFileObject(fl));
+                        //System.out.println("f " + fileSystemDao + " " + fo);
+                        if (!fileSystemDao.exists(fo)) {
+                            //System.out.println("notexists");
+                            delList.add(new ResultItem(filename));
+                            delfileset.add(fo);
+                            deletes.add(fl);
+                        }
+                    } else {
+                        delList.add(new ResultItem(fl.toString()));
+                        FileObject fo = fileSystemDao.get(FsUtil.getFileObject(fl));
+                        delfileset.add(fo);
+                        deletes.add(fl);
+                    }
+                }
+            }
+            // common 3
+            // then delete from collection, and eventually remove from search
+            if (clean && !deletes.isEmpty()) {
+                index.getFilelocations().removeAll(deletes);
+                if (index.getFilelocations().isEmpty()) {
+                    indexFilesDao.delete(index);
+                    searchDao.deleteme(index.getMd5());
+                } else {
+                    indexFilesDao.add(index);
+                }
+                ifs.add(index);
+            }
+            lock.unlock();
+        }
     }
 
 }

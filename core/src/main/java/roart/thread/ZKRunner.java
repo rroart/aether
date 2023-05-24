@@ -59,7 +59,7 @@ public class ZKRunner implements Runnable {
     try {
         for (String child : children) {
         if (child.equals(Constants.REFRESH)) {
-            IndexFilesDao.getAll();
+            new IndexFilesDao().getAll();
             log.info(Constants.REFRESH + " " + ControlService.nodename);
             //ClientRunner.notify("Finished refresh");
         } else if (child.equals(Constants.RECONFIG)) {

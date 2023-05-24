@@ -18,6 +18,7 @@ import roart.database.IndexFilesDao;
 import roart.search.SearchDao;
 import roart.service.ControlService;
 import roart.util.MyLockFactory;
+import roart.common.model.FileObject;
 
 public class DeletePath extends AbstractFunction {
 
@@ -27,6 +28,7 @@ public class DeletePath extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+	ConsistentClean cc = new ConsistentClean(param);
         synchronized (ControlService.writelock) {
             try {
                 MyLock lock = null;
@@ -44,11 +46,19 @@ public class DeletePath extends AbstractFunction {
                     retlistlist.add(delList);
                     return retlistlist;
                 }
-                Set<String> indexes = IndexFilesDao.getAllMd5();
-                for (String md5 : indexes) {
+                //Set<String> indexes = IndexFilesDao.getAllMd5();
+		List<IndexFiles> indexes;
+		indexes = new IndexFilesDao().getAll();
+
+                Set<FileObject> delfileset = new HashSet<>();
+                cc.extracted(delList, delfileset, path, indexes, ifs, false, true);
+		/*
+                for (IndexFiles index : indexes) {
                     MyLock lock2 = MyLockFactory.create();
-                    lock2.lock(md5);               
-                    IndexFiles index = IndexFilesDao.getByMd5(md5);
+                    lock2.lock(index.getMd5());               
+                    //IndexFiles index = IndexFilesDao.getByMd5(md5);
+		    // common 2
+		    // find out if to be deleted
                     Set<FileLocation> deletes = new HashSet<FileLocation>();
                     for (FileLocation fl : index.getFilelocations()) {
                         if (fl.toString().contains(path)) {
@@ -57,6 +67,8 @@ public class DeletePath extends AbstractFunction {
                             //delfileset.add(filename);
                         }
                     }
+		    // common 3
+		    // then delete from collection, and eventually remove from search
                     if (!deletes.isEmpty()) {
                         index.getFilelocations().removeAll(deletes);
                         if (index.getFilelocations().isEmpty()) {
@@ -68,16 +80,9 @@ public class DeletePath extends AbstractFunction {
                     }
                     lock2.unlock();
                 }
+		*/
                 while (IndexFilesDao.dirty() > 0) {
                     TimeUnit.SECONDS.sleep(60);
-                }
-
-                for (IndexFiles i : ifs) {
-                    MyLock filelock = i.getLock();
-                    if (filelock != null) {
-                        filelock.unlock();
-                        i.setLock(null);
-                    }
                 }
 
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {

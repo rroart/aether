@@ -34,4 +34,9 @@ public class ResultItem {
     public void setItems(List<Object> items) {
         this.items = items;
     }
+    
+    @Override
+    public String toString() {
+        return "" + items;
+    }
 }

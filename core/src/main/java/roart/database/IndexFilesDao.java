@@ -123,7 +123,7 @@ public class IndexFilesDao {
         }
     }
 
-    public static List<IndexFiles> getAll() throws Exception {
+    public List<IndexFiles> getAll() throws Exception {
         //all.clear();
         Set<String> allKeys = all.keySet();
         synchronized(IndexFilesDao.class) {
@@ -202,7 +202,7 @@ public class IndexFilesDao {
         return i;
     }
 
-    public static void add(IndexFiles i) {
+    public void add(IndexFiles i) {
         synchronized(IndexFilesDao.class) {
         dbi.putIfAbsent(i.getMd5(), i);
         }
@@ -323,7 +323,7 @@ public class IndexFilesDao {
         return dirty1;
     }
 
-    public static void delete(IndexFiles index) {
+    public void delete(IndexFiles index) {
         try {
             synchronized(IndexFilesDao.class) {
                 indexFiles.delete(index);

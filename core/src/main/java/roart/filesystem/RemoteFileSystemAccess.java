@@ -19,11 +19,12 @@ public class RemoteFileSystemAccess extends FileSystemAccess {
 
     private static Logger log = LoggerFactory.getLogger(RemoteFileSystemAccess.class);
 
+    // not used
     public static String copyFileToTmp(FileObject filename){
         int i = filename.object.lastIndexOf("/");
         String fn = "/tmp/hdfs" + filename.object.substring(i + 1);
         log.info("copy to local filenames {} {}",filename, fn);
-        FileObject file = FileSystemDao.get(filename);
+        FileObject file = new FileSystemDao().get(filename);
         InputStream in = FileSystemDao.getInputStream(file);
         OutputStream out;
         try {

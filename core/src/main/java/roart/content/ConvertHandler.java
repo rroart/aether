@@ -163,7 +163,7 @@ public class ConvertHandler {
             index.setPriority(1);
             // file unlock dbindex
             // config with finegrained distrib
-            IndexFilesDao.add(index);
+            new IndexFilesDao().add(index);
         }
         boolean success = Queues.convertTimeoutQueue.remove(filename.toString());
         if (!success) {
