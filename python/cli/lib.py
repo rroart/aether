@@ -149,6 +149,10 @@ def filesystemlucenenew(add, md5checknew):
         param = { "function" : "FILESYSTEMLUCENENEW", "add" : add, "md5checknew" : md5checknew }
         response = request.request1(param, "filesystemlucenenew")
 
+def consistentclean(clean):
+        param = { "function" : "CONSISTENTCLEAN", "clean" : clean }
+        response = request.request1(param, "consistentclean")
+
 def deletepathdb(path):
         param = { "function" : "DELETEPATH", "file" : path }
         response = request.request1(param, "deletepathdb")
