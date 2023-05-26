@@ -102,7 +102,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     param.config = props.config;
     param.function = "CONSISTENTCLEAN";
     param.dirname = dirname;
-    param.webpath = "cleanupfs";
+    param.webpath = "consistentclean";
     setParam(param);
   }
 
