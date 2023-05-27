@@ -171,8 +171,8 @@
     <log4j.version>1.2.17</log4j.version>
     <camel.version>3.6.0</camel.version>
     <camelactivemq.version>5.16.0</camelactivemq.version>
-    <springintegration.version>6.0.0-RC2</springintegration.version>
-    <springrabbit.version>3.0.0-RC1</springrabbit.version>
+    <springintegration.version>6.1.0</springintegration.version>
+    <springrabbit.version>3.0.4</springrabbit.version>
     <redisclient.version>4.3.1</redisclient.version>
     <chill.version>0.9.3</chill.version>
     <jersey.version>2.22.2</jersey.version>
