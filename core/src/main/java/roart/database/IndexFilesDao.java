@@ -16,6 +16,7 @@ import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.synchronization.MyLock;
 import roart.service.ControlService;
@@ -133,6 +134,20 @@ public class IndexFilesDao {
                     //continue;
                 }
                 all.put(i.getMd5(), i);
+            }
+            return iAll;
+        }
+    }
+
+    public List<Files> getAllFiles() throws Exception {
+        //all.clear();
+        Set<String> allKeys = all.keySet();
+        synchronized(IndexFilesDao.class) {
+            List<Files> iAll = indexFiles.getAllFiles();
+            for (Files i : iAll) {
+                if (allKeys.contains(i.getMd5())) {
+                    //continue;
+                }
             }
             return iAll;
         }

@@ -12,6 +12,7 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.util.FsUtil;
 
@@ -342,6 +343,15 @@ public class CassandraIndexFiles {
         return ifile;
     }
 
+    public Files getFiles(Row row) {
+        String md5 = row.getString(md5q);
+        Files ifile = new Files();
+        //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
+        ifile.setFilename(row.getString(filenameq));
+        ifile.setMd5(row.getString(md5q));
+        return ifile;
+    }
+
     public Map<String, IndexFiles> get(Set<String> md5s) {
         Map<String, IndexFiles> indexFilesMap = new HashMap<>();
         for (String md5 : md5s) {
@@ -410,6 +420,18 @@ public class CassandraIndexFiles {
         List<IndexFiles> retlist = new ArrayList<>();
         for (Row row : resultSet) {
             retlist.add(get(row));
+        }
+        return retlist;
+    }
+
+    public List<Files> getAllFiles() throws Exception {
+        StringBuilder sb = new StringBuilder("SELECT * FROM ")
+                .append(TABLE_FILES_NAME).append(";");
+        String query = sb.toString();
+        ResultSet resultSet = session.execute(query);   
+        List<Files> retlist = new ArrayList<>();
+        for (Row row : resultSet) {
+            retlist.add(getFiles(row));
         }
         return retlist;
     }

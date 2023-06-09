@@ -51,6 +51,7 @@ public class EurekaConstants {
     public static final String SEARCHENGINE = "searchengine";
     public static final String MACHINELEARNING = "machinelearning";
     public static final String OVERLAPPING = "overlapping";
+    public static final String DBCHECK = "dbcheck";
 
     // convert
     public static final String CONVERT = "convert";
@@ -93,6 +94,7 @@ public class EurekaConstants {
     public static final String GETBOTHBYFILELOCATION = "getbothbyfilelocation";
     public static final String GETBYMD5 = "getbymd5";
     public static final String GETALL = "getall";
+    public static final String GETALLFILES = "getallfiles";
     public static final String SAVE = "save";
     public static final String FLUSH = "flush";
     public static final String COMMIT = "commit";

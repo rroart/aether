@@ -37,6 +37,7 @@ import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.model.FileLocation;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.util.FsUtil;
 
@@ -285,6 +286,14 @@ public class HbaseIndexFiles {
         return ifile;
     }
 
+    public Files getFiles(Result index) {
+        String md5 = bytesToString(index.getValue(indexcf, md5q));
+        Files ifile = new Files();
+        ifile.setFilename(bytesToString(index.getValue(indexcf, filenameq)));
+        ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
+        return ifile;
+    }
+
     public FileLocation getfl(Result files, String md5) {
         FileLocation fl = null;
         List<Cell> list = files.listCells();
@@ -397,6 +406,20 @@ public class HbaseIndexFiles {
         ResultScanner scanner = indexTable.getScanner(new Scan());
         for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
             retlist.add(get(rr));
+        }
+        return retlist;
+    }
+
+    public List<Files> getAllFiles() throws Exception {
+        List<Files> retlist = new ArrayList<IndexFiles>();
+        /*
+        Configuration conf = HBaseConfiguration.create();
+        HTablePool pool = new HTablePool();
+        HTableInterface indexTable = pool.getTable(getIndex());
+         */
+        ResultScanner scanner = indexTable.getScanner(new Scan());
+        for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
+            retlist.add(getFiles(rr));
         }
         return retlist;
     }

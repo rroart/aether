@@ -135,6 +135,14 @@ public class Util {
         return sender.send(param, param.webpath);
     }
 
+    public Object dbcheck() {
+        ServiceParam param = new ServiceParam();
+        param.config = getConfig();
+        param.function = Function.DBCHECK;
+        param.webpath = EurekaConstants.DBCHECK;
+        return sender.send(param, param.webpath);
+    }
+
     // called from ui
     public Object memoryusage() {
         ServiceParam param = new ServiceParam();

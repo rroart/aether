@@ -44,4 +44,6 @@ public abstract class DatabaseOperations {
     
     public abstract DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception;
 
+    public abstract DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception;
+
 }

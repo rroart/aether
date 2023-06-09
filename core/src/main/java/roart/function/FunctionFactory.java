@@ -26,6 +26,8 @@ public class FunctionFactory {
             return new DbIndex(param);
         case DBSEARCH:
             return new DbSearch(param);
+        case DBCHECK:
+            return new DbCheck(param);
         case CONSISTENTCLEAN:
             return new ConsistentClean(param);
         case SEARCH:

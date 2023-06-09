@@ -23,6 +23,7 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.eureka.util.EurekaUtil;
 
@@ -118,6 +119,14 @@ public abstract class IndexFilesAccess {
         param.setConf(MyConfig.conf);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALL);
         return Arrays.asList(result.getIndexFiles());
+
+    }
+
+    public List<Files> getAllFiles() throws Exception {
+        DatabaseFileLocationParam param = new DatabaseFileLocationParam();
+        param.setConf(MyConfig.conf);
+        DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALLFILES);
+        return Arrays.asList(result.getFiles());
 
     }
 

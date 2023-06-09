@@ -17,6 +17,7 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 
 import org.slf4j.Logger;
@@ -506,6 +507,13 @@ public class DynamodbIndexFiles {
         return ifile;
     }
 
+    public Files getFiles(Map<String, AttributeValue> item) {
+        Files ifile = new Files();
+        ifile.setFilename(itemgets(item.get(filenameq)));
+        ifile.setMd5(itemgets(item.get(md5q)));
+        return ifile;
+    }
+
     private String itemgets(AttributeValue attributeValue) {
         if (attributeValue != null) {
             return attributeValue.s();
@@ -635,6 +643,29 @@ public class DynamodbIndexFiles {
                 }
             }
             retlist.add(get(item));
+        }
+        return retlist;
+    }
+
+    public List<Files> getAllFiles() throws Exception {
+        List<Files> retlist = new ArrayList<>();
+        ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(getIndexFiles()).build();
+
+        ScanResponse result = client.scan(scanRequest);
+        List<Map<String, AttributeValue>> list = result.items();
+        for (Map<String, AttributeValue> itemMap : list){
+            Map<String, AttributeValue> item = new HashMap<>();
+            for (Entry<String, AttributeValue> entry : itemMap.entrySet()) {
+                if ( entry.getKey().equals(filelocationq)) {
+                    String value = entry.getValue().s();
+                    List<FileLocation> unconverted = new FileLocationConverter().unconvert(value);
+                    item.put(entry.getKey(), entry.getValue());
+                } else {
+                    item.put(entry.getKey(), entry.getValue());
+                }
+            }
+            retlist.add(getFiles(item));
         }
         return retlist;
     }

@@ -152,6 +152,12 @@ def filesystemlucenenew(add, md5checknew):
 def consistentclean(clean):
         param = { "function" : "CONSISTENTCLEAN", "clean" : clean }
         response = request.request1(param, "consistentclean")
+        pltshow(response)
+
+def dbcheck(clean):
+        param = { "function" : "DBCHECK" }
+        response = request.request1("consistentclean")
+        pltshow(response)
 
 def deletepathdb(path):
         param = { "function" : "DELETEPATH", "file" : path }
@@ -186,3 +192,23 @@ def notindexed():
         response = request.request1({ "function" : "NOTINDEXED" }, "notindexed")
         print(response)
         print(response.json())
+
+def pltshow(response):
+        l = response.json()['list']
+        val1 = l[0][0]['items']
+        val2 = [ 1 + i for i in range(len(l[0]) - 1 ) ]
+        #for i in l:
+        #    for j in i:
+        #        print(j['items'])
+        val3 = [ l[0][i]['items'] for i in range(1, len(l[0])) ]
+        fig, ax = plt.subplots() 
+        ax.set_axis_off()
+        table = ax.table( 
+                cellText = val3,  
+                rowLabels = val2,  
+                colLabels = val1, 
+                cellLoc ='left',  
+                loc ='upper left')
+        table.auto_set_font_size(False)
+        plt.show()
+        

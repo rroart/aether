@@ -337,6 +337,20 @@ public class ServiceController implements CommandLineRunner {
         return result;
     }
 
+    @RequestMapping(value = "/" + EurekaConstants.DBCHECK,
+            method = RequestMethod.POST)
+    public ServiceResult dbCheck(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            result.list = ClientHandler.doClient(param);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/" + EurekaConstants.DELETEPATHDB,
             method = RequestMethod.POST)
     public ServiceResult getDeletePathDb(@RequestBody ServiceParam param)

@@ -93,6 +93,13 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     }
 
     @Override
+    public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
+        DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
+        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(IndexFiles[]::new));
+        return result;
+    }
+
+    @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
         Set<IndexFiles> is = param.getIndexFiles();
         for (IndexFiles i : is) {

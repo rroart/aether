@@ -2,9 +2,12 @@ package roart.common.database;
 
 import java.util.Map;
 
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 
 public class DatabaseIndexFilesResult extends DatabaseResult {
+    private Files[] files;
+
     private IndexFiles[] indexFiles;
 
     private Map<String, IndexFiles> indexFilesMap;
@@ -21,7 +24,15 @@ public class DatabaseIndexFilesResult extends DatabaseResult {
         this.indexFiles = indexFiles;
     }
 
-    public Map<String, IndexFiles> getIndexFilesMap() {
+    public Files[] getFiles() {
+        return files;
+    }
+
+    public void setFiles(Files[] files) {
+        this.files = files;
+    }
+
+     public Map<String, IndexFiles> getIndexFilesMap() {
         return indexFilesMap;
     }
 

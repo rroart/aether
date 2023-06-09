@@ -33,6 +33,7 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.database.DatabaseOperations;
 
@@ -105,6 +106,13 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
         result.setIndexFiles(hbaseIndexFiles.getAll().stream().toArray(IndexFiles[]::new));
+        return result;
+    }
+
+    @Override
+    public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
+        DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
+        result.setFiles(hbaseIndexFiles.getAllFiles().stream().toArray(Files[]::new));
         return result;
     }
 
