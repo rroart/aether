@@ -411,7 +411,7 @@ public class HbaseIndexFiles {
     }
 
     public List<Files> getAllFiles() throws Exception {
-        List<Files> retlist = new ArrayList<IndexFiles>();
+        List<Files> retlist = new ArrayList<>();
         /*
         Configuration conf = HBaseConfiguration.create();
         HTablePool pool = new HTablePool();

@@ -20,6 +20,7 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
+import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.database.DatabaseOperations;
 
@@ -95,7 +96,7 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(IndexFiles[]::new));
+        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(Files[]::new));
         return result;
     }
 
