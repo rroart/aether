@@ -178,6 +178,9 @@ def dbclear():
 def dbdrop():
         response = request.request1({ "function" : "DBDROP" }, "dbdrop")
         
+def dbcopy(src, dst):
+        response = request.request1({ "function" : "DBCOPY", "name" : src, "add" : dst }, "dbcopy")
+        
 def dbsearch(string = None):
         response = request.request1({ "function" : "DBSEARCH", "file" : string }, "dbsearch")
         print(response)

@@ -104,5 +104,6 @@ public class EurekaConstants {
     public static final String GETLANGUAGES = "getlanguages";
     public static final String DBCLEAR = "dbclear";
     public static final String DBDROP = "dbdrop";
+    public static final String DBCOPY = "dbcopy";
     public static final String DOWNLOAD = "download";
 }

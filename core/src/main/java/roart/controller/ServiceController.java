@@ -393,6 +393,20 @@ public class ServiceController implements CommandLineRunner {
         return result;
     }
 
+    @RequestMapping(value = "/" + EurekaConstants.DBCOPY,
+            method = RequestMethod.POST)
+    public ServiceResult getDbCopy(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            ClientHandler.doClient(param);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/" + EurekaConstants.INDEXCLEAN,
             method = RequestMethod.POST)
     public ServiceResult getIndexClean(@RequestBody ServiceParam param)

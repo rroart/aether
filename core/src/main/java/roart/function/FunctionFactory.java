@@ -42,6 +42,8 @@ public class FunctionFactory {
             return new DbClear(param);
         case DBDROP:
             return new DbDrop(param);
+        case DBCOPY:
+            return new DbCopy(param);
         case INDEXCLEAN:
             return new IndexClean(param);
         case INDEXDELETE:

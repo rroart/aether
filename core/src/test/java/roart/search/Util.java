@@ -215,6 +215,14 @@ public class Util {
         return sender.send(param, param.webpath);
     }
     
+    public Object dbcopy() {
+        ServiceParam param = new ServiceParam();
+        param.config = getConfig();
+        param.function = Function.DBCOPY;
+        param.webpath = EurekaConstants.DBCOPY;
+        return sender.send(param, param.webpath);
+    }
+    
     public Object indexclean() {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
