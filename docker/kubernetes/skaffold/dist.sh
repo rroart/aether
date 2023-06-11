@@ -9,6 +9,7 @@ export ELASTICJAR=aether-elastic-0.10-SNAPSHOT.jar
 export HBASEJAR=aether-hbase-0.10-SNAPSHOT.jar
 export HDFSJAR=aether-hdfs-0.10-SNAPSHOT.jar
 export HIBERNATEJAR=aether-hibernate-0.10-SNAPSHOT.jar
+export SPRINGDATAJAR=aether-springdata-0.10-SNAPSHOT.jar
 export LOCALJAR=aether-local-0.10-SNAPSHOT.jar
 export LUCENEJAR=aether-lucene-0.10-SNAPSHOT.jar
 export MAHOUTMRJAR=aether-mahout-mr-0.10-SNAPSHOT.jar

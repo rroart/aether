@@ -53,6 +53,9 @@ public class IndexFilesDao {
             if (type.equals(ConfigConstants.DATABASEDATANUCLEUS)) {
                 indexFiles = new DataNucleusIndexFilesAccess();
             }
+            if (type.equals(ConfigConstants.DATABASESPRING)) {
+                indexFiles = new SpringDataIndexFilesAccess();
+            }
         }
     }
 

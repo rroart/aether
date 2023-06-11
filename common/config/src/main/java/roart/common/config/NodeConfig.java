@@ -114,6 +114,10 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.DATABASEDATANUCLEUS);
     }
     
+    public Boolean wantSpringData() {
+        return (Boolean) getValueOrDefault(ConfigConstants.DATABASESPRING);
+    }
+    
     public Boolean wantSwift() {
         return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMSWIFT);
     }

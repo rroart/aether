@@ -20,6 +20,7 @@
     <module>dynamodb</module>
     <module>hbase</module>
     <module>hibernate</module>
+    <module>spring</module>
   </modules>
 </project>
 

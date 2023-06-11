@@ -6,6 +6,8 @@ public class Files {
     
     private String md5;
 
+    private Integer version;
+    
     public Files() {
         // for jackson
     }
@@ -32,6 +34,14 @@ public class Files {
         this.md5 = md5;
     }
         
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object other) {
         return filename.equals(((Files) other).filename) && md5.equals(((Files) other).md5);

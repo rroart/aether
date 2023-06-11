@@ -51,6 +51,7 @@ public class MyXMLConfig {
          map.put(ConfigConstants.DATABASEDYNAMODB, "aether-dynamodb" + version);
          map.put(ConfigConstants.DATABASEHIBERNATE, "aether-hibernate" + version);
          map.put(ConfigConstants.DATABASEDATANUCLEUS, "aether-datanucleus" + version);
+         map.put(ConfigConstants.DATABASESPRING, "aether-springdata" + version);
          map.put(ConfigConstants.MACHINELEARNINGMAHOUT, "aether-mahout-mr" + version);
          map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, "aether-mahout-spark" + version);
          map.put(ConfigConstants.MACHINELEARNINGSPARKML, "aether-spark-ml" + version);

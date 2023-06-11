@@ -56,6 +56,19 @@ build:
         extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
         appid: '{{.APPID}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
+  - image: aether-springdata$IMGID
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/generic/Dockerfile
+      buildArgs:
+        distlib: '{{.DISTLIB}}'
+        distjar: '{{.SPRINGDATAJAR}}'
+        mywebport: "8080"
+        myconfig: '{{.MYCONFIG}}'
+        mydebug: '{{.MYDEBUG}}'
+        extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
+        appid: '{{.APPID}}'
+        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:
     manifests:
@@ -64,3 +77,4 @@ deploy:
     - hibernatedata/deployment.yaml
     - cassandra/deployment.yaml
     - dynamodb/deployment.yaml
+    - springdata/deployment.yaml

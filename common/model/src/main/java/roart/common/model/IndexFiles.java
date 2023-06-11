@@ -43,6 +43,7 @@ public class IndexFiles {
     private String isbn;
     private String created;
     private String checked;
+    private Integer version;
     
     private boolean changed = false;
     private boolean indb = false;
@@ -361,6 +362,14 @@ public class IndexFiles {
 
         public void setChecked(String checked) {
             this.checked = checked;
+        }
+
+    public Integer getVersion() {
+            return version;
+        }
+
+        public void setVersion(Integer version) {
+            this.version = version;
         }
 
     public boolean hasChanged() {

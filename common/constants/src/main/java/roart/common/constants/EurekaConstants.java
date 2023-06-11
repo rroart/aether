@@ -18,6 +18,7 @@ public class EurekaConstants {
     public static final String CASSANDRA = "CASSANDRA";
     public static final String DYNAMODB = "DYNAMODB";
     public static final String DATANUCLEUS = "DATANUCLEUS";
+    public static final String SPRINGDATA = "SPRINGDATA";
     public static final String LOCAL = "LOCAL";
     public static final String SWIFT = "SWIFT";
     public static final String S3 = "S3";

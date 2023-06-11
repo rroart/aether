@@ -39,6 +39,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.DATABASEDYNAMODB, Boolean.class);
         map.put(ConfigConstants.DATABASEHIBERNATE, Boolean.class);
         map.put(ConfigConstants.DATABASEHIBERNATEH2DIR, String.class);
+        map.put(ConfigConstants.DATABASESPRING, Boolean.class);
         map.put(ConfigConstants.NODECLASSIFY, Boolean.class);
         map.put(ConfigConstants.MACHINELEARNINGMAHOUT, Boolean.class);
         map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, Boolean.class);
@@ -162,6 +163,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.DATABASEDYNAMODB, Boolean.FALSE);
         deflt.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
         deflt.put(ConfigConstants.DATABASEHIBERNATEH2DIR, "");
+        deflt.put(ConfigConstants.DATABASESPRING, Boolean.FALSE);
         deflt.put(ConfigConstants.NODECLASSIFY, Boolean.FALSE);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUT, Boolean.FALSE);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, Boolean.FALSE);
@@ -286,6 +288,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.DATABASEDYNAMODB, "");
         text.put(ConfigConstants.DATABASEHIBERNATE, "");
         text.put(ConfigConstants.DATABASEHIBERNATE, "Hibernate H2 directory");
+        text.put(ConfigConstants.DATABASESPRING, "");
         text.put(ConfigConstants.NODECLASSIFY, "Use classifier ML");
         text.put(ConfigConstants.MACHINELEARNINGMAHOUT, "");
         text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, "");
@@ -404,6 +407,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.DATABASEDYNAMODB, new XMLType( Boolean.class, Boolean.FALSE, ""));
         mymap.put(ConfigConstants.DATABASEHIBERNATE, new XMLType( Boolean.class, Boolean.TRUE, "Hibernate H2 directory"));
         mymap.put(ConfigConstants.DATABASEHIBERNATEH2DIR, new XMLType( String.class, "", null));
+        mymap.put(ConfigConstants.DATABASESPRING, new XMLType( Boolean.class, Boolean.FALSE, ""));
         mymap.put(ConfigConstants.NODECLASSIFY, new XMLType( Boolean.class, Boolean.FALSE, "Use classifier ML"));
         mymap.put(ConfigConstants.MACHINELEARNINGOPENNLP, new XMLType( Boolean.class, Boolean.FALSE, "Machine learning OpenNLP"));
         mymap.put(ConfigConstants.GUIDOWNLOADER, new XMLType( Boolean.class, Boolean.TRUE, "Use downloader"));

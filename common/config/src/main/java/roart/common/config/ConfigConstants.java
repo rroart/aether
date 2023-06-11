@@ -107,6 +107,7 @@ public class ConfigConstants {
     public static final String CONVERSIONOTHERTIMEOUT = "conversion.othertimeout";
     public static final String CONVERSION = "conversion";
     public static final String DATABASEDATANUCLEUS = "database.datanucleus[@enable]";
+    public static final String DATABASESPRING = "database.spring[@enable]";
     public static final String SYNCHRONIZATIONZOOKEEPER = "synchronization.zookeeper";
     public static final String GUIHIGHLIGHTMLT = "gui.highlightmlt[@enable]";
     public static final String NODELANGUAGES = "node.languages";

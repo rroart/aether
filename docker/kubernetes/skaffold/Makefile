@@ -1,5 +1,5 @@
 VERSION = 0.10-SNAPSHOT
-SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr lucene hbase hibernate cassandra dynamodb s3 swift hdfs opennlp mahoutspark sparkml core webr hibernatedata lucenedata mahoutsparkdata opennlpdata sparkmldata
+SUBDIRS = calibre djvutxt pdftotext tika wvtext elastic solr lucene hbase hibernate springdata cassandra dynamodb s3 swift hdfs opennlp mahoutspark sparkml core webr hibernatedata lucenedata mahoutsparkdata opennlpdata sparkmldata
 
 all: $(SUBDIRS) skaffoldconvert.yaml skaffoldfrontr.yaml skaffoldsearchengine.yaml skaffoldclassify.yaml skaffolddatabase.yaml skaffoldfilesystem.yaml skaffoldcore.yaml conf
 

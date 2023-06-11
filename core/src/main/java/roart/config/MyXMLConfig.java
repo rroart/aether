@@ -317,6 +317,8 @@ public class MyXMLConfig {
             db = ConfigConstants.DATABASEDATANUCLEUS;
         } else if (configInstance.wantHibernate()) {
             db = ConfigConstants.DATABASEHIBERNATE;
+        } else if (configInstance.wantSpringData()) {
+            db = ConfigConstants.DATABASESPRING;
         }
         if (db != null) {
             System.out.println("type " + db);
