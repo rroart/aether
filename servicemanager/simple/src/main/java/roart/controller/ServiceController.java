@@ -16,8 +16,6 @@ import roart.common.service.ServiceResult;
 import roart.config.MyXMLConfig;
 
 @RestController
-@SpringBootApplication
-@EnableDiscoveryClient
 public class ServiceController {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());

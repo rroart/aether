@@ -74,6 +74,8 @@
 		    --add-opens java.base/java.lang=ALL-UNNAMED
 		    --add-reads common.config=ALL-UNNAMED
 		    --add-reads common.model=ALL-UNNAMED
+		    --add-opens springdata/roart.database.spring=ALL-UNNAMED
+		    --add-opens spark.ml/roart.classification.spark.ml=ALL-UNNAMED
 		  </argLine>
 		</configuration>
       </plugin>
@@ -95,7 +97,7 @@
   </dependencies>
   <properties>
     <aether.version>0.10-SNAPSHOT</aether.version>
-    <mavencompiler.version>3.8.1</mavencompiler.version>
+    <mavencompiler.version>3.11.0</mavencompiler.version>
     <mavenshade.version>3.2.1</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>11.0.12</jetty.version>
@@ -118,7 +120,7 @@
     <mahout.version>14.1</mahout.version>
     <!-- must keep at old version for some time -->
     <mahout.spark.version>2.4.0</mahout.spark.version>
-    <spark.version>3.3.1</spark.version>
+    <spark.version>3.4.0</spark.version>
     <scala.version>2.13</scala.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
@@ -132,7 +134,7 @@
     <hazelcast.version>3.12.12</hazelcast.version>
     <hazelcastclient.version>3.2.12</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
-    <jackson.version>2.12.5</jackson.version>
+    <jackson.version>2.14.2</jackson.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>6.1.5.Final</hibernate.version>
@@ -174,8 +176,8 @@
     <springintegration.version>6.1.0</springintegration.version>
     <springrabbit.version>3.0.4</springrabbit.version>
     <redisclient.version>4.3.1</redisclient.version>
-    <chill.version>0.9.3</chill.version>
-    <jersey.version>2.22.2</jersey.version>
+    <chill.version>0.10.0</chill.version>
+    <jersey.version>2.36</jersey.version>
   </properties>
   <!--repositories>
     <repository>

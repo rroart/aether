@@ -39,6 +39,12 @@
 		  <include>org.apache.spark:spark-mllib-local_2.13</include>
 		  <include>org.apache.spark:spark-sql_2.13</include>
 		  <include>org.eclipse.jetty:jetty-http</include>
+		  <include>org.glassfish.jersey.core:jersey-client</include>
+                  <include>org.glassfish.jersey.core:jersey-common</include>
+                  <include>org.glassfish.jersey.core:jersey-server</include>
+                  <include>org.glassfish.jersey.containers:jersey-container-servlet</include>
+                  <include>org.glassfish.jersey.containers:jersey-container-servlet-core</include>
+                  <include>org.glassfish.jersey.inject:jersey-hk2</include>
 		</includes>
               </artifactSet>
             </configuration>
@@ -101,7 +107,37 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-http</artifactId>
-      <version>9.4.12.v20180830</version>
+      <version>9.4.50.v20221201</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet-core</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey.version}</version>
     </dependency>
   </dependencies>
 </project>
