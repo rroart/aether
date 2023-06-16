@@ -135,6 +135,16 @@ function ControlPanel ({ props, callbackNewTab }) {
     return;
   }
 
+    function dbcheck( props) {
+    var param = new ServiceParam();
+    param.config = props.config;
+    param.function = "DBCHECK";
+    param.webpath = "dbcheck";
+    Queues.clientQueue.add(param);
+    setParam(param);
+    return;
+  }
+
   function deletepathdb( path, props) {
     var param = new ServiceParam();
     param.config = props.config;
@@ -336,6 +346,18 @@ function ControlPanel ({ props, callbackNewTab }) {
                 onChange = { (e) => setCleanpath(e.target.value) }
                 type="text"/>
             </Form>
+        </Nav>
+      </Navbar>
+      <Navbar>
+        <Navbar.Header>
+          <Navbar.Brand>
+            <a href="#home">Db check</a>
+          </Navbar.Brand>
+        </Navbar.Header>
+        <Nav>
+          <NavItem eventKey={1} href="#">
+              <Button bsStyle="primary" onClick={ (e) => dbcheck(props) }>Db check</Button>
+          </NavItem>
         </Nav>
       </Navbar>
       <Navbar>
