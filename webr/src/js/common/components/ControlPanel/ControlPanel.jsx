@@ -21,6 +21,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   const [ startdate, setStartdate ] = useState('');
   const [ enddate, setEnddate ] = useState('');
   const [ reindex, setReindex ] = useState('');
+  const [ cleanpath, setCleanpath ] = useState('');
   const [ deletepath, setDeletepath ] = useState('');
   const [ databasemd5, setDatabasemd5 ] = useState('');
   const [ databasesearch, setDatabasesearch ] = useState('');
@@ -122,11 +123,12 @@ function ControlPanel ({ props, callbackNewTab }) {
     setParam(param);
   }
 
-  function consistentclean( clean, props) {
+    function consistentclean( clean, path, props) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "CONSISTENTCLEAN";
-    param.clean = clean;
+      param.clean = clean;
+      param.path = path;
     param.webpath = "consistentclean";
     Queues.clientQueue.add(param);
     setParam(param);
@@ -324,11 +326,16 @@ function ControlPanel ({ props, callbackNewTab }) {
         </Navbar.Header>
         <Nav>
           <NavItem eventKey={1} href="#">
-            <Button bsStyle="primary" onClick={ (e) => consistentclean(false, props) }>Get consistency</Button>
+              <Button bsStyle="primary" onClick={ (e) => consistentclean(false, cleanpath, props) }>Get consistency</Button>
           </NavItem>
           <NavItem eventKey={2} href="#">
-            <Button bsStyle="primary" onClick={ (e) => consistentclean(true, props) }>Get consistency and clean</Button>
+              <Button bsStyle="primary" onClick={ (e) => consistentclean(true, cleanpath, props) }>Get consistency and clean</Button>
           </NavItem>
+	    <Form>
+              <FormControl
+                onChange = { (e) => setCleanpath(e.target.value) }
+                type="text"/>
+            </Form>
         </Nav>
       </Navbar>
       <Navbar>
