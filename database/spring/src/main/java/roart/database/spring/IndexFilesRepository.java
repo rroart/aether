@@ -24,11 +24,7 @@ import javax.sql.DataSource;
 
 @Repository
 public interface IndexFilesRepository extends CrudRepository<Index, String> {
-    /*
-    interface Ids {
-        String getId();
-    }
-*/
+
     String[] findDistinctByLanguageNotIn(List l);
 
     String[] findDistinctByMd5NotIn(List l);
@@ -54,7 +50,7 @@ public interface IndexFilesRepository extends CrudRepository<Index, String> {
             + "    \"TIMEOUTREASON\" CHARACTER VARYING(255),\n"
             + "    \"TIMESTAMP\" CHARACTER VARYING(255)\n"
             + ");\n"
-            + "ALTER TABLE \"PUBLIC\".\"INDEX\" ADD CONSTRAINT \"PUBLIC\".\"CONSTRAINT_4\" PRIMARY KEY(\"MD5\");        \n"
+            + "ALTER TABLE \"PUBLIC\".\"INDEX\" ADD CONSTRAINT IF NOT EXISTS \"PUBLIC\".\"CONSTRAINT_4\" PRIMARY KEY(\"MD5\");        \n"
             + "")
     void createH2();
 }

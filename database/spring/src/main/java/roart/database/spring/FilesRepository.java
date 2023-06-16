@@ -13,7 +13,7 @@ public interface FilesRepository extends CrudRepository<Files, String>{
             + "    \"VERSION\" INTEGER,\n"
             + "    \"FILENAME\" CHARACTER VARYING(511) NOT NULL\n"
             + ");             \n"
-            + "ALTER TABLE \"PUBLIC\".\"FILES\" ADD CONSTRAINT \"PUBLIC\".\"CONSTRAINT_3\" PRIMARY KEY(\n"
+            + "ALTER TABLE \"PUBLIC\".\"FILES\" ADD CONSTRAINT IF NOT EXISTS \"PUBLIC\".\"CONSTRAINT_3\" PRIMARY KEY(\n"
             + "\"FILENAME\");            \n"
             + "")  
     void createH2();

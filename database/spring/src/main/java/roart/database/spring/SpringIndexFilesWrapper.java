@@ -1,6 +1,5 @@
 package roart.database.spring;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import roart.common.config.NodeConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
@@ -24,41 +27,28 @@ import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
-import roart.database.DatabaseOperations;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
 import roart.common.util.FsUtil;
+import roart.database.DatabaseOperations;
 
 @Component
 public class SpringIndexFilesWrapper extends DatabaseOperations {
 
     private static Logger log = LoggerFactory.getLogger(SpringIndexFilesWrapper.class);
 
-    //private String nodename;
-
-    //private NodeConfig nodeConf;
-
-    @Autowired
     private IndexFilesRepository repo;
     
-    @Autowired
     private FilesRepository filesrepo;
     
-    @Autowired
     private SpringConfiguration config;
     
     @Autowired
-    public SpringIndexFilesWrapper() {
-        //this.nodename = nodename;
-        //this.nodeConf = nodeConf;
+    public SpringIndexFilesWrapper(IndexFilesRepository repo, FilesRepository filesrepo, SpringConfiguration config) {
+        this.repo = repo;
+        this.filesrepo = filesrepo;
+        this.config = config;
+
         String driver = config != null ? config.getDriver() : null;
-        System.out.println("Driver" + driver);
+        
         if ("org.h2.Driver".equals(driver) || driver == null) {
             if (repo != null) {
                 repo.createH2();

@@ -13,4 +13,11 @@ public class SpringConfiguration {
         return driver;
     }
 
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
 }
