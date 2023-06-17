@@ -288,6 +288,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
                 while (!success) {
                     try {
                         curatorClient.setData().forPath(str, bytes);
+                        success = true;
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         Thread.sleep(10000);
