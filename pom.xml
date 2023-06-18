@@ -110,7 +110,7 @@
     <junit.version>5.7.2</junit.version>
     <mahout.lucene.version>8.9.0</mahout.lucene.version>
     <lucene.version>9.6.0</lucene.version>
-    <solr.version>9.0.0</solr.version>
+    <solr.version>9.2.1</solr.version>
     <hbase.version>2.4.5</hbase.version>
     <cassandra.version>3.11.0</cassandra.version>
     <aws.version>1.12.114</aws.version>
