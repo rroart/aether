@@ -124,7 +124,7 @@
     <scala.version>2.13</scala.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
-    <opennlp.version>1.9.3</opennlp.version>
+    <opennlp.version>2.2.0</opennlp.version>
     <hadoop.version>3.1.1</hadoop.version>
     <datanucleus.version>5.1.0-release</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
