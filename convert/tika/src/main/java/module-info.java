@@ -14,7 +14,7 @@ module tika {
     requires common.inmemory.factory;
     requires convert;
     requires org.apache.tika.core;
-    requires org.apache.tika.parsers;
+    //requires org.apache.tika.parsers;
     //requires tika.core;
     //requires tika.parsers;
     requires org.slf4j;
