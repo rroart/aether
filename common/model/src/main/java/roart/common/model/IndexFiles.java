@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Date;
 
@@ -575,6 +576,28 @@ public class IndexFiles {
 	@Override
 	public String toString() {
 	    return md5 + " " + filelocations;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+	        IndexFiles f = (IndexFiles) object;
+	        return Objects.equals(md5, f.md5)
+	        && Objects.equals(indexed, f.indexed)
+                && Objects.equals(timeindex, f.timeindex)
+                && Objects.equals(timestamp, f.timestamp)
+                && Objects.equals(timeclass, f.timeclass)
+                && Objects.equals(convertsw, f.convertsw)
+                && Objects.equals(classification, f.classification)
+                && Objects.equals(failed, f.failed)
+                && Objects.equals(failedreason, f.failedreason)
+                && Objects.equals(timeoutreason, f.timeoutreason)
+                && Objects.equals(noindexreason, f.noindexreason)
+                && Objects.equals(filelocations, f.filelocations)
+                && Objects.equals(language, f.language)
+                && Objects.equals(isbn, f.isbn)
+                && Objects.equals(created, f.created)
+                && Objects.equals(checked, f.checked);
+	    
 	}
 	
     }
