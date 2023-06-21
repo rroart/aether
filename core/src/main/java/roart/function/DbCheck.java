@@ -2,6 +2,7 @@ package roart.function;
 
 import java.util.List;
 
+import roart.common.constants.Constants;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
@@ -40,11 +41,14 @@ public class DbCheck extends AbstractFunction {
         resultList1.add(new ResultItem("" + set1));
         resultList2.add(new ResultItem("Present in indexfiles"));
         resultList2.add(new ResultItem("" + set4));
+        log.info("Present in file {}", set1);
+        log.info("Present in indexfile {}", set4);
         List<List> retlistlist = new ArrayList<>();
         retlistlist.add(resultList1);
         retlistlist.add(resultList2);
         return retlistlist;
         } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
             return null;
         }
     }
