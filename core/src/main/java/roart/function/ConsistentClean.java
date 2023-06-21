@@ -190,6 +190,7 @@ public class ConsistentClean extends AbstractFunction {
         }
 
         List<List> retlistlist = new ArrayList<>();
+        log.error("Not exists {}", delList);
         retlistlist.add(delList);
         retlistlist.add(nonexistList);
         retlistlist.add(newList);
