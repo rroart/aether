@@ -3,6 +3,7 @@ package roart.function;
 import java.util.List;
 
 import roart.common.constants.Constants;
+import roart.common.model.FileLocation;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
@@ -25,8 +26,8 @@ public class DbCheck extends AbstractFunction {
         List<Files> files = new IndexFilesDao().getAllFiles();
         List<Files> checklist = new ArrayList<>();
         for (IndexFiles indexFiles : indexes) {
-            for (String filename : indexFiles.getFilenames()) {
-                checklist.add(new Files(filename, indexFiles.getMd5()));
+            for (FileLocation filename : indexFiles.getFilelocations()) {
+                checklist.add(new Files(filename.toString(), indexFiles.getMd5()));
             }
         }
         Set<Files> set1 = new HashSet<>(files);
