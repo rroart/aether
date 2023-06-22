@@ -258,6 +258,7 @@ public class IndexFiles {
 	    return filelocations;
 	}
 
+        // not used
         public Set<String> getFilenames() {
 	    Set<String> names = new HashSet<String>();
 	    for (FileLocation fl : filelocations) {
@@ -599,5 +600,10 @@ public class IndexFiles {
                 && Objects.equals(checked, f.checked);
 	    
 	}
+	
+	    @Override
+	    public int hashCode() {
+	        return Objects.hash(md5, indexed, timeindex, timestamp, timeclass, convertsw, classification, failed, failedreason, timeoutreason, noindexreason, filelocations, language, isbn, created, checked);
+	    }
 	
     }

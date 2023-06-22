@@ -1,5 +1,7 @@
 package roart.common.model;
 
+import java.util.Objects;
+
 public class Files {
 
     private String filename;
@@ -50,5 +52,10 @@ public class Files {
     @Override
     public String toString() {
         return filename + ":" + md5;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(filename, md5);
     }
 }
