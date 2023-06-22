@@ -63,7 +63,7 @@ public class ConsistentClean extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
-        boolean clean = param.reindex;
+        boolean clean = param.clean;
         List<ResultItem> delList = new ArrayList<>();
         List<ResultItem> nonexistList = new ArrayList<>();
         List<ResultItem> newList = new ArrayList<>();
