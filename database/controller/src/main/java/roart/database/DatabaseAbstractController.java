@@ -144,7 +144,7 @@ public abstract class DatabaseAbstractController {
     public DatabaseIndexFilesResult processGetAllFiles(@RequestBody DatabaseParam param)
             throws Exception {
         DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
-        return operation.getAll(param);
+        return operation.getAllFiles(param);
     }
 
     @RequestMapping(value = "/" + EurekaConstants.SAVE,
