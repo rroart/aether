@@ -179,6 +179,15 @@ public abstract class IndexFilesAccess {
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.DELETE);
     }
 
+    public void delete(Files index) throws Exception {
+        DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
+        param.setConf(MyConfig.conf);
+        Set<Files> indexes = new HashSet<>();
+        indexes.add(index);
+        param.setFiles(indexes);
+        EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.DELETE);
+    }
+
     public Map<String, IndexFiles> getByMd5(Set<String> md5s) {
         DatabaseMd5Param param = new DatabaseMd5Param();
         param.setConf(MyConfig.conf);

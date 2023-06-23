@@ -152,6 +152,10 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
         for (IndexFiles index : indexes) {
             dynamodbIndexFiles.delete(index);
         }
+        Set<Files> files = param.getFiles();
+        for (Files index : files) {
+            dynamodbIndexFiles.delete(index);
+        }
         return null;
     }
 

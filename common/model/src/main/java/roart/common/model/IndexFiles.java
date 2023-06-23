@@ -82,6 +82,7 @@ public class IndexFiles {
 	    return ((FileLocation) (getFilelocations()).iterator().next()).getFilename();
 	}
 
+        @Deprecated
     public int getMaxfilelocations() {
 	return maxfilelocations;
     }

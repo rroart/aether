@@ -163,6 +163,10 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
         for (IndexFiles index : indexes) {
             hbaseIndexFiles.delete(index);
         }
+        Set<Files> files = param.getFiles();
+        for (Files index : files) {
+            hbaseIndexFiles.delete(index);
+        }
         return null;
     }
 

@@ -103,6 +103,7 @@ public class IndexFilesDao {
         }
     }
 
+    // TODO
     public static String getMd5ByFilename(FileObject filename) throws Exception {
         FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
         synchronized(IndexFilesDao.class) {
@@ -335,6 +336,16 @@ public class IndexFilesDao {
         }
     }
 
+    public void delete(Files index) {
+        try {
+            synchronized(IndexFilesDao.class) {
+                indexFiles.delete(index);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+    }
+
     public static Map<String, IndexFiles> getByMd5(Set<String> md5s) throws Exception {
         return getByMd5(md5s, true);
     }
@@ -366,6 +377,7 @@ public class IndexFilesDao {
         }
     }
 
+    // TODO
     public static Map<FileObject, String> getMd5ByFilename(Set<FileObject> filenames) throws Exception {
         Set<FileLocation> fls = new HashSet<>();
         for (FileObject filename : filenames) {
@@ -387,6 +399,7 @@ public class IndexFilesDao {
         }
     }
 
+    // not used
     public static List<Map> getBothByFilename(Set<String> filenames) throws Exception {
         String nodename = ControlService.nodename;
         Set<FileLocation> fls = new HashSet<>();

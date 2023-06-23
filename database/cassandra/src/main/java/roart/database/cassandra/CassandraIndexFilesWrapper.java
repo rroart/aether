@@ -147,6 +147,10 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         for (IndexFiles index : indexes) {
             cassandraIndexFiles.delete(index);
         }
+        Set<Files> files = param.getFiles();
+        for (Files index : files) {
+            cassandraIndexFiles.delete(index);
+        }
         return null;
     }
 

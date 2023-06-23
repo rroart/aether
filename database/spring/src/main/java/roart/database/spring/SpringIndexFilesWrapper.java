@@ -278,6 +278,10 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         for (IndexFiles index : indexes) {
             repo.deleteById(index.getMd5());
         }
+        Set<roart.common.model.Files> files = param.getFiles();
+        for (roart.common.model.Files index : files) {
+            filesrepo.deleteById(index.getFilename());
+        }
         return null;
     }
 

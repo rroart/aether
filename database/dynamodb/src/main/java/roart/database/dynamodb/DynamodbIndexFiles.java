@@ -420,6 +420,7 @@ public class DynamodbIndexFiles {
 	    i++;
          */
         // now, delete the rest (or we would get some old historic content)
+        // TODO
         for (; i < ifile.getMaxfilelocations(); i++) {
             //Delete d = new Delete(ifile.getMd5()));
             //d.addColumns(flcf, "q" + i)); // yes this deletes, was previously deleteColumns
@@ -650,7 +651,7 @@ public class DynamodbIndexFiles {
     public List<Files> getAllFiles() throws Exception {
         List<Files> retlist = new ArrayList<>();
         ScanRequest scanRequest = ScanRequest.builder()
-                .tableName(getIndexFiles()).build();
+                .tableName(getFiles()).build();
 
         ScanResponse result = client.scan(scanRequest);
         List<Map<String, AttributeValue>> list = result.items();
@@ -757,8 +758,16 @@ public class DynamodbIndexFiles {
         // delete the files no longer associated to the md5
         for (FileLocation fl : curfls) {
             String name = fl.toString();
-            client.deleteItem(DeleteItemRequest.builder().tableName(getFiles()).key(Map.of(filenameq, AttributeValue.builder().s(name).build())).build());
+            deleteFile(name);
         }
+    }
+
+    public void delete(Files index) throws Exception {
+        deleteFile(index.getFilename());
+    }
+
+    public void deleteFile(String filename) throws Exception {
+        client.deleteItem(DeleteItemRequest.builder().tableName(getFiles()).key(Map.of(filenameq, AttributeValue.builder().s(filename).build())).build());
     }
 
     public void destroy() throws Exception {

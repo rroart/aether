@@ -533,6 +533,18 @@ public class CassandraIndexFiles {
         }
     }
 
+    public void delete(Files filename) throws Exception {
+        deleteFile(filename.getFilename());
+    }
+    
+    public void deleteFile(String filename) throws Exception {
+        log.info("Cassandra delete {}", filename);
+        StringBuilder sb3 = new StringBuilder("BEGIN BATCH ")
+                .append("DELETE FROM ").append(TABLE_FILES_NAME).append(" where ")
+                .append(filenameq + " = '" + filename + "'; apply batch;");
+        session.execute(sb3.toString());
+    }
+
     public void destroy() throws Exception {
         config.getSession().close();
     }

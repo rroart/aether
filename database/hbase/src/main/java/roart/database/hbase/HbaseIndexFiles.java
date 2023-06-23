@@ -208,17 +208,33 @@ public class HbaseIndexFiles {
         for (FileLocation file : ifile.getFilelocations()) {
             i++;
             String filename = getFile(file);
-            //log.info("hbase " + filename);
+            log.info("hbase " + i + " " + filename);
             put.addColumn(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
         }
         i++;
         // now, delete the rest (or we would get some old historic content)
+        // TODO
+        boolean found = true;
+        while (found) {
+            Get get = new Get(Bytes.toBytes(ifile.getMd5()));
+            get.addColumn(flcf, Bytes.toBytes("q" + i));
+            found = indexTable.exists(get);
+            if (found) {
+                Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
+                d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
+                log.info("Hbase delete q" + i);
+                indexTable.delete(d);
+            }
+            i++;
+        }
+        /*
         for (; i < ifile.getMaxfilelocations(); i++) {
             Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
             d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
             //log.info("Hbase delete q" + i);
             indexTable.delete(d);
         }
+        */
 
         put(ifile.getMd5(), ifile.getFilelocations());	    
         indexTable.put(put);
@@ -231,8 +247,7 @@ public class HbaseIndexFiles {
         for (FileLocation fl : curfls) {
             String name = fl.toString();
             log.info("Hbase delete " + name);
-            Delete d = new Delete(Bytes.toBytes(name));
-            filesTable.delete(d);
+            deleteFile(name);
         }
 
     }
@@ -287,10 +302,11 @@ public class HbaseIndexFiles {
     }
 
     public Files getFiles(Result index) {
-        String md5 = bytesToString(index.getValue(indexcf, md5q));
+        String filename = bytesToString(index.getRow());
+        String md5 = bytesToString(index.getValue(filescf, md5q));
         Files ifile = new Files();
-        ifile.setFilename(bytesToString(index.getValue(indexcf, filenameq)));
-        ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
+        ifile.setFilename(filename);
+        ifile.setMd5(md5);
         return ifile;
     }
 
@@ -417,7 +433,7 @@ public class HbaseIndexFiles {
         HTablePool pool = new HTablePool();
         HTableInterface indexTable = pool.getTable(getIndex());
          */
-        ResultScanner scanner = indexTable.getScanner(new Scan());
+        ResultScanner scanner = filesTable.getScanner(new Scan());
         for (Result rr = scanner.next(); rr != null; rr = scanner.next()) {
             retlist.add(getFiles(rr));
         }
@@ -519,24 +535,37 @@ public class HbaseIndexFiles {
     }
     
     public void delete(IndexFiles index) throws Exception {
-        for (int i = -1; i < index.getMaxfilelocations(); i++) {
+        // TODO
+        /*
+        for (int i = -1; i < index.getFilelocations().size(); i++) {
             Delete d = new Delete(Bytes.toBytes(index.getMd5()));
             d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
             indexTable.delete(d);
         }
-
+*/
+        Delete d = new Delete(Bytes.toBytes(index.getMd5()));
+        //d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
+        indexTable.delete(d);
+        /*
         Set<FileLocation> curfls = getFilelocationsByMd5(index.getMd5());
         curfls.removeAll(index.getFilelocations());
-
+*/
         // delete the files no longer associated to the md5
-        for (FileLocation fl : curfls) {
+        for (FileLocation fl : index.getFilelocations()) {
             String name = fl.toString();
             log.info("Hbase delete " + name);
-            Delete d = new Delete(Bytes.toBytes(name));
-            filesTable.delete(d);
+            deleteFile(name);
         }
     }
-
+    public void delete(Files index) throws Exception {
+        deleteFile(index.getFilename());
+    }
+    
+    public void deleteFile(String filename) throws Exception {
+        Delete d = new Delete(Bytes.toBytes(filename));
+        filesTable.delete(d);
+    }
+    
     public void destroy() throws Exception {
         config.getConnection().close();
     }

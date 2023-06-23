@@ -12,6 +12,7 @@ import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.Files;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
@@ -239,6 +240,9 @@ public class ConsistentClean extends AbstractFunction {
                     searchDao.deleteme(index.getMd5());
                 } else {
                     indexFilesDao.add(index);
+                }
+                for (FileLocation fl : deletes) {
+                    indexFilesDao.delete(new Files(fl.toString(), index.getMd5()));
                 }
                 ifs.add(index);
             }
