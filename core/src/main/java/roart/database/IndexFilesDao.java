@@ -30,6 +30,8 @@ public class IndexFilesDao {
 
     private static volatile ConcurrentMap<String, IndexFiles> all = new ConcurrentHashMap<String, IndexFiles>();
 
+    private static volatile ConcurrentMap<String, Files> allFiles = new ConcurrentHashMap<String, Files>();
+
     private static volatile ConcurrentMap<String, IndexFiles> dbi = new ConcurrentHashMap<String, IndexFiles>();
 
     private static volatile ConcurrentMap<String, IndexFiles> dbitemp = new ConcurrentHashMap<String, IndexFiles>();
@@ -128,13 +130,14 @@ public class IndexFilesDao {
 
     public List<Files> getAllFiles() throws Exception {
         //all.clear();
-        Set<String> allKeys = all.keySet();
+        Set<String> allKeys = allFiles.keySet();
         synchronized(IndexFilesDao.class) {
             List<Files> iAll = indexFiles.getAllFiles();
             for (Files i : iAll) {
                 if (allKeys.contains(i.getMd5())) {
                     //continue;
                 }
+                allFiles.put(i.getFilename(), i);
             }
             return iAll;
         }
@@ -341,6 +344,7 @@ public class IndexFilesDao {
             synchronized(IndexFilesDao.class) {
                 indexFiles.delete(index);
             }
+            allFiles.remove(index.getMd5());
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }

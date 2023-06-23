@@ -343,6 +343,7 @@ public class Traverse {
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+        new IndexFilesDao().getAllFiles();
         List<IndexFiles> indexes = new IndexFilesDao().getAll();
         for (IndexFiles index : indexes) {
             if (isMaxed(myid, element)) {
