@@ -68,6 +68,17 @@ public class AnIT {
     public void my4Test() throws Exception {
         Object l = new Util(new Sender()).search("amazon", "0");
         System.out.println(l);
+        l = new Util(new Sender()).search("lucene", "0");
+        System.out.println(l);
+        l = new Util(new Sender()).search("music", "0");
+        System.out.println(l);
+    }
+    
+    @Test
+    @Order(42)
+    public void my41Test() throws Exception {
+        Object l = new Util(new Sender()).searchmlt("0000b8dd7fd8004c1df08a363187c3ff");
+        System.out.println(l);
     }
     
     @Test
@@ -82,5 +93,9 @@ public class AnIT {
         new Util(new Sender()).index("/home/roart/src/aethermicro/books", true);
     }
     
+    @Test
+    public void dTest() throws Exception {
+        new Util(new Sender()).deletepathdb("/home/roart/usr/aethermicro/books/doc");
+    }
      
 }

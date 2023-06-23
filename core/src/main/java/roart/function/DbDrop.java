@@ -3,6 +3,8 @@ package roart.function;
 import java.util.List;
 
 import roart.common.service.ServiceParam;
+import roart.database.IndexFilesAccess;
+import roart.database.IndexFilesAccessFactory;
 import roart.database.IndexFilesDao;
 
 public class DbDrop extends AbstractFunction {
@@ -13,7 +15,13 @@ public class DbDrop extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao.drop();
+        String db = param.name;
+        if (db == null) {
+            IndexFilesDao.drop();
+        } else {
+            IndexFilesAccess access = IndexFilesAccessFactory.get(db);
+            access.drop();
+        }
         return null;
     }
 

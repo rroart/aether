@@ -135,8 +135,9 @@ public class Util {
         return sender.send(param, param.webpath);
     }
 
-    public Object dbcheck() {
+    public Object dbcheck(String db) {
         ServiceParam param = new ServiceParam();
+        param.name = db;
         param.config = getConfig();
         param.function = Function.DBCHECK;
         param.webpath = EurekaConstants.DBCHECK;
@@ -199,27 +200,31 @@ public class Util {
         return sender.send(param, param.webpath);
     }
 
-    public Object dbclear() {
+    public Object dbclear(String db) {
         ServiceParam param = new ServiceParam();
+        param.name = db;
         param.config = getConfig();
         param.function = Function.DBCLEAR;
         param.webpath = EurekaConstants.DBCLEAR;
         return sender.send(param, param.webpath);
     }
     
-    public Object dbdrop() {
+    public Object dbdrop(String db) {
         ServiceParam param = new ServiceParam();
+        param.name = db;
         param.config = getConfig();
         param.function = Function.DBDROP;
         param.webpath = EurekaConstants.DBDROP;
         return sender.send(param, param.webpath);
     }
     
-    public Object dbcopy() {
+    public Object dbcopy(String in, String out) {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.DBCOPY;
         param.webpath = EurekaConstants.DBCOPY;
+        param.name = in;
+        param.add = out;
         return sender.send(param, param.webpath);
     }
     

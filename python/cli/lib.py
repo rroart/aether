@@ -154,9 +154,9 @@ def consistentclean(clean):
         response = request.request1(param, "consistentclean")
         pltshow(response)
 
-def dbcheck():
+def dbcheck(db):
         param = { "function" : "DBCHECK" }
-        response = request.request1(param, "dbcheck")
+        response = request.request1(param, "dbcheck", "name" : db)
         pltshow(response)
 
 def deletepathdb(path):
@@ -172,11 +172,11 @@ def indexclean():
 def indexdelete():
         response = request.request1({ "function" : "INDEXDELETE" }, "indexdelete")
 
-def dbclear():
-        response = request.request1({ "function" : "DBCLEAR" }, "dbclear")
+def dbclear(db):
+        response = request.request1({ "function" : "DBCLEAR", "name" : db }, "dbclear")
 
-def dbdrop():
-        response = request.request1({ "function" : "DBDROP" }, "dbdrop")
+def dbdrop(db):
+        response = request.request1({ "function" : "DBDROP", "name" : db }, "dbdrop")
         
 def dbcopy(src, dst):
         response = request.request1({ "function" : "DBCOPY", "name" : src, "add" : dst }, "dbcopy")

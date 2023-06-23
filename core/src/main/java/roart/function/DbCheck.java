@@ -7,6 +7,8 @@ import roart.common.model.FileLocation;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
+import roart.database.IndexFilesAccess;
+import roart.database.IndexFilesAccessFactory;
 import roart.database.IndexFilesDao;
 import java.util.ArrayList;
 import java.util.Set;
@@ -22,8 +24,17 @@ public class DbCheck extends AbstractFunction {
     @Override
     public List doClient(ServiceParam param) {
         try {
-        List<IndexFiles> indexes = new IndexFilesDao().getAll();
-        List<Files> files = new IndexFilesDao().getAllFiles();
+            List<IndexFiles> indexes;
+            List<Files> files;
+            String db = param.name;
+            if (db == null) {
+                indexes = new IndexFilesDao().getAll();
+                files = new IndexFilesDao().getAllFiles();
+            } else {
+                IndexFilesAccess access = IndexFilesAccessFactory.get(db);
+                indexes = access.getAll();
+                files = access.getAllFiles();
+            }
         List<Files> checklist = new ArrayList<>();
         for (IndexFiles indexFiles : indexes) {
             for (FileLocation filename : indexFiles.getFilelocations()) {

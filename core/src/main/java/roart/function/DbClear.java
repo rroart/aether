@@ -3,6 +3,8 @@ package roart.function;
 import java.util.List;
 
 import roart.common.service.ServiceParam;
+import roart.database.IndexFilesAccess;
+import roart.database.IndexFilesAccessFactory;
 import roart.database.IndexFilesDao;
 
 public class DbClear extends AbstractFunction {
@@ -13,7 +15,13 @@ public class DbClear extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao.clear();
+        String db = param.name;
+        if (db == null) {
+            IndexFilesDao.clear();
+        } else {
+            IndexFilesAccess access = IndexFilesAccessFactory.get(db);
+            access.clear();
+        }
         return null;
     }
 
