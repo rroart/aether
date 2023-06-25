@@ -147,6 +147,7 @@
     <jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
     <jdbc.url><![CDATA[jdbc:h2:${h2dir}]]>
     </jdbc.url>
+    <postgresql.version>42.5.0</postgresql.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>7.6.0</vaadin.version>
     <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>

@@ -48,6 +48,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         this.config = config;
 
         String driver = config != null ? config.getDriver() : null;
+        log.info("Using driver {}", driver);
         
         if ("org.h2.Driver".equals(driver) || driver == null) {
             if (repo != null) {
@@ -55,6 +56,14 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
             }
             if (filesrepo != null) {
                 filesrepo.createH2();
+            }
+        }
+        if ("org.postgresql.Driver".equals(driver)) {
+            if (repo != null) {
+                repo.createPsql();
+            }
+            if (filesrepo != null) {
+                filesrepo.createPsql();
             }
         }
     }
@@ -293,6 +302,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseConstructorResult clear(DatabaseConstructorParam param) throws Exception {
         repo.deleteAll();
+        filesrepo.deleteAll();
         return new DatabaseConstructorResult();
     }
 

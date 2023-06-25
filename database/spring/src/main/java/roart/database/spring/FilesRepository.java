@@ -18,6 +18,17 @@ public interface FilesRepository extends CrudRepository<Files, String>{
             + "")  
     void createH2();
     @Modifying
+    @Query("CREATE TABLE IF NOT EXISTS \"files\" (\n"
+            + "    \"md5\" CHARACTER VARYING(255) NOT NULL,\n"
+            + "    \"version\" INTEGER,\n"
+            + "    \"filename\" CHARACTER VARYING(511) NOT NULL\n"
+            + ");             \n"
+            + "ALTER TABLE ONLY \"files\" DROP CONSTRAINT IF EXISTS \"constraint_3\";            \n"
+            + "ALTER TABLE ONLY \"files\" ADD CONSTRAINT \"constraint_3\" PRIMARY KEY(\n"
+            + "\"filename\");            \n"
+            + "")  
+    void createPsql();
+    @Modifying
     @Query("CREATE CACHED TABLE \"PUBLIC\".\"FILES\"(\n"
             + "    \"MD5\" CHARACTER VARYING(255) NOT NULL,\n"
             + "    \"FILENAME\" CHARACTER VARYING(511) NOT NULL\n"

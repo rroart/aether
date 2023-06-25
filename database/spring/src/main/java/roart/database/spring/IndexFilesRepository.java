@@ -53,4 +53,30 @@ public interface IndexFilesRepository extends CrudRepository<Index, String> {
             + "ALTER TABLE \"PUBLIC\".\"INDEX\" ADD CONSTRAINT IF NOT EXISTS \"PUBLIC\".\"CONSTRAINT_4\" PRIMARY KEY(\"MD5\");        \n"
             + "")
     void createH2();
+
+    @Modifying
+    @Query("CREATE TABLE IF NOT EXISTS \"index\" (\n"
+            + "    \"md5\" CHARACTER VARYING(255) NOT NULL,\n"
+            + "    \"version\" INTEGER,\n"
+            + "    \"checked\" CHARACTER VARYING(255),\n"
+            + "    \"classification\" CHARACTER VARYING(255),\n"
+            + "    \"convertsw\" CHARACTER VARYING(255),\n"
+            + "    \"converttime\" CHARACTER VARYING(255),\n"
+            + "    \"created\" CHARACTER VARYING(255),\n"
+            + "    \"failed\" INTEGER,\n"
+            + "    \"failedreason\" CHARACTER VARYING(255),\n"
+            + "    \"filenames\" CHARACTER VARYING(255),\n"
+            + "    \"indexed\" BOOLEAN,\n"
+            + "    \"isbn\" CHARACTER VARYING(255),\n"
+            + "    \"language\" CHARACTER VARYING(255),\n"
+            + "    \"noindexreason\" CHARACTER VARYING(255),\n"
+            + "    \"timeclass\" CHARACTER VARYING(255),\n"
+            + "    \"timeindex\" CHARACTER VARYING(255),\n"
+            + "    \"timeoutreason\" CHARACTER VARYING(255),\n"
+            + "    \"timestamp\" CHARACTER VARYING(255)\n"
+            + ");\n"
+            + "ALTER TABLE \"index\" DROP CONSTRAINT IF EXISTS \"constraint_4\";        \n"
+            + "ALTER TABLE \"index\" ADD CONSTRAINT \"constraint_4\" PRIMARY KEY(\"md5\");        \n"
+            + "")
+    void createPsql();
 }
