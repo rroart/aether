@@ -35,7 +35,7 @@ public class AnPrIT {
     @Order(0)
     public void my0Test() throws Exception {
         new Util(new Sender()).indexclean();
-        new Util(new Sender()).dbclear();
+        new Util(new Sender()).dbclear(null);
     }
     
     @Test

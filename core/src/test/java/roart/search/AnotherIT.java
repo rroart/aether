@@ -21,13 +21,13 @@ public class AnotherIT {
         LocalFSUtil.rm("/tmp/ae/f1.txt");
         object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
-        object = new Util(new Sender()).dbcheck();
+        object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);
 
         LocalFSUtil.rm("/tmp/ae/d/f3.txt");
         object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
-        object = new Util(new Sender()).dbcheck();
+        object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);
     }
     
@@ -48,13 +48,13 @@ public class AnotherIT {
         HDFSUtil.rm("/htmp/ae/f1.txt");
         object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
-        object = new Util(new Sender()).dbcheck();
+        object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);
 
         HDFSUtil.rm("/htmp/ae/d/f3.txt");
         object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
-        object = new Util(new Sender()).dbcheck();
+        object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);
     }
 }

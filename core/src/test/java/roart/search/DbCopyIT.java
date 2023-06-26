@@ -7,11 +7,11 @@ import roart.common.config.ConfigConstants;
 public class DbCopyIT {
     @Test
     public void myTest() throws Exception {
-        String src = ConfigConstants.DATABASEHIBERNATE;
-        String dst = ConfigConstants.DATABASEHBASE;
+        String dst = ConfigConstants.DATABASESPRING;
+        String src = ConfigConstants.DATABASEHBASE;
         Object object;
         //object = new Util(new Sender()).dbcopy(ConfigConstants.DATABASEHIBERNATE , ConfigConstants.DATABASECASSANDRA);
-        object = new Util(new Sender()).dbdrop(dst);
+        object = new Util(new Sender()).dbclear(dst);
         System.out.println(object);
         object = new Util(new Sender()).dbcopy(src, dst);
         System.out.println(object);
