@@ -155,8 +155,8 @@ def consistentclean(clean):
         pltshow(response)
 
 def dbcheck(db):
-        param = { "function" : "DBCHECK" }
-        response = request.request1(param, "dbcheck", "name" : db)
+        param = { "function" : "DBCHECK", "name" : db }
+        response = request.request1(param, "dbcheck")
         pltshow(response)
 
 def deletepathdb(path):
