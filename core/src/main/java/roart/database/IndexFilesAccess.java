@@ -117,7 +117,9 @@ public abstract class IndexFilesAccess {
     public List<IndexFiles> getAll() throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         param.setConf(MyConfig.conf);
+        long time = System.currentTimeMillis();
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALL);
+        log.info("Load time {} for {}", (System.currentTimeMillis() - time) / 1000, result.getIndexFiles().length);
         return Arrays.asList(result.getIndexFiles());
 
     }
