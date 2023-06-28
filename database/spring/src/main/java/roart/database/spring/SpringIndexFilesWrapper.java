@@ -1,6 +1,7 @@
 package roart.database.spring;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +65,14 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
             }
             if (filesrepo != null) {
                 filesrepo.createPsql();
+            }
+        }
+        if ("com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(driver)) {
+            if (repo != null) {
+                repo.createMssql();
+            }
+            if (filesrepo != null) {
+                filesrepo.createMssql();
             }
         }
     }
@@ -178,14 +187,53 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
             log.error(Constants.EXCEPTION, e);
         }
         Set<IndexFiles> is = param.getIndexFiles();
+        save(is);
+        /*
         for (IndexFiles i : is) {
             save(i);
         }
+        */
         return null;
     }
-    
+
+    private void save(Set<IndexFiles> is) {
+        Set<Index> indexes = new HashSet<>();
+        Set<Files> files = new HashSet<>();
+        for (IndexFiles i : is) {
+            Index in = map(i);
+            if (in != null) {
+                indexes.add(in);
+            }
+            for (FileLocation f : i.getFilelocations()) {                
+                Files fi = map(i, f);
+                files.add(fi);
+            }
+        }
+        repo.saveAll(indexes);
+        filesrepo.saveAll(files);
+    }
+
     public DatabaseResult save(IndexFiles i) {
-        log.info("Md5 {}", i.getMd5());
+        log.debug("Md5 {}", i.getMd5());
+        Index hif = map(i);
+        if ( hif != null ) {
+            repo.save(hif);
+        }
+        for (FileLocation f : i.getFilelocations()) {
+            Files fi = map(i, f);
+            filesrepo.save(fi);
+        }
+        return null;
+    }
+
+    private Files map(IndexFiles i, FileLocation f) {
+        Files fi = new Files();
+        fi.setFilename(f.toString());
+        fi.setMd5(i.getMd5());
+        return fi;
+    }
+
+    private Index map(IndexFiles i) {
         try {
             Index hif = new Index(); //hibernateIndexFiles.ensureExistence(i.getMd5());
             hif.setMd5(i.getMd5());
@@ -209,17 +257,11 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
             hif.setFilenames(i.getFilelocations().stream().map(FileLocation::toString).collect(Collectors.toSet()));
             hif.setCreated(i.getCreated());
             hif.setChecked(i.getChecked());
-            repo.save(hif);
+            return hif;
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
+            return null;
         }
-        for (FileLocation f : i.getFilelocations()) {
-            Files fi = new Files();
-            fi.setFilename(f.toString());
-            fi.setMd5(i.getMd5());
-            filesrepo.save(fi);
-        }
-        return null;
     }
 
     private IndexFiles convert(Index hif) {
