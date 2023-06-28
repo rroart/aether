@@ -17,9 +17,10 @@ public interface FilesRepository extends CrudRepository<Files, String>{
             + "\"FILENAME\");            \n"
             + "")  
     void createH2();
+    
     @Modifying
     @Query("CREATE TABLE IF NOT EXISTS \"files\" (\n"
-            + "    \"md5\" CHARACTER VARYING(255) NOT NULL,\n"
+            + "    \"md5\" CHARACTER VARYING(511) NOT NULL,\n"
             + "    \"version\" INTEGER,\n"
             + "    \"filename\" CHARACTER VARYING(511) NOT NULL\n"
             + ");             \n"
@@ -28,6 +29,26 @@ public interface FilesRepository extends CrudRepository<Files, String>{
             + "\"filename\");            \n"
             + "")  
     void createPsql();
+    
+    @Modifying
+    @Query("IF OBJECT_ID(N'dbo.files', N'U') IS NULL BEGIN"
+            + "    CREATE TABLE \"files\" (\n"
+            + "    \"md5\" CHARACTER VARYING(511) NOT NULL,\n"
+            + "    \"version\" INTEGER,\n"
+            + "    \"filename\" CHARACTER VARYING(511) NOT NULL\n"
+            + ");             \n"
+            + "end;\n"
+            + "ALTER TABLE \"files\" DROP CONSTRAINT IF EXISTS \"constraint_3\";            \n"
+            + "ALTER TABLE \"files\" ADD CONSTRAINT \"constraint_3\" PRIMARY KEY(\"filename\");            \n"
+            + "")  
+    void createMssql();
+    
+    /*
+     *             + "IF OBJECT_ID('constraint_3', 'C') IS NULL BEGIN"
+            + "    ALTER TABLE ONLY \"files\" ADD CONSTRAINT \"constraint_3\" PRIMARY KEY(\"filename\");            \n"
+            + "end;\n"
+
+     */
     @Modifying
     @Query("CREATE CACHED TABLE \"PUBLIC\".\"FILES\"(\n"
             + "    \"MD5\" CHARACTER VARYING(255) NOT NULL,\n"

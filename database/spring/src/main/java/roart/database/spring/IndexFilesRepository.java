@@ -65,7 +65,7 @@ public interface IndexFilesRepository extends CrudRepository<Index, String> {
             + "    \"created\" CHARACTER VARYING(255),\n"
             + "    \"failed\" INTEGER,\n"
             + "    \"failedreason\" CHARACTER VARYING(255),\n"
-            + "    \"filenames\" CHARACTER VARYING(255),\n"
+            + "    \"filenames\" CHARACTER VARYING(511)[],\n"
             + "    \"indexed\" BOOLEAN,\n"
             + "    \"isbn\" CHARACTER VARYING(255),\n"
             + "    \"language\" CHARACTER VARYING(255),\n"
@@ -79,4 +79,38 @@ public interface IndexFilesRepository extends CrudRepository<Index, String> {
             + "ALTER TABLE \"index\" ADD CONSTRAINT \"constraint_4\" PRIMARY KEY(\"md5\");        \n"
             + "")
     void createPsql();
+
+    @Modifying
+    @Query("IF OBJECT_ID(N'dbo.index', N'U') IS NULL BEGIN"
+            + "    CREATE TABLE \"index\" (\n"
+            + "    \"md5\" CHARACTER VARYING(255) NOT NULL,\n"
+            + "    \"version\" INTEGER,\n"
+            + "    \"checked\" CHARACTER VARYING(255),\n"
+            + "    \"classification\" CHARACTER VARYING(255),\n"
+            + "    \"convertsw\" CHARACTER VARYING(255),\n"
+            + "    \"converttime\" CHARACTER VARYING(255),\n"
+            + "    \"created\" CHARACTER VARYING(255),\n"
+            + "    \"failed\" INTEGER,\n"
+            + "    \"failedreason\" CHARACTER VARYING(255),\n"
+            + "    \"filenames\" VARBINARY(MAX),\n"
+            + "    \"indexed\" BIT,\n"
+            + "    \"isbn\" CHARACTER VARYING(255),\n"
+            + "    \"language\" CHARACTER VARYING(255),\n"
+            + "    \"noindexreason\" CHARACTER VARYING(255),\n"
+            + "    \"timeclass\" CHARACTER VARYING(255),\n"
+            + "    \"timeindex\" CHARACTER VARYING(255),\n"
+            + "    \"timeoutreason\" CHARACTER VARYING(255),\n"
+            + "    \"timestamp\" CHARACTER VARYING(255)\n"
+            + ");\n"
+            + "END;\n"
+            + "ALTER TABLE \"index\" DROP CONSTRAINT IF EXISTS \"constraint_4\";        \n"
+            + "ALTER TABLE \"index\" ADD CONSTRAINT \"constraint_4\" PRIMARY KEY(\"md5\");        \n"
+            + "")
+    void createMssql();
+    /*
+     *             + "IF OBJECT_ID(N'dbo.constraint_4', N'C') IS NULL BEGIN"
+            + "    ALTER TABLE \"index\" ADD CONSTRAINT \"constraint_4\" PRIMARY KEY(\"md5\");        \n"
+            + "end;\n"
+
+     */
 }

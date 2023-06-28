@@ -280,6 +280,9 @@ public class IndexFiles {
 	    if (filelocations.size() > maxfilelocations) {
 		maxfilelocations = filelocations.size();
 	    }
+            if (filelocation.toString().length() > 500) {
+                log.error("filename {}", filelocation.toString().length());                
+            }
 	    //IndexFilesDao.ensureExistence(filelocation);
 	}
 
@@ -306,6 +309,10 @@ public class IndexFiles {
 	public void setTimeoutreason(String timeoutreason) {
 	    changed |= true;
 	    this.timeoutreason = timeoutreason;
+            if (timeoutreason != null && timeoutreason.length() > 250) {
+                log.error("timeoutreason {}", timeoutreason.length());
+                timeoutreason = timeoutreason.substring(0, 250);
+            }
 	}
 
         public String getNoindexreason() {
@@ -315,6 +322,10 @@ public class IndexFiles {
 	public void setNoindexreason(String noindexreason) {
 	    changed |= true;
 	    this.noindexreason = noindexreason;
+            if (noindexreason != null && noindexreason.length() > 250) {
+                log.error("noindexreason {}", noindexreason.length());
+                noindexreason = noindexreason.substring(0, 250);
+           }
 	}
 
         public String getFailedreason() {
@@ -324,6 +335,10 @@ public class IndexFiles {
 	public void setFailedreason(String failedreason) {
 	    changed |= true;
 	    this.failedreason = failedreason;
+	    if (failedreason != null && failedreason.length() > 250) {
+	        log.error("failedreason {}", failedreason.length());
+                failedreason = failedreason.substring(0, 250);
+	    }
 	}
 
 	public void setLanguage(String language) {
