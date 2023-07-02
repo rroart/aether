@@ -323,7 +323,7 @@ public class CassandraIndexFiles {
         String md5 = row.getString(md5q);
         IndexFiles ifile = new IndexFiles(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
-        ifile.setIndexed(new Boolean(row.getString(indexedq)));
+        ifile.setIndexed(row.getBoolean(indexedq));
         ifile.setTimeindex(row.getString(timeindexq));
         ifile.setTimestamp(row.getString(timestampq));
         ifile.setTimeclass(row.getString(timeclassq));
