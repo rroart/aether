@@ -21,7 +21,7 @@
     <module>filesystem</module>
     <module>machinelearning</module>
     <module>searchengine</module>
-    <module>web</module>
+    <!--module>web</module-->
     <module>webr</module>
     <module>servicemanager</module>
     <module>testdata</module>
