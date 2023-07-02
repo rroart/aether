@@ -226,56 +226,11 @@ public class CassandraIndexFiles {
     }
     public void put(IndexFiles ifile) throws Exception {
         //InsertInto insert = insertInto(TABLE_INDEXFILES_NAME);
-        UpdateStart update = update(TABLE_INDEXFILES_NAME);
-        if (ifile.getIndexed() != null) {
-            update.setColumn(indexedq, literal(ifile.getIndexed()));
-        }
-        if (ifile.getTimestamp() != null) {
-            update.setColumn(timestampq, literal(ifile.getTimestamp()));
-        }
-        if (ifile.getTimeindex() != null) {
-            update.setColumn(timeindexq, literal(ifile.getTimeindex()));
-        }
-        if (ifile.getTimeclass() != null) {
-            update.setColumn(timeclassq, literal(ifile.getTimeclass()));
-        }
-        if (ifile.getClassification() != null) {
-            update.setColumn(classificationq, literal(ifile.getClassification()));
-        }
-        if (ifile.getConvertsw() != null) {
-            update.setColumn(convertswq, literal(ifile.getConvertsw()));
-        }
-        if (ifile.getConverttime() != null) {
-            update.setColumn(converttimeq, literal(ifile.getConverttime()));
-        }
-        if (ifile.getFailed() != null) {
-            update.setColumn(failedq, literal(ifile.getFailed()));
-        }
-        if (ifile.getFailedreason() != null) {
-            update.setColumn(failedreasonq, literal(ifile.getFailedreason()));
-        }
-        if (ifile.getTimeoutreason() != null) {
-            update.setColumn(timeoutreasonq, literal(ifile.getTimeoutreason()));
-        }
-        if (ifile.getNoindexreason() != null) {
-            update.setColumn(noindexreasonq, literal(ifile.getNoindexreason()));
-        }
-        if (ifile.getLanguage() != null) {
-            update.setColumn(languageq, literal(ifile.getLanguage()));
-        }
-        if (ifile.getIsbn() != null) {
-            update.setColumn(isbnq, literal(ifile.getIsbn()));
-        }
-        if (ifile.getCreated() != null) {
-            update.setColumn(createdq, literal(ifile.getCreated()));
-        }
-        if (ifile.getChecked() != null) {
-            update.setColumn(checkedq, literal(ifile.getChecked()));
-        }
-        UpdateWithAssignments u = null;
+        UpdateStart updateStart = update(TABLE_INDEXFILES_NAME);
+        UpdateWithAssignments updatewa = null;
         if (ifile.getFilelocations() != null) {
             //log.info("fls " + ifile.getFilelocations());
-            u = update.setColumn(filelocationsq, literal(ifile.getFilelocations(), codecRegistry));
+            updatewa = updateStart.setColumn(filelocationsq, literal(ifile.getFilelocations(), codecRegistry));
             //u = update.appendSetElement(filelocationq, literal(ifile.getFilelocations(), codecRegistry));
             /*
             for (FileLocation filelocation : ifile.getFilelocations()) {
@@ -283,11 +238,56 @@ public class CassandraIndexFiles {
             }
             */
         }
-        Update u2 = u
+        if (ifile.getIndexed() != null) {
+            updatewa = updatewa.setColumn(indexedq, literal(ifile.getIndexed()));
+        }
+        if (ifile.getTimestamp() != null) {
+            updatewa = updatewa.setColumn(timestampq, literal(ifile.getTimestamp()));
+        }
+        if (ifile.getTimeindex() != null) {
+            updatewa = updatewa.setColumn(timeindexq, literal(ifile.getTimeindex()));
+        }
+        if (ifile.getTimeclass() != null) {
+            updatewa = updatewa.setColumn(timeclassq, literal(ifile.getTimeclass()));
+        }
+        if (ifile.getClassification() != null) {
+            updatewa = updatewa.setColumn(classificationq, literal(ifile.getClassification()));
+        }
+        if (ifile.getConvertsw() != null) {
+            updatewa = updatewa.setColumn(convertswq, literal(ifile.getConvertsw()));
+        }
+        if (ifile.getConverttime() != null) {
+            updatewa = updatewa.setColumn(converttimeq, literal(ifile.getConverttime()));
+        }
+        if (ifile.getFailed() != null) {
+            updatewa = updatewa.setColumn(failedq, literal(ifile.getFailed()));
+        }
+        if (ifile.getFailedreason() != null) {
+            updatewa = updatewa.setColumn(failedreasonq, literal(ifile.getFailedreason()));
+        }
+        if (ifile.getTimeoutreason() != null) {
+            updatewa = updatewa.setColumn(timeoutreasonq, literal(ifile.getTimeoutreason()));
+        }
+        if (ifile.getNoindexreason() != null) {
+            updatewa = updatewa.setColumn(noindexreasonq, literal(ifile.getNoindexreason()));
+        }
+        if (ifile.getLanguage() != null) {
+            updatewa = updatewa.setColumn(languageq, literal(ifile.getLanguage()));
+        }
+        if (ifile.getIsbn() != null) {
+            updatewa = updatewa.setColumn(isbnq, literal(ifile.getIsbn()));
+        }
+        if (ifile.getCreated() != null) {
+            updatewa = updatewa.setColumn(createdq, literal(ifile.getCreated()));
+        }
+        if (ifile.getChecked() != null) {
+            updatewa = updatewa.setColumn(checkedq, literal(ifile.getChecked()));
+        }
+        Update update = updatewa
                 .whereColumn(md5q)
                 .isEqualTo(literal(ifile.getMd5()));
         //log.info("hbase " + ifile.getMd5());
-        session.execute(u2.build());
+        session.execute(update.build());
         put(ifile.getMd5(), ifile.getFilelocations());
 
         // or if still to slow, simply get current (old) indexfiles
