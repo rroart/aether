@@ -13,6 +13,20 @@
   <build>
     <plugins>
       <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<version>${mavencompiler.version}</version>
+	<configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.datastax.oss</groupId>
+              <artifactId>java-driver-mapper-processor</artifactId>
+	      <version>${cassandra.version}</version>
+            </path>
+          </annotationProcessorPaths>
+	</configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.5</version>
@@ -79,7 +93,7 @@
     <dependency>
       <groupId>org.cassandraunit</groupId>
       <artifactId>cassandra-unit</artifactId>
-      <version>3.5.0.1</version>
+      <version>4.3.1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -178,11 +192,26 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.datastax.cassandra</groupId>
-      <artifactId>cassandra-driver-core</artifactId>
+      <groupId>com.datastax.oss</groupId>
+      <artifactId>java-driver-core</artifactId>
       <version>${cassandra.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.datastax.oss</groupId>
+      <artifactId>java-driver-query-builder</artifactId>
+      <version>${cassandra.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.datastax.oss</groupId>
+      <artifactId>java-driver-mapper-runtime</artifactId>
+      <version>${cassandra.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.datastax.oss</groupId>
+      <artifactId>java-driver-mapper-processor</artifactId>
+      <version>${cassandra.version}</version>
+    </dependency>
+    <!--dependency>
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-mapping</artifactId>
       <version>${cassandra.version}</version>
@@ -191,12 +220,12 @@
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-extras</artifactId>
       <version>${cassandra.version}</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
       <version>3.2.6</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>

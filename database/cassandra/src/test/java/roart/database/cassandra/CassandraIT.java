@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
@@ -23,7 +23,7 @@ import roart.database.cassandra.CassandraIndexFiles;
 
 public class CassandraIT {
 
-    Session session;
+    CqlSession session;
     CassandraIndexFiles indexfiles;
 
     @BeforeEach

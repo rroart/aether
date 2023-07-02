@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -19,123 +21,46 @@ import roart.common.util.FsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Builder;
-import com.datastax.driver.core.CodecRegistry;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.TypeCodec;
-import com.datastax.driver.core.UDTValue;
-import com.datastax.driver.core.UserType;
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
+//import com.datastax.oss.driver.api.core.cql.Cluster;
+//import com.datastax.driver.core.Cluster.Builder;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
+import com.datastax.oss.driver.api.core.type.codec.registry.MutableCodecRegistry;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.core.cql.Statement;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
+import com.datastax.oss.driver.api.core.data.UdtValue;
+import com.datastax.oss.driver.api.core.type.DataType;
+import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.core.type.UserDefinedType;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
+import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
+import com.datastax.oss.driver.api.querybuilder.truncate.Truncate;
+import com.datastax.oss.driver.api.querybuilder.select.Select;
+import com.datastax.oss.driver.api.querybuilder.update.Update;
+import com.datastax.oss.driver.api.querybuilder.update.UpdateWithAssignments;
+import com.datastax.oss.driver.internal.core.type.codec.ParseUtils;
+import com.datastax.oss.driver.api.querybuilder.update.UpdateStart;
+import com.datastax.oss.driver.api.querybuilder.delete.Delete;
+import com.datastax.oss.driver.api.querybuilder.insert.InsertInto;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspaceStart;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTableStart;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateType;
+
+import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.*;
 
 public class CassandraIndexFiles {
 
     private Logger log = LoggerFactory.getLogger(CassandraIndexFiles.class);
 
-    private CassandraConfig config;
-
-    private static final String TABLE_FILES_NAME = "files";
-    private static final String TABLE_INDEXFILES_NAME = "indexfiles";
-    private Session session;
-
-    public Session getSession() {
-        return session;
-    }
-
-    /*
-    public void setSession(Session session) {
-        this.session = session;
-    }
-     */
-
-    public void createKeyspace(
-            String keyspaceName, String replicationStrategy, int replicationFactor) {
-        StringBuilder sb = 
-                new StringBuilder("CREATE KEYSPACE IF NOT EXISTS ")
-                .append(keyspaceName).append(" WITH replication = {")
-                .append("'class':'").append(replicationStrategy)
-                .append("','replication_factor':").append(replicationFactor)
-                .append("};");
-
-        String query = sb.toString();
-        session.execute(query);
-        session.execute("use " + keyspaceName + ";");
-    }
-
-    public void createType() {
-        try {
-            StringBuilder sb = 
-                    new StringBuilder("CREATE TYPE filelocation ( ")
-                    .append("node text,")
-                    .append("filename text);");
-
-            String query = sb.toString();
-            session.execute(query);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e);
-        }
-        CodecRegistry codecRegistry = session.getCluster().getConfiguration().getCodecRegistry();             
-        UserType addressType = session.getCluster().getMetadata().getKeyspace("library").getUserType("filelocation");
-        TypeCodec<UDTValue> addressTypeCodec = codecRegistry.codecFor(addressType);
-        FilelocationCodec myJsonCodec = new FilelocationCodec(addressTypeCodec, FileLocation.class);
-        codecRegistry.register(myJsonCodec);
-        /*
-              JsonCodec<FileLocation> myJsonCodec = new JsonCodec<>(FileLocation.class);
-              CodecRegistry myCodecRegistry = session.getCluster().getConfiguration().getCodecRegistry();
-              myCodecRegistry.register(myJsonCodec);
-         */
-
-
-    }
-
-    public void createTable() {
-        StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-                .append(TABLE_FILES_NAME).append("(")
-                .append("filename text PRIMARY KEY, ")
-                .append("md5 text);");
-
-        String query = sb.toString();
-        System.out.println("q1");
-        try {
-            session.execute(query);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("q2");
-        StringBuilder sb2 = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-                .append(TABLE_INDEXFILES_NAME).append("(")
-                .append("md5 text PRIMARY KEY, ")
-                .append("indexed text, ")
-                .append("timestamp text, ")
-                .append("timeindex text, ")
-                .append("timeclass text, ")
-                .append("classification text, ")
-                .append("convertsw text, ")
-                .append("converttime text, ")
-                .append("failed int, ")
-                .append("failedreason text, ")
-                .append("timeoutreason text, ")
-                .append("noindexreason text, ")
-                .append("language text, ")
-                .append("isbn text, ")
-                .append("created text, ")
-                .append("checked text, ")
-                .append("node text, ")
-                .append("filename text, ")
-                .append("filelocation set<frozen<filelocation>>);");
-
-        String query2 = sb2.toString();
-        System.out.println("q3");
-        try {
-            session.execute(query2);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("q4");
-    }
     // column families
     private final String indexcf = "if";
     private final String flcf = "fl";
@@ -161,8 +86,23 @@ public class CassandraIndexFiles {
     private final String nodeq = "node";
     private final String filenameq = "filename";
     private final String filelocationq = "filelocation";
+    private final String filelocationsq = "filelocations";
 
-    public CassandraIndexFiles(Session session, String nodename, NodeConfig nodeConf) {
+    //private static final CqlIdentifier KEYSPACE = CqlIdentifier.fromInternal("aether");
+    private static final CqlIdentifier TABLE_FILES_NAME = CqlIdentifier.fromInternal("files");
+    private static final CqlIdentifier TABLE_INDEXFILES_NAME = CqlIdentifier.fromInternal("indexfiles");
+
+    private CassandraConfig config;
+
+    private CqlSession session;
+
+    private FilesDao filesDao;
+    private IndexDao indexDao;
+    private CqlIdentifier keyspace;
+    private TypeCodec<UdtValue> filelocationTypeCodec;
+    private MutableCodecRegistry codecRegistry;
+    
+    public CassandraIndexFiles(CqlSession session, String nodename, NodeConfig nodeConf) {
         String port = "9042";
         String host = "localhost";
         if (session == null) {
@@ -173,120 +113,185 @@ public class CassandraIndexFiles {
         if (session != null) {
             this.session = session;
         } else {
-            Cluster cluster;
-
-
-            Builder b = Cluster.builder().addContactPoint(host);
+            int aPort = 9042;
             if (port != null) {
-                b.withPort(Integer.valueOf(port));
+                aPort = Integer.valueOf(port);
             }
-            log.info("Cluster build");
-            cluster = b.build();
-            log.info("Cluster built");
-
-            this.session = cluster.connect();
-            log.info("Cluster connected");
-            log.info("Session {}", this.session.getCluster().getClusterName());
+            session = CqlSession
+                    .builder()
+                    .addContactPoint(new InetSocketAddress(host, aPort))
+                    .withLocalDatacenter("datacenter1")
+                    .build();
+            this.session = session;
         }
         config.setSession(this.session);
         config.setNodename(nodename);
-        System.out.println("ct1");
+        this.keyspace = CqlIdentifier.fromInternal(nodeConf.getCassandraKeyspace());
         try {
-            createKeyspace(nodeConf.getCassandraKeyspace(), "SimpleStrategy", 1);
-            createType();
-            createTable();
+            createAKeyspace(keyspace, 1);
+            DataType filelocation = createAType();
+            createTables(filelocation);
+            IndexMapper indexMapper = new IndexMapperBuilder(session).build();
+            FilesMapper filesMapper = new FilesMapperBuilder(session).build();
+            filesDao = filesMapper.filesDao(keyspace);
+            indexDao = indexMapper.indexDao(keyspace);
         } catch (Exception e) {
-            e.printStackTrace();
-            // check if exists
+            log.error(Constants.EXCEPTION, e);
         }
-        System.out.println("ct2");
     }
 
+    public CqlSession getSession() {
+        return session;
+    }
+
+    public FilesDao getFilesDao() {
+        return filesDao;
+    }
+
+    public void setFilesDao(FilesDao filesDao) {
+        this.filesDao = filesDao;
+    }
+
+    public IndexDao getIndexDao() {
+        return indexDao;
+    }
+
+    public void setIndexDao(IndexDao indexDao) {
+        this.indexDao = indexDao;
+    }
+
+    public void createAKeyspace(CqlIdentifier keyspaceName, int replicationFactor) {
+        CreateKeyspace create = createKeyspace(keyspaceName)
+                .ifNotExists()
+                .withSimpleStrategy(replicationFactor);
+
+        session.execute(create.build());
+        session.execute("use " + keyspaceName + ";");
+    }
+
+    public DataType createAType() {
+        CreateType create = createType(filelocationq)
+                .ifNotExists()
+                .withField(nodeq, DataTypes.TEXT)
+                .withField(filenameq, DataTypes.TEXT);
+        session.execute(create.build());
+        //if (true) return null;
+        codecRegistry = (MutableCodecRegistry) session.getContext().getCodecRegistry();             
+        Optional<UserDefinedType> filelocationType = session.getMetadata().getKeyspace(keyspace).get().getUserDefinedType(filelocationq);
+        this.filelocationTypeCodec = codecRegistry.codecFor(filelocationType.get());
+        FilelocationCodec myJsonCodec = new FilelocationCodec(filelocationTypeCodec, FileLocation.class);
+
+        codecRegistry.register(myJsonCodec);
+        /*
+              JsonCodec<FileLocation> myJsonCodec = new JsonCodec<>(FileLocation.class);
+              CodecRegistry myCodecRegistry = session.getCluster().getConfiguration().getCodecRegistry();
+              myCodecRegistry.register(myJsonCodec);
+         */
+
+        return null;
+    }
+
+    public void createTables(DataType filelocation) {
+        CreateTable create = createTable(TABLE_FILES_NAME)
+                .ifNotExists()
+                .withPartitionKey(filenameq, DataTypes.TEXT)
+                .withColumn(md5q, DataTypes.TEXT);
+        try {
+            session.execute(create.build());
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        CreateTable create2 = createTable(TABLE_INDEXFILES_NAME)
+                .ifNotExists()
+                .withPartitionKey(md5q, DataTypes.TEXT)
+                .withColumn(indexedq, DataTypes.BOOLEAN)
+                .withColumn(timestampq, DataTypes.TEXT)
+                .withColumn(timeindexq, DataTypes.TEXT)
+                .withColumn(timeclassq, DataTypes.TEXT)
+                .withColumn(classificationq, DataTypes.TEXT)
+                .withColumn(convertswq, DataTypes.TEXT)
+                .withColumn(converttimeq, DataTypes.TEXT)
+	        .withColumn(failedq, DataTypes.INT)
+                .withColumn(failedreasonq, DataTypes.TEXT)
+                .withColumn(timeoutreasonq, DataTypes.TEXT)
+                .withColumn(noindexreasonq, DataTypes.TEXT)
+                .withColumn(languageq, DataTypes.TEXT)
+                .withColumn(isbnq, DataTypes.TEXT)
+                .withColumn(createdq, DataTypes.TEXT)
+                .withColumn(checkedq, DataTypes.TEXT)
+                .withColumn(nodeq, DataTypes.TEXT)
+                .withColumn(filelocationsq, DataTypes.setOf(udt(filelocationq), true));  
+
+        session.execute(create2.build());
+    }
     public void put(IndexFiles ifile) throws Exception {
-        StringBuilder sb = new StringBuilder("BEGIN BATCH ")
-                .append("UPDATE ").append(TABLE_INDEXFILES_NAME).append(" set ");
+        //InsertInto insert = insertInto(TABLE_INDEXFILES_NAME);
+        UpdateStart update = update(TABLE_INDEXFILES_NAME);
         if (ifile.getIndexed() != null) {
-            sb.append(indexedq + " = '" + ifile.getIndexed() + "', ");
+            update.setColumn(indexedq, literal(ifile.getIndexed()));
         }
         if (ifile.getTimestamp() != null) {
-            sb.append(timestampq + " = '" + ifile.getTimestamp() + "', ");
+            update.setColumn(timestampq, literal(ifile.getTimestamp()));
         }
         if (ifile.getTimeindex() != null) {
-            sb.append(timeindexq + " = '" + ifile.getTimeindex() + "', ");
+            update.setColumn(timeindexq, literal(ifile.getTimeindex()));
         }
         if (ifile.getTimeclass() != null) {
-            sb.append(timeclassq + " = '" + ifile.getTimeclass() + "', ");
+            update.setColumn(timeclassq, literal(ifile.getTimeclass()));
         }
         if (ifile.getClassification() != null) {
-            sb.append(classificationq + " = '" + ifile.getClassification() + "', ");
+            update.setColumn(classificationq, literal(ifile.getClassification()));
         }
         if (ifile.getConvertsw() != null) {
-            sb.append(convertswq + " = '" + ifile.getConvertsw() + "', ");
+            update.setColumn(convertswq, literal(ifile.getConvertsw()));
         }
         if (ifile.getConverttime() != null) {
-            sb.append(converttimeq + " = '" + ifile.getConverttime() + "', ");
+            update.setColumn(converttimeq, literal(ifile.getConverttime()));
         }
         if (ifile.getFailed() != null) {
-            sb.append(failedq + " = " +"" + ifile.getFailed() + ", ");
+            update.setColumn(failedq, literal(ifile.getFailed()));
         }
         if (ifile.getFailedreason() != null) {
-            sb.append(failedreasonq + " = '" +ifile.getFailedreason() + "', ");
+            update.setColumn(failedreasonq, literal(ifile.getFailedreason()));
         }
         if (ifile.getTimeoutreason() != null) {
-            sb.append(timeoutreasonq + " = '" +ifile.getTimeoutreason() + "', ");
+            update.setColumn(timeoutreasonq, literal(ifile.getTimeoutreason()));
         }
         if (ifile.getNoindexreason() != null) {
-            sb.append(noindexreasonq + " = '" +ifile.getNoindexreason() + "', ");
+            update.setColumn(noindexreasonq, literal(ifile.getNoindexreason()));
         }
         if (ifile.getLanguage() != null) {
-            sb.append(languageq + " = '" +ifile.getLanguage() + "', ");
+            update.setColumn(languageq, literal(ifile.getLanguage()));
         }
         if (ifile.getIsbn() != null) {
-            sb.append(isbnq + " = '" +ifile.getIsbn() + "', ");
+            update.setColumn(isbnq, literal(ifile.getIsbn()));
         }
         if (ifile.getCreated() != null) {
-            sb.append(createdq + " = '" +ifile.getCreated() + "', ");
+            update.setColumn(createdq, literal(ifile.getCreated()));
         }
         if (ifile.getChecked() != null) {
-            sb.append(checkedq + " = '" +ifile.getChecked() + "', ");
+            update.setColumn(checkedq, literal(ifile.getChecked()));
         }
+        UpdateWithAssignments u = null;
         if (ifile.getFilelocations() != null) {
-            sb.append(filelocationq + " = ? ");	        
-        }
-        sb.append("where " + md5q + " = '" + ifile.getMd5() + "'; apply batch;");
-        //log.info("hbase " + ifile.getMd5());
-        int i = -1;
-        /*
-            for (FileLocation file : ifile.getFilelocations()) {
-	        StringBuilder sb2 = new StringBuilder("BEGIN BATCH ")
-	                .append("UPDATE ").append(TABLE_FILES_NAME).append(" set ");
-	        sb2.append(md5q + " = " + ifile.getMd5() + ", ");
-	            if (file.getFilename() != null) {
-	                sb2.append(md5q + " = " + file.getFilename() + ", ");
-	            }
-	            session.execute(sb2.toString());
-		i++;
+            //log.info("fls " + ifile.getFilelocations());
+            u = update.setColumn(filelocationsq, literal(ifile.getFilelocations(), codecRegistry));
+            //u = update.appendSetElement(filelocationq, literal(ifile.getFilelocations(), codecRegistry));
+            /*
+            for (FileLocation filelocation : ifile.getFilelocations()) {
+                u = update.appendSetElement(filelocationq, literal(filelocation, codecRegistry));
             }
-         */
-        String str = sb.toString();
-        System.out.println("put1" + sb.toString());
-        PreparedStatement prepared = session.prepare(str);
-        BoundStatement bound = prepared.bind(ifile.getFilelocations());
-        session.execute(bound);
-        System.out.println("put2");
-        /*
-	    // now, delete the rest (or we would get some old historic content)
-	    for (; i < ifile.getMaxfilelocations(); i++) {
-	    	StringBuilder sb3 = new StringBuilder("BEGIN BATCH ")
-	    	        .append("DELETE FROM ").append(TABLE_INDEXFILES_NAME).append(" where ")
-	    	        .append(md5q + " = " + ifile.getMd5());
-	    	session.execute(sb3.toString());
-	    }
-	           System.out.println("put3");
-         */
+            */
+        }
+        Update u2 = u
+                .whereColumn(md5q)
+                .isEqualTo(literal(ifile.getMd5()));
+        //log.info("hbase " + ifile.getMd5());
+        session.execute(u2.build());
         put(ifile.getMd5(), ifile.getFilelocations());
 
         // or if still to slow, simply get current (old) indexfiles
+        /*
         Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
         curfls.removeAll(ifile.getFilelocations());
 
@@ -294,28 +299,23 @@ public class CassandraIndexFiles {
         for (FileLocation fl : curfls) {
             String name = fl.toString();
             log.info("Cassandra delete {}", name);
-            StringBuilder sb3 = new StringBuilder("BEGIN BATCH ")
-                    .append("DELETE FROM ").append(TABLE_FILES_NAME).append(" where ")
-                    .append(filenameq + " = '" + name + "';apply batch;");
-            System.out.println("del " + sb3.toString());
-            session.execute(sb3.toString());
+            Delete delete = deleteFrom(TABLE_FILES_NAME)
+                    .whereColumn(filenameq)
+                    .isEqualTo(literal(name));
+            session.execute(delete.build());
         }
-        System.out.println("put4");
-
+        */
     }
 
     public void put(String md5, Set<FileLocation> files) throws Exception {
         //HTable /*Interface*/ filesTable = new HTable(conf, "index");
         for (FileLocation file : files) {
-            System.out.println("files put " + md5 + " " + file);
             String filename = getFile(file);
-            StringBuilder sb = new StringBuilder("BEGIN BATCH ")
-                    .append("UPDATE ").append(TABLE_FILES_NAME).append(" set ");
-            sb.append(md5q + " = '" + md5 + "' ");
-            sb.append("where " + filenameq + " = '" + filename + "'; apply batch;");
-            String str = sb.toString();
-            System.out.println("put1" + sb.toString());
-            session.execute(str);
+            Update update = update(TABLE_FILES_NAME)
+             .setColumn(md5q, literal(md5))
+             .whereColumn(filenameq)
+             .isEqualTo(literal(filename));
+            session.execute(update.build());
         }
     }
 
@@ -338,7 +338,7 @@ public class CassandraIndexFiles {
         ifile.setIsbn(row.getString(isbnq));
         ifile.setCreated(row.getString(createdq));
         ifile.setChecked(row.getString(checkedq));
-        ifile.setFilelocations(row.getSet(filelocationq, FileLocation.class));
+        ifile.setFilelocations(row.getSet(filelocationsq, FileLocation.class));
         ifile.setUnchanged();
         return ifile;
     }
@@ -364,10 +364,11 @@ public class CassandraIndexFiles {
     }
 
     public IndexFiles get(String md5) {
-        StringBuilder sb3 = new StringBuilder("SELECT * FROM ").append(TABLE_INDEXFILES_NAME).append(" where ")
-                .append(md5q + " = '" + md5).append("';");
-        System.out.println(sb3.toString());
-        ResultSet resultSet = session.execute(sb3.toString());
+        Select select = selectFrom(TABLE_INDEXFILES_NAME)
+                .all()
+                .whereColumn(md5q)
+                .isEqualTo(literal(md5));
+        ResultSet resultSet = session.execute(select.build());
         for (Row row : resultSet) {
             return get(row);
         }
@@ -384,10 +385,11 @@ public class CassandraIndexFiles {
 
     public String getMd5ByFilelocation(FileLocation fl) {
         String name = getFile(fl);
-        Set<FileLocation> flset = new HashSet<>();
-        StringBuilder sb3 = new StringBuilder("SELECT * FROM ").append(TABLE_FILES_NAME).append(" where ")
-                .append(filenameq + " = '" + name + "';");
-        ResultSet resultSet = session.execute(sb3.toString());
+        Select select = selectFrom(TABLE_FILES_NAME)
+                .column(md5q)
+                .whereColumn(filenameq)
+                .isEqualTo(literal(name));
+        ResultSet resultSet = session.execute(select.build());
         for (Row row : resultSet) {
             return row.getString(md5q);
         }
@@ -396,14 +398,13 @@ public class CassandraIndexFiles {
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
         Set<FileLocation> flset = new HashSet<>();
-        StringBuilder sb3 = new StringBuilder("")
-                .append("SELECT * FROM ").append(TABLE_FILES_NAME).append(" where ")
-                .append(md5q + " = '" + md5 + "' ALLOW FILTERING;");
-        System.out.println("sb3 " + sb3.toString());
-        ResultSet resultSet = session.execute(sb3.toString());
-        //System.out.println("h0 " + resultSet.all().size());
+        Select select = selectFrom(TABLE_FILES_NAME)
+                .column(filenameq)
+                .whereColumn(md5q)
+                .isEqualTo(literal(md5))
+                .allowFiltering();
+        ResultSet resultSet = session.execute(select.build());
         for (Row row : resultSet) {
-            System.out.println("h1 " + row);
             FileLocation fl = getFileLocation(row.getString(filenameq));
             if (fl != null) {
                 flset.add(fl);
@@ -413,10 +414,8 @@ public class CassandraIndexFiles {
     }
 
     public List<IndexFiles> getAll() throws Exception {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ")
-                .append(TABLE_INDEXFILES_NAME).append(";");
-        String query = sb.toString();
-        ResultSet resultSet = session.execute(query);	
+        Select select = selectFrom(TABLE_INDEXFILES_NAME).all();
+        ResultSet resultSet = session.execute(select.build());	
         List<IndexFiles> retlist = new ArrayList<>();
         for (Row row : resultSet) {
             retlist.add(get(row));
@@ -425,10 +424,8 @@ public class CassandraIndexFiles {
     }
 
     public List<Files> getAllFiles() throws Exception {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ")
-                .append(TABLE_FILES_NAME).append(";");
-        String query = sb.toString();
-        ResultSet resultSet = session.execute(query);   
+        Select select = selectFrom(TABLE_FILES_NAME).all();
+        ResultSet resultSet = session.execute(select.build());   
         List<Files> retlist = new ArrayList<>();
         for (Row row : resultSet) {
             retlist.add(getFiles(row));
@@ -491,8 +488,9 @@ public class CassandraIndexFiles {
 
     public Set<String> getAllMd5() throws Exception {
         Set<String> md5s = new HashSet<String>();
-        StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_INDEXFILES_NAME);
-        ResultSet resultSet = session.execute(sb.toString());
+        Select select = selectFrom(TABLE_INDEXFILES_NAME)
+                .column(md5q);
+        ResultSet resultSet = session.execute(select.build());
         for (Row row : resultSet.all()) {
             String md5 = row.getString(md5q);
             md5s.add(md5);
@@ -501,8 +499,9 @@ public class CassandraIndexFiles {
     }
 
     public Set<String> getLanguages() throws Exception {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_INDEXFILES_NAME);
-        ResultSet resultSet = session.execute(sb.toString());
+        Select select = selectFrom(TABLE_INDEXFILES_NAME)
+                .column(languageq);
+        ResultSet resultSet = session.execute(select.build());
         Set<String> languages = new HashSet<>();
         for (Row row : resultSet.all()) {
             String lang = row.getString("language");
@@ -512,13 +511,12 @@ public class CassandraIndexFiles {
     }
 
     public void delete(IndexFiles index) throws Exception {
-        StringBuilder sb = new StringBuilder("BEGIN BATCH ")
-                .append("DELETE FROM ").append(TABLE_INDEXFILES_NAME).append(" where ")
-                .append(md5q + " = '" + index.getMd5()).append("'; apply batch;");
-        session.execute(sb.toString());
+        Delete delete = deleteFrom(TABLE_INDEXFILES_NAME)
+                .whereColumn(md5q)
+                .isEqualTo(literal(index.getMd5()));
+         session.execute(delete.build());
 
         Set<FileLocation> curfls = getFilelocationsByMd5(index.getMd5());
-        System.out.println("curfls " + curfls.size());
         //curfls.removeAll(index.getFilelocations());
         //System.out.println("curfls " + curfls.size());
 
@@ -526,46 +524,42 @@ public class CassandraIndexFiles {
         for (FileLocation fl : curfls) {
             String name = fl.toString();
             log.info("Cassandra delete {}", name);
-            StringBuilder sb3 = new StringBuilder("BEGIN BATCH ")
-                    .append("DELETE FROM ").append(TABLE_FILES_NAME).append(" where ")
-                    .append(filenameq + " = '" + name + "'; apply batch;");
-            session.execute(sb3.toString());
+            Delete delete2 = deleteFrom(TABLE_FILES_NAME)
+                    .whereColumn(filenameq)
+                    .isEqualTo(literal(name));
+            session.execute(delete2.build());
         }
     }
 
     public void delete(Files filename) throws Exception {
         deleteFile(filename.getFilename());
     }
-    
+
     public void deleteFile(String filename) throws Exception {
         log.info("Cassandra delete {}", filename);
-        StringBuilder sb3 = new StringBuilder("BEGIN BATCH ")
-                .append("DELETE FROM ").append(TABLE_FILES_NAME).append(" where ")
-                .append(filenameq + " = '" + filename + "'; apply batch;");
-        session.execute(sb3.toString());
+        Delete delete = deleteFrom(TABLE_FILES_NAME)
+                .whereColumn(filenameq)
+                .isEqualTo(literal(filename));
+        session.execute(delete.build());
     }
 
     public void destroy() throws Exception {
         config.getSession().close();
     }
 
-    public void clear(String tableName) {
-    StringBuilder sb = 
-            new StringBuilder("TRUNCATE ");
-    sb.append(tableName);
-    sb.append(";");
-    String query = sb.toString();
-    session.execute(query);
+    public void clear(CqlIdentifier tableFilesName) {
+        Truncate truncate = truncate(keyspace, tableFilesName);
+        session.execute(truncate.build());
 
     }
 
-    public void drop(String keyspaceName) {
-    StringBuilder sb = 
-            new StringBuilder("DROP KEYSPACE IF EXISTS ");
-    sb.append(keyspaceName);
-    sb.append(";");
-    String query = sb.toString();
-    session.execute(query);
+    public void drop(CqlIdentifier keyspaceName) {
+        StringBuilder sb = 
+                new StringBuilder("DROP KEYSPACE IF EXISTS ");
+        sb.append(keyspaceName);
+        sb.append(";");
+        String query = sb.toString();
+        session.execute(query);
 
     }
 
@@ -575,7 +569,7 @@ public class CassandraIndexFiles {
     }
 
     public void drop(DatabaseConstructorParam param) {
-        drop(param.getConf().getCassandraKeyspace());
+        drop(keyspace);
     }
 }
 

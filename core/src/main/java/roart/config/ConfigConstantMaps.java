@@ -223,7 +223,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.DATABASECASSANDRAPORT, "9042");
         deflt.put(ConfigConstants.DATABASECASSANDRATHRIFTPORT, "9160");
         deflt.put(ConfigConstants.DATABASECASSANDRATLSPORT, "9142");
-        deflt.put(ConfigConstants.DATABASECASSANDRAKEYSPACE, "library");
+        deflt.put(ConfigConstants.DATABASECASSANDRAKEYSPACE, "aether");
         deflt.put(ConfigConstants.DATABASEDYNAMODBHOST, "");
         deflt.put(ConfigConstants.DATABASEDYNAMODBPORT, "8000");
         deflt.put(ConfigConstants.DATABASEDYNAMODBTABLEPREFIX, "");
@@ -467,7 +467,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.DATABASECASSANDRAPORT, new XMLType( String.class, "9042", "Cassandra port"));
         mymap.put(ConfigConstants.DATABASECASSANDRATHRIFTPORT, new XMLType( String.class, "9160", "Cassandra Thrift port"));
         mymap.put(ConfigConstants.DATABASECASSANDRATLSPORT, new XMLType( String.class, "9142", "Cassandra TLS port"));
-        mymap.put(ConfigConstants.DATABASECASSANDRAKEYSPACE, new XMLType( String.class, "library", "Cassandra keyspace"));
+        mymap.put(ConfigConstants.DATABASECASSANDRAKEYSPACE, new XMLType( String.class, "aether", "Cassandra keyspace"));
         mymap.put(ConfigConstants.DATABASEDYNAMODBHOST, new XMLType( String.class, "", "Dynamodb host"));
         mymap.put(ConfigConstants.DATABASEDYNAMODBPORT, new XMLType( String.class, "8000", "Dynamodb port"));
         mymap.put(ConfigConstants.DATABASEDYNAMODBTABLEPREFIX, new XMLType( String.class, "", "Dynamodb table prefix"));

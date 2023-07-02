@@ -1,13 +1,16 @@
 package roart.database.cassandra;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
@@ -20,14 +23,16 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
-import roart.common.model.Files;
 import roart.common.model.IndexFiles;
+import roart.common.util.FsUtil;
 import roart.database.DatabaseOperations;
 
 public class CassandraIndexFilesWrapper extends DatabaseOperations {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private static boolean useMapper = false;
+    
     private CassandraIndexFiles cassandraIndexFiles;
 
     public CassandraIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
@@ -89,14 +94,22 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
+        if (useMapper) {
+            result.setIndexFiles(cassandraIndexFiles.getIndexDao().findAll().stream().map(e -> map(e)).toList().toArray(IndexFiles[]::new));
+        } else {
         result.setIndexFiles(cassandraIndexFiles.getAll().stream().toArray(IndexFiles[]::new));
+        }
         return result;
     }
 
     @Override
     public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(Files[]::new));
+        if (useMapper) {
+            result.setFiles(cassandraIndexFiles.getFilesDao().findAll().stream().map(e -> map(e)).toList().toArray(roart.common.model.Files[]::new));
+        } else {
+        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(roart.common.model.Files[]::new));
+        }
         return result;
     }
 
@@ -147,8 +160,8 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         for (IndexFiles index : indexes) {
             cassandraIndexFiles.delete(index);
         }
-        Set<Files> files = param.getFiles();
-        for (Files index : files) {
+        Set<roart.common.model.Files> files = param.getFiles();
+        for (roart.common.model.Files index : files) {
             cassandraIndexFiles.delete(index);
         }
         return null;
@@ -171,5 +184,123 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         cassandraIndexFiles.drop(param);
         return new DatabaseConstructorResult();        
     }
+    
+    private Files map(IndexFiles i, FileLocation f) {
+        Files fi = new Files();
+        fi.setFilename(f.toString());
+        fi.setMd5(i.getMd5());
+        return fi;
+    }
+
+    private Index map(IndexFiles i) {
+        try {
+            Index hif = new Index(); //hibernateIndexFiles.ensureExistence(i.getMd5());
+            hif.setMd5(i.getMd5());
+            hif.setIndexed(i.getIndexed());
+            hif.setTimeindex(i.getTimeindex());
+            hif.setTimestamp(i.getTimestamp());
+            hif.setTimeclass(i.getTimeclass());
+            hif.setClassification(i.getClassification());
+            hif.setConvertsw(i.getConvertsw());
+            hif.setConverttime(i.getConverttime());
+            hif.setFailed(i.getFailed());
+            String fr = i.getFailedreason();
+            if (fr != null && fr.length() > 250) {
+                fr = fr.substring(0,250);
+            }
+            hif.setFailedreason(fr); // temp fix substr
+            hif.setTimeoutreason(i.getTimeoutreason());
+            hif.setNoindexreason(i.getNoindexreason());
+            hif.setLanguage(i.getLanguage());
+            hif.setIsbn(i.getIsbn());
+            hif.setFilelocations(i.getFilelocations().stream().map(e -> e /*FileLocation::toString*/).collect(Collectors.toSet()));
+            hif.setCreated(i.getCreated());
+            hif.setChecked(i.getChecked());
+            return hif;
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            return null;
+        }
+    }
+
+    private IndexFiles convert(Index hif) {
+        if (hif == null) {
+            return null;
+        }
+        String md5 = hif.getMd5();
+        IndexFiles ifile = new IndexFiles(md5);
+        //ifile.setMd5(hif.getMd5());
+        ifile.setIndexed(hif.getIndexed());
+        ifile.setTimeindex(hif.getTimeindex());
+        ifile.setTimestamp(hif.getTimestamp());
+        ifile.setTimeclass(hif.getTimeclass());
+        ifile.setClassification(hif.getClassification());
+        ifile.setConvertsw(hif.getConvertsw());
+        ifile.setConverttime(hif.getConverttime());
+        ifile.setFailed(hif.getFailed());
+        ifile.setFailedreason(hif.getFailedreason());
+        ifile.setTimeoutreason(hif.getTimeoutreason());
+        ifile.setNoindexreason(hif.getNoindexreason());
+        ifile.setLanguage(hif.getLanguage());
+        ifile.setIsbn(hif.getIsbn());
+        ifile.setCreated(hif.getCreated());
+        ifile.setChecked(hif.getChecked());
+        /*
+        Set<String> files = hif.getFilelocation();
+        for (String file : files) {
+            ifile.addFile(FsUtil.getFileLocation(file));
+        }
+        */
+        ifile.setUnchanged();
+        return ifile;
+    }
+
+     private IndexFiles map(Index hif) {
+        if (hif == null) {
+            return null;
+        }
+        String md5 = hif.getMd5();
+        IndexFiles ifile = new IndexFiles(md5);
+        //ifile.setVersion(hif.getVersion());
+        //ifile.setMd5(hif.getMd5());
+        ifile.setIndexed(hif.getIndexed());
+        ifile.setTimeindex(hif.getTimeindex());
+        ifile.setTimestamp(hif.getTimestamp());
+        ifile.setTimeclass(hif.getTimeclass());
+        ifile.setClassification(hif.getClassification());
+        ifile.setConvertsw(hif.getConvertsw());
+        ifile.setConverttime(hif.getConverttime());
+        ifile.setFailed(hif.getFailed());
+        ifile.setFailedreason(hif.getFailedreason());
+        ifile.setTimeoutreason(hif.getTimeoutreason());
+        ifile.setNoindexreason(hif.getNoindexreason());
+        ifile.setLanguage(hif.getLanguage());
+        ifile.setIsbn(hif.getIsbn());
+        ifile.setCreated(hif.getCreated());
+        ifile.setChecked(hif.getChecked());
+        /*
+        Set<String> files = hif.getFilelocation();
+        for (String file : files) {
+            ifile.addFile(FsUtil.getFileLocation(file));
+        }
+        */
+        ifile.setFilelocations(new HashSet<>(hif.getFilelocations()));
+        ifile.setUnchanged();
+        return ifile;
+    }
+
+    private roart.common.model.Files map(Files hif) {
+        if (hif == null) {
+            return null;
+        }
+        String md5 = hif.getMd5();
+        roart.common.model.Files ifile = new roart.common.model.Files();
+        //ifile.setVersion(hif.getVersion());
+        ifile.setMd5(hif.getMd5());
+        ifile.setFilename(hif.getFilename());
+        return ifile;
+    }
+
+
 }
 

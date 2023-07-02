@@ -1,32 +1,21 @@
 package roart.database.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Builder;
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 
 public class CassandraConnector {
     
-    private Cluster cluster;
- 
-    private Session session;
+    private CqlSession session;
  
     public void connect(String node, Integer port) {
-        Builder b = Cluster.builder().addContactPoint(node);
-        if (port != null) {
-            b.withPort(port);
-        }
-        cluster = b.build();
- 
-        session = cluster.connect();
     }
  
-    public Session getSession() {
+    public CqlSession getSession() {
         return this.session;
     }
  
     public void close() {
         session.close();
-        cluster.close();
+        //cluster.close();
     }
 
     public void createKeyspace(

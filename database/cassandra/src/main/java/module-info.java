@@ -8,7 +8,11 @@
 module cassandra {
     exports roart.database.cassandra;
 
-    requires cassandra.driver.core;
+    requires com.datastax.oss.driver.core;
+    requires com.datastax.oss.driver.mapper.processor;
+    requires com.datastax.oss.driver.mapper.runtime;
+    requires com.datastax.oss.driver.querybuilder;
+    requires java.driver.shaded.guava;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires common.config;

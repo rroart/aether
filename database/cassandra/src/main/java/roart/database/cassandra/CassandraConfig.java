@@ -1,20 +1,20 @@
 package roart.database.cassandra;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 
 public class CassandraConfig {
 
-    private Session session = null;
+    private CqlSession session = null;
 
     private String port = null;
     
     private String nodename = null;
     
-    public Session getSession() {
+    public CqlSession getSession() {
         return session;
     }
 
-    public void setSession(Session session) {
+    public void setSession(CqlSession session) {
         this.session = session;
     }
 
