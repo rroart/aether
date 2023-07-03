@@ -103,10 +103,6 @@ public class DynamodbIndexFiles {
         //filesattributes.add(md5);
         indexfilesattributes.add(md5);
 
-        System.out.format(
-                "Creating table \"%s\" with a simple primary key: \"Name\".\n",
-                getFiles());
-
         ProvisionedThroughput ptIndex = ProvisionedThroughput.builder()
                 .readCapacityUnits(1L)
                 .writeCapacityUnits(1L).build();
@@ -127,24 +123,7 @@ public class DynamodbIndexFiles {
                         .build();
 
 
-        //final AmazonDynamoDB ddb = AmazonDynamoDBClientBuilder.defaultClient();
-        System.out.println("cl " + client);
-        /*
-        try {
-            Table table = ddb.getTable(getFiles());
-            table.delete();
-            table.waitForDelete();
-            //DeleteTableResult res = client.deleteTable(getFiles());
-            //Thread.sleep(10000);
-            //System.out.println("res0 " + res.toString());
-        } catch (InterruptedException e) {
-            System.err.println("res5 " + e.getMessage());            
-        }
-         */
-        log.info("y1");
-        //printEndpoints(client);
         createTable(request, ddb, getFiles());
-        log.info("y12");
 
         CreateTableRequest request2 = CreateTableRequest.builder()
                 .tableName(getIndexFiles())
@@ -152,9 +131,7 @@ public class DynamodbIndexFiles {
                 .keySchema(indexfileskeyelements)
                 .provisionedThroughput(ProvisionedThroughput.builder()
                         .readCapacityUnits(10L).writeCapacityUnits(10L).build()).build();
-        log.info("y123");
         createTable(request2, ddb, getIndexFiles());
-        log.info("y1234");
         //filesTable = ddb.getTable(getFiles());
         //indexTable = ddb.getTable(getIndexFiles());
         /*
@@ -197,10 +174,6 @@ public class DynamodbIndexFiles {
             System.out.println("r2 " + res);;
 
         }
-        System.out.println("Done!");
-        log.info("yend");
-
-
     }
 
     private void printEndpoints(DynamoDbClient cli) {
@@ -208,7 +181,7 @@ public class DynamodbIndexFiles {
         DescribeEndpointsRequest describeEndpointsRequest = DescribeEndpointsRequest.builder().build();
         DescribeEndpointsResponse res00 = cli.describeEndpoints(describeEndpointsRequest);
         for (Endpoint endpoint : res00.endpoints()) {
-            log.info("endp " + endpoint.address());
+            log.info("endpoint {}", endpoint.address());
         }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -219,7 +192,6 @@ public class DynamodbIndexFiles {
         try {
             //AmazonDynamoDB ddb = new AmazonDynamoDB(client);
             CreateTableResponse response = ddb.createTable(request);
-            System.out.println("res1 " + response);
             DescribeTableRequest tableRequest = DescribeTableRequest.builder()
                     .tableName(tableName)
                     .build();
@@ -230,23 +202,15 @@ public class DynamodbIndexFiles {
             //return newTable;
 
             //Table table = ddb.getTable(tableName);
-            //System.out.println("res1 " + table);
             DescribeTableRequest describeTableRequest = DescribeTableRequest.builder().tableName(tableName).build();
             TableDescription tableDescription = client.describeTable(describeTableRequest).table();
-            System.out.println("Table Description: " + tableDescription);
             //CreateTableResult result = client.createTable(request);
-            //System.out.println("res1 " + result.getTableDescription().getTableName());
         } catch (ResourceInUseException e) {
             log.error(Constants.EXCEPTION, e);
-            e.printStackTrace();
         } catch (AwsServiceException e) {
             log.error(Constants.EXCEPTION, e);
-            e.printStackTrace();
-            System.exit(1);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }    
     // column families
@@ -329,14 +293,6 @@ public class DynamodbIndexFiles {
         config.setTableprefix(nodeConf.getDynamodbTableprefix());
 
         amain();
-        log.info("After main");
-
-        //ddb = new DynamoDB(new AmazonDynamoDBClient( 
-        //     new ProfileCredentialsProvider()));  
-        //DynamoDbClient ddb2 = new DynamoDbClient(this.client);
-        //indexTable = ddb2 .getTable(getIndexFiles());
-        //filesTable = ddb2.getTable(getFiles());
-        log.info("After");
     }
 
     /*
@@ -403,12 +359,9 @@ public class DynamodbIndexFiles {
         if (ifile.getFilelocations() != null && !ifile.getFilelocations().isEmpty()) {
             //updatedvalues.put(filelocationq, AttributeValue.builder().s(new ArrayList(ifile.getFilelocations())));              
             String str = null;
-            System.out.println("put floc");
             str = new FileLocationConverter().convert(new ArrayList(ifile.getFilelocations()));
             updatedvalues.put(filelocationq, AttributeValue.builder().s(str).build());	        
         }
-        //item.with
-        //log.info("hbase " + ifile.getMd5());
         int i = -1;
         /*
 	    for (FileLocation file : ifile.getFilelocations()) {
@@ -430,9 +383,10 @@ public class DynamodbIndexFiles {
 
         put(ifile.getMd5(), ifile.getFilelocations());
         //client.putI;
-        log.info("grrrr"+updatedvalues.toString());
+        //TableWriteItems items = new TableWriteItems("");
         client.putItem(PutItemRequest.builder().tableName(getIndexFiles()).item(updatedvalues).build());
-
+         //client.batchW .batchWriteItem(batchWRQ);
+        /*
         // or if still to slow, simply get current (old) indexfiles
         Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
         curfls.removeAll(ifile.getFilelocations());
@@ -442,18 +396,15 @@ public class DynamodbIndexFiles {
             String name = fl.toString();
             log.info("Dynamodb delete {}", name);
                 try {
-                    System.out.println("Attempting a conditional delete...");
                     client.deleteItem(DeleteItemRequest.builder().key(Map.of(filenameq, AttributeValue.builder().s(fl.toString()).build())).build());
-                    System.out.println("DeleteItem succeeded");
                 }
                 catch (Exception e) {
-                    System.err.println("Unable to delete item: " + fl);
-                    System.err.println(e.getMessage());
+                    log.error("Unable to delete item: {}", e);
                 }
             //Delete d = new Delete(name));
             //filesTable.delete(d);
         }
-
+        */
     }
 
     // is this handling other nodes
@@ -462,7 +413,6 @@ public class DynamodbIndexFiles {
     public void put(String md5, Set<FileLocation> files) throws Exception {
         //HTable /*Interface*/ filesTable = new HTable(conf, "index");
         for (FileLocation file : files) {
-            System.out.println("files put " + md5 + " " + file);
             String filename = getFile(file);
             Map<String,AttributeValue/*Update*/> updatedvalues = new HashMap<>();
             updatedvalues.put(filenameq, AttributeValue.builder().s(filename).build()); //, AttributeAction.PUT));
@@ -493,7 +443,7 @@ public class DynamodbIndexFiles {
         ifile.setIsbn(itemgets(item.get(isbnq)));
         ifile.setCreated(itemgets(item.get(createdq)));
         ifile.setChecked(itemgets(item.get(checkedq)));
-        log.info("get fl " + item.get(filelocationq).getClass().getName() + " " + itemgets(item.get(filelocationq)).getClass().getName() + " " + item.get(filelocationq));
+        //log.info("get fl " + item.get(filelocationq).getClass().getName() + " " + itemgets(item.get(filelocationq)).getClass().getName() + " " + item.get(filelocationq));
         ifile.setFilelocations(item.get(filelocationq) != null ? new HashSet<>(convert(itemgets(item.get(filelocationq)))) : new HashSet<>());
         Set<FileLocation> fls;
         /*
@@ -567,17 +517,14 @@ public class DynamodbIndexFiles {
 
     public String getMd5ByFilelocation(FileLocation fl) {
         String name = getFile(fl);
-        log.info("NAME"+name);
         GetItemResponse item = client.getItem(GetItemRequest.builder().tableName(getFiles()).key(Map.of(filenameq, AttributeValue.builder().s(name).build())).build());
         if (item == null || item.item().isEmpty()) {
             return null;
         }
-        log.info("" + item.item());
         return item.item().get(md5q).s();
     }
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
-        log.info("Search md5 {}", md5);
         Set<FileLocation> flset = new HashSet<>();
 
         Map<String, AttributeValue> expressionAttributeValues = Map.of(":md5", AttributeValue.builder().s(md5).build());
@@ -602,7 +549,6 @@ public class DynamodbIndexFiles {
         // filesTable.query(spec)
         //ItemCollection<QueryOutcome> items = filesTable.query(spec);
         ScanResponse scans = client.scan(scanSpec);
-        //System.out.println("cnt " + items.getTotalCount());
         //List<Map<String, AttributeValue>> items = client.query(queryRequest ).getItems();
         /*
         for (Item item : items) {
@@ -612,16 +558,12 @@ public class DynamodbIndexFiles {
             }            
         }
         */
-        System.out.println("h0");
         for (Map<String, AttributeValue> item : scans.items()) {
-            System.out.println("h1");
             FileLocation fl = getFileLocation(item.get(filenameq).s());
-            System.out.println("h1 " + fl);
             if (fl != null) {
                 flset.add(fl);
             }            
         }
-        System.out.println("h2");
         return flset;
     }
 
@@ -751,9 +693,7 @@ public class DynamodbIndexFiles {
             client.deleteItem(DeleteItemRequest.builder().tableName(getIndexFiles()).key(Map.of(md5q, AttributeValue.builder().s(index.getMd5()).build())).build());
 
         Set<FileLocation> curfls = getFilelocationsByMd5(index.getMd5());
-        System.out.println("curfls " + curfls.size());
         //curfls.removeAll(index.getFilelocations());
-        //System.out.println("curfls " + curfls.size());
 
         // delete the files no longer associated to the md5
         for (FileLocation fl : curfls) {
@@ -868,7 +808,6 @@ private void clear(String table, String hashKeyName) throws Exception {
         //String hashKey = item.get(hashKeyName);
         //PrimaryKey key = new PrimaryKey(hashKeyName, hashKey);
         client.deleteItem(DeleteItemRequest.builder().tableName(table).key(Map.of(hashKeyName, item.get(hashKeyName))).build());
-        System.out.printf("Deleted item with key: %s\n", hashKeyName);
     }
 }
 
