@@ -92,12 +92,16 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception {
         Map<String, String> md5Map = new HashMap<>();
+        /*
         for (FileLocation fl : param.getFileLocations()) {
             String filename = fl.getFilename();
             String md5 = hbaseIndexFiles.getMd5ByFilelocation(fl);
             md5Map.put(filename, md5);
         }
+        */
         DatabaseMd5Result result = new DatabaseMd5Result();
+        Map<FileLocation, String> indexFiles = hbaseIndexFiles.getMd5ByFilelocation(param.getFileLocations());
+        indexFiles.entrySet().forEach(e -> md5Map.put(e.getKey().toString(), e.getValue())); 
         result.setMd5Map(md5Map);
         return result;
     }
@@ -119,9 +123,12 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
         Set<IndexFiles> is = param.getIndexFiles();
+        hbaseIndexFiles.save(is);
+        /*
         for (IndexFiles i : is) {
             hbaseIndexFiles.put(i);
         }
+        */
         return null;
     }
 

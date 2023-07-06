@@ -80,6 +80,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
         Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        /*
         for (String md5 : param.getMd5s()) {
             Optional<Index> index = repo.findById(md5);
             if (index.isPresent()) {
@@ -88,6 +89,9 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
                 log.error("Not");
             }
         }
+        */
+        Iterable<Index> indexes = repo.findAllById(param.getMd5s());
+        indexes.forEach(i -> indexFilesMap.put(i.getMd5(), convert(i)));        
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
         result.setIndexFilesMap(indexFilesMap);
         return result;
@@ -133,6 +137,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception {
         Map<String, String> md5Map = new HashMap<>();
+        /*
         for (FileLocation fl : param.getFileLocations()) {
             String filename = fl.getFilename();
             Files f = filesrepo.findById(fl.toString()).orElse(null);
@@ -141,7 +146,10 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
                 md5Map.put(filename, md5);
             }
         }
+        */
         DatabaseMd5Result result = new DatabaseMd5Result();
+        Iterable<Files> files = filesrepo.findAllById(param.getFileLocations().stream().map(FileLocation::toString).toList());
+        files.forEach(f -> md5Map.put(f.getFilename(), f.getMd5()));
         result.setMd5Map(md5Map);
         return result;
     }

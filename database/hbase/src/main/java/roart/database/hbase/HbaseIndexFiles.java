@@ -2,10 +2,13 @@ package roart.database.hbase;
 
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -28,6 +31,7 @@ import org.apache.hadoop.hbase.client.TableDescriptorBuilder;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
@@ -40,6 +44,7 @@ import roart.common.model.FileLocation;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.util.FsUtil;
+import roart.common.util.JsonUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +53,8 @@ public class HbaseIndexFiles {
 
     private Logger log = LoggerFactory.getLogger(HbaseIndexFiles.class);
 
+    private static final int BATCH_SIZE = 1000;
+    
     private HbaseConfig config;
 
     // column families
@@ -107,7 +114,7 @@ public class HbaseIndexFiles {
                 TableDescriptor indexTableDesc = TableDescriptorBuilder
                         .newBuilder(TableName.valueOf(getIndex()))
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder(indexcf).build())
-                        .setColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder(flcf).build())
+                        //.setColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder(flcf).build())
                         .build();
                 admin.createTable(indexTableDesc);
             }
@@ -151,82 +158,53 @@ public class HbaseIndexFiles {
         }
     }
 
+    public void save(Set<IndexFiles> is) throws IOException, InterruptedException {
+        List<Row> indexes = new ArrayList<>();
+        List<Row> files = new ArrayList<>();
+        for (IndexFiles i : is) {
+            Put put = map(i);
+            if (put != null) {
+                indexes.add(put);
+            }
+            for (FileLocation f : i.getFilelocations()) {                
+                Put fput = map(i.getMd5(), f);
+                files.add(fput);
+            }
+        }
+        /*
+        Object[] resulti = new Object[indexes.size()];
+        indexTable.batch(indexes, resulti);
+        Object[] resultf = new Object[files.size()];
+        filesTable.batch(files, resultf);
+        log.info("result {}", Arrays.asList(resulti));
+        */
+        batch(indexTable, indexes, BATCH_SIZE);
+        batch(filesTable, files, BATCH_SIZE);
+   }
+
+    private Object[] batch(Table table, List<Row> actions, int size) throws IOException, InterruptedException {
+        Object[] resultArray = new Object[0];
+        AtomicInteger counter = new AtomicInteger();
+        Map<Object, List<Row>> parts = actions.stream()
+                .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / size));
+        for (List<Row> part : parts.values()) {
+            Object[] result = new Object[part.size()];
+            table.batch(part, result);
+            resultArray = concatWithArrayCopy(resultArray, result);
+            //log.info("result {}", Arrays.asList(result));
+        }
+        return resultArray;
+    }
+    
+    private <T> T[] concatWithArrayCopy(T[] array1, T[] array2) {
+        T[] result = Arrays.copyOf(array1, array1.length + array2.length);
+        System.arraycopy(array2, 0, result, array1.length, array2.length);
+        return result;
+    }
+    
     public void put(IndexFiles ifile) throws Exception {
         //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
-        Put put = new Put(Bytes.toBytes(ifile.getMd5()));
-        put.addColumn(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
-        if (ifile.getIndexed() != null) {
-            put.addColumn(indexcf, indexedq, Bytes.toBytes("" + ifile.getIndexed()));
-        }
-        if (ifile.getTimestamp() != null) {
-            put.addColumn(indexcf, timestampq, Bytes.toBytes(ifile.getTimestamp()));
-        }
-        if (ifile.getTimeindex() != null) {
-            put.addColumn(indexcf, timeindexq, Bytes.toBytes(ifile.getTimeindex()));
-        }
-        if (ifile.getTimeclass() != null) {
-            put.addColumn(indexcf, timeclassq, Bytes.toBytes(ifile.getTimeclass()));
-        }
-        if (ifile.getClassification() != null) {
-            put.addColumn(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
-        }
-        if (ifile.getConvertsw() != null) {
-            put.addColumn(indexcf, convertswq, Bytes.toBytes(ifile.getConvertsw()));
-        }
-        if (ifile.getConverttime() != null) {
-            put.addColumn(indexcf, converttimeq, Bytes.toBytes(ifile.getConverttime()));
-        }
-        if (ifile.getFailed() != null) {
-            put.addColumn(indexcf, failedq, Bytes.toBytes("" + ifile.getFailed()));
-        }
-        if (ifile.getFailedreason() != null) {
-            put.addColumn(indexcf, failedreasonq, Bytes.toBytes(ifile.getFailedreason()));
-        }
-        if (ifile.getTimeoutreason() != null) {
-            put.addColumn(indexcf, timeoutreasonq, Bytes.toBytes(ifile.getTimeoutreason()));
-        }
-        if (ifile.getNoindexreason() != null) {
-            put.addColumn(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
-        }
-        if (ifile.getLanguage() != null) {
-            put.addColumn(indexcf, languageq, Bytes.toBytes(ifile.getLanguage()));
-        }
-        if (ifile.getIsbn() != null) {
-            put.addColumn(indexcf, isbnq, Bytes.toBytes(ifile.getIsbn()));
-        }
-        if (ifile.getCreated() != null) {
-            put.addColumn(indexcf, createdq, Bytes.toBytes(ifile.getCreated()));
-        }
-        if (ifile.getChecked() != null) {
-            put.addColumn(indexcf, checkedq, Bytes.toBytes(ifile.getChecked()));
-        }
-        if (ifile.getIsbn() != null) {
-            put.addColumn(indexcf, isbnq, Bytes.toBytes(ifile.getIsbn()));
-        }
-        //log.info("hbase " + ifile.getMd5());
-        int i = -1;
-        for (FileLocation file : ifile.getFilelocations()) {
-            i++;
-            String filename = getFile(file);
-            log.info("hbase " + i + " " + filename);
-            put.addColumn(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
-        }
-        i++;
-        // now, delete the rest (or we would get some old historic content)
-        // TODO
-        boolean found = true;
-        while (found) {
-            Get get = new Get(Bytes.toBytes(ifile.getMd5()));
-            get.addColumn(flcf, Bytes.toBytes("q" + i));
-            found = indexTable.exists(get);
-            if (found) {
-                Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
-                d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
-                log.info("Hbase delete q" + i);
-                indexTable.delete(d);
-            }
-            i++;
-        }
+        Put put = map(ifile);
         /*
         for (; i < ifile.getMaxfilelocations(); i++) {
             Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
@@ -246,11 +224,103 @@ public class HbaseIndexFiles {
         // delete the files no longer associated to the md5
         for (FileLocation fl : curfls) {
             String name = fl.toString();
-            log.info("Hbase delete " + name);
+            //log.info("Hbase delete " + name);
             deleteFile(name);
         }
 
     }
+
+private Put map(IndexFiles ifile) {
+    Put put = new Put(Bytes.toBytes(ifile.getMd5()));
+    put.addColumn(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
+    if (ifile.getIndexed() != null) {
+        put.addColumn(indexcf, indexedq, Bytes.toBytes("" + ifile.getIndexed()));
+    }
+    if (ifile.getTimestamp() != null) {
+        put.addColumn(indexcf, timestampq, Bytes.toBytes(ifile.getTimestamp()));
+    }
+    if (ifile.getTimeindex() != null) {
+        put.addColumn(indexcf, timeindexq, Bytes.toBytes(ifile.getTimeindex()));
+    }
+    if (ifile.getTimeclass() != null) {
+        put.addColumn(indexcf, timeclassq, Bytes.toBytes(ifile.getTimeclass()));
+    }
+    if (ifile.getClassification() != null) {
+        put.addColumn(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
+    }
+    if (ifile.getConvertsw() != null) {
+        put.addColumn(indexcf, convertswq, Bytes.toBytes(ifile.getConvertsw()));
+    }
+    if (ifile.getConverttime() != null) {
+        put.addColumn(indexcf, converttimeq, Bytes.toBytes(ifile.getConverttime()));
+    }
+    if (ifile.getFailed() != null) {
+        put.addColumn(indexcf, failedq, Bytes.toBytes("" + ifile.getFailed()));
+    }
+    if (ifile.getFailedreason() != null) {
+        put.addColumn(indexcf, failedreasonq, Bytes.toBytes(ifile.getFailedreason()));
+    }
+    if (ifile.getTimeoutreason() != null) {
+        put.addColumn(indexcf, timeoutreasonq, Bytes.toBytes(ifile.getTimeoutreason()));
+    }
+    if (ifile.getNoindexreason() != null) {
+        put.addColumn(indexcf, noindexreasonq, Bytes.toBytes(ifile.getNoindexreason()));
+    }
+    if (ifile.getLanguage() != null) {
+        put.addColumn(indexcf, languageq, Bytes.toBytes(ifile.getLanguage()));
+    }
+    if (ifile.getIsbn() != null) {
+        put.addColumn(indexcf, isbnq, Bytes.toBytes(ifile.getIsbn()));
+    }
+    if (ifile.getCreated() != null) {
+        put.addColumn(indexcf, createdq, Bytes.toBytes(ifile.getCreated()));
+    }
+    if (ifile.getChecked() != null) {
+        put.addColumn(indexcf, checkedq, Bytes.toBytes(ifile.getChecked()));
+    }
+    if (ifile.getIsbn() != null) {
+        put.addColumn(indexcf, isbnq, Bytes.toBytes(ifile.getIsbn()));
+    }
+    if (ifile.getFilelocations() != null) {
+        put.addColumn(indexcf, filelocationq, Bytes.toBytes(JsonUtil.convert(ifile.getFilelocations().toArray())));
+    }
+    if (true) return put;
+    //log.info("hbase " + ifile.getMd5());
+    int i = -1;
+    for (FileLocation file : ifile.getFilelocations()) {
+        i++;
+        String filename = getFile(file);
+        //log.info("hbase " + i + " " + filename);
+        put.addColumn(flcf, Bytes.toBytes("q" + i), Bytes.toBytes(filename));
+    }
+    i++;
+    // now, delete the rest (or we would get some old historic content)
+    // TODO
+    boolean found = true;
+    while (found) {
+        Get get = new Get(Bytes.toBytes(ifile.getMd5()));
+        get.addColumn(flcf, Bytes.toBytes("q" + i));
+        try {
+            found = indexTable.exists(get);
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+            break;
+        }
+        if (found) {
+            Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
+            d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
+            //log.info("Hbase delete q" + i);
+            try {
+                indexTable.delete(d);
+            } catch (IOException e) {
+                log.error(Constants.EXCEPTION, e);
+                break;
+            }
+        }
+        i++;
+    }
+    return put;
+}
 
     // is this handling other nodes
     // plus get set of existing, remove new from that, delete the rest.
@@ -258,14 +328,22 @@ public class HbaseIndexFiles {
     public void put(String md5, Set<FileLocation> files) throws Exception {
         //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
         for (FileLocation file : files) {
-            String filename = getFile(file);
-            Put put = new Put(Bytes.toBytes(filename));
-            put.addColumn(filescf, md5q, Bytes.toBytes(md5));
+            Put put = map(md5, file);
             filesTable.put(put);
         }
     }
 
+    private Put map(String md5, FileLocation file) {
+        String filename = getFile(file);
+        Put put = new Put(Bytes.toBytes(filename));
+        put.addColumn(filescf, md5q, Bytes.toBytes(md5));
+        return put;
+    }
+
     public IndexFiles get(Result index) {
+        if (index.isEmpty()) {
+            return null;
+        }
         String md5 = bytesToString(index.getValue(indexcf, md5q));
         IndexFiles ifile = new IndexFiles(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
@@ -284,7 +362,8 @@ public class HbaseIndexFiles {
         ifile.setIsbn(bytesToString(index.getValue(indexcf, isbnq)));
         ifile.setCreated(bytesToString(index.getValue(indexcf, createdq)));
         ifile.setChecked(bytesToString(index.getValue(indexcf, checkedq)));
-        List<Cell> list = index.listCells();
+        ifile.setFilelocations(new HashSet<>(Arrays.asList(JsonUtil.convertnostrip(bytesToString(index.getValue(indexcf, filelocationq)), FileLocation[].class))));
+        List<Cell> list = null; //index.listCells();
         if (list != null) {
             for (Cell kv : list) {
                 byte[] family = CellUtil.cloneFamily(kv);
@@ -302,6 +381,9 @@ public class HbaseIndexFiles {
     }
 
     public Files getFiles(Result index) {
+        if (index.isEmpty()) {
+            return null;
+        }
         String filename = bytesToString(index.getRow());
         String md5 = bytesToString(index.getValue(filescf, md5q));
         Files ifile = new Files();
@@ -332,22 +414,28 @@ public class HbaseIndexFiles {
         return fl;
     }
 
-    public Map<String, IndexFiles> get(Set<String> md5s) {
+    public Map<String, IndexFiles> get(Set<String> md5s) throws IOException, InterruptedException {
         Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        List<Row> indexes = new ArrayList<>();
         for (String md5 : md5s) {
-            IndexFiles indexFile = get(md5);
-            if (indexFile != null) {
-                indexFilesMap.put(md5, indexFile);
+            Get get = indexGet(md5);
+            indexes.add(get);
+        }
+        Object[] results = batch(indexTable, indexes, BATCH_SIZE);
+        for (int i = 0; i < indexes.size(); i++) {
+            IndexFiles index = get((Result) results[i]);
+            if (index == null) {
+                continue;
             }
+            indexFilesMap.put(index.getMd5(), index);
         }
         return indexFilesMap;
     }
 
     public IndexFiles get(String md5) {
         try {
-            Get get = new Get(Bytes.toBytes(md5));
-            get.addFamily(indexcf);
-            get.addFamily(flcf);
+            Get get = indexGet(md5);
+            //get.addFamily(flcf);
             Result index = indexTable.get(get);
             if (index.isEmpty()) {
                 return null;
@@ -359,6 +447,12 @@ public class HbaseIndexFiles {
         return null;
     }
 
+    private Get indexGet(String md5) {
+        Get get = new Get(Bytes.toBytes(md5));
+        get.addFamily(indexcf);
+        return get;
+    }
+
     public IndexFiles getIndexByFilelocation(FileLocation fl) {
         String md5 = getMd5ByFilelocation(fl);
         if (md5.length() == 0) {
@@ -367,13 +461,36 @@ public class HbaseIndexFiles {
         return get(md5);
     }
 
+    public Map<FileLocation, String> getMd5ByFilelocation(Set<FileLocation> fileLocations) throws IOException, InterruptedException {
+        List<Row> files = new ArrayList<>();
+        for (FileLocation i : fileLocations) {
+            Get get = filesGet(i.toString());
+            files.add(get);
+        }
+        /*
+        Object[] resulti = new Object[indexes.size()];
+        indexTable.batch(indexes, resulti);
+        Object[] resultf = new Object[files.size()];
+        filesTable.batch(files, resultf);
+        log.info("result {}", Arrays.asList(resulti));
+        */
+        Map<FileLocation, String> retMap = new HashMap<>();
+        Object[] results = batch(filesTable, files, BATCH_SIZE);
+        for (int i = 0; i < files.size(); i++) {
+            Files result = getFiles((Result) results[i]);
+            if (result == null) {
+                continue;
+            }
+            retMap.put(FsUtil.getFileLocation(bytesToString(files.get(i).getRow())), result.getMd5());
+        }
+        return retMap;
+    }
+
     public String getMd5ByFilelocation(FileLocation fl) {
         String name = getFile(fl);
         try {
             //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
-            Get get = new Get(Bytes.toBytes(name));
-            //get.addColumn(filescf, md5q);
-            get.addFamily(filescf);
+            Get get = filesGet(name);
             Result result = filesTable.get(get);
             //log.info("res " + new String(result.getValue(filescf, md5q)));
             // add a little workaround for temp backward compatibility
@@ -382,8 +499,7 @@ public class HbaseIndexFiles {
                 String fn = fl.getFilename();
                 if (fn != null) {
                     //fn = fn. substring(5);
-                    get = new Get(Bytes.toBytes(fn));
-                    get.addFamily(filescf);
+                    get = filesGet(fn);
                     result = filesTable.get(get);
                 }
             }
@@ -395,6 +511,12 @@ public class HbaseIndexFiles {
             log.error(Constants.EXCEPTION, e);
         }
         return null;
+    }
+
+    private Get filesGet(String name) {
+        Get get = new Get(Bytes.toBytes(name));
+        get.addFamily(filescf);
+        return get;
     }
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
