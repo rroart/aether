@@ -11,7 +11,7 @@ import java.util.TreeMap;
 import roart.common.constants.Constants;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
-import roart.dir.Traverse;
+import roart.util.TraverseUtil;
 
 public class Overlapping extends AbstractFunction {
 
@@ -48,7 +48,7 @@ public class Overlapping extends AbstractFunction {
         // dirset will contain a map of directories, and the md5 files is contains
         // fileset will contain a map of md5 and the directories it has files in
         try {
-            Set<String> filesetnew2 = Traverse.doList2(dirset, fileset);
+            Set<String> filesetnew2 = TraverseUtil.doList2(dirset, fileset);
             filesetnew.addAll(filesetnew2);
         } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);

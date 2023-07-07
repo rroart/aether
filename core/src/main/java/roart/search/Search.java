@@ -6,6 +6,7 @@ import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.util.MyList;
 import roart.util.MyLists;
+import roart.util.TraverseUtil;
 import roart.lang.LanguageDetect;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
@@ -17,7 +18,6 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 import roart.common.util.JsonUtil;
 import roart.database.IndexFilesDao;
-import roart.dir.Traverse;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.config.MyConfig;
@@ -94,7 +94,7 @@ public class Search {
 	dbindex.setTimeindex("" + time);
 	log.info("timerStop filename " + time);
 
-    FileLocation maybeFl = Traverse.getExistingLocalFilelocationMaybe(el.index);
+    FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(el.index);
 	ResultItem ri = IndexFiles.getResultItem(el.index, lang, ControlService.nodename, maybeFl);
 	ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
 	retlist.add(ri);

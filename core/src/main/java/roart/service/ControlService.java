@@ -27,7 +27,6 @@ import roart.common.util.FsUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.content.ClientHandler;
 import roart.database.IndexFilesDao;
-import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
 import roart.queue.Queues;
 import roart.search.SearchDao;
@@ -45,6 +44,7 @@ import roart.util.MyList;
 import roart.util.MyLists;
 import roart.util.MyLockFactory;
 import roart.util.MySets;
+import roart.util.TraverseUtil;
     
     public class ControlService {
         private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -97,7 +97,7 @@ import roart.util.MySets;
     	try {
     	    String[] dirlist = { dirname };
     	    for (int i = 0; i < dirlist.length; i ++) {
-    		Set<String> filesetnew2 = Traverse.dupdir(FsUtil.getFileObject(dirlist[i]));
+    		Set<String> filesetnew2 = TraverseUtil.dupdir(FsUtil.getFileObject(dirlist[i]));
     		filesetnew.addAll(filesetnew2);
     	    }
     	} catch (Exception e) {

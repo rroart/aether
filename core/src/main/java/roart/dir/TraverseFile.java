@@ -51,6 +51,7 @@ import roart.util.MyAtomicLong;
 import roart.util.MyAtomicLongs;
 import roart.util.MyLockFactory;
 import roart.util.MySets;
+import roart.util.TraverseUtil;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
@@ -81,7 +82,7 @@ public class TraverseFile {
         //          } else {
         // config with finegrained distrib
         IndexFilesDao indexFilesDao = new IndexFilesDao();
-        if (Traverse.isMaxed(trav.getMyid(), trav.getClientQueueElement())) {
+        if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement())) {
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
@@ -231,7 +232,7 @@ public class TraverseFile {
         //              handleFo2(retset, md5set, filename);
         //          } else {
         // config with finegrained distrib
-        if (Traverse.isMaxed(trav.getMyid(), trav.getClientQueueElement())) {
+        if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement())) {
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());

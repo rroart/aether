@@ -10,7 +10,7 @@ import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.database.IndexFilesDao;
-import roart.dir.Traverse;
+import roart.util.TraverseUtil;
 
 public class NotIndexed extends AbstractFunction {
 
@@ -31,8 +31,8 @@ public class NotIndexed extends AbstractFunction {
         retlist2.add(ri3);
         List<ResultItem> retlistyes = null;
         try {
-            retlist.addAll(Traverse.notindexed(param, indexFilesDao));
-            retlistyes = Traverse.indexed(param, indexFilesDao);
+            retlist.addAll(TraverseUtil.notindexed(param, indexFilesDao));
+            retlistyes = TraverseUtil.indexed(param, indexFilesDao);
             Map<String, Integer> plusretlist = new HashMap<>();
             Map<String, Integer> plusretlistyes = new HashMap<>();
             for(ResultItem ri : retlist) {
