@@ -1,6 +1,7 @@
 package roart.controller;
 
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -395,16 +396,16 @@ public class ServiceController implements CommandLineRunner {
 
     @RequestMapping(value = "/" + EurekaConstants.DBCOPY,
             method = RequestMethod.POST)
-    public ServiceResult getDbCopy(@RequestBody ServiceParam param)
+    public List<Integer> getDbCopy(@RequestBody ServiceParam param)
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            ClientHandler.doClient(param);
+            return ClientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
         }
-        return result;
+        return null;
     }
 
     @RequestMapping(value = "/" + EurekaConstants.INDEXCLEAN,

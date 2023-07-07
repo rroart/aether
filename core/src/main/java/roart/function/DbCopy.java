@@ -2,6 +2,7 @@ package roart.function;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ public class DbCopy extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        List<Integer> retList = new ArrayList<>();
         //List<IndexFiles> list = new IndexFilesDao().getAll();
         //List<Files> list2 = new IndexFilesDao().getAllFiles();
         IndexFilesDao out = new IndexFilesDao();
@@ -31,10 +33,18 @@ public class DbCopy extends AbstractFunction {
         IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src);
         IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst);
         try {
+            long time0;
+            dstAccess.clear();
+            time0 = System.currentTimeMillis();
             List<IndexFiles> indexFiles = srcAccess.getAll();
+            retList.add((int) ((System.currentTimeMillis() - time0) / 1000));
             Set<IndexFiles> saves = new HashSet<>(indexFiles);
+            time0 = System.currentTimeMillis();
             dstAccess.save(saves);
+            retList.add((int) ((System.currentTimeMillis() - time0) / 1000));
+            time0 = System.currentTimeMillis();
             List<IndexFiles> indexFiles2 = dstAccess.getAll();
+            retList.add((int) ((System.currentTimeMillis() - time0) / 1000));
             Map<String, IndexFiles> map = util(indexFiles);
             Map<String, IndexFiles> map2 = util(indexFiles2);
             if (map.size() != map2.size()) {
@@ -52,7 +62,7 @@ public class DbCopy extends AbstractFunction {
             log.error(Constants.EXCEPTION, e);
             e.printStackTrace();
         }
-        return null;
+        return retList;
     }
 
     public Map<String, IndexFiles> util(List<IndexFiles> indexFiles) {
