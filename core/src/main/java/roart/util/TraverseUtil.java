@@ -21,6 +21,8 @@ import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
+import roart.model.MyAtomicLong;
+import roart.model.MyAtomicLongs;
 import roart.service.ControlService;
 
 public class TraverseUtil {

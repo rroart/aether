@@ -5,9 +5,9 @@ import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.dir.Traverse;
+import roart.model.MyAtomicLong;
+import roart.model.MyAtomicLongs;
 import roart.queue.TraverseQueueElement;
-import roart.util.MyAtomicLong;
-import roart.util.MyAtomicLongs;
 
 public abstract class AbstractIndex extends AbstractFunction {
 

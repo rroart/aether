@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MySet;
 import roart.common.constants.Constants;
-import roart.util.MyAtomicLong;
-import roart.util.MyAtomicLongs;
-import roart.util.MyQueue;
-import roart.util.MyQueues;
+import roart.model.MyAtomicLong;
+import roart.model.MyAtomicLongs;
+import roart.model.MyQueue;
+import roart.model.MyQueues;
 
 /**
  * @author roart

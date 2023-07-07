@@ -17,16 +17,16 @@ import roart.common.synchronization.MyLock;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
+import roart.model.MyAtomicLong;
+import roart.model.MyAtomicLongs;
+import roart.model.MyCollections;
+import roart.model.MyList;
+import roart.model.MyLists;
+import roart.model.MyLockFactory;
+import roart.model.MySets;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
-import roart.util.MyAtomicLong;
-import roart.util.MyAtomicLongs;
-import roart.util.MyCollections;
-import roart.util.MyList;
-import roart.util.MyLists;
-import roart.util.MyLockFactory;
-import roart.util.MySets;
 
 public abstract class AbstractFunction {
     protected Logger log = LoggerFactory.getLogger(this.getClass());

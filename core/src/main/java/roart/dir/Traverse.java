@@ -25,6 +25,12 @@ import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
+import roart.model.MyAtomicLong;
+import roart.model.MyAtomicLongs;
+import roart.model.MyLockFactory;
+import roart.model.MyQueue;
+import roart.model.MyQueues;
+import roart.model.MySets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +42,6 @@ import java.util.Set;
 import java.util.List;
 import java.util.HashMap;
 
-import roart.util.MyAtomicLong;
-import roart.util.MyAtomicLongs;
-import roart.util.MyLockFactory;
-import roart.util.MyQueue;
-import roart.util.MyQueues;
-import roart.util.MySets;
 import roart.util.TraverseUtil;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;

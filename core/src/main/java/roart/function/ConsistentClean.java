@@ -21,10 +21,10 @@ import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
+import roart.model.MyLockFactory;
+import roart.model.MySets;
 import roart.search.SearchDao;
 import roart.service.ControlService;
-import roart.util.MyLockFactory;
-import roart.util.MySets;
 
 public class ConsistentClean extends AbstractFunction {
 

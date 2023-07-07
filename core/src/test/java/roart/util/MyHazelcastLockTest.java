@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
 import roart.common.synchronization.MyLock;
+import roart.model.MyHazelcastLock;
 
 public class MyHazelcastLockTest {
    

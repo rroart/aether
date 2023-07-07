@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import roart.common.synchronization.MyLock;
+import roart.model.MyCuratorLock;
 import roart.service.ControlService;
 
 public class MyCuratorLockTest {

@@ -15,9 +15,9 @@ import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
+import roart.model.MyLockFactory;
 import roart.search.SearchDao;
 import roart.service.ControlService;
-import roart.util.MyLockFactory;
 import roart.common.model.FileObject;
 
 public class DeletePath extends AbstractFunction {

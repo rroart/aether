@@ -25,10 +25,10 @@ import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
+import roart.model.MyQueue;
+import roart.model.MyQueues;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
-import roart.util.MyQueue;
-import roart.util.MyQueues;
 
 public class TraverseQueueRunner implements Runnable {
 

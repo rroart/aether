@@ -33,6 +33,10 @@ import roart.common.util.IOUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
+import roart.model.MyAtomicLong;
+import roart.model.MyAtomicLongs;
+import roart.model.MyLockFactory;
+import roart.model.MySets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +51,6 @@ import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import roart.util.MyAtomicLong;
-import roart.util.MyAtomicLongs;
-import roart.util.MyLockFactory;
-import roart.util.MySets;
 import roart.util.TraverseUtil;
 
 import org.apache.commons.codec.digest.DigestUtils;

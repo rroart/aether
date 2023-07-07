@@ -32,11 +32,11 @@ import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
 import roart.lang.LanguageDetect;
 import roart.lang.LanguageDetectFactory;
+import roart.model.MyList;
+import roart.model.MyLists;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.util.ISBNUtil;
-import roart.util.MyList;
-import roart.util.MyLists;
 import roart.queue.ConvertQueueElement;
 import roart.queue.IndexQueueElement;
 
