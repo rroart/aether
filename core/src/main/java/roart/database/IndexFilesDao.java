@@ -28,10 +28,6 @@ public class IndexFilesDao {
 
     private static Logger log = LoggerFactory.getLogger(IndexFilesDao.class);
 
-    private static volatile ConcurrentMap<String, IndexFiles> all = new ConcurrentHashMap<String, IndexFiles>();
-
-    private static volatile ConcurrentMap<String, Files> allFiles = new ConcurrentHashMap<String, Files>();
-
     private static volatile ConcurrentMap<String, IndexFiles> dbi = new ConcurrentHashMap<String, IndexFiles>();
 
     private static volatile ConcurrentMap<String, IndexFiles> dbitemp = new ConcurrentHashMap<String, IndexFiles>();
@@ -51,18 +47,10 @@ public class IndexFilesDao {
         if (md5 == null) {
             return null;
         }
-        if (false && !MyConfig.conf.wantZookeeperSmall()) {
-            if (all.containsKey(md5)) {
-                return all.get(md5);
-            }
-        }
         synchronized(IndexFilesDao.class) {
             IndexFiles i = indexFiles.getByMd5(md5);
             if (i == null && create) {
                 i = new IndexFiles(md5);
-            }
-            if (i != null) {
-                all.put(md5, i);
             }
             i.setCreated("" + System.currentTimeMillis());
             return i;
@@ -80,9 +68,6 @@ public class IndexFilesDao {
         }
         synchronized(IndexFilesDao.class) {
             IndexFiles i = new IndexFiles(md5);
-            if (i != null) {
-                all.put(md5, i);
-            }
             i.setCreated("" + System.currentTimeMillis());
             return i;
         }
@@ -117,31 +102,15 @@ public class IndexFilesDao {
     }
 
     public List<IndexFiles> getAll() throws Exception {
-        //all.clear();
-        Set<String> allKeys = all.keySet();
         synchronized(IndexFilesDao.class) {
             List<IndexFiles> iAll = indexFiles.getAll();
-            for (IndexFiles i : iAll) {
-                if (allKeys.contains(i.getMd5())) {
-                    //continue;
-                }
-                all.put(i.getMd5(), i);
-            }
             return iAll;
         }
     }
 
     public List<Files> getAllFiles() throws Exception {
-        //all.clear();
-        Set<String> allKeys = allFiles.keySet();
         synchronized(IndexFilesDao.class) {
             List<Files> iAll = indexFiles.getAllFiles();
-            for (Files i : iAll) {
-                if (allKeys.contains(i.getMd5())) {
-                    //continue;
-                }
-                allFiles.put(i.getFilename(), i);
-            }
             return iAll;
         }
     }
@@ -201,16 +170,6 @@ public class IndexFilesDao {
         } else {
             //log.info("not saving " + i.getMd5());
         }
-    }
-
-    @Deprecated
-    public static IndexFiles instanceNot(String md5) {
-        IndexFiles i = all.get(md5);
-        if (i == null) {
-            i = new IndexFiles(md5);
-            all.put(md5, i);
-        }
-        return i;
     }
 
     public void add(IndexFiles i) {
@@ -277,7 +236,6 @@ public class IndexFilesDao {
             save(saves, i);
             dbitemp.remove(entry.getKey());
         }
-        //all.clear();
         try {
             synchronized(IndexFilesDao.class) {
                 indexFiles.save(saves);
@@ -291,17 +249,6 @@ public class IndexFilesDao {
 
     private int[] getPris() {
         int[] pris = { dbi.size(), dbitemp.size() };
-        /*
-        for (String k : all.keySet()) {
-            IndexFiles i = all.get(k);
-            int priority = i.getPriority();
-            if (priority <= 1) {
-                pris[priority]++;
-            } else {
-                log.error("priority " + priority);
-            }
-        }
-         */
         return pris;
     }
 
@@ -339,7 +286,6 @@ public class IndexFilesDao {
             synchronized(IndexFilesDao.class) {
                 indexFiles.delete(index);
             }
-            all.remove(index.getMd5());
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -350,7 +296,6 @@ public class IndexFilesDao {
             synchronized(IndexFilesDao.class) {
                 indexFiles.delete(index);
             }
-            allFiles.remove(index.getMd5());
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -366,23 +311,12 @@ public class IndexFilesDao {
         if (md5s == null) {
             return null;
         }
-        Map<String, IndexFiles> indexFileMap = new HashMap<>();
-        if (false && !MyConfig.conf.wantZookeeperSmall()) {
-            for (String md5 : md5s) {
-                if (all.containsKey(md5)) {
-                    indexFileMap.put(md5, all.get(md5));
-                }
-            }
-        }
         synchronized(IndexFilesDao.class) {
             Map<String, IndexFiles> is = indexFiles.getByMd5(md5s);
             for (String md5 : md5s) {
                 IndexFiles i = is.get(md5);
                 if (i == null && create) {
                     i = new IndexFiles(md5);
-                }
-                if (i != null) {
-                    all.put(md5, i);
                 }
             }
             return is;
