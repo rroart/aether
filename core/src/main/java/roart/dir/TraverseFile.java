@@ -226,7 +226,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map, Map<FileObject, String> contentMap)
+    public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map, Map<FileObject, String> contentMap)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -411,17 +411,6 @@ public class TraverseFile {
         return doindex;
     }
 
-    public void handleFo3(TraverseQueueElement trav, Set<FileObject> filenames)
-            throws Exception {
-        FileObject filename = trav.getFileobject();
-        // ADD
-        // fo=fsdao.get(fn) fsdao.exists(fo) fsdao.getfis()
-        // md5=ifdao.getmd5(fn) ifdao.getbymd5(md5)
-        filenames.add(filename);
-        //Map<String, List> lists = FileSystemDao.get(filenames);
-        //Map<String, List> lists2 = IndexFilesDao.get(filenames);
-    }
-
     /**
      * Index the filename with id, represented by index internally in the db
      * 
@@ -455,21 +444,6 @@ public class TraverseFile {
         ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
         Queues.convertQueue.add(e2);
         //size = doTika(filename, filename, md5, index, retlist);
-    }
-
-    public Map<FileObject, MyFile> handleFo3(Set<FileObject> filenames) {
-        Map<FileObject, MyFile> result = FileSystemDao.getWithoutInputStream(filenames);
-        return result;
-    }
-
-    public Map<FileObject, String> handleFo4(Set<FileObject> filenames) throws Exception {
-        Map<FileObject, String> result = indexFilesDao.getMd5ByFilename(filenames);
-        return result;
-    }
-
-    public Map<String, IndexFiles> handleFo5(Set<String> md5s) throws Exception {
-        Map<String, IndexFiles> result = indexFilesDao.getByMd5(md5s);
-        return result;
     }
 
     public Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {

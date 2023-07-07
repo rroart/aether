@@ -25,6 +25,7 @@ import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
+import roart.filesystem.FileSystemDao;
 import roart.model.MyQueue;
 import roart.model.MyQueues;
 import roart.queue.Queues;
@@ -206,25 +207,25 @@ public class TraverseQueueRunner implements Runnable {
         Set<FileObject> filenames = new HashSet<>();
         // Create filenames set
         for (TraverseQueueElement trav : traverseList) {
-            traverseFile.handleFo3(trav, filenames);
+            filenames.add(trav.getFileobject());
         }
         long time0 = System.currentTimeMillis();
         // Get MyFile data from filesystem
-        Map<FileObject, MyFile> fsMap = traverseFile.handleFo3(filenames);
+        Map<FileObject, MyFile> fsMap = FileSystemDao.getWithoutInputStream(filenames);
         long time1 = System.currentTimeMillis();
         // Get Md5s by fileobject from database
-        Map<FileObject, String> md5Map = traverseFile.handleFo4(filenames);
+        Map<FileObject, String> md5Map = indexFilesDao.getMd5ByFilename(filenames);
         // Batch read md5
         Map<FileObject, String> newMd5Map = traverseFile.getMd5(traverseList, fsMap, md5Map);
         // Batch read content
         Map<FileObject, String> contentMap = new HashMap<>(); // TraverseFile.readFiles(traverseList, fsMap);
         long time2 = System.currentTimeMillis();
+        Map<String, IndexFiles> ifMap = indexFilesDao.getByMd5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         // Get IndexFiles by Md5 from database
-        Map<String, IndexFiles> ifMap = traverseFile.handleFo5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            traverseFile.handleFo3(trav, fsMap, md5Map, ifMap, newMd5Map, contentMap);
+            traverseFile.handleFo(trav, fsMap, md5Map, ifMap, newMd5Map, contentMap);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));
