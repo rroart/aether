@@ -23,13 +23,14 @@ public class DbCheck extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         try {
             List<IndexFiles> indexes;
             List<Files> files;
             String db = param.name;
             if (db == null) {
-                indexes = new IndexFilesDao().getAll();
-                files = new IndexFilesDao().getAllFiles();
+                indexes = indexFilesDao.getAll();
+                files = indexFilesDao.getAllFiles();
             } else {
                 IndexFilesAccess access = IndexFilesAccessFactory.get(db);
                 indexes = access.getAll();

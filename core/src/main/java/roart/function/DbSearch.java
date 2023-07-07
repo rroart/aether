@@ -19,6 +19,7 @@ public class DbSearch extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         try {
             ServiceParam.Function function = param.function;
             String searchexpr = param.file;
@@ -34,7 +35,7 @@ public class DbSearch extends AbstractFunction {
             List<ResultItem> indexList = new ArrayList<>();
             indexList.add(IndexFiles.getHeader());
 
-            List<IndexFiles> indexes = new IndexFilesDao().getAll();
+            List<IndexFiles> indexes = indexFilesDao.getAll();
             for (IndexFiles index : indexes) {
                 boolean match = false;
 

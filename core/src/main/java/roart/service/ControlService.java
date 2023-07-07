@@ -49,6 +49,8 @@ import roart.util.MySets;
     public class ControlService {
         private Logger log = LoggerFactory.getLogger(this.getClass());
     
+        private IndexFilesDao indexFilesDao = new IndexFilesDao();
+        
         public static volatile Integer writelock = new Integer(-1);
     
         private static volatile int mycounter = 0;
@@ -143,6 +145,7 @@ import roart.util.MySets;
             startTraversequeueWorker();
             }
             startCamel();
+            startMem();
         }
     
     	private void startCamel() {
@@ -193,6 +196,14 @@ import roart.util.MySets;
         	log.info("starting index worker");
     	}
     
+        public void startMem() {
+            MemRunner indexRunnable = new MemRunner();
+            indexWorker = new Thread(indexRunnable);
+            indexWorker.setName("IndexWorker");
+            indexWorker.start();
+            log.info("starting index worker");
+    }
+
     	public void startDbWorker() {
     		dbRunnable = new DbRunner();
         	dbWorker = new Thread(dbRunnable);
@@ -232,8 +243,8 @@ import roart.util.MySets;
     	return retlistlist;
         }
     
-    	public static String[] getLanguages() throws Exception {
-        return IndexFilesDao.getLanguages().stream().toArray(String[]::new);
+    	public String[] getLanguages() throws Exception {
+        return indexFilesDao.getLanguages().stream().toArray(String[]::new);
         }
         
             public List searchengine(ServiceParam param) {
@@ -260,5 +271,32 @@ import roart.util.MySets;
             	return null;
             	// TODO fix
             	//property.configFileSystem(fs);      	
+            }
+            
+            class MemRunner implements Runnable {
+
+                private static Logger log = LoggerFactory.getLogger(IndexRunner.class);
+
+                public static volatile int timeout = 3600;
+
+                public void run() {
+                    long heapSize = Runtime.getRuntime().totalMemory(); 
+
+                     // Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
+                     long heapMaxSize = Runtime.getRuntime().maxMemory();
+
+                      // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
+                     long heapFreeSize = Runtime.getRuntime().freeMemory(); 
+                     log.info("MEM0 " + heapSize + " " + heapMaxSize + " " + heapFreeSize);
+
+                     while (true) {
+                        try {
+                            TimeUnit.SECONDS.sleep(600);
+                        } catch (/*Interrupted*/Exception e) {
+                            // TODO Auto-generated catch block
+                            log.error(Constants.EXCEPTION, e);
+                        }
+                    }
+                }
             }
     }

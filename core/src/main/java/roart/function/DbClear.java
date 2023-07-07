@@ -15,9 +15,10 @@ public class DbClear extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         String db = param.name;
         if (db == null) {
-            IndexFilesDao.clear();
+            indexFilesDao.clear();
         } else {
             IndexFilesAccess access = IndexFilesAccessFactory.get(db);
             access.clear();

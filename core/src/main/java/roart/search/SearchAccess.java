@@ -137,7 +137,8 @@ public abstract class SearchAccess {
                 for (SearchResult res : results) {
                     md5s.add(res.md5);
                 }
-                Map<String, IndexFiles> indexmd5s = IndexFilesDao.getByMd5(md5s);
+                IndexFilesDao indexFilesDao = new IndexFilesDao();
+                Map<String, IndexFiles> indexmd5s = indexFilesDao.getByMd5(md5s);
     		for (SearchResult res : results) {
     			String md5 = res.md5;
     			IndexFiles indexmd5 = indexmd5s.get(md5);

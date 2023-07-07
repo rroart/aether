@@ -41,6 +41,7 @@ public abstract class AbstractFunction {
 
     @SuppressWarnings("rawtypes")
     public List<List> clientDo(ServiceParam el) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         synchronized (ControlService.writelock) {
             try {
                 MyLock lock = null;
@@ -123,7 +124,7 @@ public abstract class AbstractFunction {
 
                 Queues.resetConvertTimeoutQueue();
                 //IndexFilesDao.commit();
-                while (IndexFilesDao.dirty() > 0) {
+                while (indexFilesDao.dirty() > 0) {
                     TimeUnit.SECONDS.sleep(60);
                 }
 

@@ -46,7 +46,8 @@ public class IndexFilesDao {
 
     // with zookeepersmall, lock must be held when entering here
 
-    public static IndexFiles getByMd5(String md5, boolean create) throws Exception {
+    // todo get and create, bieffect
+    public IndexFiles getByMd5(String md5, boolean create) throws Exception {
         if (md5 == null) {
             return null;
         }
@@ -68,11 +69,12 @@ public class IndexFilesDao {
         }
     }
 
-    public static IndexFiles getByMd5(String md5) throws Exception {
+    // todo get and create, bieffect
+    public IndexFiles getByMd5(String md5) throws Exception {
         return getByMd5(md5, true);
     }
 
-    public static IndexFiles getNewByMd5(String md5) throws Exception {
+    public IndexFiles getNewByMd5(String md5) throws Exception {
         if (md5 == null) {
             return null;
         }
@@ -86,11 +88,12 @@ public class IndexFilesDao {
         }
     }
 
-    public static IndexFiles getExistingByMd5(String md5) throws Exception {
+    // not used
+    public IndexFiles getExistingByMd5(String md5) throws Exception {
         return getByMd5(md5, false);
     }
 
-    public static Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
+    public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
         if (md5 == null) {
             return null;
         }
@@ -106,7 +109,7 @@ public class IndexFilesDao {
     }
 
     // TODO
-    public static String getMd5ByFilename(FileObject filename) throws Exception {
+    public String getMd5ByFilename(FileObject filename) throws Exception {
         FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
         synchronized(IndexFilesDao.class) {
             return indexFiles.getMd5ByFilelocation(fl);
@@ -143,14 +146,15 @@ public class IndexFilesDao {
         }
     }
 
-    public static Set<String> getAllMd5() throws Exception {
+    // not used
+    public Set<String> getAllMd5() throws Exception {
         synchronized(IndexFilesDao.class) {
             Set<String> md5All = indexFiles.getAllMd5();
             return md5All;
         }
     }
 
-    public static Set<String> getLanguages() throws Exception {
+    public Set<String> getLanguages() throws Exception {
         synchronized(IndexFilesDao.class) {
             Set<String> languages = indexFiles.getLanguages();
             return languages;
@@ -167,7 +171,8 @@ public class IndexFilesDao {
     }
      */
 
-    public static IndexFiles ensureExistenceNot(FileLocation filename) throws Exception {
+    @Deprecated
+    public IndexFiles ensureExistenceNot(FileLocation filename) throws Exception {
         /*
 	IndexFiles fi = getByMd5(md5);
 	if (fi == null) {
@@ -177,7 +182,7 @@ public class IndexFilesDao {
         return null;
     }
 
-    public static void save(Set<IndexFiles> saves, IndexFiles i) {
+    public void save(Set<IndexFiles> saves, IndexFiles i) {
         if (i.hasChanged()) {
             try {
                 synchronized(IndexFilesDao.class) {
@@ -198,6 +203,7 @@ public class IndexFilesDao {
         }
     }
 
+    @Deprecated
     public static IndexFiles instanceNot(String md5) {
         IndexFiles i = all.get(md5);
         if (i == null) {
@@ -213,19 +219,19 @@ public class IndexFilesDao {
         }
     }
 
-    public static void addTemp(IndexFiles i) {
+    public void addTemp(IndexFiles i) {
         synchronized(IndexFilesDao.class) {
         dbitemp.putIfAbsent(i.getMd5(), i);
         }
     }
 
-    public static IndexFiles getByTemp(String md5) {
+    public IndexFiles getByTemp(String md5) {
         synchronized(IndexFilesDao.class) {
         return dbitemp.remove(md5);
         }
     }
 
-    public static void close() {
+    public void close() {
         try {
             synchronized(IndexFilesDao.class) {
                 indexFiles.close();
@@ -235,7 +241,7 @@ public class IndexFilesDao {
         }
     }
 
-    public static void commit() {
+    public void commit() {
         synchronized(IndexFilesDao.class) {
         int[] pris = getPris();
         log.info("dbis {}", dbi.keySet());
@@ -248,7 +254,7 @@ public class IndexFilesDao {
         for (Entry<String, IndexFiles> entry : dbi.entrySet()) {
             String key = entry.getKey();
             IndexFiles i = entry.getValue();
-            IndexFilesDao.save(saves, i);
+            save(saves, i);
             MyLock lock = i.getLock();
             if (lock != null) {
                 LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
@@ -268,7 +274,7 @@ public class IndexFilesDao {
         }
         for (Entry<String, IndexFiles> entry : dbitemp.entrySet()) {
             IndexFiles i = entry.getValue();
-            IndexFilesDao.save(saves, i);
+            save(saves, i);
             dbitemp.remove(entry.getKey());
         }
         //all.clear();
@@ -283,7 +289,7 @@ public class IndexFilesDao {
         }
     }
 
-    private static int[] getPris() {
+    private int[] getPris() {
         int[] pris = { dbi.size(), dbitemp.size() };
         /*
         for (String k : all.keySet()) {
@@ -299,7 +305,7 @@ public class IndexFilesDao {
         return pris;
     }
 
-    public static void flush() {
+    public void flush() {
         try {
             synchronized(IndexFilesDao.class) {
                 indexFiles.flush();
@@ -309,12 +315,12 @@ public class IndexFilesDao {
         }
     }
 
-    public static String webstat() {
+    public String webstat() {
         int[] pris = getPris();
         return "d " + pris[0] + " / " + pris[1];
     }
 
-    public static int dirty() {
+    public int dirty() {
         int [] pris = getPris();
         if (true) return pris[0] + pris[1];
         int dirty1 = 0;
@@ -350,11 +356,13 @@ public class IndexFilesDao {
         }
     }
 
-    public static Map<String, IndexFiles> getByMd5(Set<String> md5s) throws Exception {
+    // todo has bieffect
+    public Map<String, IndexFiles> getByMd5(Set<String> md5s) throws Exception {
         return getByMd5(md5s, true);
     }
 
-    public static Map<String, IndexFiles> getByMd5(Set<String> md5s, boolean create) throws Exception {
+    // todo has bieffect
+    public Map<String, IndexFiles> getByMd5(Set<String> md5s, boolean create) throws Exception {
         if (md5s == null) {
             return null;
         }
@@ -382,7 +390,7 @@ public class IndexFilesDao {
     }
 
     // TODO
-    public static Map<FileObject, String> getMd5ByFilename(Set<FileObject> filenames) throws Exception {
+    public Map<FileObject, String> getMd5ByFilename(Set<FileObject> filenames) throws Exception {
         Set<FileLocation> fls = new HashSet<>();
         for (FileObject filename : filenames) {
             FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
@@ -404,7 +412,7 @@ public class IndexFilesDao {
     }
 
     // not used
-    public static List<Map> getBothByFilename(Set<String> filenames) throws Exception {
+    public List<Map> getBothByFilename(Set<String> filenames) throws Exception {
         String nodename = ControlService.nodename;
         Set<FileLocation> fls = new HashSet<>();
         for (String filename : filenames) {
@@ -416,11 +424,11 @@ public class IndexFilesDao {
         }
     }
 
-    public static void clear() {
+    public void clear() {
         indexFiles.clear();
     }
 
-    public static void drop() {
+    public void drop() {
         indexFiles.drop();
     }
 

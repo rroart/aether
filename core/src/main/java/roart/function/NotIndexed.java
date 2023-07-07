@@ -9,6 +9,7 @@ import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
+import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 
 public class NotIndexed extends AbstractFunction {
@@ -19,6 +20,7 @@ public class NotIndexed extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         List<List> retlistlist = new ArrayList<>();
         List<ResultItem> retlist = new ArrayList<>();
         List<ResultItem> retlist2 = new ArrayList<>();
@@ -29,10 +31,10 @@ public class NotIndexed extends AbstractFunction {
         retlist2.add(ri3);
         List<ResultItem> retlistyes = null;
         try {
-            retlist.addAll(Traverse.notindexed(param));
-            retlistyes = Traverse.indexed(param);
-            Map<String, Integer> plusretlist = new HashMap<String, Integer>();
-            Map<String, Integer> plusretlistyes = new HashMap<String, Integer>();
+            retlist.addAll(Traverse.notindexed(param, indexFilesDao));
+            retlistyes = Traverse.indexed(param, indexFilesDao);
+            Map<String, Integer> plusretlist = new HashMap<>();
+            Map<String, Integer> plusretlistyes = new HashMap<>();
             for(ResultItem ri : retlist) {
                 if (ri == retlist.get(0)) {
                     continue;

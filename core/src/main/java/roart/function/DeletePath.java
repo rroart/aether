@@ -28,6 +28,7 @@ public class DeletePath extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
 	ConsistentClean cc = new ConsistentClean(param);
         synchronized (ControlService.writelock) {
             try {
@@ -48,7 +49,7 @@ public class DeletePath extends AbstractFunction {
                 }
                 //Set<String> indexes = IndexFilesDao.getAllMd5();
 		List<IndexFiles> indexes;
-		indexes = new IndexFilesDao().getAll();
+		indexes = indexFilesDao.getAll();
 
                 Set<FileObject> delfileset = new HashSet<>();
                 cc.extracted(delList, delfileset, path, indexes, ifs, false, true);
@@ -81,7 +82,7 @@ public class DeletePath extends AbstractFunction {
                     lock2.unlock();
                 }
 		*/
-                while (IndexFilesDao.dirty() > 0) {
+                while (indexFilesDao.dirty() > 0) {
                     TimeUnit.SECONDS.sleep(60);
                 }
 

@@ -15,9 +15,10 @@ public class DbDrop extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         String db = param.name;
         if (db == null) {
-            IndexFilesDao.drop();
+            indexFilesDao.drop();
         } else {
             IndexFilesAccess access = IndexFilesAccessFactory.get(db);
             access.drop();

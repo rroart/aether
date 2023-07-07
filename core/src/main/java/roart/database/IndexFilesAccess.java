@@ -70,6 +70,7 @@ public abstract class IndexFilesAccess {
         return result.error;
     }
     
+    // not used
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         param.setConf(MyConfig.conf);
@@ -78,6 +79,7 @@ public abstract class IndexFilesAccess {
         return result.getIndexFiles()[0];
     }
 
+    // todo qu
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         param.setConf(MyConfig.conf);

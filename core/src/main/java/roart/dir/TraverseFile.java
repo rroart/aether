@@ -59,6 +59,13 @@ public class TraverseFile {
 
     private static Logger log = LoggerFactory.getLogger(TraverseFile.class);
 
+    private IndexFilesDao indexFilesDao = new IndexFilesDao();
+
+    public TraverseFile(IndexFilesDao indexFilesDao) {
+        super();
+        this.indexFilesDao = indexFilesDao;
+    }
+
     /**
      * Handle a single file during traversal
      * 
@@ -66,12 +73,14 @@ public class TraverseFile {
      * @throws Exception
      */
     
-    public static void handleFo3(TraverseQueueElement trav)
+    @Deprecated // ?
+    public void handleFo3(TraverseQueueElement trav)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
         //          } else {
         // config with finegrained distrib
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         if (Traverse.isMaxed(trav.getMyid(), trav.getClientQueueElement())) {
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);
@@ -86,7 +95,7 @@ public class TraverseFile {
         //MyLock lock2 = MyLockFactory.create();
         //lock2.lock(fo.toString());
         log.debug("timer");
-        String md5 = IndexFilesDao.getMd5ByFilename(filename);
+        String md5 = indexFilesDao.getMd5ByFilename(filename);
         log.debug("info {} {}", md5, filename);
         MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
         if (!filestodoset.add(filename.toString())) {
@@ -111,11 +120,11 @@ public class TraverseFile {
                         // get read file
                         lock = MyLockFactory.create();
                         lock.lock(md5);
-                        files = IndexFilesDao.getByMd5(md5);
+                        files = indexFilesDao.getByMd5(md5);
                     }
                     // modify write file
                     files.addFile(filename.location.toString(), filename.object);
-                    IndexFilesDao.addTemp(files);
+                    indexFilesDao.addTemp(files);
                     log.info("adding md5 file {}", filename);
                 }
                 // calculatenewmd5 and nodbchange are never both true
@@ -150,7 +159,7 @@ public class TraverseFile {
             // get read file
             lock = MyLockFactory.create();
             lock.lock(md5);
-            files = IndexFilesDao.getByMd5(md5);
+            files = indexFilesDao.getByMd5(md5);
             // TODO implement other wise
             // error case for handling when the supporting filename indexed
             // table has an entry, but no corresponding in the md5 indexed
@@ -159,7 +168,7 @@ public class TraverseFile {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
                 files.addFile(filename.location.toString(), filename.object);
-                IndexFilesDao.addTemp(files);
+                indexFilesDao.addTemp(files);
             }
             log.debug("info {} {}", md5, files);
         }
@@ -216,7 +225,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map, Map<FileObject, String> contentMap)
+    public void handleFo3(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map, Map<FileObject, String> contentMap)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -271,20 +280,20 @@ public class TraverseFile {
                 files = ifMap.get(md5);
                 //}
                 if (files == null) {
-                    files = IndexFilesDao.getByTemp(md5);
+                    files = indexFilesDao.getByTemp(md5);
                 }
                 if (files == null) {
-                    files = IndexFilesDao.getByMd5(md5);
+                    files = indexFilesDao.getByMd5(md5);
                 }
                 if (files == null) {
-                    files = IndexFilesDao.getNewByMd5(md5);
+                    files = indexFilesDao.getNewByMd5(md5);
                     //files = new IndexFiles(md5);
                 }
                 log.debug("Files {}", files);
                 files.setChecked("" + System.currentTimeMillis());
                 // modify write file
                 files.addFile(filename.location.toString(), filename.object);
-                IndexFilesDao.addTemp(files);
+                indexFilesDao.addTemp(files);
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
@@ -327,7 +336,7 @@ public class TraverseFile {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
                 files.addFile(filename.location.toString(), filename.object);
-                IndexFilesDao.addTemp(files);
+                indexFilesDao.addTemp(files);
             }
             log.debug("info {} {}", md5, files);
         }
@@ -379,7 +388,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public static boolean getDoIndex(TraverseQueueElement trav, String md5, IndexFiles files,
+    public boolean getDoIndex(TraverseQueueElement trav, String md5, IndexFiles files,
             MySet<String> md5sdoneset, AbstractFunction function) throws Exception {
         boolean doindex = true;
         if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
@@ -401,7 +410,7 @@ public class TraverseFile {
         return doindex;
     }
 
-    public static void handleFo3(TraverseQueueElement trav, Set<FileObject> filenames)
+    public void handleFo3(TraverseQueueElement trav, Set<FileObject> filenames)
             throws Exception {
         FileObject filename = trav.getFileobject();
         // ADD
@@ -422,7 +431,7 @@ public class TraverseFile {
      * @param contentMap TODO
      */
     
-    public static void indexsingle(TraverseQueueElement trav,
+    public void indexsingle(TraverseQueueElement trav,
             String md5, FileObject filename, IndexFiles index, Map<FileObject, MyFile> fsMap, Map<FileObject, String> contentMap) {
         int maxfailed = MyConfig.conf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
@@ -447,22 +456,22 @@ public class TraverseFile {
         //size = doTika(filename, filename, md5, index, retlist);
     }
 
-    public static Map<FileObject, MyFile> handleFo3(Set<FileObject> filenames) {
+    public Map<FileObject, MyFile> handleFo3(Set<FileObject> filenames) {
         Map<FileObject, MyFile> result = FileSystemDao.getWithoutInputStream(filenames);
         return result;
     }
 
-    public static Map<FileObject, String> handleFo4(Set<FileObject> filenames) throws Exception {
-        Map<FileObject, String> result = IndexFilesDao.getMd5ByFilename(filenames);
+    public Map<FileObject, String> handleFo4(Set<FileObject> filenames) throws Exception {
+        Map<FileObject, String> result = indexFilesDao.getMd5ByFilename(filenames);
         return result;
     }
 
-    public static Map<String, IndexFiles> handleFo5(Set<String> md5s) throws Exception {
-        Map<String, IndexFiles> result = IndexFilesDao.getByMd5(md5s);
+    public Map<String, IndexFiles> handleFo5(Set<String> md5s) throws Exception {
+        Map<String, IndexFiles> result = indexFilesDao.getByMd5(md5s);
         return result;
     }
 
-    public static Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
+    public Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
         Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {
             FileObject filename = trav.getFileobject();
@@ -496,7 +505,7 @@ public class TraverseFile {
         return contentMap;
     }
     
-    public static Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map) {
+    public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map) {
         Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {
             FileObject filename = trav.getFileobject();

@@ -52,9 +52,11 @@ import roart.common.model.Location;
 
 public class Traverse {
 
+    private static Logger log = LoggerFactory.getLogger(Traverse.class);
+
     private static final int MAXFILE = 500;
 
-    private static Logger log = LoggerFactory.getLogger(Traverse.class);
+    private IndexFilesDao indexFilesDao = new IndexFilesDao();
 
     /**
      * Check if filename/directory is among excluded directories
@@ -64,7 +66,7 @@ public class Traverse {
      * @return whether excluded
      */
 
-    private static boolean indirlistnot(FileObject fileObject, FileObject[] dirlistnot2) {
+    private boolean indirlistnot(FileObject fileObject, FileObject[] dirlistnot2) {
         if (dirlistnot2 == null) {
             return false;
         }
@@ -179,8 +181,9 @@ public class Traverse {
     // fileset will contain a map of md5 and the directories it has files in
     public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
         Set<String> retset = new HashSet<>();
-
-        List<IndexFiles> files = new IndexFilesDao().getAll();
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        
+        List<IndexFiles> files = indexFilesDao.getAll();
         log.info("size {}", files.size());
         for (IndexFiles file : files) {
             String md5 = file.getMd5();
@@ -208,6 +211,7 @@ public class Traverse {
 
     // old, probably oudated by overlapping?
     public static Set<String> dupdir (FileObject fileObject) throws Exception {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         boolean onlyone = false;
         boolean error = false;
         int count = 0;
@@ -229,8 +233,8 @@ public class Traverse {
                 if (error) {
                     continue;
                 }
-                String md5 = IndexFilesDao.getMd5ByFilename(fo);
-                IndexFiles files = IndexFilesDao.getByMd5(md5);
+                String md5 = indexFilesDao.getMd5ByFilename(fo);
+                IndexFiles files = indexFilesDao.getByMd5(md5);
                 if (files == null) {
                     error = true;
                     continue;
@@ -239,7 +243,7 @@ public class Traverse {
                     error = true;
                     continue;
                 }
-                if (IndexFilesDao.getByMd5(md5).getFilelocations().size() < 2) {
+                if (indexFilesDao.getByMd5(md5).getFilelocations().size() < 2) {
                     onlyone = true;
                 }
                 count++;
@@ -252,11 +256,11 @@ public class Traverse {
         return retset;
     }
 
-    public static List<ResultItem> notindexed(ServiceParam el) throws Exception {
+    public static List<ResultItem> notindexed(ServiceParam el, IndexFilesDao indexFilesDao) throws Exception {
         List<ResultItem> retlist = new ArrayList<>();
         ResultItem ri = new ResultItem();
         retlist.add(IndexFiles.getHeader());
-        List<IndexFiles> indexes = new IndexFilesDao().getAll();
+        List<IndexFiles> indexes = indexFilesDao.getAll();
         log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
@@ -270,9 +274,9 @@ public class Traverse {
         return retlist;
     }
 
-    public static List<ResultItem> indexed(ServiceParam el) throws Exception {
+    public static List<ResultItem> indexed(ServiceParam el, IndexFilesDao indexFilesDao) throws Exception {
         List<ResultItem> retlist = new ArrayList<ResultItem>();
-        List<IndexFiles> indexes = new IndexFilesDao().getAll();
+        List<IndexFiles> indexes = indexFilesDao.getAll();
         log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
             Boolean indexed = index.getIndexed();
@@ -288,7 +292,7 @@ public class Traverse {
         return retlist;
     }
 
-    public static String getExistingLocalFile(IndexFiles i) {
+    public String getExistingLocalFile(IndexFiles i) {
         FileLocation fl = null;
         try {
             fl = getExistingLocalFilelocation(i);
@@ -343,8 +347,8 @@ public class Traverse {
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
-        new IndexFilesDao().getAllFiles();
-        List<IndexFiles> indexes = new IndexFilesDao().getAll();
+        indexFilesDao.getAllFiles();
+        List<IndexFiles> indexes = indexFilesDao.getAll();
         for (IndexFiles index : indexes) {
             if (isMaxed(myid, element)) {
                 break;
@@ -373,8 +377,9 @@ public class Traverse {
             //queue.offer(trav);
             String md5sdoneid = "md5sdoneid"+trav.getMyid();
             MySet<String> md5sdoneset = MySets.get(md5sdoneid);
-            if (TraverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
-                TraverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null, null);
+            TraverseFile traverseFile = new TraverseFile(indexFilesDao);
+            if (traverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
+                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null, null);
             }
             //MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);
@@ -474,7 +479,7 @@ public class Traverse {
 
     // ?
     @Deprecated
-    public static boolean isLocal(FileObject fo) {
+    public boolean isLocal(FileObject fo) {
         return new FileSystemDao().exists(fo);
     }
 

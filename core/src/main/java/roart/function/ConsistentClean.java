@@ -64,6 +64,7 @@ public class ConsistentClean extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         boolean clean = param.clean;
         List<ResultItem> delList = new ArrayList<>();
         List<ResultItem> nonexistList = new ArrayList<>();
@@ -107,7 +108,7 @@ public class ConsistentClean extends AbstractFunction {
                 indexes = indexFilesDao.getAll();
                 extracted(delList, delfileset, path, indexes, ifs, true, clean);
 
-                while (IndexFilesDao.dirty() > 0) {
+                while (indexFilesDao.dirty() > 0) {
                     TimeUnit.SECONDS.sleep(60);
                 }
 
@@ -142,12 +143,12 @@ public class ConsistentClean extends AbstractFunction {
                 if (false && clean) {
                     //DbRunner.doupdate = false;
                     for (FileObject filename : delfileset) {
-                        String md5 = IndexFilesDao.getMd5ByFilename(filename);
+                        String md5 = indexFilesDao.getMd5ByFilename(filename);
                         // common3?
                         if (md5 != null) {
                             MyLock lock2 = MyLockFactory.create();
                             lock2.lock(md5);
-                            IndexFiles ifile = IndexFilesDao.getByMd5(md5);
+                            IndexFiles ifile = indexFilesDao.getByMd5(md5);
                             FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
                             boolean removed = ifile.removeFilelocation(fl);
                             //log.info("fls2 size " + removed + ifile.getFilelocations().size());
@@ -168,7 +169,7 @@ public class ConsistentClean extends AbstractFunction {
                     }
                     //DbRunner.doupdate = true;
                     //IndexFilesDao.commit();
-                    while (IndexFilesDao.dirty() > 0) {
+                    while (indexFilesDao.dirty() > 0) {
                         TimeUnit.SECONDS.sleep(60);
                     }
                     for (IndexFiles i : ifs) {

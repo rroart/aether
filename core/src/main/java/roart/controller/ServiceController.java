@@ -527,10 +527,11 @@ public class ServiceController implements CommandLineRunner {
             method = RequestMethod.GET)
     public @ResponseBody byte[] getDownload(@PathVariable String id)
             throws Exception {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         InputStream result = null;
         try {
             String md5 = id;
-            IndexFiles index = IndexFilesDao.getByMd5(md5);
+            IndexFiles index = indexFilesDao.getByMd5(md5);
             FileLocation fl = index.getaFilelocation();
             FileObject f = FsUtil.getFileObject(fl);
             Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());

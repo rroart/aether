@@ -35,13 +35,14 @@ public class DbRunner implements Runnable {
     //public static volatile boolean doupdate = true;
 
     public void run() {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         while (true) {
             long now = System.currentTimeMillis();
             log.info("updatetime " + (int) ((now - lastupdate)/1000));
             if (true || (now - lastupdate) >= update * 1000) {
                 try {
                     if (true /*doupdate*/) {
-                        IndexFilesDao.commit();
+                        indexFilesDao.commit();
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);

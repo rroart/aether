@@ -21,6 +21,7 @@ public class DbIndex extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao();
         try {
             ServiceParam.Function function = param.function;
             String md5 = param.file;
@@ -34,7 +35,7 @@ public class DbIndex extends AbstractFunction {
             List<ResultItem> filesList = new ArrayList<>();
             filesList.add(new ResultItem("Files"));
 
-            IndexFiles index = IndexFilesDao.getByMd5(md5);
+            IndexFiles index = indexFilesDao.getByMd5(md5);
             if (index != null) {
                 FileLocation aFl = index.getaFilelocation();
                 indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, aFl));
@@ -44,7 +45,7 @@ public class DbIndex extends AbstractFunction {
                         indexfilesList.add(new ResultItem(filename.toString()));
                     }
                 }
-                Set<FileLocation> flSet = IndexFilesDao.getFilelocationsByMd5(md5);
+                Set<FileLocation> flSet = indexFilesDao.getFilelocationsByMd5(md5);
                 if (flSet != null) {
                     for (FileLocation fl : flSet) {
                         if (fl == null) {
