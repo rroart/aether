@@ -276,6 +276,7 @@ public class TraverseFile {
                 //if (files == null) {
                 //z.lock(md5);
                 // get read file
+                // todo lock file name
                 lock = MyLockFactory.create();
                 lock.lock(md5);
                 files = ifMap.get(md5);
@@ -284,11 +285,12 @@ public class TraverseFile {
                     files = indexFilesDao.getByTemp(md5);
                 }
                 if (files == null) {
+                    // TODO batch
                     files = indexFilesDao.getByMd5(md5);
                 }
-                if (files == null) {
-                    files = indexFilesDao.getNewByMd5(md5);
-                    //files = new IndexFiles(md5);
+                if (files == null && md5 != null) {
+                    files = new IndexFiles(md5);
+                    files.setCreated("" + System.currentTimeMillis());             
                 }
                 log.debug("Files {}", files);
                 files.setChecked("" + System.currentTimeMillis());
