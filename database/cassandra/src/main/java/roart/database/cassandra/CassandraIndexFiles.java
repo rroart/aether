@@ -286,25 +286,10 @@ public class CassandraIndexFiles {
         Update update = updatewa
                 .whereColumn(md5q)
                 .isEqualTo(literal(ifile.getMd5()));
-        //log.info("hbase " + ifile.getMd5());
+
         session.execute(update.build());
         put(ifile.getMd5(), ifile.getFilelocations());
 
-        // or if still to slow, simply get current (old) indexfiles
-        /*
-        Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
-        curfls.removeAll(ifile.getFilelocations());
-
-        // delete the files no longer associated to the md5
-        for (FileLocation fl : curfls) {
-            String name = fl.toString();
-            log.info("Cassandra delete {}", name);
-            Delete delete = deleteFrom(TABLE_FILES_NAME)
-                    .whereColumn(filenameq)
-                    .isEqualTo(literal(name));
-            session.execute(delete.build());
-        }
-        */
     }
 
     public void put(String md5, Set<FileLocation> files) throws Exception {

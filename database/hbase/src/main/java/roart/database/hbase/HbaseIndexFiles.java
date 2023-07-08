@@ -202,31 +202,12 @@ public class HbaseIndexFiles {
         return result;
     }
     
+    // not used
     public void put(IndexFiles ifile) throws Exception {
-        //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
         Put put = map(ifile);
-        /*
-        for (; i < ifile.getMaxfilelocations(); i++) {
-            Delete d = new Delete(Bytes.toBytes(ifile.getMd5()));
-            d.addColumns(flcf, Bytes.toBytes("q" + i)); // yes this deletes, was previously deleteColumns
-            //log.info("Hbase delete q" + i);
-            indexTable.delete(d);
-        }
-        */
 
         put(ifile.getMd5(), ifile.getFilelocations());	    
         indexTable.put(put);
-
-        // or if still to slow, simply get current (old) indexfiles
-        Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
-        curfls.removeAll(ifile.getFilelocations());
-
-        // delete the files no longer associated to the md5
-        for (FileLocation fl : curfls) {
-            String name = fl.toString();
-            //log.info("Hbase delete " + name);
-            deleteFile(name);
-        }
 
     }
 
@@ -453,6 +434,7 @@ private Put map(IndexFiles ifile) {
         return get;
     }
 
+    @Deprecated
     public IndexFiles getIndexByFilelocation(FileLocation fl) {
         String md5 = getMd5ByFilelocation(fl);
         if (md5.length() == 0) {

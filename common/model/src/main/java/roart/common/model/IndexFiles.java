@@ -39,7 +39,6 @@ public class IndexFiles {
     private String noindexreason;
     private String timeoutreason;
 	private Set<FileLocation> filelocations;
-    private int maxfilelocations; // keep max count, for hbase deletions
     private String language;
     private String isbn;
     private String created;
@@ -58,12 +57,10 @@ public class IndexFiles {
     
     private IndexFiles() {
 	    filelocations = new HashSet<>();
-	    maxfilelocations = 0;
 	}
 
 	public IndexFiles(String md5) {
 	    filelocations = new HashSet<>();
-	    maxfilelocations = 0;
 	    this.setMd5(md5);
 	}
 
@@ -81,11 +78,6 @@ public class IndexFiles {
 	    }
 	    return ((FileLocation) (getFilelocations()).iterator().next()).getFilename();
 	}
-
-        @Deprecated
-    public int getMaxfilelocations() {
-	return maxfilelocations;
-    }
 
         public String getFilelocation() {
 	    if (filelocations.size() == 0) {
@@ -277,9 +269,6 @@ public class IndexFiles {
 	    changed |= true;
 	    filelocations.add(filelocation);
 	    log.debug("fls {}", filelocations);
-	    if (filelocations.size() > maxfilelocations) {
-		maxfilelocations = filelocations.size();
-	    }
             if (filelocation.toString().length() > 500) {
                 log.error("filename {}", filelocation.toString().length());                
             }

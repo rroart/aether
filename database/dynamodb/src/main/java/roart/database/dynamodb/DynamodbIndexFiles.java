@@ -362,49 +362,10 @@ public class DynamodbIndexFiles {
             str = new FileLocationConverter().convert(new ArrayList(ifile.getFilelocations()));
             updatedvalues.put(filelocationq, AttributeValue.builder().s(str).build());	        
         }
-        int i = -1;
-        /*
-	    for (FileLocation file : ifile.getFilelocations()) {
-		i++;
-		String filename = getFile(file);
-		//log.info("hbase " + filename);
-		//item.addColumn(flcf, "q" + i), filename));
-	    }
-	    i++;
-         */
-        // now, delete the rest (or we would get some old historic content)
-        // TODO
-        for (; i < ifile.getMaxfilelocations(); i++) {
-            //Delete d = new Delete(ifile.getMd5()));
-            //d.addColumns(flcf, "q" + i)); // yes this deletes, was previously deleteColumns
-            //log.info("Hbase delete q" + i);
-            //indexTable.delete(d);
-        }
 
         put(ifile.getMd5(), ifile.getFilelocations());
-        //client.putI;
-        //TableWriteItems items = new TableWriteItems("");
-        client.putItem(PutItemRequest.builder().tableName(getIndexFiles()).item(updatedvalues).build());
-         //client.batchW .batchWriteItem(batchWRQ);
-        /*
-        // or if still to slow, simply get current (old) indexfiles
-        Set<FileLocation> curfls = getFilelocationsByMd5(ifile.getMd5());
-        curfls.removeAll(ifile.getFilelocations());
 
-        // delete the files no longer associated to the md5
-        for (FileLocation fl : curfls) {
-            String name = fl.toString();
-            log.info("Dynamodb delete {}", name);
-                try {
-                    client.deleteItem(DeleteItemRequest.builder().key(Map.of(filenameq, AttributeValue.builder().s(fl.toString()).build())).build());
-                }
-                catch (Exception e) {
-                    log.error("Unable to delete item: {}", e);
-                }
-            //Delete d = new Delete(name));
-            //filesTable.delete(d);
-        }
-        */
+        client.putItem(PutItemRequest.builder().tableName(getIndexFiles()).item(updatedvalues).build());
     }
 
     // is this handling other nodes

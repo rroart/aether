@@ -113,6 +113,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         return result;
     }
 
+    @Deprecated
     @Override
     public DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception {
         FileLocation fl = param.getFileLocation();

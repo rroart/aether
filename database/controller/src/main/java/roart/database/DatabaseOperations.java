@@ -24,6 +24,7 @@ public abstract class DatabaseOperations {
     
     public abstract DatabaseFileLocationResult getFilelocationsByMd5(DatabaseMd5Param param) throws Exception;;
     
+    @Deprecated
     public abstract DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception;;
     
     public abstract DatabaseMd5Result getMd5ByFilelocation(DatabaseFileLocationParam param) throws Exception;;
