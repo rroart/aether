@@ -17,6 +17,13 @@ public class MyHazelcastLock extends MyLock {
     }
 
     @Override
+    public boolean tryLock(String path) throws Exception {
+        HazelcastInstance hz = GetHazelcastInstance.instance();
+        lock = hz.getCPSubsystem().getLock(path);
+        return lock.tryLock();
+    }
+
+    @Override
     public void unlock() {
         lock.unlock();
     }

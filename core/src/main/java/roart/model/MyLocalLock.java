@@ -10,46 +10,61 @@ import roart.common.synchronization.MyLock;
 public class MyLocalLock extends MyLock {
 
     private static ConcurrentHashMap<String, ReentrantLock> map = new ConcurrentHashMap();
-    
+
+    ReentrantLock lock;
+
     private String path;
-    
+
     @SuppressWarnings("squid:S2222")
     @Override
     public void lock(String path) throws Exception {
-        log.debug("before lock {}", path);
-        //Lock lock = map.get(path);
-        //synchronized (MyLocalLock.class) {
-                 //if (lock == null) {
-        lock = map.computeIfAbsent(path, e -> new ReentrantLock());
-       // }
-        //}
-        lock.lock();
-        log.debug("after lock {}", path);
-        this.path = path;
+        synchronized (MyLocalLock.class) {
+            log.debug("before lock {}", path);
+            //Lock lock = map.get(path);
+            //synchronized (MyLocalLock.class) {
+            //if (lock == null) {
+            lock = map.computeIfAbsent(path, e -> new ReentrantLock());
+            // }
+            //}
+            lock.lock();
+            log.debug("after lock {}", path);
+            this.path = path;
+        }
     }
 
-    ReentrantLock lock;
-    
+    @SuppressWarnings("squid:S2222")
+    @Override
+    public boolean tryLock(String path) throws Exception {
+        synchronized (MyLocalLock.class) {
+            this.path = path;
+            log.debug("before lock {}", path);
+            lock = map.computeIfAbsent(path, e -> new ReentrantLock());
+            //log.debug("after lock {}", path);
+            return lock.tryLock();
+        }
+    }
+
     @Override
     public void unlock() {
         synchronized (MyLocalLock.class) {
-        /*
+            /*
             lock = map.get(path);
         if (lock == null) {
             System.out.println("Map " + path + " " + map);
         }
-        */
-        if (!lock.hasQueuedThreads()) {
-            map.remove(path);
-            if (lock.hasQueuedThreads()) {
-                map.put(path, lock);
-                //System.out.println("Back " + path);
+             */
+            if (!lock.hasQueuedThreads()) {
+                map.remove(path);
+                if (lock.hasQueuedThreads()) {
+                    map.put(path, lock);
+                    //System.out.println("Back " + path);
+                }
+                //System.out.println("Rem " + path + " " + lock.getHoldCount() + " " + lock.getQueueLength());
+            } else {
+                //System.out.println("Lock " + path + " " + lock.getHoldCount() + " " + lock.getQueueLength());
             }
-            //System.out.println("Rem " + path + " " + lock.getHoldCount() + " " + lock.getQueueLength());
-        } else {
-            //System.out.println("Lock " + path + " " + lock.getHoldCount() + " " + lock.getQueueLength());
-        }
-        lock.unlock();
+            // TODO?
+            lock.unlock();
         }
         log.debug("after unlock {}", path);
     }

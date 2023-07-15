@@ -1,5 +1,7 @@
 package roart.model;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
 import roart.common.constants.Constants;
@@ -16,6 +18,15 @@ public class MyCuratorLock extends MyLock {
         lock = new InterProcessMutex(ControlService.curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
         lock.acquire();
         log.info("after lock");
+    }
+
+    @Override
+    public boolean tryLock(String path) throws Exception {
+        log.info("before lock");
+        lock = new InterProcessMutex(ControlService.curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
+        lock.acquire(1, TimeUnit.SECONDS);
+        log.info("after lock");
+        return lock.isAcquiredInThisProcess();
     }
 
     @Override
