@@ -44,11 +44,13 @@ public abstract class AbstractFunction {
         IndexFilesDao indexFilesDao = new IndexFilesDao();
         synchronized (ControlService.writelock) {
             try {
+                /*
                 MyLock lock = null;
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
+                */
                 ServiceParam.Function function = el.function;
                 String filename = el.add;
                 //boolean reindex = el.reindex;
@@ -162,7 +164,7 @@ public abstract class AbstractFunction {
                 retlistlist.add(retNotExistList);
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     ZKMessageUtil.dorefresh(ControlService.nodename);
-                    lock.unlock();
+                    //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");
                 }
                 return retlistlist;

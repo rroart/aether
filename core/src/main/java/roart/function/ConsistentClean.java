@@ -99,11 +99,13 @@ public class ConsistentClean extends AbstractFunction {
         List<IndexFiles> indexes;
         synchronized (ControlService.writelock) {
             try {
+                /*
                 MyLock lock = null;
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
+                */
                 Set<IndexFiles> ifs = new HashSet<>();
                 indexes = indexFilesDao.getAll();
                 extracted(delList, delfileset, path, indexes, ifs, true, clean);
@@ -126,7 +128,7 @@ public class ConsistentClean extends AbstractFunction {
 
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     ZKMessageUtil.dorefresh(ControlService.nodename);
-                    lock.unlock();
+                    //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");
                 }
                 /*
@@ -182,7 +184,7 @@ public class ConsistentClean extends AbstractFunction {
 
                     if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                         ZKMessageUtil.dorefresh(ControlService.nodename);
-                        lock.unlock();
+                        //lock.unlock();
                     }
                 }
 

@@ -32,11 +32,13 @@ public class DeletePath extends AbstractFunction {
 	ConsistentClean cc = new ConsistentClean(param);
         synchronized (ControlService.writelock) {
             try {
+                /*
                 MyLock lock = null;
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
+                */
                 List<List> retlistlist = new ArrayList<>();
                 List<ResultItem> delList = new ArrayList<>();
                 delList.add(new ResultItem("Deleted"));
@@ -88,7 +90,7 @@ public class DeletePath extends AbstractFunction {
 
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     ZKMessageUtil.dorefresh(ControlService.nodename);
-                    lock.unlock();
+                    //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");
                 }
                 retlistlist.add(delList);
