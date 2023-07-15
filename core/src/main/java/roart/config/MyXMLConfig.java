@@ -3,6 +3,8 @@ package roart.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -226,8 +228,15 @@ public class MyXMLConfig {
         }
 
         String nodename  = configInstance.getNodename();
+        if (nodename == null) {
+            try {
+                nodename = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
         ControlService.nodename = nodename;
-        log.info("nodename0" + nodename);
+        log.info("nodename {}", nodename);
 
         //String languages = getLanguages();
         //configInstance.languages = languages.split(",");
