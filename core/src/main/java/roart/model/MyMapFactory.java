@@ -11,7 +11,11 @@ public class MyMapFactory extends MyFactory {
     
     public MyMap create(String mapid) {
         if (MyConfig.conf.wantDistributedTraverse()) {
-            return new MyHazelcastMap(mapid);
+            if (MyConfig.conf.getRedis() != null) {
+                return new MyRedisMap(MyConfig.conf.getRedis(), mapid);
+            } else {
+                return new MyHazelcastMap(mapid);
+            }
         } else {
             return new MyJavaMap();
         }

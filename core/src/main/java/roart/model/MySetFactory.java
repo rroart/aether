@@ -11,7 +11,11 @@ public class MySetFactory extends MyFactory {
     
     public MySet create(String setid) {
         if (MyConfig.conf.wantDistributedTraverse()) {
-            return new MyHazelcastSet(setid);
+            if (MyConfig.conf.getRedis() != null) {
+                return new MyRedisSet(MyConfig.conf.getRedis(), setid);
+            } else {
+                return new MyHazelcastSet(setid);
+            }
         } else {
             return new MyJavaSet();
         }

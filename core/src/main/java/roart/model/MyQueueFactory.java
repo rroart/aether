@@ -10,7 +10,11 @@ public class MyQueueFactory extends MyFactory {
     
     public MyQueue create(String listid) {
         if (MyConfig.conf.wantDistributedTraverse()) {
-            return new MyHazelcastQueue(listid);
+            if (MyConfig.conf.getRedis() != null) {
+                return new MyRedisQueue(MyConfig.conf.getRedis(), listid);
+            } else {
+                return new MyHazelcastQueue(listid);
+            }
         } else {
             return new MyJavaQueue();
         }

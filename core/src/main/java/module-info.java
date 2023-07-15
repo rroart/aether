@@ -58,4 +58,5 @@ module core {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires eureka.client;
+    requires redis.clients.jedis;
 }

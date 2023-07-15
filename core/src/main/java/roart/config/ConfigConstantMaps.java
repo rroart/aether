@@ -118,6 +118,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.CONNECTOR, String.class);
         map.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.class);
         map.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, String.class);
+        map.put(ConfigConstants.SYNCHRONIZATIONREDIS, String.class);
         map.put(ConfigConstants.GUIHIGHLIGHTMLT, Boolean.class);
         map.put(ConfigConstants.NODELANGUAGES, String.class);
         map.put(ConfigConstants.SEARCHENGINEMLTMLTCOUNT, Integer.class);
@@ -367,6 +368,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.CONNECTOR, "Connectors");
         text.put(ConfigConstants.DATABASEDATANUCLEUS, "Use datanucleus");
         text.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, "Zookeeper connection");
+        text.put(ConfigConstants.SYNCHRONIZATIONREDIS, "Redis connection");
         text.put(ConfigConstants.GUIHIGHLIGHTMLT, "Highlight MLT");
         text.put(ConfigConstants.NODELANGUAGES, "languages");
         text.put(ConfigConstants.SEARCHENGINEMLTMLTCOUNT, "MLT count");
@@ -486,6 +488,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.CONNECTOR, new XMLType( String.class, "{}", "Connectors"));
         mymap.put(ConfigConstants.DATABASEDATANUCLEUS, new XMLType( Boolean.class, Boolean.FALSE, "Use datanucleus"));
         mymap.put(ConfigConstants.SYNCHRONIZATIONZOOKEEPER, new XMLType( String.class, null, "Use zookeeper"));
+        mymap.put(ConfigConstants.SYNCHRONIZATIONREDIS, new XMLType( String.class, null, "Use redis"));
         mymap.put(ConfigConstants.GUIHIGHLIGHTMLT, new XMLType( Boolean.class, Boolean.TRUE, "Highlight MLT"));
         mymap.put(ConfigConstants.NODELANGUAGES, new XMLType( String.class, "en", "languages"));
         mymap.put(ConfigConstants.SEARCHENGINEMLTMLTCOUNT, new XMLType( Integer.class, 10, "MLT count"));

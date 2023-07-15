@@ -109,6 +109,7 @@ public class ConfigConstants {
     public static final String DATABASEDATANUCLEUS = "database.datanucleus[@enable]";
     public static final String DATABASESPRING = "database.spring[@enable]";
     public static final String SYNCHRONIZATIONZOOKEEPER = "synchronization.zookeeper";
+    public static final String SYNCHRONIZATIONREDIS = "synchronization.redis";
     public static final String GUIHIGHLIGHTMLT = "gui.highlightmlt[@enable]";
     public static final String NODELANGUAGES = "node.languages";
     public static final String SEARCHENGINEMLTMLTCOUNT = "searchengine.mlt.mltcount";

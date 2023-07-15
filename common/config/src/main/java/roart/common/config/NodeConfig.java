@@ -134,6 +134,7 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.FILESYSTEMS3);
     }
     
+    @Deprecated
     public Boolean wantZookeeperSmall() {
         return !((Boolean) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDLOCKMODEBIG));
     }
@@ -141,6 +142,11 @@ public class NodeConfig extends MyConfig {
     @JsonIgnore
     public String getZookeeper() {
         return (String) getNotEmptyValueOrDefault(ConfigConstants.SYNCHRONIZATIONZOOKEEPER);
+    }
+    
+    @JsonIgnore
+    public String getRedis() {
+        return (String) configValueMap.get(ConfigConstants.SYNCHRONIZATIONREDIS);
     }
     
     @JsonIgnore
@@ -161,7 +167,7 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public String getNodename() {
-        return (String) getValueOrDefault(ConfigConstants.NODENODENAME);       
+        return (String) configValueMap.get(ConfigConstants.NODENODENAME);       
     }
     
     public Boolean wantDistributedTraverse() {
