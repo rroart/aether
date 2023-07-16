@@ -140,7 +140,9 @@ public abstract class IndexFilesAccess {
         param.setIndexFiles(saves);
         long time = System.currentTimeMillis();
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.SAVE);
-        log.info("Save time {} for {}", (System.currentTimeMillis() - time) / 1000, saves.size());
+        if (!saves.isEmpty()) {
+            log.info("Save time {} for {}", (System.currentTimeMillis() - time) / 1000, saves.size());
+        }
     }
 
     public void flush() throws Exception {
