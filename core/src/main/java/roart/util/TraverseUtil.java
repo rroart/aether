@@ -66,7 +66,9 @@ public class TraverseUtil {
                 if (error) {
                     continue;
                 }
+                // TODO batch
                 String md5 = indexFilesDao.getMd5ByFilename(fo);
+                // TODO batch
                 IndexFiles files = indexFilesDao.getByMd5(md5);
                 if (files == null) {
                     error = true;
@@ -196,6 +198,29 @@ public class TraverseUtil {
             return filelocation;
         }
         return null;
+    }
+
+    /**
+     * Check if filename/directory is among excluded directories
+     * 
+     * @param fileObject of file to be tested
+     * @param dirlistnot2 an array of excluded directories
+     * @return whether excluded
+     */
+
+    public static boolean indirlistnot(FileObject fileObject, FileObject[] dirlistnot2) {
+        if (dirlistnot2 == null) {
+            return false;
+        }
+        for (int i = 0; i < dirlistnot2.length; i++) {
+            if (!fileObject.location.equals(dirlistnot2[i].location)) {
+                continue;
+            }
+            if (!dirlistnot2[i].object.isEmpty() && fileObject.object.indexOf(dirlistnot2[i].object)>=0) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

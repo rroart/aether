@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import roart.queue.ListQueueElement;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.SearchService;
@@ -35,6 +36,7 @@ import roart.model.MySets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,27 +56,52 @@ public class Traverse {
 
     private IndexFilesDao indexFilesDao = new IndexFilesDao();
 
-    /**
-     * Check if filename/directory is among excluded directories
-     * 
-     * @param fileObject of file to be tested
-     * @param dirlistnot2 an array of excluded directories
-     * @return whether excluded
-     */
+    //int max = 0;
+    //int indexcount = 0;
 
-    private boolean indirlistnot(FileObject fileObject, FileObject[] dirlistnot2) {
-        if (dirlistnot2 == null) {
-            return false;
+    String myid;
+    ServiceParam element;
+    String retlistid = null;
+    String retnotlistid = null;
+    //List<ResultItem> retList = null;
+    //List<ResultItem> retNotList = null;
+    String newsetid = null; 
+    //  MySet<String> newset = null; 
+    //  Map<String, HashSet<String>> dirset;
+    String notfoundsetid;
+    //boolean reindex = false;
+    //boolean calculatenewmd5;
+    String filestodosetid;
+    String traversecountid;
+    boolean nomd5;
+
+    FileObject[] dirlistnot;
+    SearchDisplay display;
+
+    //Set<String> md5sdone = new HashSet<String>();
+
+    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
+
+        this.myid = myid;
+        this.element = element;
+        this.retlistid = retlistid;
+        this.retnotlistid = retnotlistid;
+        this.newsetid = newsetid;
+        this.notfoundsetid = notfoundsetid;
+        //this.reindex = reindex;
+        //this.calculatenewmd5 = newmd5;
+        this.filestodosetid = filestodosetid;
+        this.traversecountid = traversecountid;
+        this.nomd5 = nomd5;
+
+        dirlistnotarr = MyConfig.conf.getDirListNot();
+        dirlistnot = new FileObject[dirlistnotarr.length];
+        int i = 0;
+        for (String dir : dirlistnotarr) {
+            dirlistnot[i++] = FsUtil.getFileObject(dir);
         }
-        for (int i = 0; i < dirlistnot2.length; i++) {
-            if (!fileObject.location.equals(dirlistnot2[i].location)) {
-                continue;
-            }
-            if (!dirlistnot2[i].object.isEmpty() && fileObject.object.indexOf(dirlistnot2[i].object)>=0) {
-                return true;
-            }
-        }
-        return false;
+        //UI ui = element.ui;
+        //this.display = SearchService.getSearchDisplay(ui);
     }
 
     // cases:
@@ -106,13 +133,14 @@ public class Traverse {
     // check gives fs for new with path, eventually also compute new md5
     // then index if new
 
+    // TODO concurrent
     public Set<String> doList(FileObject fileObject) throws Exception {
         Set<String> retset = new HashSet<>();
         if (TraverseUtil.isMaxed(myid, element)) {
             return retset;
         }
 
-        if (indirlistnot(fileObject, dirlistnot)) {
+        if (TraverseUtil.indirlistnot(fileObject, dirlistnot)) {
             return retset;
         }
         //HashSet<String> md5set = new HashSet<String>();
@@ -219,7 +247,7 @@ public class Traverse {
             MySet<String> md5sdoneset = MySets.get(md5sdoneid);
             TraverseFile traverseFile = new TraverseFile(indexFilesDao);
             if (traverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
-                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null, null);
+                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null);
             }
             //MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);
@@ -234,66 +262,26 @@ public class Traverse {
         try {
             log.info("function: {}", element.function);
             if (add != null) {
-                return doList(FsUtil.getFileObject(add));    
+                //return doList(FsUtil.getFileObject(add));
+                FileObject fileObject = FsUtil.getFileObject(add);
+                ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5);
+                Queues.getListQueue().offer(listQueueElement);
+                return new HashSet<>();
             } else {
                 Set<String> retList = new HashSet<>();
                 String[] dirlist = MyConfig.conf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
-                    retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));
+                    FileObject fileObject = FsUtil.getFileObject(dirlist[i]);
+                    ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5);
+                    Queues.getListQueue().offer(listQueueElement);
+                    //retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));
                 }
+                return new HashSet<>();
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
         return null;
-    }
-
-    //int max = 0;
-    //int indexcount = 0;
-
-    String myid;
-    ServiceParam element;
-    String retlistid = null;
-    String retnotlistid = null;
-    //List<ResultItem> retList = null;
-    //List<ResultItem> retNotList = null;
-    String newsetid = null; 
-    //	MySet<String> newset = null; 
-    //	Map<String, HashSet<String>> dirset;
-    String notfoundsetid;
-    //boolean reindex = false;
-    //boolean calculatenewmd5;
-    String filestodosetid;
-    String traversecountid;
-    boolean nomd5;
-
-    FileObject[] dirlistnot;
-    SearchDisplay display;
-
-    //Set<String> md5sdone = new HashSet<String>();
-
-    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
-
-        this.myid = myid;
-        this.element = element;
-        this.retlistid = retlistid;
-        this.retnotlistid = retnotlistid;
-        this.newsetid = newsetid;
-        this.notfoundsetid = notfoundsetid;
-        //this.reindex = reindex;
-        //this.calculatenewmd5 = newmd5;
-        this.filestodosetid = filestodosetid;
-        this.traversecountid = traversecountid;
-        this.nomd5 = nomd5;
-
-        dirlistnotarr = MyConfig.conf.getDirListNot();
-        dirlistnot = new FileObject[dirlistnotarr.length];
-        int i = 0;
-        for (String dir : dirlistnotarr) {
-            dirlistnot[i++] = FsUtil.getFileObject(dir);
-        }
-        //UI ui = element.ui;
-        //this.display = SearchService.getSearchDisplay(ui);
     }
 
     /**
