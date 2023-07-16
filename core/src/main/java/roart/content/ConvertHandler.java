@@ -146,7 +146,7 @@ public class ConvertHandler {
             //InmemoryMessage message = inmemory2.send(el.md5, content);
             elem.message = str;
             elem.convertsw = el.convertsw;
-            Queues.indexQueue.add(elem);
+            Queues.getIndexQueue().offer(elem);
 
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);

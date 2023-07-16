@@ -25,6 +25,10 @@ public abstract class MyAtomicLong {
     
     public abstract long addAndGet(long delta);
 
+    public abstract long incrementAndGet();
+
+    public abstract long decrementAndGet();
+
     /**
      * 
      * @return the value of the AtomicLong
@@ -32,4 +36,6 @@ public abstract class MyAtomicLong {
      */
     
     public abstract long get();
+
+    public abstract void set(long value);
 }

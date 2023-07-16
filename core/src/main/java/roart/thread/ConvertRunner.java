@@ -117,7 +117,10 @@ public class ConvertRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
                 }
-                if (Queues.convertQueue.isEmpty() || Queues.indexQueueHeavyLoaded()) {
+                if (Queues.getConvertQueue().size() == 0 || Queues.indexQueueHeavyLoaded()) {
+                    if (Queues.indexQueueHeavyLoaded()) {
+                        log.info("Index queue heavy loaded, sleeping");
+                    }
                         try {
                                 TimeUnit.SECONDS.sleep(1);
                         } catch (InterruptedException e) {
@@ -184,7 +187,7 @@ public class ConvertRunner implements Runnable {
         }
     }
     
-        ConvertQueueElement el = Queues.convertQueue.poll();
+        ConvertQueueElement el = Queues.getConvertQueue().poll();
         if (el == null) {
                 log.error("empty queue");
             return null;

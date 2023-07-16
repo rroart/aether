@@ -110,7 +110,10 @@ public class ListQueueRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (Queues.getListQueue().size() == 0 || Queues.indexQueueHeavyLoaded()) {
+            if (Queues.getListingQueue().size() == 0 || Queues.traverseQueueHeavyLoaded()) {
+                if (Queues.traverseQueueHeavyLoaded()) {
+                    log.info("Traverse queue heavy loaded, sleeping");
+                }
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -166,7 +169,7 @@ public class ListQueueRunner implements Runnable {
         if (limit < 1) {
             limit = LIMIT;
         }
-        MyQueue<ListQueueElement> queue = Queues.getListQueue();
+        MyQueue<ListQueueElement> queue = Queues.getListingQueue();
         ListQueueElement listing = queue.poll();
         /*
         List<ListQueueElement> listingList = new ArrayList<>();
@@ -316,7 +319,7 @@ public class ListQueueRunner implements Runnable {
                 log.debug("isdir {}", filename);
                 FileObject dirObject = file.fileObject[0];
                 ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.isNomd5());
-                Queues.getListQueue().offer(listQueueElement);
+                Queues.getListingQueue().offer(listQueueElement);
                 //retset.addAll(doList(fo));
             } else {
                 retset.add(filename);

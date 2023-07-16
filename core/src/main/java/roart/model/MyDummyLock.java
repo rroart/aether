@@ -9,6 +9,11 @@ public class MyDummyLock extends MyLock {
     }
 
     @Override
+    public boolean tryLock(String path) throws Exception {
+        return false;
+    }
+
+    @Override
     public void unlock() {
     }
 

@@ -40,123 +40,127 @@ public class Queues {
 
     //public static Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
 
+    /*
     public static volatile Deque<ConvertQueueElement> convertQueue = new ConcurrentLinkedDeque<ConvertQueueElement>();
     public static volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
-    public static volatile Queue<TraverseQueueElement> traverseQueue = new ConcurrentLinkedQueue<TraverseQueueElement>();
+    public static volatile Queue<TraverseQueueElement>  getMy = new ConcurrentLinkedQueue<TraverseQueueElement>();
     public static volatile Queue<ListQueueElement> listQueue = new ConcurrentLinkedQueue<>();
-
+*/
+    
     public static Set<MySet> workQueues = new HashSet();
 
     public static volatile Queue<String> convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
 
+    /*
     private static volatile AtomicInteger converts = new AtomicInteger(0);
     private static volatile AtomicInteger indexs = new AtomicInteger(0);
     private static volatile AtomicInteger clients = new AtomicInteger(0);
     private static AtomicInteger traverses = new AtomicInteger(0);
     private static AtomicInteger listings = new AtomicInteger(0);
+*/
 
-    public static int getConverts() {
-        return converts.get();
+    public static long getConverts() {
+        return getMyConverts().get();
     }
 
-    public static int getIndexs() {
-        return indexs.get();
+    public static long getIndexs() {
+        return getMyIndexs().get();
     }
 
-    public static int getClients() {
-        return clients.get();
+    public static long getClients() {
+        return getMyClients().get();
     }
 
-    public static int getTraverses() {
-        return traverses.get();
+    public static long getTraverses() {
+        return getMyTraverses().get();
     }
 
-    public static int getListings() {
-        return listings.get();
+    public static long getListings() {
+        return getMyListings().get();
     }
 
     public static void incConverts() {
-        converts.incrementAndGet();
+        getMyConverts().incrementAndGet();
     }
 
     public static void incIndexs() {
-        indexs.incrementAndGet();
+        getMyIndexs().incrementAndGet();
     }
 
     public static void incClients() {
-        clients.incrementAndGet();
+        getMyClients().incrementAndGet();
     }
 
     public static void incTraverses() {
-        traverses.incrementAndGet();
+        getMyTraverses().incrementAndGet();
     }
 
     public static void incListings() {
-        listings.incrementAndGet();
+        getMyListings().incrementAndGet();
     }
 
     public static void decConverts() {
-        converts.decrementAndGet();
+        getMyConverts().decrementAndGet();
     }
 
     public static void decIndexs() {
-        indexs.decrementAndGet();
+        getMyIndexs().decrementAndGet();
     }
 
     public static void decClients() {
-        clients.decrementAndGet();
+        getMyClients().decrementAndGet();
     }
 
     public static void decTraverses() {
-        traverses.decrementAndGet();
+        getMyTraverses().decrementAndGet();
     }
 
     public static void decListings() {
-        listings.decrementAndGet();
+        getMyListings().decrementAndGet();
     }
 
     public static void resetConverts() {
-        converts = new AtomicInteger(0);
+        getMyConverts().set(0);
     }
 
     public static void resetIndexs() {
-        indexs = new AtomicInteger(0);
+        getMyIndexs().set(0);
     }
 
     public static void resetClients() {
-        clients = new AtomicInteger(0);
+        getMyClients().set(0);
     }
 
     public static void resetTraverses() {
-        traverses = new AtomicInteger(0);
+        getMyTraverses().set(0);
     }
 
     public static void resetListings() {
-        listings = new AtomicInteger(0);
+        getMyListings().set(0);
     }
 
     public static boolean convertQueueHeavyLoaded() {
-        return convertQueue.size() >= limit;
+        return getConvertQueue().size() >= limit;
     }
 
     public static boolean indexQueueHeavyLoaded() {
-        return indexQueue.size() >= limit;
+        return getIndexQueue().size() >= limit;
     }
 
     public static boolean traverseQueueHeavyLoaded() {
-        return traverseQueue.size() >= limit;
+        return getTraverseQueue().size() >= limit;
+    }
+
+    public static boolean listingQueueHeavyLoaded() {
+        return getListingQueue().size() >= limit;
     }
 
     public static String webstat() {
-        String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-        return "q " + total() + " f " + traverses + " " + work() + "\nc " + convertQueue.size() + " " + converts + "\ni " + indexQueue.size() + " " + indexs;
+        return "q " + total() + " l " + getListings() + " \nf " + getTraverses() + " " + work() + "\nc " + getConvertQueue().size() + " " + getConverts() + "\ni " + getIndexQueue().size() + " " + getIndexs();
     }
 
     public static String stat() {
-        String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-        return "q " + total() + " f " + traverses + " " + work() + " c " + convertQueue.size() + " " + converts + " i " + indexQueue.size() + " " + indexs;
+        return "q " + total() + " l " + getListings() + " f " + getTraverses() + " " + work() + " c " + getConvertQueue().size() + " " + getConverts() + " i " + getIndexQueue().size() + " " + getIndexs();
     }
 
     public static void queueStat() {
@@ -164,15 +168,11 @@ public class Queues {
     }
 
     public static int queueSize() {
-        String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-        return traverseQueue.size() + convertQueue.size() + indexQueue.size();
+        return getListingQueue().size() + getTraverseQueue().size() + getConvertQueue().size() + getIndexQueue().size();
     }
 
-    public static int runSize() {
-        String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> traverseQueue = MyQueues.get(queueid);
-        return converts.get() + indexs.get();
+    public static long runSize() {
+        return getMyConverts().get() + getMyIndexs().get();
     }
 
     public static void resetConvertTimeoutQueue() {
@@ -192,15 +192,48 @@ public class Queues {
         return ret;
     }
 
+    public static MyQueue<ListQueueElement> getListingQueue() {
+        String queueid = Constants.LISTINGQUEUE;
+        MyQueue<ListQueueElement> queue = MyQueues.get(queueid);
+        return queue;
+    }
+
     public static MyQueue<TraverseQueueElement> getTraverseQueue() {
         String queueid = Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
         return queue;
     }
 
-    public static MyQueue<ListQueueElement> getListQueue() {
-        String queueid = Constants.LISTQUEUE;
-        MyQueue<ListQueueElement> queue = MyQueues.get(queueid);
+    public static MyQueue<ConvertQueueElement> getConvertQueue() {
+        String queueid = Constants.CONVERTQUEUE;
+        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid);
         return queue;
     }
+
+    public static MyQueue<IndexQueueElement> getIndexQueue() {
+        String queueid = Constants.INDEXQUEUE;
+        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid);
+        return queue;
+    }
+    
+    public static MyAtomicLong getMyConverts() {
+        return MyAtomicLongs.get(Constants.CONVERTS);
+    }
+
+    public static MyAtomicLong getMyIndexs() {
+        return MyAtomicLongs.get(Constants.INDEXS);
+    }
+
+    public static MyAtomicLong getMyTraverses() {
+        return MyAtomicLongs.get(Constants.TRAVERSES);
+    }
+
+    public static MyAtomicLong getMyListings() {
+        return MyAtomicLongs.get(Constants.LISTINGS);
+    }
+
+    public static MyAtomicLong getMyClients() {
+        return MyAtomicLongs.get(Constants.CLIENTS);
+    }
+
 }

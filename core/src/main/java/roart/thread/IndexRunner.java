@@ -83,7 +83,7 @@ public class IndexRunner implements Runnable {
                 running--;
                 Queues.decIndexs();
             }
-            if (Queues.indexQueue.isEmpty() /*|| Queues.indexQueueHeavyLoaded()*/) {
+            if (Queues.getIndexQueue().size() == 0 /*|| Queues.indexQueueHeavyLoaded()*/) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -167,7 +167,7 @@ public class IndexRunner implements Runnable {
             }
         }
 
-        IndexQueueElement el = Queues.indexQueue.poll();
+        IndexQueueElement el = Queues.getIndexQueue().poll();
         if (el == null) {
             log.error("empty queue");
             return null;

@@ -42,7 +42,9 @@ public class TraverseQueueRunner implements Runnable {
     private IndexFilesDao indexFilesDao = new IndexFilesDao();
 
     private TraverseFile traverseFile = new TraverseFile(indexFilesDao); 
-    
+
+    ThreadPoolExecutor /*ExecutorService*/ pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
+
     @SuppressWarnings("squid:S2189")
     public void run() {
         Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
@@ -101,7 +103,10 @@ public class TraverseQueueRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (Queues.getTraverseQueue().size() == 0 || Queues.indexQueueHeavyLoaded()) {
+            if (Queues.getTraverseQueue().size() == 0 || Queues.convertQueueHeavyLoaded()) {
+                if (Queues.convertQueueHeavyLoaded()) {
+                    log.info("Convert queue heavy loaded, sleeping");
+                }
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -184,7 +189,8 @@ public class TraverseQueueRunner implements Runnable {
 
         try {
             //handleList(pool, traverseList);
-            handleList2(traverseList);
+            //handleList2(traverseList);
+            handleList3(pool, traverseList);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         } catch (Error e) {
@@ -203,6 +209,14 @@ public class TraverseQueueRunner implements Runnable {
         }                   
     }
 
+    /**
+     * 
+     * Traverse list of max limit
+     * 
+     * @param traverseList
+     * @throws Exception
+     */
+    
     private void handleList2(List<TraverseQueueElement> traverseList) throws Exception {
         Set<FileObject> filenames = new HashSet<>();
         // Create filenames set
@@ -214,18 +228,19 @@ public class TraverseQueueRunner implements Runnable {
         Map<FileObject, MyFile> fsMap = FileSystemDao.getWithoutInputStream(filenames);
         long time1 = System.currentTimeMillis();
         // Get Md5s by fileobject from database
-        Map<FileObject, String> md5Map = indexFilesDao.getMd5ByFilename(filenames);
-        // Batch read md5
-        Map<FileObject, String> newMd5Map = traverseFile.getMd5(traverseList, fsMap, md5Map);
+        // TODO check if need full indexfiles?
+        Map<FileObject, String> filenameMd5Map = indexFilesDao.getMd5ByFilename(filenames);
+        // Batch read md5, if have none or wants to calculate new
+        Map<FileObject, String> filenameNewMd5Map = traverseFile.getMd5(traverseList, fsMap, filenameMd5Map);
         // Batch read content
         Map<FileObject, String> contentMap = new HashMap<>(); // TraverseFile.readFiles(traverseList, fsMap);
         long time2 = System.currentTimeMillis();
-        Map<String, IndexFiles> ifMap = indexFilesDao.getByMd5(new HashSet<>(md5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
+        Map<String, IndexFiles> ifMap = indexFilesDao.getByMd5(new HashSet<>(filenameMd5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         // Get IndexFiles by Md5 from database
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            traverseFile.handleFo(trav, fsMap, md5Map, ifMap, newMd5Map, contentMap);
+            traverseFile.handleFo(trav, fsMap, filenameMd5Map, ifMap, filenameNewMd5Map, contentMap);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));
@@ -244,6 +259,11 @@ public class TraverseQueueRunner implements Runnable {
         }        
     }
 
+    private void handleList3(ThreadPoolExecutor pool, List<TraverseQueueElement> traverseList) throws Exception {
+        Runnable runnable = new MyRunnable3(traverseList);
+        pool.execute(runnable);
+    }
+    
     @Deprecated // ?
     class MyRunnable implements Runnable {
         TraverseQueueElement trav;
@@ -257,6 +277,25 @@ public class TraverseQueueRunner implements Runnable {
         public void run() {
             try {
                 traverseFile.handleFo3(trav);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
+
+    }
+    
+    class MyRunnable3 implements Runnable {
+        List<TraverseQueueElement> traverseList;
+
+        public MyRunnable3(List<TraverseQueueElement> traverseList) {
+            super();
+            this.traverseList = traverseList;
+        }
+
+        @Override
+        public void run() {
+            try {
+                handleList2(traverseList);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }

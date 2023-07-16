@@ -265,7 +265,7 @@ public class Traverse {
                 //return doList(FsUtil.getFileObject(add));
                 FileObject fileObject = FsUtil.getFileObject(add);
                 ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5);
-                Queues.getListQueue().offer(listQueueElement);
+                Queues.getListingQueue().offer(listQueueElement);
                 return new HashSet<>();
             } else {
                 Set<String> retList = new HashSet<>();
@@ -273,7 +273,7 @@ public class Traverse {
                 for (int i = 0; i < dirlist.length; i ++) {
                     FileObject fileObject = FsUtil.getFileObject(dirlist[i]);
                     ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5);
-                    Queues.getListQueue().offer(listQueueElement);
+                    Queues.getListingQueue().offer(listQueueElement);
                     //retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));
                 }
                 return new HashSet<>();

@@ -26,7 +26,22 @@ public class MyJavaAtomicLong extends MyAtomicLong {
     }
 
     @Override
+    public long incrementAndGet() {
+        return mylong.incrementAndGet();
+    }
+
+    @Override
+    public long decrementAndGet() {
+        return mylong.decrementAndGet();
+    }
+
+    @Override
     public long get() {
         return mylong.get();
+    }
+
+    @Override
+    public void set(long value) {
+        mylong.set(value);
     }
 }
