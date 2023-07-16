@@ -38,7 +38,7 @@ public class DbRunner implements Runnable {
         IndexFilesDao indexFilesDao = new IndexFilesDao();
         while (true) {
             long now = System.currentTimeMillis();
-            log.info("updatetime " + (int) ((now - lastupdate)/1000));
+            log.debug("updatetime {}", (int) ((now - lastupdate)/1000));
             if (true || (now - lastupdate) >= update * 1000) {
                 try {
                     if (true /*doupdate*/) {
@@ -54,7 +54,7 @@ public class DbRunner implements Runnable {
                 if (sleepsec < 1) {
                     sleepsec = 1;
                 }
-                log.info("sleepsec " + sleepsec);
+                log.debug("sleepsec {}", sleepsec);
                 TimeUnit.SECONDS.sleep(sleepsec);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
