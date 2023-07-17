@@ -14,18 +14,18 @@ public class MyCuratorLock extends MyLock {
 
     @Override
     public void lock(String path) throws Exception {
-        log.info("before lock");
+        log.debug("before lock {}", path);
         lock = new InterProcessMutex(ControlService.curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
         lock.acquire();
-        log.info("after lock");
+        log.debug("after lock {}", path);
     }
 
     @Override
     public boolean tryLock(String path) throws Exception {
-        log.info("before lock");
+        log.debug("before lock {}", path);
         lock = new InterProcessMutex(ControlService.curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
         lock.acquire(1, TimeUnit.SECONDS);
-        log.info("after lock");
+        log.debug("after lock {}", path);
         return lock.isAcquiredInThisProcess();
     }
 
