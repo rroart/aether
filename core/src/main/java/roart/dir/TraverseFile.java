@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
@@ -36,6 +37,7 @@ import roart.function.AbstractFunction;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
 import roart.model.MyLockFactory;
+import roart.model.MyQueue;
 import roart.model.MySets;
 
 import org.slf4j.Logger;
@@ -192,7 +194,7 @@ public class TraverseFile {
                 return;
             }
             lockwait = true;
-            indexsingle(trav, md5, filename, files, null, null);
+            indexsingle(trav, md5, filename, files, null);
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
             log.error(Constants.EXCEPTION, e);
@@ -207,7 +209,7 @@ public class TraverseFile {
                     log.debug("done waiting");
                 }
             }
-            if (files != null) {
+            if (false && files != null) {
                 MyLock unlock = files.getLock();
                 if (unlock != null) {
                     files.setLock(null);
@@ -226,7 +228,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> newMd5Map, Map<FileObject, String> contentMap)
+    public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Map<FileObject, String> contentMap, Queue<MyLock> locks)
             throws Exception {
         //          if (ControlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -241,6 +243,23 @@ public class TraverseFile {
             return;
         }
         FileObject filename = trav.getFileobject();
+        // TODO this is new lock
+        // TODO trylock, if false, all is invalid, but which
+        MyLock folock = MyLockFactory.create();
+        boolean flocked = folock.tryLock(filename.toString());
+        if (!flocked) {
+            MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+            /*
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+            total.addAndGet(1);
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+            count.addAndGet(1);
+            */
+            // save
+            queue.offer(trav);
+            log.info("Already locked: {}", filename.toString());
+            return;
+        }
         try {
         FileObject fo = fsMap.get(filename).fileObject[0];
         } catch (Exception e) {
@@ -249,13 +268,13 @@ public class TraverseFile {
         //MyLock lock2 = MyLockFactory.create();
         //lock2.lock(fo.toString());
         log.debug("timer");
-        String md5 = md5Map.get(filename);
+        String md5 = filenameMd5Map.get(filename);
         log.debug("info {} {}", md5, filename);
         MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
         if (!filestodoset.add(filename.toString())) {
             log.error("already added {}", filename);
         }
-        IndexFiles files = null;
+        IndexFiles indexfiles = null;
         MyLock lock = null; 
         boolean lockwait = false;
         if (trav.getClientQueueElement().md5change == true || md5 == null) {
@@ -263,7 +282,7 @@ public class TraverseFile {
                 if (!fsMap.get(filename).exists) {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
-                md5 = newMd5Map.get(filename);
+                md5 = filenameNewMd5Map.get(filename);
                 if (md5 == null) {
                     log.error("Md5 null");
                     throw new Exception("Md5 null");
@@ -278,25 +297,44 @@ public class TraverseFile {
                 // get read file
                 // todo lock file name
                 lock = MyLockFactory.create();
-                lock.lock(md5);
-                files = ifMap.get(md5);
+                boolean locked = lock.tryLock(md5);
+                if (!locked) {
+                    MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+                    /*
+                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+                    total.addAndGet(1);
+                    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+                    count.addAndGet(1);
+                    */
+                    folock.unlock();
+                    // save
+                    queue.offer(trav);
+                    log.info("Already locked: {}", md5);
+                    return;
+                }
+                indexfiles = ifMap.get(md5);
                 //}
-                if (files == null) {
-                    files = indexFilesDao.getByTemp(md5);
+                if (indexfiles == null) {
+                    // todo sync problem
+                    //files = indexFilesDao.getByTemp(md5);
                 }
-                if (files == null) {
+                if (indexfiles == null) {
                     // TODO batch
-                    files = indexFilesDao.getByMd5(md5);
+                    // TODO bieffect
+                    // not need? indexfiles = indexFilesDao.getByMd5(md5);
+                    indexfiles = new IndexFiles(md5);
+                    indexfiles.setCreated("" + System.currentTimeMillis());             
                 }
-                if (files == null && md5 != null) {
-                    files = new IndexFiles(md5);
-                    files.setCreated("" + System.currentTimeMillis());             
+                if (indexfiles == null /* && md5 != null*/) {
+                    // not used
+                    indexfiles = new IndexFiles(md5);
+                    indexfiles.setCreated("" + System.currentTimeMillis());             
                 }
-                log.debug("Files {}", files);
-                files.setChecked("" + System.currentTimeMillis());
+                log.debug("Files {}", indexfiles);
+                indexfiles.setChecked("" + System.currentTimeMillis());
                 // modify write file
-                files.addFile(filename.location.toString(), filename.object);
-                indexFilesDao.addTemp(files);
+                indexfiles.addFile(filename.location.toString(), filename.object);
+                //indexFilesDao.addTemp(indexfiles);
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
@@ -329,53 +367,72 @@ public class TraverseFile {
             log.debug("timer2");
             // get read file
             lock = MyLockFactory.create();
-            lock.lock(md5);
-            files = ifMap.get(md5);
+            boolean locked = lock.tryLock(md5);
+            if (!locked) {
+                MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+                /*
+                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+                total.addAndGet(1);
+                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
+                count.addAndGet(1);
+                */
+                folock.unlock();
+                // save
+                queue.offer(trav);
+                log.info("Already locked: {}", md5);
+                return;
+            }
+            indexfiles = ifMap.get(md5);
             // TODO implement other wise
             // error case for handling when the supporting filename indexed
             // table has an entry, but no corresponding in the md5 indexed
             // table, and the files here just got created
-            if (files.getFilelocations().isEmpty()) {
+            if (indexfiles.getFilelocations().isEmpty()) {
                 log.error("existing file only");
                 String nodename = ControlService.nodename;
-                files.addFile(filename.location.toString(), filename.object);
-                indexFilesDao.addTemp(files);
+                indexfiles.addFile(filename.location.toString(), filename.object);
+                //indexFilesDao.addTemp(indexfiles);
             }
-            log.debug("info {} {}", md5, files);
+            log.debug("info {} {}", md5, indexfiles);
         }
-        if (files != null && lock != null) {
-            files.setLock(lock);
-            LinkedBlockingQueue lockqueue = new LinkedBlockingQueue();
-            files.setLockqueue(lockqueue);
+        if (indexfiles != null && lock != null) {
+            indexfiles.setFlock(folock);
+            indexfiles.setLock(lock);
+            indexfiles.setLockqueue(locks);
         }
         String md5sdoneid = "md5sdoneid"+trav.getMyid();
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         try {
-            boolean doindex = getDoIndex(trav, md5, files, md5sdoneset, null);
+            // TODO new criteria
+            boolean doindex = getDoIndex(trav, md5, indexfiles, md5sdoneset, null);
             lockwait = true;
             if (doindex) {
-            indexsingle(trav, md5, filename, files, fsMap, contentMap);
+            indexsingle(trav, md5, filename, indexfiles, contentMap);
+            } else {
+                indexFilesDao.add(indexfiles);                
             }
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
             log.error(Constants.EXCEPTION, e);
         } finally {
             log.debug("hereend");
-            if (lockwait) {
+            if (false && lockwait) {
                 // TODO better flag than this?
-                LinkedBlockingQueue lockqueue2 = (LinkedBlockingQueue) files.getLockqueue();
+                // TODO not used
+                LinkedBlockingQueue lockqueue2 = (LinkedBlockingQueue) indexfiles.getLockqueue();
                 if (lockqueue2 != null) {
                     log.debug("waiting");
                     lockqueue2.take();
                     log.debug("done waiting");
                 }
             }
-            if (files != null) {
-                MyLock unlock = files.getLock();
+            if (false && indexfiles != null) {
+                // TODO not here
+                MyLock unlock = indexfiles.getLock();
                 if (unlock != null) {
-                    files.setLock(null);
-		    log.debug("Files {}", files);
+                    indexfiles.setLock(null);
+		    log.debug("Files {}", indexfiles);
                     unlock.unlock();
                 }
             }
@@ -389,6 +446,10 @@ public class TraverseFile {
             log.debug("Count dec {}", trav.getFileobject());
         }
         //md5set.add(md5);
+        // TODO this is new unlock
+        // TODO not unlock here
+        //folock.unlock();
+
     }
 
     public boolean getDoIndex(TraverseQueueElement trav, String md5, IndexFiles files,
@@ -424,7 +485,7 @@ public class TraverseFile {
      */
     
     public void indexsingle(TraverseQueueElement trav,
-            String md5, FileObject filename, IndexFiles index, Map<FileObject, MyFile> fsMap, Map<FileObject, String> contentMap) {
+            String md5, FileObject filename, IndexFiles index, Map<FileObject, String> contentMap) {
         int maxfailed = MyConfig.conf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
             int failed = index.getFailed();
@@ -444,7 +505,7 @@ public class TraverseFile {
         //Queues.tikaQueue.add(e);
         String content = null; //contentMap.get(filename);
         ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
-        Queues.convertQueue.add(e2);
+        Queues.getConvertQueue().offer(e2);
         //size = doTika(filename, filename, md5, index, retlist);
     }
 
@@ -482,11 +543,11 @@ public class TraverseFile {
         return contentMap;
     }
     
-    public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> md5Map) {
+    public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map) {
         Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {
             FileObject filename = trav.getFileobject();
-            String md5 = md5Map.get(filename);
+            String md5 = filenameMd5Map.get(filename);
             if (trav.getClientQueueElement().md5change == true || md5 == null) {
                 try {
                     if (!fsMap.get(filename).exists) {

@@ -51,6 +51,8 @@ public class IndexFiles {
     private int priority;
 
     @JsonIgnore
+    private MyLock flock;
+    @JsonIgnore
     private MyLock lock;
     @JsonIgnore
     private Object lockqueue;
@@ -403,6 +405,14 @@ public class IndexFiles {
         return priority;
     }
 
+    public void setFlock(MyLock flock) {
+        this.flock = flock;
+    }
+
+    public MyLock getFlock() {
+        return flock;
+    }
+
     public void setLock(MyLock lock) {
         this.lock = lock;
     }
@@ -416,7 +426,7 @@ public class IndexFiles {
     }
 
     public void setLockqueue(Object lockqueue) {
-     // TODO disabled this.lockqueue = lockqueue;
+        this.lockqueue = lockqueue;
     }
 
 	public static ResultItem getHeader() {

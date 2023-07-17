@@ -23,6 +23,7 @@ import roart.service.ControlService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Queue;
 
 public class IndexFilesDao {
 
@@ -30,6 +31,7 @@ public class IndexFilesDao {
 
     private static volatile ConcurrentMap<String, IndexFiles> dbi = new ConcurrentHashMap<String, IndexFiles>();
 
+    @Deprecated
     private static volatile ConcurrentMap<String, IndexFiles> dbitemp = new ConcurrentHashMap<String, IndexFiles>();
 
     private static IndexFilesAccess indexFiles = null;
@@ -192,9 +194,11 @@ public class IndexFilesDao {
     public void commit() {
         synchronized(IndexFilesDao.class) {
         int[] pris = getPris();
-        log.info("dbis {}", dbi.keySet());
-        log.info("dbitemps {}", dbitemp.keySet());
-        log.info("pris levels {} {}", pris[0], pris[1]);
+        if (!dbi.isEmpty()) {
+            log.info("dbis {}", dbi.keySet());
+        }
+        log.debug("dbitemps {}", dbitemp.keySet());
+        log.debug("pris levels {} {}", pris[0], pris[1]);
         if (pris[0] > 0) {
             log.info("saving finished");
         }
@@ -204,7 +208,8 @@ public class IndexFilesDao {
             IndexFiles i = entry.getValue();
             save(saves, i);
             MyLock lock = i.getLock();
-            if (lock != null) {
+            if (false && lock != null) {
+                // TODO not used
                 LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
                 if (lockqueue != null) {
                     lockqueue.offer(lock);
@@ -214,7 +219,7 @@ public class IndexFilesDao {
             } else {
                 log.error("lock null for {}", i.getMd5());
             }
-            dbi.remove(key);
+            //dbi.remove(key);
             dbitemp.remove(key);
         }
         if (pris[1] > 0) {
@@ -227,13 +232,28 @@ public class IndexFilesDao {
         }
         try {
             synchronized(IndexFilesDao.class) {
-                indexFiles.save(saves);
-                indexFiles.commit();
+                if (!saves.isEmpty()) {
+                    indexFiles.save(saves);
+                    indexFiles.commit();
+                }
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
+        for (Entry<String, IndexFiles> entry : dbi.entrySet()) {
+            String key = entry.getKey();
+            IndexFiles i = entry.getValue();
+            Queue<MyLock> queue = (Queue<MyLock>) i.getLockqueue();
+            if (i.getLock() != null) {
+                 queue.offer(i.getLock());
+            }
+            if (i.getFlock() != null) {
+                queue.offer(i.getFlock());
+            }
+            dbi.remove(key);
         }
+        }
+        // todo unlock
     }
 
     private int[] getPris() {

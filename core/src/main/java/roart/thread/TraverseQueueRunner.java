@@ -23,6 +23,7 @@ import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.synchronization.MyLock;
 import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
@@ -30,6 +31,8 @@ import roart.model.MyQueue;
 import roart.model.MyQueues;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TraverseQueueRunner implements Runnable {
 
@@ -117,11 +120,15 @@ public class TraverseQueueRunner implements Runnable {
             }
             //Queues.queueStat();
 
+            nThreads = 3;
             for(int i = running; i < nThreads; i++) {
                 Callable<Object> callable = new Callable<Object>() {
                     public Object call() /* throws Exception*/ {
                         try {
-                            doTraverseTimeout();
+                            Queue<MyLock> locks = new ConcurrentLinkedQueue<>();
+                            while (true) {
+                                doTraverseTimeout(locks);
+                            }
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e);
                         } catch (Error e) {
@@ -157,7 +164,7 @@ public class TraverseQueueRunner implements Runnable {
         }
     }
 
-    private void doTraverseTimeout() {
+    private void doTraverseTimeout(Queue<MyLock> locks) {
         int limit = MyConfig.instance().conf.getMPBatch();
         if (limit < 1) {
             limit = LIMIT;
@@ -190,7 +197,7 @@ public class TraverseQueueRunner implements Runnable {
         try {
             //handleList(pool, traverseList);
             //handleList2(traverseList);
-            handleList3(pool, traverseList);
+            handleList3(traverseList, locks);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         } catch (Error e) {
@@ -202,6 +209,11 @@ public class TraverseQueueRunner implements Runnable {
             log.debug("myend");            
         }
         try {
+            unlock(locks);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
+        try {
             TimeUnit.SECONDS.sleep(1);
             return;
         } catch (InterruptedException e) {
@@ -209,15 +221,23 @@ public class TraverseQueueRunner implements Runnable {
         }                   
     }
 
+    private void unlock(Queue<MyLock> locks) {
+        while (!locks.isEmpty()) {
+            MyLock lock = locks.poll();
+            lock.unlock();
+        }
+    }
+
     /**
      * 
      * Traverse list of max limit
      * 
      * @param traverseList
+     * @param locks 
      * @throws Exception
      */
     
-    private void handleList2(List<TraverseQueueElement> traverseList) throws Exception {
+    private void handleList3(List<TraverseQueueElement> traverseList, Queue<MyLock> locks) throws Exception {
         Set<FileObject> filenames = new HashSet<>();
         // Create filenames set
         for (TraverseQueueElement trav : traverseList) {
@@ -240,7 +260,7 @@ public class TraverseQueueRunner implements Runnable {
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            traverseFile.handleFo(trav, fsMap, filenameMd5Map, ifMap, filenameNewMd5Map, contentMap);
+            traverseFile.handleFo(trav, fsMap, filenameMd5Map, ifMap, filenameNewMd5Map, contentMap, locks);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));
@@ -250,58 +270,6 @@ public class TraverseQueueRunner implements Runnable {
         return (int) (time2 - time1); // 1000;
     }
 
-    @Deprecated // ?
-    private void handleList(ThreadPoolExecutor pool, List<TraverseQueueElement> traverseList) throws Exception {
-        for (TraverseQueueElement trav : traverseList) {
-            //TraverseFile.handleFo3(trav);
-            Runnable runnable = new MyRunnable(trav);
-            pool.execute(runnable);
-        }        
-    }
-
-    private void handleList3(ThreadPoolExecutor pool, List<TraverseQueueElement> traverseList) throws Exception {
-        Runnable runnable = new MyRunnable3(traverseList);
-        pool.execute(runnable);
-    }
-    
-    @Deprecated // ?
-    class MyRunnable implements Runnable {
-        TraverseQueueElement trav;
-
-        public MyRunnable(TraverseQueueElement trav) {
-            super();
-            this.trav = trav;
-        }
-
-        @Override
-        public void run() {
-            try {
-                traverseFile.handleFo3(trav);
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
-            }
-        }
-
-    }
-    
-    class MyRunnable3 implements Runnable {
-        List<TraverseQueueElement> traverseList;
-
-        public MyRunnable3(List<TraverseQueueElement> traverseList) {
-            super();
-            this.traverseList = traverseList;
-        }
-
-        @Override
-        public void run() {
-            try {
-                handleList2(traverseList);
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
-            }
-        }
-
-    }
 }
 
 
