@@ -116,6 +116,7 @@ public class ConsistentClean extends AbstractFunction {
 
                 // TODO why copied from below?
                 // TODO or indexes?
+                // TODO not here?
                 for (IndexFiles i : ifs) {
                     MyLock filelock = i.getLock();
                     if (filelock != null) {
@@ -205,8 +206,8 @@ public class ConsistentClean extends AbstractFunction {
             Set<IndexFiles> ifs, boolean checkexist, boolean clean) throws Exception {
         log.info("size {}", indexes.size());
         for (IndexFiles index : indexes) {
-            MyLock lock = MyLockFactory.create();
-            lock.lock(index.getMd5());               
+            //MyLock lock = MyLockFactory.create();
+            //lock.lock(index.getMd5());               
             // if last deletepathdb
             // common 2
             // find out if to be deleted
@@ -249,7 +250,7 @@ public class ConsistentClean extends AbstractFunction {
                 }
                 ifs.add(index);
             }
-            lock.unlock();
+            //lock.unlock();
         }
     }
 
