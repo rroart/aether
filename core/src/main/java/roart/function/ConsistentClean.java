@@ -119,7 +119,7 @@ public class ConsistentClean extends AbstractFunction {
                 // TODO not here?
                 for (IndexFiles i : ifs) {
                     MyLock filelock = i.getLock();
-                    if (filelock != null) {
+                    if (false && filelock != null) {
                         filelock.unlock();
                         i.setLock(null);
                     } else {
