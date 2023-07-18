@@ -15,7 +15,7 @@ public class ListingQueueElementSerializer implements StreamSerializer<ListQueue
 
   @Override
       public int getTypeId() {
-      return 1;
+      return 5;
   }
 
   @Override

@@ -15,7 +15,7 @@ public class IndexQueueElementSerializer implements StreamSerializer<IndexQueueE
 
   @Override
       public int getTypeId() {
-      return 1;
+      return 7;
   }
 
   @Override

@@ -15,7 +15,7 @@ public class ConvertQueueElementSerializer implements StreamSerializer<ConvertQu
 
   @Override
       public int getTypeId() {
-      return 1;
+      return 6;
   }
 
   @Override
