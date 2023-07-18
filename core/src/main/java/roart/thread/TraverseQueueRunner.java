@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyQueue;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
@@ -27,7 +28,6 @@ import roart.common.synchronization.MyLock;
 import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
-import roart.model.MyQueue;
 import roart.model.MyQueues;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
@@ -172,7 +172,7 @@ public class TraverseQueueRunner implements Runnable {
         MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
         List<TraverseQueueElement> traverseList = new ArrayList<>();
         for (int i = 0; i < limit; i++) {
-            TraverseQueueElement trav = queue.poll();
+            TraverseQueueElement trav = queue.poll(TraverseQueueElement.class);
             if (trav == null) {
                 break;
             }

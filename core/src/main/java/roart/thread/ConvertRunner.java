@@ -187,7 +187,7 @@ public class ConvertRunner implements Runnable {
         }
     }
     
-        ConvertQueueElement el = Queues.getConvertQueue().poll();
+        ConvertQueueElement el = Queues.getConvertQueue().poll(ConvertQueueElement.class);
         if (el == null) {
                 log.error("empty queue");
             return null;

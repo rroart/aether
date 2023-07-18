@@ -8,4 +8,5 @@ public abstract class MyLock {
     public abstract void lock(String path) throws Exception;
     public abstract boolean tryLock(String path) throws Exception;
     public abstract void unlock();
+    public abstract boolean isLocked();
 }

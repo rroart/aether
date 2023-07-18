@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
@@ -31,7 +32,6 @@ import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
-import roart.model.MyQueue;
 import roart.model.MySets;
 import roart.queue.ListQueueElement;
 import roart.queue.Queues;
@@ -170,7 +170,7 @@ public class ListQueueRunner implements Runnable {
             limit = LIMIT;
         }
         MyQueue<ListQueueElement> queue = Queues.getListingQueue();
-        ListQueueElement listing = queue.poll();
+        ListQueueElement listing = queue.poll(ListQueueElement.class);
         /*
         List<ListQueueElement> listingList = new ArrayList<>();
         for (int i = 0; i < limit; i++) {

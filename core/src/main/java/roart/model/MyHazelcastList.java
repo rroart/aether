@@ -2,6 +2,7 @@ package roart.model;
 
 import java.util.List;
 
+import roart.common.collections.MyList;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -46,5 +47,10 @@ public class MyHazelcastList<T> extends MyList<T> {
     @Override
     public int size() {
         return list.size();
+    }
+    
+    @Override
+    public void clear() {
+        list.clear();
     }
 }

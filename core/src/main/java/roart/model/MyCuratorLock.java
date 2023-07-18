@@ -40,4 +40,9 @@ public class MyCuratorLock extends MyLock {
         }
     }
 
+    @Override
+    public boolean isLocked() {
+        return lock.isAcquiredInThisProcess();
+    }
+
 }

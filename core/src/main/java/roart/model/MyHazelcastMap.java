@@ -46,4 +46,9 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     public int size() {
         return map.size();
     }
+    
+    @Override
+    public void clear() {
+        map.clear();
+    }
 }

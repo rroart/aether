@@ -10,6 +10,7 @@ public abstract class MySet<T> extends MyCollection<T> {
     public abstract boolean add(T o);
     public abstract boolean remove(T o);
     public abstract Set<T> getAll();
+    public abstract void clear();
     //public abstract Set<T> get();
         //public abstract MyQueue<T>(String queue);
 }

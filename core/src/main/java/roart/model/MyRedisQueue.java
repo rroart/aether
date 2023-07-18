@@ -1,6 +1,11 @@
 package roart.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import redis.clients.jedis.Jedis;
+import roart.common.collections.MyQueue;
+import roart.common.util.JsonUtil;
+import roart.util.RedisUtil;
 
 public class MyRedisQueue<T> extends MyQueue<T> {
 
@@ -16,7 +21,8 @@ public class MyRedisQueue<T> extends MyQueue<T> {
 
     @Override
     public void offer(T o) {
-        jedis.rpush(queuename, (String) o);
+        String string = RedisUtil.convert(o);
+        jedis.rpush(queuename, string);
     }
 
     @Override
@@ -27,6 +33,16 @@ public class MyRedisQueue<T> extends MyQueue<T> {
     @Override
     public int size() {
         return (int) jedis.llen(queuename);
+    }
+    
+    @Override
+    public void clear() {
+        while (!"nil".equals(jedis.rpop(queuename))) { }
+    }
+
+    @Override
+    public T poll(Class<T> clazz) {
+        return JsonUtil.convert((String) poll(), clazz);
     }
 
 }

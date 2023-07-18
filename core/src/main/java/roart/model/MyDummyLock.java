@@ -17,4 +17,9 @@ public class MyDummyLock extends MyLock {
     public void unlock() {
     }
 
+    @Override
+    public boolean isLocked() {
+        return false;
+    }
+
 }

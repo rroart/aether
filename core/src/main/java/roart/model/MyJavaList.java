@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import roart.common.collections.MyList;
+
 /**
  * 
  * @author roart
@@ -37,5 +39,10 @@ public class MyJavaList<T> extends MyList<T> {
     @Override
     public int size() {
         return list.size();
+    }
+    
+    @Override
+    public void clear() {
+        list.clear();
     }
 }

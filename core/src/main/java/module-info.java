@@ -9,6 +9,7 @@ module core {
     exports roart.database;
     exports roart.filesystem;
     exports roart.search;
+    exports roart.queue;
     
     requires camel.amqp;
     requires camel.core;

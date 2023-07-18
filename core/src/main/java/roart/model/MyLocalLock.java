@@ -69,4 +69,8 @@ public class MyLocalLock extends MyLock {
         log.debug("after unlock {}", path);
     }
 
+    @Override
+    public boolean isLocked() {
+        return lock.isLocked();
+    }
 }

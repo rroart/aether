@@ -167,7 +167,7 @@ public class IndexRunner implements Runnable {
             }
         }
 
-        IndexQueueElement el = Queues.getIndexQueue().poll();
+        IndexQueueElement el = Queues.getIndexQueue().poll(IndexQueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;

@@ -3,6 +3,8 @@ package roart.model;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import roart.common.collections.MyQueue;
+
 public class MyJavaQueue<T> extends MyQueue<T> {
     private Queue<T> queue;
 
@@ -23,5 +25,15 @@ public class MyJavaQueue<T> extends MyQueue<T> {
     @Override
     public int size() {
         return queue.size();
+    }
+    
+    @Override
+    public void clear() {
+        queue.clear();
+    }
+
+    @Override
+    public T poll(Class<T> clazz) {
+        return poll();
     }
 }

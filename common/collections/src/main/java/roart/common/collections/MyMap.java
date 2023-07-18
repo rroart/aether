@@ -11,6 +11,7 @@ public abstract class MyMap<K, V> {
     public abstract V remove(K k);
     public abstract Map<K, V> getAll();
     public abstract int size();
+    public abstract void clear();
     //public abstract Map<T> get();
         //public abstract MyQueue<T>(String queue);
 }

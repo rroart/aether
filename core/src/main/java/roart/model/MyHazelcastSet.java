@@ -46,4 +46,9 @@ public class MyHazelcastSet<T> extends MySet<T> {
     public int size() {
         return set.size();
     }
+    
+    @Override
+    public void clear() {
+        set.clear();
+    }
 }

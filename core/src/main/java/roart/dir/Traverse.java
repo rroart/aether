@@ -9,6 +9,7 @@ import roart.queue.ListQueueElement;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.SearchService;
+import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
@@ -29,7 +30,6 @@ import roart.function.AbstractFunction;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
 import roart.model.MyLockFactory;
-import roart.model.MyQueue;
 import roart.model.MyQueues;
 import roart.model.MySets;
 
@@ -247,7 +247,7 @@ public class Traverse {
             MySet<String> md5sdoneset = MySets.get(md5sdoneid);
             TraverseFile traverseFile = new TraverseFile(indexFilesDao);
             if (traverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
-                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index, null);
+                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
             }
             //MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);

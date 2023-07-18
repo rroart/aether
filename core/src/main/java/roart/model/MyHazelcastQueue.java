@@ -1,5 +1,6 @@
 package roart.model;
 
+import roart.common.collections.MyQueue;
 import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 
@@ -31,5 +32,15 @@ public class MyHazelcastQueue<T> extends MyQueue<T> {
     @Override
     public int size() {
         return queue.size();
+    }
+    
+    @Override
+    public void clear() {
+        queue.clear();
+    }
+
+    @Override
+    public T poll(Class<T> clazz) {
+         return poll();
     }
 }

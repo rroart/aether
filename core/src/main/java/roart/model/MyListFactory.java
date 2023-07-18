@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import roart.common.collections.MyList;
 import roart.common.config.MyConfig;
 
 public class MyListFactory extends MyFactory {

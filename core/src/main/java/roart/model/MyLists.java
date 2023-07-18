@@ -1,5 +1,7 @@
 package roart.model;
 
+import roart.common.collections.MyList;
+
 public class MyLists extends MyCollections {
     
     public static MyList get(String id) {

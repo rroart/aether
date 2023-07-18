@@ -28,6 +28,11 @@ public class MyHazelcastLock extends MyLock {
         lock.unlock();
     }
 
+    @Override
+    public boolean isLocked() {
+        return lock.isLocked();
+    }
+
     public FencedLock getLock() {
         return lock;
     }

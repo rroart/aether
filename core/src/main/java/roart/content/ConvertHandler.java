@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.classification.ClassifyDao;
+import roart.common.collections.MyList;
 import roart.common.config.Converter;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
@@ -32,7 +33,6 @@ import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
 import roart.lang.LanguageDetect;
 import roart.lang.LanguageDetectFactory;
-import roart.model.MyList;
 import roart.model.MyLists;
 import roart.queue.Queues;
 import roart.service.ControlService;

@@ -11,6 +11,7 @@ import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.service.SearchService;
+import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
@@ -37,7 +38,6 @@ import roart.function.AbstractFunction;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
 import roart.model.MyLockFactory;
-import roart.model.MyQueue;
 import roart.model.MySets;
 
 import org.slf4j.Logger;
@@ -181,6 +181,7 @@ public class TraverseFile {
             files.setLockqueue(lockqueue);
         }
         String md5sdoneid = "md5sdoneid"+trav.getMyid();
+        // TODO mysets -> queue
         MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         try {
@@ -194,7 +195,7 @@ public class TraverseFile {
                 return;
             }
             lockwait = true;
-            indexsingle(trav, md5, filename, files, null);
+            indexsingle(trav, md5, filename, files);
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
             log.error(Constants.EXCEPTION, e);
@@ -408,7 +409,7 @@ public class TraverseFile {
             boolean doindex = getDoIndex(trav, md5, indexfiles, md5sdoneset, null);
             lockwait = true;
             if (doindex) {
-            indexsingle(trav, md5, filename, indexfiles, contentMap);
+            indexsingle(trav, md5, filename, indexfiles);
             } else {
                 indexFilesDao.add(indexfiles);                
             }
@@ -481,11 +482,10 @@ public class TraverseFile {
      * @param md5 id
      * @param filename to be indexed
      * @param index db representation
-     * @param contentMap TODO
      */
     
     public void indexsingle(TraverseQueueElement trav,
-            String md5, FileObject filename, IndexFiles index, Map<FileObject, String> contentMap) {
+            String md5, FileObject filename, IndexFiles index) {
         int maxfailed = MyConfig.conf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
             int failed = index.getFailed();

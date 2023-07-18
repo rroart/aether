@@ -2,8 +2,12 @@ package roart.model;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import redis.clients.jedis.Jedis;
 import roart.common.collections.MySet;
+import roart.common.util.JsonUtil;
+import roart.util.RedisUtil;
 
 public class MyRedisSet<T> extends MySet<T> {
 
@@ -19,7 +23,8 @@ public class MyRedisSet<T> extends MySet<T> {
 
     @Override
     public boolean add(T o) {
-        return jedis.sadd(setname, (String) o) == 1;
+        String string = RedisUtil.convert(o);
+        return jedis.sadd(setname, string) == 1;
     }
 
     @Override
@@ -36,5 +41,11 @@ public class MyRedisSet<T> extends MySet<T> {
     public int size() {
         return (int) jedis.scard(setname);
     }
-
+    
+    @Override
+    public void clear() {
+        for (String member : jedis.smembers(setname)) {
+            jedis.srem(setname, member);
+        }
+    }
 }
