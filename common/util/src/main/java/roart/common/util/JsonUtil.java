@@ -1,14 +1,17 @@
 package roart.common.util;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import roart.common.constants.Constants;
+import roart.common.util.JsonUtil.JsonResponse;
 
 public class JsonUtil {
 
@@ -132,5 +135,51 @@ public class JsonUtil {
     public static <T> T copy(Object object) {
         String text = convert(object);
         return (T) convert(text, object.getClass());
+    }
+
+    public static <T> T convertx(String string, Class<T> cls) {
+        //JsonUtil.convert(string, T.class);
+        return JsonUtil.convert(string, cls);
+    }
+
+    /**
+     * converts to LinkedHashMap
+     * @param <T>
+     * @param string
+     * @return
+     * @throws Exception
+     */
+    public static <T> T converty(String string) throws Exception {
+        //JsonUtil.convert(string, T.class);
+        return new ObjectMapper().readValue(string, new TypeReference<>() {});
+    }
+
+    public static <T> T convertz(String string) throws Exception {
+        //JsonUtil.convert(string, T.class);
+        return new ObjectMapper().readValue(string, new TypeReference<T>() {});
+    }
+
+    public static <T> JsonData<T> convertx(String string) throws Exception {
+        //JsonUtil.convert(string, T.class);
+        return new ObjectMapper().readValue(string, new TypeReference<JsonData<T>>() {});
+    }
+
+    public static <T> JsonData<T> convertxx(String string) throws Exception {
+        //JsonUtil.convert(string, T.class);
+        JavaType type = new ObjectMapper().getTypeFactory().constructParametricType(JsonData.class, String.class);
+        return new ObjectMapper().readValue(string, type);
+    }
+
+    public static <T> T convertJsonToPOJO(String filePath, Class<?> target) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue((filePath), objectMapper .getTypeFactory().constructParametricType(JsonResponse.class, Class.forName(target.getName())));
+    }
+    
+    public class JsonResponse<T> {
+        public JsonResponse() {
+            super();
+        }
+
+        // getters and setters...
     }
 }
