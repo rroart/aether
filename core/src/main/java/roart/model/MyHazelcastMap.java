@@ -7,7 +7,6 @@ import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IQueue;
 
 public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     Map<K, V> map = null;

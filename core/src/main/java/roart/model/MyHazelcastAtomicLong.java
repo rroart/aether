@@ -3,7 +3,8 @@ package roart.model;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IAtomicLong;
+import com.hazelcast.cp.CPSubsystem;
+import com.hazelcast.cp.IAtomicLong;
 
 /**
  * 
@@ -24,7 +25,8 @@ public class MyHazelcastAtomicLong extends MyAtomicLong {
     
     public MyHazelcastAtomicLong(String id) {
         HazelcastInstance hz = GetHazelcastInstance.instance();
-        mylong = hz.getAtomicLong(id);       
+        CPSubsystem cpSubsystem = hz.getCPSubsystem();
+        mylong =  cpSubsystem.getAtomicLong(id);     
     }
  
     @Override

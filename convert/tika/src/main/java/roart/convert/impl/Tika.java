@@ -50,8 +50,6 @@ import roart.common.inmemory.model.InmemoryUtil;
 
 import org.xml.sax.ContentHandler;
 
-import com.hazelcast.nio.IOUtil;
-
 //import roart.queue.TikaQueueElement;
 
 public class Tika extends ConvertAbstract {

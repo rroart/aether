@@ -1,20 +1,21 @@
 package roart.model;
 
+import java.util.Queue;
+
 import roart.common.collections.MyQueue;
 import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IQueue;
 
 public class MyHazelcastQueue<T> extends MyQueue<T> {
-    IQueue<T> queue = null;
+    Queue<T> queue = null;
     
     @Override
     public void offer(T o) {
         try {
-            queue.put(o);
-        } catch (InterruptedException e) {
+            queue.offer(o);
+        } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
     }
