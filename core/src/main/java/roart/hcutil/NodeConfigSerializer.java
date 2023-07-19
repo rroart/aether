@@ -30,8 +30,9 @@ public class NodeConfigSerializer implements StreamSerializer<NodeConfig> {
   @Override
       public NodeConfig read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
-      XMLDecoder decoder = new XMLDecoder( inputStream );
-      return (NodeConfig) decoder.readObject();
+      try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
+        return (NodeConfig) decoder.readObject();
+    }
   }
 
   @Override

@@ -30,8 +30,9 @@ public class TraverseQueueElementSerializer implements StreamSerializer<Traverse
   @Override
       public TraverseQueueElement read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
-      XMLDecoder decoder = new XMLDecoder( inputStream );
-      return (TraverseQueueElement) decoder.readObject();
+      try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
+        return (TraverseQueueElement) decoder.readObject();
+    }
   }
 
   @Override

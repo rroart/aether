@@ -30,8 +30,9 @@ public class ResultItemSerializer implements StreamSerializer<ResultItem> {
   @Override
       public ResultItem read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
-      XMLDecoder decoder = new XMLDecoder( inputStream );
-      return (ResultItem) decoder.readObject();
+      try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
+        return (ResultItem) decoder.readObject();
+    }
   }
 
   @Override

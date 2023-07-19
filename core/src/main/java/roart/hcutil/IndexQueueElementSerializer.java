@@ -31,8 +31,9 @@ public class IndexQueueElementSerializer implements StreamSerializer<IndexQueueE
   @Override
       public IndexQueueElement read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
-      XMLDecoder decoder = new XMLDecoder( inputStream );
-      return (IndexQueueElement) decoder.readObject();
+      try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
+        return (IndexQueueElement) decoder.readObject();
+    }
   }
 
   @Override

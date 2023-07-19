@@ -31,8 +31,9 @@ public class ConvertQueueElementSerializer implements StreamSerializer<ConvertQu
   @Override
       public ConvertQueueElement read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
-      XMLDecoder decoder = new XMLDecoder( inputStream );
-      return (ConvertQueueElement) decoder.readObject();
+      try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
+        return (ConvertQueueElement) decoder.readObject();
+    }
   }
 
   @Override

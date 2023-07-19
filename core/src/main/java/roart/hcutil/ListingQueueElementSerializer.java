@@ -31,8 +31,9 @@ public class ListingQueueElementSerializer implements StreamSerializer<ListQueue
   @Override
       public ListQueueElement read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
-      XMLDecoder decoder = new XMLDecoder( inputStream );
-      return (ListQueueElement) decoder.readObject();
+      try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
+        return (ListQueueElement) decoder.readObject();
+    }
   }
 
   @Override
