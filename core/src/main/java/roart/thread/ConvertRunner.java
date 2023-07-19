@@ -117,7 +117,7 @@ public class ConvertRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
                 }
-                if (Queues.getConvertQueue().size() == 0 || Queues.indexQueueHeavyLoaded()) {
+                if (Queues.getConvertQueueSize() == 0 || Queues.indexQueueHeavyLoaded()) {
                     if (Queues.indexQueueHeavyLoaded()) {
                         log.info("Index queue heavy loaded, sleeping");
                     }
@@ -192,6 +192,7 @@ public class ConvertRunner implements Runnable {
                 log.error("empty queue");
             return null;
         }
+        //Queues.getConvertQueueSize().decrementAndGet();
          ConvertTimeout convertRunnable = new ConvertTimeout(el);
         Thread convertWorker = new Thread(convertRunnable);
         convertWorker.setName("ConvertTimeout");

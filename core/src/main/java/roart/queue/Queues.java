@@ -140,35 +140,35 @@ public class Queues {
     }
 
     public static boolean convertQueueHeavyLoaded() {
-        return getConvertQueue().size() >= limit;
+        return getConvertQueueSize() >= limit;
     }
 
     public static boolean indexQueueHeavyLoaded() {
-        return getIndexQueue().size() >= limit;
+        return getIndexQueueSize() >= limit;
     }
 
     public static boolean traverseQueueHeavyLoaded() {
-        return getTraverseQueue().size() >= limit;
+        return getTraverseQueueSize() >= limit;
     }
 
     public static boolean listingQueueHeavyLoaded() {
-        return getListingQueue().size() >= limit;
+        return getListingQueueSize() >= limit;
     }
 
     public static String webstat() {
-        return "q " + total() + " l " + getListings() + " \nf " + getTraverses() + " " + work() + "\nc " + getConvertQueue().size() + " " + getConverts() + "\ni " + getIndexQueue().size() + " " + getIndexs();
+        return "q " + total() + " l " + getListings() + " \nf " + getTraverses() + " " + work() + "\nc " + getConvertQueueSize() + " " + getConverts() + "\ni " + getIndexQueueSize() + " " + getIndexs();
     }
 
     public static String stat() {
-        return "q " + total() + " l " + getListings() + " f " + getTraverses() + " " + work() + " c " + getConvertQueue().size() + " " + getConverts() + " i " + getIndexQueue().size() + " " + getIndexs();
+        return "q " + total() + " l " + getListings() + " f " + getTraverses() + " " + work() + " c " + getConvertQueueSize() + " " + getConverts() + " i " + getIndexQueueSize() + " " + getIndexs();
     }
 
     public static void queueStat() {
         log.info("Queues {}", stat());
     }
 
-    public static int queueSize() {
-        return getListingQueue().size() + getTraverseQueue().size() + getConvertQueue().size() + getIndexQueue().size();
+    public static long queueSize() {
+        return getListingQueueSize() + getTraverseQueueSize() + getConvertQueueSize() + getIndexQueueSize();
     }
 
     public static long runSize() {
@@ -234,6 +234,26 @@ public class Queues {
 
     public static MyAtomicLong getMyClients() {
         return MyAtomicLongs.get(Constants.CLIENTS);
+    }
+
+    public static int getListingQueueSize() {
+        return getListingQueue().size();
+        //return MyAtomicLongs.get(Constants.LISTINGQUEUESIZE);
+    }
+
+    public static int getTraverseQueueSize() {
+        return getTraverseQueue().size();
+        //return MyAtomicLongs.get(Constants.TRAVERSEQUEUESIZE);
+    }
+
+    public static int getConvertQueueSize() {
+        return getConvertQueue().size();
+        //return MyAtomicLongs.get(Constants.CONVERTQUEUESIZE);
+    }
+
+    public static int getIndexQueueSize() {
+        return getIndexQueue().size();
+        //return MyAtomicLongs.get(Constants.INDEXQUEUESIZE);
     }
 
 }

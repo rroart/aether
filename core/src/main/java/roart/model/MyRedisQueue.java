@@ -3,6 +3,7 @@ package roart.model;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import roart.common.collections.MyQueue;
 import roart.common.util.JsonUtil;
 import roart.util.RedisUtil;
@@ -11,38 +12,53 @@ public class MyRedisQueue<T> extends MyQueue<T> {
 
     private String queuename;
     
-    private Jedis jedis;
+    private JedisPool pool;
 
     public MyRedisQueue(String server, String queuename) {
         this.queuename = queuename;
-        jedis = new Jedis(server);
-        jedis.configSet("stop-writes-on-bgsave-error", "no");
+        pool = new JedisPool(server);
+        //jedis.configSet("stop-writes-on-bgsave-error", "no");
     }
 
     @Override
     public void offer(T o) {
         String string = RedisUtil.convert(o);
-        jedis.rpush(queuename, string);
+        try (Jedis jedis = pool.getResource()) {
+            jedis.rpush(queuename, string);
+        }
     }
 
     @Override
     public T poll() {
-        return (T) jedis.rpop(queuename);
+        try (Jedis jedis = pool.getResource()) {
+            String polled = jedis.rpop(queuename);
+            if ("nil".equals(polled)) {
+                polled = null;
+            }
+            return (T) polled;
+        }
     }
 
     @Override
     public int size() {
-        return (int) jedis.llen(queuename);
+        // TODO not working
+        try (Jedis jedis = pool.getResource()) {
+            return (int) jedis.llen(queuename);
+        }
     }
     
     @Override
     public void clear() {
-        while (!"nil".equals(jedis.rpop(queuename))) { }
+        try (Jedis jedis = pool.getResource()) {
+            while (jedis.rpop(queuename) != null) { }
+        }
     }
 
     @Override
     public T poll(Class<T> clazz) {
-        return JsonUtil.convert((String) poll(), clazz);
+        try (Jedis jedis = pool.getResource()) {
+            return JsonUtil.convert((String) poll(), clazz);
+        }
     }
 
 }

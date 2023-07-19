@@ -53,4 +53,8 @@ public static final String TRAVERSES = "traverses";
 public static final String LISTINGS = "listings";
 public static final String CLIENTS = "clients";
 
+public static final String CONVERTQUEUESIZE = "convertqueuesize";
+public static final String INDEXQUEUESIZE = "indexqueuesize";
+public static final String TRAVERSEQUEUESIZE = "traversequeuesize";
+public static final String LISTINGQUEUESIZE = "listingqueuesize";
 }

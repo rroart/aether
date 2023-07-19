@@ -59,7 +59,7 @@ public class TraverseQueueRunner implements Runnable {
 
         if (Queues.getTraverses() > 0) {
             log.info("resetting traverses");
-            Queues.resetTraverses();
+            //Queues.resetTraverses();
         }
 
         while (true) {
@@ -106,7 +106,7 @@ public class TraverseQueueRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (Queues.getTraverseQueue().size() == 0 || Queues.convertQueueHeavyLoaded()) {
+            if (Queues.getTraverseQueueSize() == 0 || Queues.convertQueueHeavyLoaded()) {
                 if (Queues.convertQueueHeavyLoaded()) {
                     log.info("Convert queue heavy loaded, sleeping");
                 }
@@ -180,6 +180,7 @@ public class TraverseQueueRunner implements Runnable {
                 queue.offer(trav);
                 break;
             }
+            //Queues.getTraverseQueueSize().decrementAndGet();
             traverseList.add(trav);
             FileObject filename = trav.getFileobject();
             log.debug("Traverse file {}", filename);

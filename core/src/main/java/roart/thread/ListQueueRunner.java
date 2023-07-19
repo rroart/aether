@@ -110,7 +110,7 @@ public class ListQueueRunner implements Runnable {
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (Queues.getListingQueue().size() == 0 || Queues.traverseQueueHeavyLoaded()) {
+            if (Queues.getListingQueueSize() == 0 || Queues.traverseQueueHeavyLoaded()) {
                 if (Queues.traverseQueueHeavyLoaded()) {
                     log.info("Traverse queue heavy loaded, sleeping");
                 }
@@ -195,6 +195,7 @@ public class ListQueueRunner implements Runnable {
                 log.error(Constants.EXCEPTION, e); 
             }                   
         }
+        //Queues.getListingQueueSize().decrementAndGet();
         //log.debug("Listing list size {}", listingList.size());
 
         try {
@@ -320,6 +321,7 @@ public class ListQueueRunner implements Runnable {
                 FileObject dirObject = file.fileObject[0];
                 ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.isNomd5());
                 Queues.getListingQueue().offer(listQueueElement);
+                //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
             } else {
                 retset.add(filename);
@@ -332,6 +334,7 @@ public class ListQueueRunner implements Runnable {
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
+                    //Queues.getTraverseQueueSize().incrementAndGet();
                     log.debug("Count inc {}", trav.getFileobject());
                     //TraverseFile.handleFo3(null, fo);
                 }
