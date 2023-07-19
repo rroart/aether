@@ -20,6 +20,11 @@ public class ListQueueElement {
     private String filestodosetid;
     private String traversecountid;
     private boolean nomd5;
+    
+    // for Jackson
+    public ListQueueElement() {
+        super();
+    }
     public ListQueueElement(FileObject fileObject, String myid, ServiceParam element, String retlistid,
             String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid,
             boolean nomd5) {

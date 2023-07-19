@@ -1,37 +1,38 @@
 package roart.queue;
 
 import roart.common.model.FileObject;
-import roart.common.model.SearchDisplay;
 import roart.common.service.ServiceParam;
 
 public class TraverseQueueElement {
 
-	private String myid;
-	private FileObject fileobject;
+    private String myid;
+    private FileObject fileobject;
     private ServiceParam clientQueueElement;
-        private String retlistid = null;
-	private String retnotlistid = null;
-        private String newsetid = null; 
-	private String notfoundsetid;
-	private String filestodoid;
-	private String traversecountid;
+    private String retlistid = null;
+    private String retnotlistid = null;
+    private String newsetid = null; 
+    private String notfoundsetid;
+    private String filestodoid;
+    private String traversecountid;
 
+    // for Jackson
     public TraverseQueueElement() {
-	}
-	
-	public TraverseQueueElement(String myid, FileObject filename, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
+        super();
+    }
 
-	    this.setMyid(myid);
-	    this.fileobject = filename;
-	    this.setClientQueueElement(element);
-		this.setRetlistid(retlistid);
-		this.setRetnotlistid(retnotlistid);
-		this.setNewsetid(newsetid);
-		this.setNotfoundsetid(notfoundsetid);
-		this.setFilestodoid(filestodosetid);
-		this.setTraversecountid(traversecountid);
-		//this.setNomd5(nomd5);
-	}
+    public TraverseQueueElement(String myid, FileObject filename, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid) {
+
+        this.setMyid(myid);
+        this.fileobject = filename;
+        this.setClientQueueElement(element);
+        this.setRetlistid(retlistid);
+        this.setRetnotlistid(retnotlistid);
+        this.setNewsetid(newsetid);
+        this.setNotfoundsetid(notfoundsetid);
+        this.setFilestodoid(filestodosetid);
+        this.setTraversecountid(traversecountid);
+        //this.setNomd5(nomd5);
+    }
 
     public String getMyid() {
         return myid;
@@ -84,7 +85,7 @@ public class TraverseQueueElement {
     public ServiceParam getClientQueueElement() {
         return clientQueueElement;
     }
-    
+
     public void setClientQueueElement(ServiceParam element) {
         this.clientQueueElement = element;
     }

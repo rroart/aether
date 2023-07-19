@@ -1,13 +1,10 @@
 package roart.queue;
 
-import java.util.List;
 import java.util.Map;
 
-import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
-import roart.common.model.ResultItem;
 
 public class ConvertQueueElement {
 
@@ -19,11 +16,16 @@ public class ConvertQueueElement {
     public String retlistnotid;
     public Map<String, String> metadata;
     public String convertsw;
-  //  public UI ui;
+    //  public UI ui;
     public String mimetype;
     public InmemoryMessage message;
     public String content;
-    
+
+    // for Jackson
+    public ConvertQueueElement() {
+        super();
+    }
+
     public ConvertQueueElement(FileObject filename, String md5, IndexFiles index, String retlistid, String retlistnotid, Map<String, String> metadata, InmemoryMessage message, String content) {
         this.filename = filename;
         this.md5 = md5;
