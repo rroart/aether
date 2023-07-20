@@ -406,6 +406,7 @@ public class TraverseFile {
             // TODO new criteria
             boolean doindex = getDoIndex(trav, indexfiles, null);
             lockwait = true;
+            doindex = doindex && indexfiles.getFilelocations().size() == 1;
             if (doindex) {
             indexsingle(trav, md5, filename, indexfiles);
             } else {
