@@ -108,7 +108,7 @@ public class TraverseFile {
         IndexFiles files = null;
         MyLock lock = null; 
         boolean lockwait = false;
-        if (trav.getClientQueueElement().md5change == true || md5 == null) {
+        if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
                 if (!new FileSystemDao().exists(fo)) {
                     throw new FileNotFoundException("File does not exist " + filename);
@@ -132,7 +132,7 @@ public class TraverseFile {
                     log.info("adding md5 file {}", filename);
                 }
                 // calculatenewmd5 and nodbchange are never both true
-                if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
+                if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
                         MySet<String> newset = (MySet<String>) MySets.get(trav.getNewsetid()); 
                         newset.add(filename.toString());
@@ -276,7 +276,7 @@ public class TraverseFile {
         IndexFiles indexfiles = null;
         MyLock lock = null; 
         boolean lockwait = false;
-        if (trav.getClientQueueElement().md5change == true || md5 == null) {
+        if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
                 if (!fsMap.get(filename).exists) {
                     throw new FileNotFoundException("File does not exist " + filename);
@@ -336,7 +336,7 @@ public class TraverseFile {
                 //indexFilesDao.addTemp(indexfiles);
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
-                if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
+                if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
                         MyQueue<String> newset = (MyQueue<String>) MyQueues.get(trav.getNewsetid()); 
                         newset.offer(filename.toString());
@@ -536,7 +536,7 @@ public class TraverseFile {
         for (TraverseQueueElement trav : traverseList) {
             FileObject filename = trav.getFileobject();
             String md5 = filenameMd5Map.get(filename);
-            if (trav.getClientQueueElement().md5change == true || md5 == null) {
+            if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
                 try {
                     if (!fsMap.get(filename).exists) {
                         throw new FileNotFoundException("File does not exist " + filename);

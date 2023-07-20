@@ -13,7 +13,6 @@ public NodeConfig config;
     public String lowerdate;
     public String higherdate;
     public boolean reindex;
-    public boolean md5change;
     public boolean clean;
     public String path;
     public String md5;
