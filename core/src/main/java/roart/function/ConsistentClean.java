@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
@@ -22,6 +23,7 @@ import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
 import roart.model.MyLockFactory;
+import roart.model.MyQueues;
 import roart.model.MySets;
 import roart.search.SearchDao;
 import roart.service.ControlService;
@@ -83,15 +85,15 @@ public class ConsistentClean extends AbstractFunction {
 
         String myid = ControlService.getMyId();
         String newsetid = "newsetid"+myid;
-        MySet<String> newset = MySets.get(newsetid);
+        MyQueue<String> newset = MyQueues.get(newsetid);
         //MySets.put(newsetid, newset);
 
         String notfoundsetid = "notfoundsetid"+myid;
-        MySet<String> notfoundset = MySets.get(notfoundsetid);
+        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid);
         //MySets.put(notfoundsetid, notfoundset);
 
-        String md5sdoneid = "md5sdoneid"+myid;
-        MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+        //String md5sdoneid = "md5sdoneid"+myid;
+        //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         //Traverse traverse = new Traverse(myid, param, null, null, newsetid, MyConfig.conf.getDirListNot(), notfoundsetid, null, null, true);
         String path = param.file;

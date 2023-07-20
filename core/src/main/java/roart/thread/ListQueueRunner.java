@@ -32,6 +32,7 @@ import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
+import roart.model.MyQueues;
 import roart.model.MySets;
 import roart.queue.ListQueueElement;
 import roart.queue.Queues;
@@ -63,7 +64,7 @@ public class ListQueueRunner implements Runnable {
 
         if (Queues.getListings() > 0) {
             log.info("resetting listings");
-            Queues.resetListings();
+            //Queues.resetListings();
         }
 
         while (true) {
@@ -304,8 +305,8 @@ public class ListQueueRunner implements Runnable {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MySet<String> notfoundset = (MySet<String>) MySets.get(element.getNotfoundsetid()); 
-                notfoundset.add(filename);
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(element.getNotfoundsetid()); 
+                notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
             }
@@ -319,7 +320,7 @@ public class ListQueueRunner implements Runnable {
             if (file.isDirectory) {
                 log.debug("isdir {}", filename);
                 FileObject dirObject = file.fileObject[0];
-                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.isNomd5());
+                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.isNomd5(), element.getFilesdonesetid());
                 Queues.getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
@@ -327,13 +328,15 @@ public class ListQueueRunner implements Runnable {
                 retset.add(filename);
                 if (!element.isNomd5()) {
                     MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
-                    TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid());
+                    TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.getFilesdonesetid());
                     MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                     total.addAndGet(1);
                     MyAtomicLong count = MyAtomicLongs.get(element.getTraversecountid());
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
+                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid()); 
+                    filestodoset.offer(trav.getFileobject().toString());
                     //Queues.getTraverseQueueSize().incrementAndGet();
                     log.debug("Count inc {}", trav.getFileobject());
                     //TraverseFile.handleFo3(null, fo);

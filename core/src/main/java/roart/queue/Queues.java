@@ -47,7 +47,7 @@ public class Queues {
     public static volatile Queue<ListQueueElement> listQueue = new ConcurrentLinkedQueue<>();
 */
     
-    public static Set<MySet> workQueues = new HashSet();
+    public static Set<Set> workQueues = new HashSet();
 
     public static volatile Queue<String> convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
 
@@ -186,7 +186,7 @@ public class Queues {
 
     public static int work() {
         int ret = 0;
-        for (MySet set : workQueues) {
+        for (Set set : workQueues) {
             ret += set.size();
         }
         return ret;

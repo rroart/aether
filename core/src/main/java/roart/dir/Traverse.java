@@ -74,13 +74,14 @@ public class Traverse {
     String filestodosetid;
     String traversecountid;
     boolean nomd5;
+    String filesdonesetid;
 
     FileObject[] dirlistnot;
     SearchDisplay display;
 
     //Set<String> md5sdone = new HashSet<String>();
 
-    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5) {
+    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5, String filesdonesetid) {
 
         this.myid = myid;
         this.element = element;
@@ -93,7 +94,8 @@ public class Traverse {
         this.filestodosetid = filestodosetid;
         this.traversecountid = traversecountid;
         this.nomd5 = nomd5;
-
+        this.filesdonesetid = filesdonesetid;
+        
         dirlistnotarr = MyConfig.conf.getDirListNot();
         dirlistnot = new FileObject[dirlistnotarr.length];
         int i = 0;
@@ -160,8 +162,8 @@ public class Traverse {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MySet<String> notfoundset = (MySet<String>) MySets.get(notfoundsetid); 
-                notfoundset.add(filename);
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(notfoundsetid); 
+                notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
             }
@@ -179,13 +181,14 @@ public class Traverse {
                 retset.add(filename);
                 if (!nomd5) {
                     MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
-                    TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
+                    TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
                     MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                     total.addAndGet(1);
                     MyAtomicLong count = MyAtomicLongs.get(traversecountid);
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
+                    //Queues.getTraverseQueueSize().incrementAndGet();
                     log.debug("Count inc {}", trav.getFileobject());
                     //TraverseFile.handleFo3(null, fo);
                 }
@@ -232,7 +235,7 @@ public class Traverse {
             }
             */
             // TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid);
+            TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
             if (!function.indexFilter(index, trav)) {
                 continue;
             }
@@ -243,10 +246,10 @@ public class Traverse {
             count.addAndGet(1);
             // ?
             //queue.offer(trav);
-            String md5sdoneid = "md5sdoneid"+trav.getMyid();
-            MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+            //String md5sdoneid = "md5sdoneid"+trav.getMyid();
+            //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
             TraverseFile traverseFile = new TraverseFile(indexFilesDao);
-            if (traverseFile.getDoIndex(trav, md5, index, md5sdoneset, function)) {
+            if (traverseFile.getDoIndex(trav, index, function)) {
                 traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
             }
             //MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
@@ -264,16 +267,18 @@ public class Traverse {
             if (add != null) {
                 //return doList(FsUtil.getFileObject(add));
                 FileObject fileObject = FsUtil.getFileObject(add);
-                ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5);
+                ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5, filesdonesetid);
                 Queues.getListingQueue().offer(listQueueElement);
-                return new HashSet<>();
+                //Queues.getListingQueueSize().incrementAndGet();
+            return new HashSet<>();
             } else {
                 Set<String> retList = new HashSet<>();
                 String[] dirlist = MyConfig.conf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
                     FileObject fileObject = FsUtil.getFileObject(dirlist[i]);
-                    ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5);
+                    ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5, filesdonesetid);
                     Queues.getListingQueue().offer(listQueueElement);
+                    //Queues.getListingQueueSize().incrementAndGet();
                     //retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));
                 }
                 return new HashSet<>();

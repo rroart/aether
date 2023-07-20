@@ -20,6 +20,7 @@ public class ListQueueElement {
     private String filestodosetid;
     private String traversecountid;
     private boolean nomd5;
+    private String filesdonesetid;
     
     // for Jackson
     public ListQueueElement() {
@@ -27,7 +28,7 @@ public class ListQueueElement {
     }
     public ListQueueElement(FileObject fileObject, String myid, ServiceParam element, String retlistid,
             String retnotlistid, String newsetid, String notfoundsetid, String filestodosetid, String traversecountid,
-            boolean nomd5) {
+            boolean nomd5, String filesdonesetid) {
         super();
         this.fileObject = fileObject;
         this.myid = myid;
@@ -39,6 +40,7 @@ public class ListQueueElement {
         this.filestodosetid = filestodosetid;
         this.traversecountid = traversecountid;
         this.nomd5 = nomd5;
+        this.filesdonesetid = filesdonesetid;
     }
     public FileObject getFileObject() {
         return fileObject;
@@ -99,6 +101,12 @@ public class ListQueueElement {
     }
     public void setNomd5(boolean nomd5) {
         this.nomd5 = nomd5;
+    }
+    public String getFilesdonesetid() {
+        return filesdonesetid;
+    }
+    public void setFilesdonesetid(String filesdonesetid) {
+        this.filesdonesetid = filesdonesetid;
     }
 
 }

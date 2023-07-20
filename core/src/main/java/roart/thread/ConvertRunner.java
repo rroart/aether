@@ -45,7 +45,7 @@ public class ConvertRunner implements Runnable {
 
         if (Queues.getConverts() > 0) {
                 log.info("resetting converts");
-                Queues.resetConverts();
+                //Queues.resetConverts();
         }
         
         while (true) {

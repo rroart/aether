@@ -41,7 +41,7 @@ public class IndexRunner implements Runnable {
 
         if (Queues.getIndexs() > 0) {
             log.info("resetting indexs");
-            Queues.resetIndexs();
+            //Queues.resetIndexs();
         }
 
         while (true) {

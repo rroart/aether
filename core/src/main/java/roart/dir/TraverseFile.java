@@ -38,6 +38,7 @@ import roart.function.AbstractFunction;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
 import roart.model.MyLockFactory;
+import roart.model.MyQueues;
 import roart.model.MySets;
 
 import org.slf4j.Logger;
@@ -258,6 +259,7 @@ public class TraverseFile {
             */
             // save
             queue.offer(trav);
+            //Queues.getTraverseQueueSize().incrementAndGet();
             log.info("Already locked: {}", filename.toString());
             return;
         }
@@ -271,10 +273,6 @@ public class TraverseFile {
         log.debug("timer");
         String md5 = filenameMd5Map.get(filename);
         log.debug("info {} {}", md5, filename);
-        MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid()); 
-        if (!filestodoset.add(filename.toString())) {
-            log.error("already added {}", filename);
-        }
         IndexFiles indexfiles = null;
         MyLock lock = null; 
         boolean lockwait = false;
@@ -340,8 +338,8 @@ public class TraverseFile {
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5change == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
-                        MySet<String> newset = (MySet<String>) MySets.get(trav.getNewsetid()); 
-                        newset.add(filename.toString());
+                        MyQueue<String> newset = (MyQueue<String>) MyQueues.get(trav.getNewsetid()); 
+                        newset.offer(filename.toString());
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -350,8 +348,8 @@ public class TraverseFile {
                 MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
                 count.addAndGet(-1);
                 log.error(Constants.EXCEPTION, e);
-                MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid()); 
-                notfoundset.add(filename.toString());
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(trav.getNotfoundsetid()); 
+                notfoundset.offer(filename.toString());
                 log.debug("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
@@ -401,12 +399,12 @@ public class TraverseFile {
             indexfiles.setLock(lock);
             indexfiles.setLockqueue(locks);
         }
-        String md5sdoneid = "md5sdoneid"+trav.getMyid();
-        MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+        //String md5sdoneid = "md5sdoneid"+trav.getMyid();
+        //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         try {
             // TODO new criteria
-            boolean doindex = getDoIndex(trav, md5, indexfiles, md5sdoneset, null);
+            boolean doindex = getDoIndex(trav, indexfiles, null);
             lockwait = true;
             if (doindex) {
             indexsingle(trav, md5, filename, indexfiles);
@@ -437,9 +435,8 @@ public class TraverseFile {
                     unlock.unlock();
                 }
             }
-            if (!filestodoset.remove(filename.toString())) {
-                log.error("already removed {}", filename);
-            }
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(trav.getFilesdoneid()); 
+            filesdoneset.offer(filename.toString());
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(-1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
@@ -453,19 +450,8 @@ public class TraverseFile {
 
     }
 
-    public boolean getDoIndex(TraverseQueueElement trav, String md5, IndexFiles files,
-            MySet<String> md5sdoneset, AbstractFunction function) throws Exception {
+    public boolean getDoIndex(TraverseQueueElement trav, IndexFiles files, AbstractFunction function) throws Exception {
         boolean doindex = true;
-        if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
-            /*
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-            total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-            count.addAndGet(-1);
-            log.info("Count dec {}", trav.getFileobject());
-            */
-            doindex = false;
-        }
         if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
             doindex = false;
         }
@@ -506,7 +492,8 @@ public class TraverseFile {
         String content = null; //contentMap.get(filename);
         ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
         Queues.getConvertQueue().offer(e2);
-        //size = doTika(filename, filename, md5, index, retlist);
+        //Queues.getConvertQueueSize().incrementAndGet();
+    //size = doTika(filename, filename, md5, index, retlist);
     }
 
     public Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {

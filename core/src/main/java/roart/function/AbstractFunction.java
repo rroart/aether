@@ -1,13 +1,17 @@
 package roart.function;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MyList;
+import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
@@ -23,6 +27,7 @@ import roart.model.MyAtomicLongs;
 import roart.model.MyCollections;
 import roart.model.MyLists;
 import roart.model.MyLockFactory;
+import roart.model.MyQueues;
 import roart.model.MySets;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
@@ -57,6 +62,8 @@ public abstract class AbstractFunction {
                 //boolean newmd5 = el.md5change;
                 log.info("function " + function + " " + filename + " " + el.reindex);
 
+                Set<String> filestodoSet = new HashSet<>();
+                
                 List<List> retlistlist = new ArrayList<>();
                 List<ResultItem> retList = new ArrayList<>();
                 retList.add(IndexFiles.getHeader());
@@ -72,33 +79,37 @@ public abstract class AbstractFunction {
                 retDeletedList.add(new ResultItem("Deleted"));
                 List<ResultItem> retNotExistList = new ArrayList<>();
                 retNotExistList.add(new ResultItem("File does not exist"));
-
+                List<String> notfoundList = new ArrayList<>();
+                List<String> newfileList = new ArrayList<>();
+                
                 String myid = ControlService.getMyId();
                 String filesetnewid = Constants.FILESETNEWID + myid;
-                MySet<String> filesetnew = MySets.get(filesetnewid);
+                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid);
                 //MySets.put(filesetnewid, filesetnew);
 
                 String notfoundsetid = Constants.NOTFOUNDSETID + myid;
-                MySet<String> notfoundset = MySets.get(notfoundsetid);
+                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid);
                 //MySets.put(notfoundsetid, notfoundset);
 
                 String retlistid = Constants.RETLISTID + myid;
-                MyList<ResultItem> retlist = MyLists.get(retlistid);
+                MyQueue retQueue = MyQueues.get(retlistid);
                 //MyLists.put(retlistid, retlist);
 
                 String retnotlistid = Constants.RETNOTLISTID + myid;
-                MyList<ResultItem> retnotlist = MyLists.get(retnotlistid);
+                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid);
                 //MyLists.put(retnotlistid, retnotlist);
 
                 String traversecountid = Constants.TRAVERSECOUNT + myid;
                 MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid);
 
                 String filestodosetid = Constants.FILESTODOSETID + myid;
-                MySet<String> filestodoset = MySets.get(filestodosetid);
+                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid);
+                String filesdonesetid = Constants.FILESDONESETID + myid;
+                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid);
                 //MyLists.put(retnotlistid, retnotlist);
-                Queues.workQueues.add(filestodoset);
+                Queues.workQueues.add(filestodoSet);
 
-                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, MyConfig.conf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false);
+                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, MyConfig.conf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid);
 
                 // filesystem
                 // reindexsuffix
@@ -114,9 +125,17 @@ public abstract class AbstractFunction {
                 while ((traversecount.get() + Queues.queueSize() + Queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
                     TimeUnit.SECONDS.sleep(5);
                     Queues.queueStat();
+                    fromQueueToList(retList, retQueue, ResultItem.class);
+                    fromQueueToList(retNotList, retnotQueue, ResultItem.class);
+                    fromQueueToList(filestodoSet, filestodoQueue, String.class);
+                    Set<String> filesdoneSet = new HashSet<>();
+                    fromQueueToList(filesdoneSet, filesdoneQueue, String.class);
+                    filestodoSet.removeAll(filesdoneSet);
+                    fromQueueToList(newfileList, newfileQueue, String.class);
+                    fromQueueToList(notfoundList, notfoundQueue, String.class);
                 }
 
-                for (String str : filestodoset.getAll()) {
+                for (String str : filestodoSet) {
                     System.out.println("todo " + str);
                 }
 
@@ -130,19 +149,11 @@ public abstract class AbstractFunction {
                     TimeUnit.SECONDS.sleep(60);
                 }
 
-                for (ResultItem file : retlist.getAll()) {
-                    retList.add(file);
-                }
-
-                for (ResultItem s : retnotlist.getAll()) {
-                    retNotList.add(s);
-                }
-
-                for (String file : notfoundset.getAll()) {
+                for (String file : notfoundList) {
                     retNotExistList.add(new ResultItem(file));
                 }
 
-                for (String s : filesetnew.getAll()) {
+                for (String s : newfileList) {
                     retNewFilesList.add(new ResultItem(s));
                 }
 
@@ -154,7 +165,7 @@ public abstract class AbstractFunction {
                 MyCollections.remove(filesetnewid);
                 MyCollections.remove(filestodosetid);
                 MyCollections.remove(traversecountid);
-                Queues.workQueues.remove(filestodoset);
+                Queues.workQueues.remove(filestodoSet);
 
                 retlistlist.add(retList);
                 retlistlist.add(retNotList);
@@ -173,6 +184,16 @@ public abstract class AbstractFunction {
             }
         }
         return null;        
+    }
+
+    private <T> void fromQueueToList(Collection<T> resultList, MyQueue<T> resultQueue, Class<T> clazz) {
+        while (true) {
+            T s = resultQueue.poll(clazz);
+            if (s == null) {
+                break;
+            }
+            resultList.add(s);
+        }
     }
 
     protected void traverse(String filename, Traverse traverse) {

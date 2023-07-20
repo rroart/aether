@@ -39,6 +39,7 @@ public static final String CURATOR = "curator";
 public static final String LOCAL = "local";
 public static final String GLOBALLOCK = "globallock";
 public static final String FILESTODOSETID = "filestodoset";
+public static final String FILESDONESETID = "filesdoneset";
 
 public static final String REDIS = "redis";
 public static final String HAZELCAST = "hazelcast";

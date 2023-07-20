@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.classification.ClassifyDao;
 import roart.common.collections.MyList;
+import roart.common.collections.MyQueue;
 import roart.common.config.Converter;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
@@ -34,6 +35,7 @@ import roart.filesystem.FileSystemDao;
 import roart.lang.LanguageDetect;
 import roart.lang.LanguageDetectFactory;
 import roart.model.MyLists;
+import roart.model.MyQueues;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.util.ISBNUtil;
@@ -147,14 +149,15 @@ public class ConvertHandler {
             elem.message = str;
             elem.convertsw = el.convertsw;
             Queues.getIndexQueue().offer(elem);
+            //Queues.getIndexQueueSize().incrementAndGet();
 
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);
             FileLocation aFl = el.index.getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyList<ResultItem> retlistnot = (MyList<ResultItem>) MyLists.get(el.retlistnotid); 
-            retlistnot.add(ri);
+            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(el.retlistnotid); 
+            retlistnot.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
                 index.incrFailed();
