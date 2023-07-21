@@ -19,8 +19,8 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
     private Communication comm;
     
     public MyCommunicationQueue(String queuename) {
-        String name = null; // NodeConfig.conf.getDi;
-        String connection = null;
+        String name = NodeConfig.conf.getSynchronizationCommunicationName();
+        String connection = NodeConfig.conf.getSynchronizationCommunicationConnection();
         size = MyAtomicLongs.get(queuename);
         comm = CommunicationFactory.get(name, String.class, queuename, new ObjectMapper(), true, true, false, connection);
     }
