@@ -1,24 +1,28 @@
-package roart.model;
+package roart.common.synchronization.impl;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.lock.FencedLock;
 
 import roart.common.synchronization.MyLock;
-import roart.hcutil.GetHazelcastInstance;
 
 public class MyHazelcastLock extends MyLock {
+    private HazelcastInstance hz;
+    
     FencedLock lock;
     
+    public MyHazelcastLock(HazelcastInstance hz) {
+        super();
+        this.hz = hz;
+    }
+
     @Override
     public void lock(String path) throws Exception {
-        HazelcastInstance hz = GetHazelcastInstance.instance();
         lock = hz.getCPSubsystem().getLock(path);
         lock.lock();
     }
 
     @Override
     public boolean tryLock(String path) throws Exception {
-        HazelcastInstance hz = GetHazelcastInstance.instance();
         lock = hz.getCPSubsystem().getLock(path);
         return lock.tryLock();
     }

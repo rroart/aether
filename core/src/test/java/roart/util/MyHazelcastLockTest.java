@@ -9,7 +9,8 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
 import roart.common.synchronization.MyLock;
-import roart.model.MyHazelcastLock;
+import roart.common.synchronization.impl.MyHazelcastLock;
+import roart.hcutil.GetHazelcastInstance;
 
 public class MyHazelcastLockTest {
    
@@ -21,7 +22,7 @@ public class MyHazelcastLockTest {
         CountDownLatch latchDone = new CountDownLatch(numberOfThreads * 100);
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
-                MyLock lock = new MyHazelcastLock();
+                MyLock lock = new MyHazelcastLock(GetHazelcastInstance.instance());
                 String id = MyLocalLockTestUtil.getId();
                 try {
                     lock.lock(id);

@@ -1,4 +1,4 @@
-package roart.model;
+package roart.common.synchronization.impl;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;

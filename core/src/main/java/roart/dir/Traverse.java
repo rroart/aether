@@ -22,6 +22,7 @@ import roart.common.model.IndexFiles;
 import roart.common.model.SearchDisplay;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.util.ExecCommand;
 import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
@@ -29,7 +30,6 @@ import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
 import roart.model.MyAtomicLong;
 import roart.model.MyAtomicLongs;
-import roart.model.MyLockFactory;
 import roart.model.MyQueues;
 import roart.model.MySets;
 

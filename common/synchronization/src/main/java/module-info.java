@@ -7,6 +7,11 @@
  */
 module common.synchronization {
     exports roart.common.synchronization;
+    exports roart.common.synchronization.impl;
 
-    requires org.slf4j;
+    requires common.constants;
+    requires curator.framework;
+    requires curator.recipes;
+    requires com.hazelcast.core;
+    requires slf4j.api;
 }

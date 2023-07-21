@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
 import roart.common.synchronization.MyLock;
-import roart.model.MyLocalLock;
+import roart.common.synchronization.impl.MyLocalLock;
 
 public class MyLocalLockTest {
    

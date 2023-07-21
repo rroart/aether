@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import roart.common.synchronization.MyLock;
-import roart.model.MyCuratorLock;
+import roart.common.synchronization.impl.MyCuratorLock;
 import roart.service.ControlService;
 
 public class MyCuratorLockTest {
@@ -34,7 +34,7 @@ public class MyCuratorLockTest {
         CountDownLatch latchDone = new CountDownLatch(numberOfThreads * 100);
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
-                MyLock lock = new MyCuratorLock();
+                MyLock lock = new MyCuratorLock(ControlService.curatorClient);
                 String id = MyLocalLockTestUtil.getId();
                 try {
                     lock.lock(id);

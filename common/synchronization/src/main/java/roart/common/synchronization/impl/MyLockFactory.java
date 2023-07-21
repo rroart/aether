@@ -1,19 +1,21 @@
-package roart.model;
+package roart.common.synchronization.impl;
 
-import roart.common.config.MyConfig;
+import com.hazelcast.core.HazelcastInstance;
+import org.apache.curator.framework.CuratorFramework;
+
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyLock;
 
 public class MyLockFactory {
-    public static MyLock create() {
-        if (MyConfig.conf.getLocker() == null) {
+    public static MyLock create(String locker, CuratorFramework curatorFramework, HazelcastInstance hz) {
+        if (locker == null) {
             return new MyDummyLock();
         }
-        switch (MyConfig.conf.getLocker()) {
+        switch (locker) {
         case Constants.HAZELCAST:
-            return new MyHazelcastLock();
+            return new MyHazelcastLock(hz);
         case Constants.CURATOR:
-            return new MyCuratorLock();
+            return new MyCuratorLock(curatorFramework);
         case Constants.LOCAL:
             return new MyLocalLock();
             /*

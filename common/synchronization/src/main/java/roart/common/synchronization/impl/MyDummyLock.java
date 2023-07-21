@@ -1,4 +1,4 @@
-package roart.model;
+package roart.common.synchronization.impl;
 
 import roart.common.synchronization.MyLock;
 

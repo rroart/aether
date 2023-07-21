@@ -17,12 +17,13 @@ import roart.common.model.Files;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.util.FsUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
-import roart.model.MyLockFactory;
+import roart.hcutil.GetHazelcastInstance;
 import roart.model.MyQueues;
 import roart.model.MySets;
 import roart.search.SearchDao;
@@ -151,7 +152,7 @@ public class ConsistentClean extends AbstractFunction {
                         String md5 = indexFilesDao.getMd5ByFilename(filename);
                         // common3?
                         if (md5 != null) {
-                            MyLock lock2 = MyLockFactory.create();
+                            MyLock lock2 = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
                             lock2.lock(md5);
                             IndexFiles ifile = indexFilesDao.getByMd5(md5);
                             FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
