@@ -167,7 +167,7 @@
     <jaxb.version>2.3.1</jaxb.version>
     <javaxinject.version>1</javaxinject.version>
     <kafka.version>3.5.0</kafka.version>
-    <pulsar.version>2.6.1</pulsar.version>
+    <pulsar.version>3.0.0</pulsar.version>
     <commons.math3.version>3.6.1</commons.math3.version>
     <commons.lang3.version>3.8.1</commons.lang3.version>
     <commons.io.version>2.11.0</commons.io.version>
