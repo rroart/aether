@@ -25,7 +25,8 @@ public abstract class Communication {
     protected boolean receive;
     protected boolean sendreceive;
     protected String connection;
-    public Communication(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection) {
+    protected boolean retrypoll;
+    public Communication(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
         this.myclass = myclass;
         this.service = service;
         this.mapper = mapper;
@@ -34,6 +35,7 @@ public abstract class Communication {
         this.receive = receive;
         this.sendreceive = sendreceive;
         this.connection = connection;
+        this.retrypoll = retrypoll;
         if (sendreceive) {
             try {
                 this.returnService = service + InetAddress.getLocalHost().getHostAddress() + System.currentTimeMillis();

@@ -21,8 +21,8 @@ public class Camel extends IntegrationCommunication {
     ConsumerTemplate consumer;
     String vhost = "task";
 
-    public Camel(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection) {
-        super(myname, myclass, service, mapper, send, receive, sendreceive, connection);
+    public Camel(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
+        super(myname, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         context = new DefaultCamelContext();
         context.start();
         if (send) {
@@ -58,7 +58,15 @@ public class Camel extends IntegrationCommunication {
 
     public String[] receiveString() {
         Endpoint endpoint = context.getEndpoint(connection + "/" + vhost + getReceiveService() + "?autoDelete=false&routingKey=camel&queue=" + getReceiveService());
-        Exchange receive = consumer.receive(endpoint);
+        Exchange receive;
+        if (retrypoll) {
+            receive = consumer.receive(endpoint);
+        } else {
+            receive = consumer.receive(endpoint, 1000);
+            if  (receive == null) {
+                return new String[0];
+            }
+        }
         return new String[] { receive.getIn().getBody(String.class) };
     }
 

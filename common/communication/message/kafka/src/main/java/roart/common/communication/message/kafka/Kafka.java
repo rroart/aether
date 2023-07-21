@@ -60,8 +60,8 @@ public class Kafka extends MessageCommunication {
     Producer<String, String> producer;
     KafkaConsumer<String, String> consumer;
     
-    public Kafka(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection) {
-        super(myname, myclass, service, mapper, send, receive, sendreceive, connection);
+    public Kafka(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
+        super(myname, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         if (send) {
             Properties props = new Properties();
             props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connection); // List of brokers that the producer asks to get the topic leader
@@ -141,6 +141,9 @@ public class Kafka extends MessageCommunication {
                 retRecord[count++] = record.value();
                 System.out.printf("offset = %d, key = %s, value = %s\n", 
                         record.offset(), record.key(), record.value());
+            }
+            if (!retrypoll) {
+                break;
             }
         }
         // print the offset,key and value for the consumer records.     

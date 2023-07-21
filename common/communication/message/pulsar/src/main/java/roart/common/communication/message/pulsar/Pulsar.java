@@ -1,5 +1,6 @@
 package roart.common.communication.message.pulsar;
 
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,8 +27,8 @@ public class Pulsar extends MessageCommunication {
     Consumer<byte[]> consumer;
     Producer<String> stringProducer = null;
 
-    public Pulsar(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection) {
-        super(myname, myclass, service, mapper, send, receive, sendreceive, connection);
+    public Pulsar(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
+        super(myname, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         try {
             client = PulsarClient.builder()
                     .serviceUrl(connection)
@@ -117,7 +118,15 @@ public class Pulsar extends MessageCommunication {
         // Wait for a message
 
         try {
-            Message msg = consumer.receive();
+            Message msg;
+            if (retrypoll) {
+                msg = consumer.receive();
+            } else {
+                msg = consumer.receive(1, TimeUnit.SECONDS);
+                if (msg == null) {
+                    return new String[0];
+                }
+            }
 
             try {
                 // Do something with the message

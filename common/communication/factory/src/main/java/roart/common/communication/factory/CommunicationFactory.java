@@ -10,18 +10,18 @@ import roart.common.communication.rest.REST;
 import roart.common.constants.CommunicationConstants;
 
 public class CommunicationFactory {
-    public static Communication get(String name, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection) {
+    public static Communication get(String name, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
         switch (name) {
         case CommunicationConstants.REST:
-            return new REST(name, myclass, service, mapper, send, receive, sendreceive, connection);
+            return new REST(name, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         case CommunicationConstants.CAMEL:
-            return new Camel(name, myclass, service, mapper, send, receive, sendreceive, connection);
+            return new Camel(name, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         case CommunicationConstants.SPRING:
-            return new Spring(name, myclass, service, mapper, send, receive, sendreceive, connection);
+            return new Spring(name, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         case CommunicationConstants.PULSAR:
-            return new Pulsar(name, myclass, service, mapper, send, receive, sendreceive, connection);
+            return new Pulsar(name, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         case CommunicationConstants.KAFKA:
-            return new Kafka(name, myclass, service, mapper, send, receive, sendreceive, connection);
+            return new Kafka(name, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         }
         return null;
     }

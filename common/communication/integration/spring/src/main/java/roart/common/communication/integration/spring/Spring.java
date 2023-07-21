@@ -27,8 +27,8 @@ public class Spring extends IntegrationCommunication {
     
     //private Queue queue = new Queue("myq");
 
-    public Spring(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection) {
-        super(myname, myclass, service, mapper, send, receive, sendreceive, connection);
+    public Spring(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
+        super(myname, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
       /*
         ConnectionFactory connectionFactory = new CachingConnectionFactory();
         AmqpAdmin admin = new RabbitAdmin(connectionFactory);
@@ -79,6 +79,9 @@ public class Spring extends IntegrationCommunication {
                 string = (String) object;
             } else {
                 string = new String((byte[]) object);
+            }
+            if (!retrypoll) {
+                break;
             }
         }
         return new String[] { string };
