@@ -150,6 +150,21 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public Boolean wantSynchronizationCommunication() {
+        return ((Boolean) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONCOMMUNICATION));
+    }
+    
+    @JsonIgnore
+    public String getSynchronizationCommunicationName() {
+        return (String) configValueMap.get(ConfigConstants.SYNCHRONIZATIONCOMMUNICATIONNAME);
+    }
+    
+    @JsonIgnore
+    public String getSynchronizationCommunicationConnection() {
+        return (String) configValueMap.get(ConfigConstants.SYNCHRONIZATIONCOMMUNICATIONCONNECTION);
+    }
+    
+    @JsonIgnore
     public String getLocker() {
         if (wantDistributedTraverse()) {
             return roart.common.constants.Constants.HAZELCAST;

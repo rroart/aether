@@ -117,9 +117,13 @@
   </filesystem>
   <synchronization>
     <distributedlockmodebig enable='true'/>
-    <distributedprocess enable='false'/>
+    <distributedprocess enable=$DISTRIBUTEDPROCESS/>
     <zookeeper>$ZOOKEEPER</zookeeper>
     <redis>$REDIS</redis>
+    <communication enable='$COMMUNICATION'>
+      <name>$COMMUNICATIONNAME</name>
+      <connection>$COMMUNICATIONCONNECTION</connection>
+    </communication>
   </synchronization>
   <inmemory><server>$INMEMORYSERVER</server></inmemory>
   <inmemory><redis>$INMEMORYREDIS</redis></inmemory>

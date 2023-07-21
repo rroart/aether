@@ -11,6 +11,9 @@ public class MyQueueFactory extends MyFactory {
     
     public MyQueue create(String listid) {
         if (MyConfig.conf.wantDistributedTraverse()) {
+            if (MyConfig.conf.wantSynchronizationCommunication()) {
+                return new MyCommunicationQueue(listid);
+            }
             if (MyConfig.conf.getRedis() != null) {
                 return new MyRedisQueue(MyConfig.conf.getRedis(), listid);
             } else {

@@ -369,6 +369,11 @@
       <version>${aether.version}</version>
     </dependency>
     <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-communication-factory</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
     	<groupId>commons-io</groupId>
     	<artifactId>commons-io</artifactId>
     	<version>${commons.io.version}</version>
