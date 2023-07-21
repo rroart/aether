@@ -130,7 +130,7 @@
     <jdo.version>3.0.1</jdo.version>
     <zookeeper.version>3.4.6</zookeeper.version>
     <!-- must keep at old version for some time -->
-    <curator.version>2.12.0</curator.version>
+    <curator.version>5.5.0</curator.version>
     <hazelcast.version>5.3.1</hazelcast.version>
     <hazelcastclient.version>3.12.13</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
