@@ -166,7 +166,7 @@
     <netty.version>4.1.7.Final</netty.version>
     <jaxb.version>2.3.1</jaxb.version>
     <javaxinject.version>1</javaxinject.version>
-    <kafka.version>2.6.0</kafka.version>
+    <kafka.version>3.5.0</kafka.version>
     <pulsar.version>2.6.1</pulsar.version>
     <commons.math3.version>3.6.1</commons.math3.version>
     <commons.lang3.version>3.8.1</commons.lang3.version>
