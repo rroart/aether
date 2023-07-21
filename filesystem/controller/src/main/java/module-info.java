@@ -20,7 +20,7 @@ module filesystem {
     requires spring.cloud.commons;
     requires spring.context;
     requires spring.web;
-    requires zookeeper;
+    //requires aether.shadow.zookeeper;
     requires common.model;
     requires common.util;
     //requires common.zookeeper;

@@ -10,5 +10,5 @@ module common.zookeeper {
 
     requires common.constants;
     requires org.slf4j;
-    requires zookeeper;
+    requires aether.shadow.zookeeper;
 }

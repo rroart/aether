@@ -260,6 +260,12 @@
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-client</artifactId>
       <version>${curator.version}</version>
+      <exclusions>
+        <exclusion>
+	  <groupId>org.apache.zookeeper</groupId>
+	  <artifactId>zookeeper</artifactId>
+	</exclusion>
+      </exclusions>
     </dependency>
     <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
     <dependency>
@@ -368,9 +374,9 @@
     	<version>${commons.io.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.zookeeper</groupId>
-      <artifactId>zookeeper</artifactId>
-      <version>${zookeeper.version}</version>
+      <groupId>roart</groupId>
+      <artifactId>aether.shadow.zookeeper</artifactId>
+      <version>${aether.version}</version>
     </dependency>
     <dependency>
       <groupId>com.netflix.eureka</groupId>
@@ -425,6 +431,10 @@
           <groupId>com.sun.jersey.contribs</groupId>
           <artifactId>jersey-apache-client4</artifactId>
         </exclusion>
+        <exclusion>
+	  <groupId>org.apache.zookeeper</groupId>
+	  <artifactId>zookeeper</artifactId>
+	</exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -446,6 +456,11 @@
           <artifactId>jersey-apache-client4</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
 </project>

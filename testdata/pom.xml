@@ -71,11 +71,6 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
-      <artifactId>aether-common-zookeeper</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>roart</groupId>
       <artifactId>aether-common-eureka</artifactId>
       <version>${aether.version}</version>
     </dependency>
@@ -118,11 +113,6 @@
     	<groupId>commons-io</groupId>
     	<artifactId>commons-io</artifactId>
     	<version>${commons.io.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.zookeeper</groupId>
-      <artifactId>zookeeper</artifactId>
-      <version>${zookeeper.version}</version>
     </dependency>
     <dependency>
       <groupId>com.netflix.eureka</groupId>
