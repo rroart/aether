@@ -1,11 +1,8 @@
 package roart.common.communication.integration.spring;
 
-import java.util.Arrays;
 import java.util.Random;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -24,23 +21,15 @@ import roart.common.communication.integration.model.IntegrationCommunication;
 public class Spring extends IntegrationCommunication {
 
     private RabbitTemplate template = rabbitTemplate();
-    
-    //private Queue queue = new Queue("myq");
 
     public Spring(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
         super(myname, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
-      /*
-        ConnectionFactory connectionFactory = new CachingConnectionFactory();
-        AmqpAdmin admin = new RabbitAdmin(connectionFactory);
-        admin.declareQueue(new Queue(queueName));
-        template = new RabbitTemplate(connectionFactory);
-        */
     }
-    
+
     @Bean
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory =
-            new CachingConnectionFactory(connection);
+                new CachingConnectionFactory(connection);
         if (sendreceive) {
             AmqpAdmin admin = new RabbitAdmin(connectionFactory);
             admin.declareQueue(new Queue(getSendService()));
@@ -59,13 +48,12 @@ public class Spring extends IntegrationCommunication {
         //connectionFactory.setPassword("guest");
         return connectionFactory;
     }
-    
+
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate template = new RabbitTemplate(connectionFactory());
-        //template.setRoutingKey(this.helloWorldQueueName);
         return template;
     }
-    
+
     public void send(String string) {
         template.convertAndSend(getSendService(), string);
     }
@@ -74,7 +62,6 @@ public class Spring extends IntegrationCommunication {
         String string = null;
         while (string == null) {
             Object object = template.receiveAndConvert(getReceiveService(), 1000);
-            //System.out.println("boj" + Arrays.asList(object));
             if (object == null || object instanceof String) {
                 string = (String) object;
             } else {
@@ -86,13 +73,13 @@ public class Spring extends IntegrationCommunication {
         }
         return new String[] { string };
     }
-    
+
     public void simpleRequest() {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory());
         container.setQueueNames("myq");
         container.setMessageListener(new MessageListenerAdapter(new HelloWorldHandler()));
-        
+
         Random r = new Random();
         int account = r.nextInt((99999 - 1) + 1) + 1;
         String message = "Request balance for account " + account;
@@ -108,7 +95,7 @@ public class Spring extends IntegrationCommunication {
         }
         System.out.println("end");
     }
-    
+
     public class HelloWorldHandler {
 
         public void handleMessage(String text) {
@@ -116,21 +103,10 @@ public class Spring extends IntegrationCommunication {
         }
 
     }
-    
-    @RabbitListener(queues = "myq")
-    public class Balance {
-
-        @RabbitHandler
-        public void createBalance(String request) {
-            System.out.println(" [x] Received '" + request + "'");
-        }
-
-    }
 
     @Override
     public void destroy() {
         // TODO Auto-generated method stub
-        
     }
 
     protected void destroyTmp() {

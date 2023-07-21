@@ -17,13 +17,14 @@ import org.apache.pulsar.client.api.SubscriptionType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roart.common.communication.message.model.MessageCommunication;
+import roart.common.constants.Constants;
 
 public class Pulsar extends MessageCommunication {
 
     String subscriptionName = "r";
 
     PulsarClient client = null;
-    //Producer<byte[]> producer;
+
     Consumer<byte[]> consumer;
     Producer<String> stringProducer = null;
 
@@ -34,28 +35,15 @@ public class Pulsar extends MessageCommunication {
                     .serviceUrl(connection)
                     .build();
         } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(Constants.EXCEPTION, e);
         }
         if (send) {
-            /*
-            try {
-                producer = client.newProducer()
-                        .topic(getSendService())
-                        .compressionType(CompressionType.LZ4)
-                        .create();
-            } catch (PulsarClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-             */
             try {
                 stringProducer = client.newProducer(Schema.STRING)
                         .topic(getSendService())
                         .create();
             } catch (PulsarClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(Constants.EXCEPTION, e);
             }
         }
         if (receive) {
@@ -65,52 +53,25 @@ public class Pulsar extends MessageCommunication {
                         .subscriptionType(SubscriptionType.Shared)
                         .subscriptionName(subscriptionName)
                         .subscribe();
-                //consumer.close();
             } catch (PulsarClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(Constants.EXCEPTION, e);
             }
         }
 
     }
 
     public void send(String string) {
-
-        /*
-        String content = string;
-        try {
-            MessageId msgId = producer.send(content.getBytes());
-        } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-         */
         try {
             stringProducer.send(string);
         } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(Constants.EXCEPTION, e);
         }        
 
-        /*
-        Message<byte[]> msg = ByteBufMessageBuilder
-                .setContent(string.getBytes())
-                .build();
-*/
         try {
             stringProducer.close();
         } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(Constants.EXCEPTION, e);
         }
-        /*
-        try {
-            client.close();
-        } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-         */
     }
 
     public String[] receiveString() {
@@ -139,34 +100,23 @@ public class Pulsar extends MessageCommunication {
                 consumer.negativeAcknowledge(msg);
             }
         } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(Constants.EXCEPTION, e);
         }
 
-        /*
-        try {
-            client.close();
-        } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        */
         return new String[] { string };
 
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
         try {
             client.close();
         } catch (PulsarClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(Constants.EXCEPTION, e);
         }
 
     }
-    
+
     @Override
     public void destroyTmp() {
         // TODO Auto-generated method stub
