@@ -13,5 +13,6 @@ module common.synchronization {
     requires curator.framework;
     requires curator.recipes;
     requires com.hazelcast.core;
-    requires slf4j.api;
+    //requires slf4j.api;
+    requires org.slf4j;
 }
