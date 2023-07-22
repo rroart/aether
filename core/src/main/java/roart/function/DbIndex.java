@@ -45,6 +45,7 @@ public class DbIndex extends AbstractFunction {
                         indexfilesList.add(new ResultItem(filename.toString()));
                     }
                 }
+                // TODO batch or not needed?
                 Set<FileLocation> flSet = indexFilesDao.getFilelocationsByMd5(md5);
                 if (flSet != null) {
                     for (FileLocation fl : flSet) {

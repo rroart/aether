@@ -6,8 +6,6 @@ import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.util.TraverseUtil;
 import roart.lang.LanguageDetect;
-import roart.model.MyLists;
-import roart.model.MyQueues;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -18,10 +16,13 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 import roart.common.util.JsonUtil;
 import roart.database.IndexFilesDao;
+import roart.hcutil.GetHazelcastInstance;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.collections.MyList;
 import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyLists;
+import roart.common.collections.impl.MyQueues;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -59,8 +60,8 @@ public class Search {
 	String lang = el.lang;
 	InmemoryMessage message = el.message;
 	String classification = el.index.getClassification();
-    	MyQueue<ResultItem> retlist = MyQueues.get(el.retlistid);
-    	MyQueue<ResultItem> retlistnot = MyQueues.get(el.retlistnotid);
+    	MyQueue<ResultItem> retlist = MyQueues.get(el.retlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
+    	MyQueue<ResultItem> retlistnot = MyQueues.get(el.retlistnotid, ControlService.curatorClient, GetHazelcastInstance.instance());
 
     	int retsize = 0;
 

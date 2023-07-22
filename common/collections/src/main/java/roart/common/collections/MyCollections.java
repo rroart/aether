@@ -1,12 +1,14 @@
-package roart.model;
+package roart.common.collections;
 
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import com.hazelcast.core.HazelcastInstance;
+import org.apache.curator.framework.CuratorFramework;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import roart.common.collections.impl.MyRemover;
 
 public abstract class MyCollections<T> {
     protected static Logger log = LoggerFactory.getLogger(MyCollections.class);
@@ -15,13 +17,13 @@ public abstract class MyCollections<T> {
 
     public static MyRemover remover = null;
     
-    public static Object get(String id, MyFactory myfactory) {
+    public static Object get(String id, MyFactory myfactory, CuratorFramework curatorFramework, HazelcastInstance hz) {
 	Object obj = null;
 	if (id != null) {
 	    obj = mycollections.get(id);
 	}
 	if (obj == null) {
-	    obj = myfactory.create(id);
+	    obj = myfactory.create(id, curatorFramework, hz);
 	    put(id, obj);
 	}
 	return obj;
@@ -31,8 +33,8 @@ public abstract class MyCollections<T> {
         mycollections.put(id, obj);
     }
 
-    public static void put(String id, MyFactory myfactory) {
-	Object obj = myfactory.create(id);
+    public static void put(String id, MyFactory myfactory, CuratorFramework curatorFramework, HazelcastInstance hz) {
+	Object obj = myfactory.create(id, curatorFramework, hz);
 	put(id, obj);
     }
     

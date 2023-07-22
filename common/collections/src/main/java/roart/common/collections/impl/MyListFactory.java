@@ -1,17 +1,22 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.curator.framework.CuratorFramework;
+
+import com.hazelcast.core.HazelcastInstance;
+
+import roart.common.collections.MyFactory;
 import roart.common.collections.MyList;
 import roart.common.config.MyConfig;
 
 public class MyListFactory extends MyFactory {
     
-    public MyList create(String listid) {
+    public MyList create(String listid, CuratorFramework curatorFramework, HazelcastInstance hz) {
         if (MyConfig.conf.wantDistributedTraverse()) {
-            return new MyHazelcastList(listid);
+            return new MyHazelcastList(hz, listid);
         } else {
             return new MyJavaList();
         }

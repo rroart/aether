@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
+import roart.common.collections.impl.MyQueues;
+import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
@@ -24,8 +26,6 @@ import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
 import roart.hcutil.GetHazelcastInstance;
-import roart.model.MyQueues;
-import roart.model.MySets;
 import roart.search.SearchDao;
 import roart.service.ControlService;
 
@@ -86,11 +86,11 @@ public class ConsistentClean extends AbstractFunction {
 
         String myid = ControlService.getMyId();
         String newsetid = "newsetid"+myid;
-        MyQueue<String> newset = MyQueues.get(newsetid);
+        MyQueue<String> newset = MyQueues.get(newsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
         //MySets.put(newsetid, newset);
 
         String notfoundsetid = "notfoundsetid"+myid;
-        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid);
+        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
         //MySets.put(notfoundsetid, notfoundset);
 
         //String md5sdoneid = "md5sdoneid"+myid;

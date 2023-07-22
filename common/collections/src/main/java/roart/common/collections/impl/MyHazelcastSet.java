@@ -1,15 +1,21 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import java.util.Set;
 
 import roart.common.collections.MySet;
 import roart.common.constants.Constants;
-import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
 
 public class MyHazelcastSet<T> extends MySet<T> {
+    HazelcastInstance hz;
+    
     Set<T> set = null;
+
+    public MyHazelcastSet(HazelcastInstance hz, String setname) {
+        this.hz = hz;
+        set = hz.getSet(setname);       
+    }
     
     @Override
     public boolean add(T o) {
@@ -26,14 +32,9 @@ public class MyHazelcastSet<T> extends MySet<T> {
         try {
             return set.remove(o);
         } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
+            log.error(Constants.EXCEPTION, e);
         }
         return false;
-    }
-
-    public MyHazelcastSet(String setname) {
-        HazelcastInstance hz = GetHazelcastInstance.instance();
-        set = hz.getSet(setname);       
     }
 
     @Override

@@ -32,7 +32,10 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyCollections;
 import roart.common.collections.MyMap;
+import roart.common.collections.impl.MyHazelcastRemover;
+import roart.common.collections.impl.MyMaps;
 import roart.common.config.ConfigConstants;
 import roart.common.config.ConfigTreeMap;
 import roart.common.config.MyConfig;
@@ -41,9 +44,6 @@ import roart.common.constants.Constants;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
-import roart.model.MyCollections;
-import roart.model.MyHazelcastRemover;
-import roart.model.MyMaps;
 import roart.service.ControlService;
 import roart.thread.EurekaThread;
 
@@ -255,7 +255,7 @@ public class MyXMLConfig {
 
         configCurator();
 
-        nodemap = MyMaps.get(ConfigConstants.CONFIG);
+        nodemap = MyMaps.get(ConfigConstants.CONFIG, ControlService.curatorClient, GetHazelcastInstance.instance());
         nodemap.put(ControlService.nodename, configInstance);
 
     }
@@ -263,7 +263,7 @@ public class MyXMLConfig {
     private void configDistributed() {
         if (configInstance.wantDistributedTraverse()) {
             GetHazelcastInstance.instance();
-            MyCollections.remover = new MyHazelcastRemover();
+            MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance());
         }
     }
 

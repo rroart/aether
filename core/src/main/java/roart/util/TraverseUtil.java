@@ -9,6 +9,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.impl.MyAtomicLong;
+import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
@@ -21,8 +23,7 @@ import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
-import roart.model.MyAtomicLong;
-import roart.model.MyAtomicLongs;
+import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 
 public class TraverseUtil {
@@ -31,7 +32,7 @@ public class TraverseUtil {
     public static boolean isMaxed(String myid, ServiceParam element) {
         int max = MyConfig.conf.getReindexLimit();
         int maxindex = MyConfig.conf.getIndexLimit();
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, ControlService.curatorClient, GetHazelcastInstance.instance()); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
             isMaxed = true;

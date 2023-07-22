@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import roart.common.collections.MyMap;
-import roart.common.collections.MySet;
 import roart.common.config.NodeConfig;
 
 import org.slf4j.Logger;
@@ -35,6 +33,7 @@ public abstract class MyConfig {
     public Map<String, Object> deflt = new HashMap();
     public Map<String, Class> type = new HashMap();
 
+    /*
     MyMap nodemap = null;
     
     //public abstract NodeConfig mynode();
@@ -43,6 +42,7 @@ public abstract class MyConfig {
         Map<String, NodeConfig> set = nodemap.getAll();
         return set.get(nodename);
     }
+    */
     
     public Set<String> getNodes() {
         //Set<String> set = nodemap.getAll().keySet();

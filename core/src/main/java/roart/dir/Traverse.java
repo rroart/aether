@@ -8,9 +8,14 @@ import java.io.InputStream;
 import roart.queue.ListQueueElement;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
+import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
+import roart.common.collections.impl.MyAtomicLong;
+import roart.common.collections.impl.MyAtomicLongs;
+import roart.common.collections.impl.MyQueues;
+import roart.common.collections.impl.MySets;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
@@ -28,10 +33,7 @@ import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
-import roart.model.MyAtomicLong;
-import roart.model.MyAtomicLongs;
-import roart.model.MyQueues;
-import roart.model.MySets;
+import roart.hcutil.GetHazelcastInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,7 +164,7 @@ public class Traverse {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(notfoundsetid); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -182,9 +184,9 @@ public class Traverse {
                 if (!nomd5) {
                     MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
                     total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(traversecountid);
+                    MyAtomicLong count = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
@@ -240,9 +242,9 @@ public class Traverse {
                 continue;
             }
             // config with finegrained distrib
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
             total.addAndGet(1);
-            MyAtomicLong count = MyAtomicLongs.get(traversecountid);
+            MyAtomicLong count = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
             count.addAndGet(1);
             // ?
             //queue.offer(trav);

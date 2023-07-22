@@ -15,10 +15,12 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
+import roart.common.collections.impl.MyAtomicLong;
+import roart.common.collections.impl.MyAtomicLongs;
+import roart.common.collections.impl.MyQueues;
 import roart.common.constants.Constants;
-import roart.model.MyAtomicLong;
-import roart.model.MyAtomicLongs;
-import roart.model.MyQueues;
+import roart.hcutil.GetHazelcastInstance;
+import roart.service.ControlService;
 
 /**
  * @author roart
@@ -180,7 +182,7 @@ public class Queues {
     }
 
     public static long total() {
-        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
         return total.get();
     }     
 
@@ -194,46 +196,46 @@ public class Queues {
 
     public static MyQueue<ListQueueElement> getListingQueue() {
         String queueid = Constants.LISTINGQUEUE;
-        MyQueue<ListQueueElement> queue = MyQueues.get(queueid);
+        MyQueue<ListQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public static MyQueue<TraverseQueueElement> getTraverseQueue() {
         String queueid = Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid);
+        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public static MyQueue<ConvertQueueElement> getConvertQueue() {
         String queueid = Constants.CONVERTQUEUE;
-        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid);
+        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public static MyQueue<IndexQueueElement> getIndexQueue() {
         String queueid = Constants.INDEXQUEUE;
-        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid);
+        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
     
     public static MyAtomicLong getMyConverts() {
-        return MyAtomicLongs.get(Constants.CONVERTS);
+        return MyAtomicLongs.get(Constants.CONVERTS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyIndexs() {
-        return MyAtomicLongs.get(Constants.INDEXS);
+        return MyAtomicLongs.get(Constants.INDEXS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyTraverses() {
-        return MyAtomicLongs.get(Constants.TRAVERSES);
+        return MyAtomicLongs.get(Constants.TRAVERSES, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyListings() {
-        return MyAtomicLongs.get(Constants.LISTINGS);
+        return MyAtomicLongs.get(Constants.LISTINGS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyClients() {
-        return MyAtomicLongs.get(Constants.CLIENTS);
+        return MyAtomicLongs.get(Constants.CLIENTS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static int getListingQueueSize() {

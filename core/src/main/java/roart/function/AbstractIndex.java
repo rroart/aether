@@ -1,13 +1,15 @@
 package roart.function;
 
+import roart.common.collections.impl.MyAtomicLong;
+import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.dir.Traverse;
-import roart.model.MyAtomicLong;
-import roart.model.MyAtomicLongs;
+import roart.hcutil.GetHazelcastInstance;
 import roart.queue.TraverseQueueElement;
+import roart.service.ControlService;
 
 public abstract class AbstractIndex extends AbstractFunction {
 
@@ -39,7 +41,7 @@ public abstract class AbstractIndex extends AbstractFunction {
             return false;
         }
 
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid()); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), ControlService.curatorClient, GetHazelcastInstance.instance()); 
 
         boolean indexinc = indexFilter(index, trav);
         if (indexinc) {

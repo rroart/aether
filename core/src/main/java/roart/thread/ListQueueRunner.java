@@ -20,6 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
+import roart.common.collections.impl.MyAtomicLong;
+import roart.common.collections.impl.MyAtomicLongs;
+import roart.common.collections.impl.MyQueues;
+import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
@@ -30,13 +34,11 @@ import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
-import roart.model.MyAtomicLong;
-import roart.model.MyAtomicLongs;
-import roart.model.MyQueues;
-import roart.model.MySets;
+import roart.hcutil.GetHazelcastInstance;
 import roart.queue.ListQueueElement;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
+import roart.service.ControlService;
 import roart.util.TraverseUtil;
 
 public class ListQueueRunner implements Runnable {
@@ -305,7 +307,7 @@ public class ListQueueRunner implements Runnable {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(element.getNotfoundsetid()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(element.getNotfoundsetid(), ControlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -329,13 +331,13 @@ public class ListQueueRunner implements Runnable {
                 if (!element.isNomd5()) {
                     MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.getFilesdonesetid());
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
+                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
                     total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(element.getTraversecountid());
+                    MyAtomicLong count = MyAtomicLongs.get(element.getTraversecountid(), ControlService.curatorClient, GetHazelcastInstance.instance());
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
-                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid()); 
+                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid(), ControlService.curatorClient, GetHazelcastInstance.instance()); 
                     filestodoset.offer(trav.getFileobject().toString());
                     //Queues.getTraverseQueueSize().incrementAndGet();
                     log.debug("Count inc {}", trav.getFileobject());

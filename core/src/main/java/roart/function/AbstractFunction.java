@@ -10,9 +10,15 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyCollections;
 import roart.common.collections.MyList;
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
+import roart.common.collections.impl.MyAtomicLong;
+import roart.common.collections.impl.MyAtomicLongs;
+import roart.common.collections.impl.MyLists;
+import roart.common.collections.impl.MyQueues;
+import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
@@ -23,12 +29,7 @@ import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
-import roart.model.MyAtomicLong;
-import roart.model.MyAtomicLongs;
-import roart.model.MyCollections;
-import roart.model.MyLists;
-import roart.model.MyQueues;
-import roart.model.MySets;
+import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
@@ -84,28 +85,28 @@ public abstract class AbstractFunction {
                 
                 String myid = ControlService.getMyId();
                 String filesetnewid = Constants.FILESETNEWID + myid;
-                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid);
+                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(filesetnewid, filesetnew);
 
                 String notfoundsetid = Constants.NOTFOUNDSETID + myid;
-                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid);
+                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(notfoundsetid, notfoundset);
 
                 String retlistid = Constants.RETLISTID + myid;
-                MyQueue retQueue = MyQueues.get(retlistid);
+                MyQueue retQueue = MyQueues.get(retlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retlistid, retlist);
 
                 String retnotlistid = Constants.RETNOTLISTID + myid;
-                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid);
+                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
 
                 String traversecountid = Constants.TRAVERSECOUNT + myid;
-                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid);
+                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
 
                 String filestodosetid = Constants.FILESTODOSETID + myid;
-                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid);
+                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 String filesdonesetid = Constants.FILESDONESETID + myid;
-                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid);
+                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
                 Queues.workQueues.add(filestodoSet);
 

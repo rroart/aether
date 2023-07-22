@@ -1,4 +1,4 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -6,7 +6,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import roart.common.collections.MyQueue;
 import roart.common.util.JsonUtil;
-import roart.util.RedisUtil;
+import roart.common.collections.util.RedisUtil;
 
 public class MyRedisQueue<T> extends MyQueue<T> {
 

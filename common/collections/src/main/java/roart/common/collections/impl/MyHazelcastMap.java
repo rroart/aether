@@ -1,16 +1,22 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import java.util.Map;
 
 import roart.common.collections.MyMap;
 import roart.common.constants.Constants;
-import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
 
 public class MyHazelcastMap<K, V> extends MyMap<K, V> {
+    HazelcastInstance hz;
+    
     Map<K, V> map = null;
     
+    public MyHazelcastMap(HazelcastInstance hz, String mapname) {
+        this.hz = hz;
+        map = hz.getMap(mapname);       
+    }
+
     @Override
     public V put(K k, V v) {
         try {
@@ -29,11 +35,6 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
             log.error(Constants.EXCEPTION, e);
         }
         return null;
-    }
-
-    public MyHazelcastMap(String mapname) {
-        HazelcastInstance hz = GetHazelcastInstance.instance();
-        map = hz.getMap(mapname);       
     }
 
     @Override

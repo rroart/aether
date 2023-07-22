@@ -1,4 +1,4 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

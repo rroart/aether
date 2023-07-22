@@ -1,4 +1,4 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import java.util.Set;
 
@@ -8,7 +8,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import roart.common.collections.MySet;
 import roart.common.util.JsonUtil;
-import roart.util.RedisUtil;
+import roart.common.collections.util.RedisUtil;
 
 public class MyRedisSet<T> extends MySet<T> {
 

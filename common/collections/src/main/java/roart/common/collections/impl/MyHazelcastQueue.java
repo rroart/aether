@@ -1,16 +1,22 @@
-package roart.model;
+package roart.common.collections.impl;
 
 import java.util.Queue;
 
 import roart.common.collections.MyQueue;
 import roart.common.constants.Constants;
-import roart.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
 
 public class MyHazelcastQueue<T> extends MyQueue<T> {
+    HazelcastInstance hz;
+    
     Queue<T> queue = null;
     
+    public MyHazelcastQueue(HazelcastInstance hz, String queuename) {
+        this.hz = hz;
+        queue = hz.getQueue("queue");       
+    }
+
     @Override
     public void offer(T o) {
         try {
@@ -18,11 +24,6 @@ public class MyHazelcastQueue<T> extends MyQueue<T> {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
-    }
-
-    public MyHazelcastQueue(String queuename) {
-        HazelcastInstance hz = GetHazelcastInstance.instance();
-        queue = hz.getQueue("queue");       
     }
 
     @Override

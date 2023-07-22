@@ -19,11 +19,6 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
-      <artifactId>aether-common-collections</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>roart</groupId>
       <artifactId>aether-common-constants</artifactId>
       <version>${aether.version}</version>
     </dependency>
