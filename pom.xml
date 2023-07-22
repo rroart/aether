@@ -163,7 +163,7 @@
     <joss.version>0.9.14</joss.version>
     <elasticsearch.version>8.8.1</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
-    <netty.version>4.1.7.Final</netty.version>
+    <netty.version>4.1.92.Final</netty.version>
     <jaxb.version>2.3.1</jaxb.version>
     <javaxinject.version>1</javaxinject.version>
     <kafka.version>3.5.0</kafka.version>
