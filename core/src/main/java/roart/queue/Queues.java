@@ -182,7 +182,7 @@ public class Queues {
     }
 
     public static long total() {
-        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
         return total.get();
     }     
 
@@ -195,47 +195,47 @@ public class Queues {
     }
 
     public static MyQueue<ListQueueElement> getListingQueue() {
-        String queueid = Constants.LISTINGQUEUE;
+        String queueid = prefix() + Constants.LISTINGQUEUE;
         MyQueue<ListQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public static MyQueue<TraverseQueueElement> getTraverseQueue() {
-        String queueid = Constants.TRAVERSEQUEUE;
+        String queueid = prefix() + Constants.TRAVERSEQUEUE;
         MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public static MyQueue<ConvertQueueElement> getConvertQueue() {
-        String queueid = Constants.CONVERTQUEUE;
+        String queueid = prefix() + Constants.CONVERTQUEUE;
         MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public static MyQueue<IndexQueueElement> getIndexQueue() {
-        String queueid = Constants.INDEXQUEUE;
+        String queueid = prefix() + Constants.INDEXQUEUE;
         MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
     
     public static MyAtomicLong getMyConverts() {
-        return MyAtomicLongs.get(Constants.CONVERTS, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyIndexs() {
-        return MyAtomicLongs.get(Constants.INDEXS, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.INDEXS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyTraverses() {
-        return MyAtomicLongs.get(Constants.TRAVERSES, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyListings() {
-        return MyAtomicLongs.get(Constants.LISTINGS, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static MyAtomicLong getMyClients() {
-        return MyAtomicLongs.get(Constants.CLIENTS, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public static int getListingQueueSize() {
@@ -258,4 +258,12 @@ public class Queues {
         //return MyAtomicLongs.get(Constants.INDEXQUEUESIZE);
     }
 
+    public static String prefix() {
+        String appid = System.getenv(Constants.APPID);
+        if (appid != null) {
+            return appid;
+        } else {
+            return "";
+        }
+    }
 }
