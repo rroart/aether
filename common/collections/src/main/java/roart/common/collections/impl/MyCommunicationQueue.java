@@ -45,7 +45,6 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
                 }
             }
             if (!queue.isEmpty()) {
-                size.decrementAndGet();
                 return queue.poll();
             } else {
                 return (T) null;
