@@ -5,6 +5,7 @@ import java.util.Set;
 import roart.common.collections.MySet;
 import roart.common.constants.Constants;
 
+import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
 
 public class MyHazelcastSet<T> extends MySet<T> {
@@ -50,5 +51,10 @@ public class MyHazelcastSet<T> extends MySet<T> {
     @Override
     public void clear() {
         set.clear();
+    }
+
+    @Override
+    public void destroy() {
+        ((ISet) set).destroy();
     }
 }

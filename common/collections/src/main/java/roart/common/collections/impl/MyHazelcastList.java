@@ -4,6 +4,7 @@ import java.util.List;
 
 import roart.common.collections.MyList;
 
+import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
 
 /**
@@ -53,5 +54,10 @@ public class MyHazelcastList<T> extends MyList<T> {
     @Override
     public void clear() {
         list.clear();
+    }
+
+    @Override
+    public void destroy() {
+        ((IList) list).destroy();
     }
 }

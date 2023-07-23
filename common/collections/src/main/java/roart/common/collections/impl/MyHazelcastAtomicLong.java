@@ -50,4 +50,9 @@ public class MyHazelcastAtomicLong extends MyAtomicLong {
     public void set(long value) {
         mylong.set(value);
     }
+
+    @Override
+    public void destroy() {
+        ((IAtomicLong) mylong).destroy();
+    }
 }  

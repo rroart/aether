@@ -65,4 +65,11 @@ public class MyRedisMap<K, V> extends MyMap<K, V>  {
             }
         }
     }
+
+    @Override
+    public void destroy() {
+        try (Jedis jedis = pool.getResource()) {
+            jedis.del(mapname);
+        }
+    }
 }

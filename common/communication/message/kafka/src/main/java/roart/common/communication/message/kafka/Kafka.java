@@ -135,17 +135,19 @@ public class Kafka extends MessageCommunication {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        consumer.close();
+        producer.close();
+        destroyTmp();
     }
 
     @Override
     public void destroyTmp() {
         Properties config = new Properties();
-        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.122.219:9092");
-        AdminClient admin = AdminClient.create(config);
-        List<String> list = new ArrayList<>();
-        list.add(getReceiveService());
-        DeleteTopicsResult deleteTopicsResult = admin.deleteTopics(list);
-
+        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, connection);
+        try (AdminClient admin = AdminClient.create(config)) {
+            List<String> list = new ArrayList<>();
+            list.add(getReceiveService());
+            DeleteTopicsResult deleteTopicsResult = admin.deleteTopics(list);
+        }
     }
 }

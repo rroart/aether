@@ -59,4 +59,11 @@ public class MyRedisSet<T> extends MySet<T> {
             }
         }
     }
+
+    @Override
+    public void destroy() {
+        try (Jedis jedis = pool.getResource()) {
+            jedis.del(setname);
+        }
+    }
 }

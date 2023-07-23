@@ -106,7 +106,7 @@ public class Spring extends IntegrationCommunication {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        destroyTmp();
     }
 
     protected void destroyTmp() {

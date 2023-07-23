@@ -37,4 +37,8 @@ public class MyJavaSet<T> extends MySet<T> {
     public void clear() {
         set.clear();
     }
+
+    @Override
+    public void destroy() {
+    }
 }

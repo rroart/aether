@@ -38,4 +38,6 @@ public abstract class MyAtomicLong {
     public abstract long get();
 
     public abstract void set(long value);
+
+    public abstract void destroy();
 }

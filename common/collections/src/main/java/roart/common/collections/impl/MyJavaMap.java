@@ -38,4 +38,8 @@ public class MyJavaMap<K, V> extends MyMap<K, V> {
     public void clear() {
         map.clear();
     }
+
+    @Override
+    public void destroy() {
+    }
 }

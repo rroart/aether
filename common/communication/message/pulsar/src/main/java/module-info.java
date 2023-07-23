@@ -13,5 +13,6 @@ module common.communication.message.pulsar {
     requires org.apache.commons.lang3;
     requires com.fasterxml.jackson.databind;
     requires common.constants;
+    requires pulsar.client.admin.api;
     //requires com.fasterxml.jackson.annotations;
 }

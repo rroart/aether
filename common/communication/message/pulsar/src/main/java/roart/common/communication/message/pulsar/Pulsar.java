@@ -4,6 +4,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.pulsar.client.admin.PulsarAdmin;
+import org.apache.pulsar.client.admin.PulsarAdminException;
+import org.apache.pulsar.client.api.Authentication;
 import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
@@ -111,9 +114,23 @@ public class Pulsar extends MessageCommunication {
     public void destroy() {
         try {
             client.close();
+            client.shutdown();
         } catch (PulsarClientException e) {
             log.error(Constants.EXCEPTION, e);
         }
+        try (PulsarAdmin admin = PulsarAdmin.builder()
+                .serviceHttpUrl(connection)
+                .readTimeout(3, TimeUnit.SECONDS)
+                .build()) {
+
+            /*
+             * When bug is present, this call will throw a TimeoutException (read-timeout) after 3 seconds
+             */
+            admin.topics().delete(getService());
+        } catch (PulsarClientException | PulsarAdminException e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+
 
     }
 

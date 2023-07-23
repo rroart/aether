@@ -61,4 +61,10 @@ public class MyRedisQueue<T> extends MyQueue<T> {
         }
     }
 
+    @Override
+    public void destroy() {
+        try (Jedis jedis = pool.getResource()) {
+            jedis.del(queuename);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import java.util.Queue;
 import roart.common.collections.MyQueue;
 import roart.common.constants.Constants;
 
+import com.hazelcast.collection.IQueue;
 import com.hazelcast.core.HazelcastInstance;
 
 public class MyHazelcastQueue<T> extends MyQueue<T> {
@@ -44,5 +45,10 @@ public class MyHazelcastQueue<T> extends MyQueue<T> {
     @Override
     public T poll(Class<T> clazz) {
          return poll();
+    }
+
+    @Override
+    public void destroy() {
+        ((IQueue) queue).destroy();
     }
 }

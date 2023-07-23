@@ -10,6 +10,7 @@ import org.apache.camel.impl.DefaultCamelContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roart.common.communication.integration.model.IntegrationCommunication;
+import roart.common.constants.Constants;
 
 public class Camel extends IntegrationCommunication {
 
@@ -17,13 +18,14 @@ public class Camel extends IntegrationCommunication {
     ProducerTemplate producer;
     ConsumerTemplate consumer;
     String vhost = "task";
-
+    Endpoint endpoint;
+    
     public Camel(String myname, Class myclass, String service, ObjectMapper mapper, boolean send, boolean receive, boolean sendreceive, String connection, boolean retrypoll) {
         super(myname, myclass, service, mapper, send, receive, sendreceive, connection, retrypoll);
         context = new DefaultCamelContext();
         context.start();
         if (send) {
-            Endpoint endpoint = context.getEndpoint(connection + "/" + vhost + getSendService() + "?autoDelete=false&routingKey=camel&queue=" + getSendService());
+            endpoint = context.getEndpoint(connection + "/" + vhost + getSendService() + "?autoDelete=false&routingKey=camel&queue=" + getSendService());
             producer = context.createProducerTemplate();
             producer.setDefaultEndpoint(endpoint);
         }
@@ -51,6 +53,11 @@ public class Camel extends IntegrationCommunication {
     }
 
     public void destroy() {
+        try {
+            context.removeEndpoint(endpoint);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
         context.stop();
     }
 

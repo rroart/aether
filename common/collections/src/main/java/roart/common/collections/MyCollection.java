@@ -19,4 +19,5 @@ public abstract class MyCollection<T> {
      */
     
     public abstract int size();
+    public abstract void destroy();
 }

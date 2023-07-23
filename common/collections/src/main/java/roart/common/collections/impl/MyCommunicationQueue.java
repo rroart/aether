@@ -67,4 +67,9 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
         // TODO Auto-generated method stub        
     }
 
+    @Override
+    public void destroy() {
+        comm.destroy();
+    }
+
 }

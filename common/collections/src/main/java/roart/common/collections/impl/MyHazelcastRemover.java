@@ -17,7 +17,7 @@ public class MyHazelcastRemover extends MyRemover {
 	Collection<DistributedObject> objs = hz.getDistributedObjects();
 	for (DistributedObject obj : objs) {
 	    if (obj.getName().equals(id)) {
-		log.info("Hazelcast remove " + id);
+		log.info("Hazelcast remove {}", id);
 		obj.destroy();
 	    }
 	}

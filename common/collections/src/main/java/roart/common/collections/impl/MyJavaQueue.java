@@ -36,4 +36,8 @@ public class MyJavaQueue<T> extends MyQueue<T> {
     public T poll(Class<T> clazz) {
         return poll();
     }
+
+    @Override
+    public void destroy() {
+    }
 }

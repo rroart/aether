@@ -45,4 +45,8 @@ public class MyJavaList<T> extends MyList<T> {
     public void clear() {
         list.clear();
     }
+
+    @Override
+    public void destroy() {
+    }
 }

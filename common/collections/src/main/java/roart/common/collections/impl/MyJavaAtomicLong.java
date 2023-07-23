@@ -44,4 +44,8 @@ public class MyJavaAtomicLong extends MyAtomicLong {
     public void set(long value) {
         mylong.set(value);
     }
+
+    @Override
+    public void destroy() {
+    }
 }

@@ -6,6 +6,7 @@ import roart.common.collections.MyMap;
 import roart.common.constants.Constants;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 
 public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     HazelcastInstance hz;
@@ -50,5 +51,10 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     @Override
     public void clear() {
         map.clear();
+    }
+
+    @Override
+    public void destroy() {
+        ((IMap) map).destroy();
     }
 }
