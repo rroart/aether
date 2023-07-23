@@ -107,7 +107,6 @@ public class Kafka extends MessageCommunication {
         String md5Hex = DigestUtils.md5Hex(s).toUpperCase();      
         producer.send(new ProducerRecord<>(getSendService(), md5Hex, s));
         log.debug("Message sent successfully");
-        producer.close();
     }
 
     public String[] receiveString() {
