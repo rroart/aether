@@ -57,13 +57,14 @@ public class ControlService {
 
     private static volatile int mycounter = 0;
 
-    // TODO concurr
+    // TODO concurrency
+    @Deprecated
     public static int getMyCounter() {
         return mycounter++;
     }
 
     public static String getMyId() {
-        return nodename + getMyCounter();
+        return nodename + UUID.randomUUID();
     }
 
     public NodeConfig getRemoteConfig() {
