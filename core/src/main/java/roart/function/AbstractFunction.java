@@ -84,28 +84,28 @@ public abstract class AbstractFunction {
                 List<String> newfileList = new ArrayList<>();
                 
                 String myid = ControlService.getMyId();
-                String filesetnewid = Constants.FILESETNEWID + myid;
+                String filesetnewid = Queues.prefix() + Constants.FILESETNEWID + myid;
                  MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(filesetnewid, filesetnew);
 
-                String notfoundsetid = Constants.NOTFOUNDSETID + myid;
+                String notfoundsetid = Queues.prefix() + Constants.NOTFOUNDSETID + myid;
                 MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(notfoundsetid, notfoundset);
 
-                String retlistid = Constants.RETLISTID + myid;
+                String retlistid = Queues.prefix() + Constants.RETLISTID + myid;
                 MyQueue retQueue = MyQueues.get(retlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retlistid, retlist);
 
-                String retnotlistid = Constants.RETNOTLISTID + myid;
+                String retnotlistid = Queues.prefix() + Constants.RETNOTLISTID + myid;
                 MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
 
-                String traversecountid = Constants.TRAVERSECOUNT + myid;
+                String traversecountid = Queues.prefix() + Constants.TRAVERSECOUNT + myid;
                 MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
 
-                String filestodosetid = Constants.FILESTODOSETID + myid;
+                String filestodosetid = Queues.prefix() + Constants.FILESTODOSETID + myid;
                 MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, ControlService.curatorClient, GetHazelcastInstance.instance());
-                String filesdonesetid = Constants.FILESDONESETID + myid;
+                String filesdonesetid = Queues.prefix() + Constants.FILESDONESETID + myid;
                 MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
                 Queues.workQueues.add(filestodoSet);
