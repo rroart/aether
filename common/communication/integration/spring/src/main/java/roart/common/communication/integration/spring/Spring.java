@@ -71,6 +71,9 @@ public class Spring extends IntegrationCommunication {
                 break;
             }
         }
+        if (string == null) {
+            return new String[0];
+        }
         return new String[] { string };
     }
 
