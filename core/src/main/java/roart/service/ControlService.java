@@ -44,6 +44,7 @@ import roart.thread.ControlRunner;
 import roart.thread.ConvertRunner;
 import roart.thread.DbRunner;
 import roart.thread.IndexRunner;
+import roart.thread.LeaderRunner;
 import roart.thread.ListQueueRunner;
 import roart.thread.TraverseQueueRunner;
 import roart.thread.ZKRunner;
@@ -123,10 +124,12 @@ public class ControlService {
     public static Thread zkWorker = null;
     private static TraverseQueueRunner traverseQueueRunnable = null;
     private static ListQueueRunner listQueueRunnable = null;
+    private static LeaderRunner leaderRunnable = null;
     private static ClientQueueRunner clientQueueRunnable = null;
     public static Thread traverseQueueWorker = null;
     public static Thread listQueueWorker = null;
     public static Thread clientQueueWorker = null;
+    public static Thread leaderWorker = null;
     private static CamelRunner camelRunnable = null;
     public static Thread camelWorker = null;
 
@@ -158,6 +161,9 @@ public class ControlService {
         }
         if (clientQueueRunnable == null) {
             startClientqueueWorker();
+        }
+        if (leaderRunnable == null) {
+            startLeaderWorker();
         }
         startCamel();
         startMem();
@@ -257,6 +263,14 @@ public class ControlService {
         clientQueueWorker.setName("ClientWorker");
         clientQueueWorker.start();
         log.info("starting client queue worker");
+    }
+
+    public void startLeaderWorker() {
+        leaderRunnable = new LeaderRunner();
+        leaderWorker = new Thread(leaderRunnable);
+        leaderWorker.setName("LeaderWorker");
+        leaderWorker.start();
+        log.info("starting leader worker");
     }
 
     @SuppressWarnings("rawtypes")
