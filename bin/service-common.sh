@@ -22,6 +22,8 @@ else
     done
 fi
 
+HAZELCAST="--add-modules java.se --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
+
 cd ../lib
 if [ $eureka -eq 1 ]; then
     $COMMAND "java -jar aether-eureka-0.10-SNAPSHOT.jar" &
@@ -30,7 +32,7 @@ if [ $service -eq 1 ]; then
     $COMMAND "java $SERVICEDEBUG -jar aether-servicemanager-simple-0.10-SNAPSHOT.jar $CONF" &
 fi
 if [ $core -eq 1 ]; then
-    $COMMAND "java $COREDEBUG -jar aether-core-0.10-SNAPSHOT.jar $CONF" &
+    $COMMAND "java $HAZELCAST $COREDEBUG -jar aether-core-0.10-SNAPSHOT.jar $CONF" &
 fi
 if [ $web -eq 1 ]; then
     $COMMAND "java $WEBDEBUG -jar aether-web-0.10-SNAPSHOT.jar" &
