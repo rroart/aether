@@ -39,6 +39,7 @@ import roart.filesystem.FileSystemDao;
 import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.thread.CamelRunner;
+import roart.thread.ClientQueueRunner;
 import roart.thread.ControlRunner;
 import roart.thread.ConvertRunner;
 import roart.thread.DbRunner;
@@ -122,8 +123,10 @@ public class ControlService {
     public static Thread zkWorker = null;
     private static TraverseQueueRunner traverseQueueRunnable = null;
     private static ListQueueRunner listQueueRunnable = null;
+    private static ClientQueueRunner clientQueueRunnable = null;
     public static Thread traverseQueueWorker = null;
     public static Thread listQueueWorker = null;
+    public static Thread clientQueueWorker = null;
     private static CamelRunner camelRunnable = null;
     public static Thread camelWorker = null;
 
@@ -152,6 +155,9 @@ public class ControlService {
         }
         if (listQueueRunnable == null) {
             startListqueueWorker();
+        }
+        if (clientQueueRunnable == null) {
+            startClientqueueWorker();
         }
         startCamel();
         startMem();
@@ -243,6 +249,14 @@ public class ControlService {
         listQueueWorker.setName("ListWorker");
         listQueueWorker.start();
         log.info("starting list queue worker");
+    }
+
+    public void startClientqueueWorker() {
+        clientQueueRunnable = new ClientQueueRunner();
+        clientQueueWorker = new Thread(clientQueueRunnable);
+        clientQueueWorker.setName("ClientWorker");
+        clientQueueWorker.start();
+        log.info("starting client queue worker");
     }
 
     @SuppressWarnings("rawtypes")
