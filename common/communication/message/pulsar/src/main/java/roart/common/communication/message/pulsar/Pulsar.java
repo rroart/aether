@@ -70,11 +70,13 @@ public class Pulsar extends MessageCommunication {
             log.error(Constants.EXCEPTION, e);
         }        
 
+        /*
         try {
             stringProducer.close();
         } catch (PulsarClientException e) {
             log.error(Constants.EXCEPTION, e);
         }
+        */
     }
 
     public String[] receiveString() {
