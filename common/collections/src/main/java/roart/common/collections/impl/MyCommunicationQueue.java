@@ -54,7 +54,7 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
 
     @Override
     public T poll(Class<T> clazz) {
-        return JsonUtil.convert((String) poll(), clazz);
+        return JsonUtil.convertnostrip((String) poll(), clazz);
     }
 
     @Override

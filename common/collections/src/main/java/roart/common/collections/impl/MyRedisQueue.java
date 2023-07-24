@@ -57,7 +57,7 @@ public class MyRedisQueue<T> extends MyQueue<T> {
     @Override
     public T poll(Class<T> clazz) {
         try (Jedis jedis = pool.getResource()) {
-            return JsonUtil.convert((String) poll(), clazz);
+            return JsonUtil.convertnostrip((String) poll(), clazz);
         }
     }
 
