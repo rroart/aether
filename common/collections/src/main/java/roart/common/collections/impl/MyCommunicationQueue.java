@@ -39,12 +39,12 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
         synchronized(MyCommunicationQueue.class) {
             if (queue.isEmpty()) {
                 Object[] array = comm.receive();
-                size.addAndGet(-array.length);
                 for (Object o : array) {
                     queue.offer((T) o);
                 }
             }
             if (!queue.isEmpty()) {
+                size.decrementAndGet();
                 return queue.poll();
             } else {
                 return (T) null;
