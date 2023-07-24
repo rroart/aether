@@ -5,11 +5,11 @@ import roart.common.synchronization.MyLock;
 public class MyDummyLock extends MyLock {
     
     @Override
-    public void lock(String path) throws Exception {
+    public void lock() throws Exception {
     }
 
     @Override
-    public boolean tryLock(String path) throws Exception {
+    public boolean tryLock() throws Exception {
         return false;
     }
 

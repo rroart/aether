@@ -15,9 +15,14 @@ public class MyLocalLock extends MyLock {
 
     private String path;
 
+    public MyLocalLock(String path) {
+        super();
+        this.path = path;
+    }
+
     @SuppressWarnings("squid:S2222")
     @Override
-    public void lock(String path) throws Exception {
+    public void lock() throws Exception {
         synchronized (MyLocalLock.class) {
             log.debug("before lock {}", path);
             //Lock lock = map.get(path);
@@ -28,15 +33,13 @@ public class MyLocalLock extends MyLock {
             //}
             lock.lock();
             log.debug("after lock {}", path);
-            this.path = path;
         }
     }
 
     @SuppressWarnings("squid:S2222")
     @Override
-    public boolean tryLock(String path) throws Exception {
+    public boolean tryLock() throws Exception {
         synchronized (MyLocalLock.class) {
-            this.path = path;
             log.debug("before lock {}", path);
             lock = map.computeIfAbsent(path, e -> new ReentrantLock());
             //log.debug("after lock {}", path);

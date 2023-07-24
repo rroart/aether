@@ -21,10 +21,10 @@ public class MyLocalLockTest {
         CountDownLatch latchDone = new CountDownLatch(numberOfThreads * 100);
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
-                MyLock lock = new MyLocalLock();
                 String id = MyLocalLockTestUtil.getId();
+                MyLock lock = new MyLocalLock(id);
                 try {
-                    lock.lock(id);
+                    lock.lock();
                     lock.unlock();
                     latchDone.countDown();
                } catch (Exception e) {

@@ -22,10 +22,10 @@ public class MyHazelcastLockTest {
         CountDownLatch latchDone = new CountDownLatch(numberOfThreads * 100);
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
-                MyLock lock = new MyHazelcastLock(GetHazelcastInstance.instance());
                 String id = MyLocalLockTestUtil.getId();
+                MyLock lock = new MyHazelcastLock(id, GetHazelcastInstance.instance());
                 try {
-                    lock.lock(id);
+                    lock.lock();
                     lock.unlock();
                     latchDone.countDown();
                } catch (Exception e) {

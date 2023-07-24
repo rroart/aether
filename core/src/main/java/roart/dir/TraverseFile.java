@@ -123,8 +123,8 @@ public class TraverseFile {
                     if (files == null) {
                         //z.lock(md5);
                         // get read file
-                        lock = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
-                        lock.lock(md5);
+                        lock = MyLockFactory.create(md5, MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+                        lock.lock();
                         files = indexFilesDao.getByMd5(md5);
                     }
                     // modify write file
@@ -162,8 +162,8 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
-            lock.lock(md5);
+            lock = MyLockFactory.create(md5, MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+            lock.lock();
             files = indexFilesDao.getByMd5(md5);
             // TODO implement other wise
             // error case for handling when the supporting filename indexed
@@ -248,8 +248,8 @@ public class TraverseFile {
         FileObject filename = trav.getFileobject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
-        MyLock folock = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
-        boolean flocked = folock.tryLock(filename.toString());
+        MyLock folock = MyLockFactory.create(filename.toString(), MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+        boolean flocked = folock.tryLock();
         if (!flocked) {
             MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
             /*
@@ -297,8 +297,8 @@ public class TraverseFile {
                 // get read file
                 // todo lock file name
                 
-                lock = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
-                boolean locked = lock.tryLock(md5);
+                lock = MyLockFactory.create(md5, MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+                boolean locked = lock.tryLock();
                 if (!locked) {
                     MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
                     /*
@@ -368,8 +368,8 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
-            boolean locked = lock.tryLock(md5);
+            lock = MyLockFactory.create(md5, MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+            boolean locked = lock.tryLock();
             if (!locked) {
                 MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
                 /*

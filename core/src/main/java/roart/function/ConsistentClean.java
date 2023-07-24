@@ -152,8 +152,8 @@ public class ConsistentClean extends AbstractFunction {
                         String md5 = indexFilesDao.getMd5ByFilename(filename);
                         // common3?
                         if (md5 != null) {
-                            MyLock lock2 = MyLockFactory.create(MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
-                            lock2.lock(md5);
+                            MyLock lock2 = MyLockFactory.create(null, MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+                            lock2.lock();
                             IndexFiles ifile = indexFilesDao.getByMd5(md5);
                             FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
                             boolean removed = ifile.removeFilelocation(fl);

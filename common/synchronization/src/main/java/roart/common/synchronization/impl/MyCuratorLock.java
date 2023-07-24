@@ -12,27 +12,22 @@ public class MyCuratorLock extends MyLock {
 
     private CuratorFramework curatorClient;
        
-    public MyCuratorLock(CuratorFramework curatorClient) {
+    private InterProcessMutex lock;
+
+    public MyCuratorLock(String path, CuratorFramework curatorClient) {
         super();
         this.curatorClient = curatorClient;
+        this.lock = new InterProcessMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
     }
 
-    InterProcessMutex lock;
-
     @Override
-    public void lock(String path) throws Exception {
-        log.debug("before lock {}", path);
-        lock = new InterProcessMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
+    public void lock() throws Exception {
         lock.acquire();
-        log.debug("after lock {}", path);
     }
 
     @Override
-    public boolean tryLock(String path) throws Exception {
-        log.debug("before lock {}", path);
-        lock = new InterProcessMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
+    public boolean tryLock() throws Exception {
         lock.acquire(1, TimeUnit.SECONDS);
-        log.debug("after lock {}", path);
         return lock.isAcquiredInThisProcess();
     }
 

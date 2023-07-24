@@ -10,20 +10,19 @@ public class MyHazelcastLock extends MyLock {
     
     FencedLock lock;
     
-    public MyHazelcastLock(HazelcastInstance hz) {
+    public MyHazelcastLock(String path, HazelcastInstance hz) {
         super();
         this.hz = hz;
+        this. lock = hz.getCPSubsystem().getLock(path);
     }
 
     @Override
-    public void lock(String path) throws Exception {
-        lock = hz.getCPSubsystem().getLock(path);
+    public void lock() throws Exception {
         lock.lock();
     }
 
     @Override
-    public boolean tryLock(String path) throws Exception {
-        lock = hz.getCPSubsystem().getLock(path);
+    public boolean tryLock() throws Exception {
         return lock.tryLock();
     }
 

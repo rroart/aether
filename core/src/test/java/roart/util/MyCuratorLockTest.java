@@ -34,10 +34,10 @@ public class MyCuratorLockTest {
         CountDownLatch latchDone = new CountDownLatch(numberOfThreads * 100);
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
-                MyLock lock = new MyCuratorLock(ControlService.curatorClient);
                 String id = MyLocalLockTestUtil.getId();
+                MyLock lock = new MyCuratorLock(id, ControlService.curatorClient);
                 try {
-                    lock.lock(id);
+                    lock.lock();
                     lock.unlock();
                     latchDone.countDown();
                } catch (Exception e) {
