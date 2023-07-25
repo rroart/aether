@@ -16,4 +16,8 @@ module common.communication.integration.camel {
     requires org.apache.commons.lang3;
     requires common.constants;
     requires org.slf4j;
+    requires camel.spring.rabbitmq;
+    requires com.rabbitmq.client;
+    requires spring.rabbit;
+    requires spring.amqp;
 }
