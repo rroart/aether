@@ -196,7 +196,7 @@ public class IndexRunner implements Runnable {
             }
         }
         indexWorker.stop(); // .interrupt();
-        el.index.setTimeoutreason(el.index.getTimeoutreason() + "indextimeout" + timeout + " ");
+        el.index.setTimeoutreason("indextimeout" + timeout);
         log.info("Indexworker timeout " + el.md5 + " " + indexWorker + " " + indexRunnable);
         try {
             Thread.sleep(1000);

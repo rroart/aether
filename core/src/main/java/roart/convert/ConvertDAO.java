@@ -39,11 +39,7 @@ public class ConvertDAO {
             metadata.putAll(result.metadata);
         }
         if (result.error != null) {
-            if (index.getFailedreason() != null) {
-                index.setFailedreason(result.error);
-            } else {
-                index.setFailedreason(index.getFailedreason() + " " + result.error);
-            }
+            index.setFailedreason(result.error);
         }
         if (result.message == null) {
             return null;

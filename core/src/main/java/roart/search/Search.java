@@ -69,7 +69,7 @@ public class Search {
     retsize = SearchDao.indexme(type, md5, dbfilename, metadata, lang, classification, dbindex, message);
     } catch (Exception e) {
 	    log.error(roart.common.constants.Constants.EXCEPTION, e);
-	    dbindex.setNoindexreason(dbindex.getNoindexreason() + "index exception " + e.getClass().getName() + " ");
+	    dbindex.setNoindexreason("index exception " + e.getClass().getName());
 	    retsize = -1;
 	} catch (OutOfMemoryError e) {
 	    System.gc();
