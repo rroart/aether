@@ -16,7 +16,7 @@ public class MyLeaderFactory {
                 return new MyHazelcastLeader(id, curatorFramework, hz);
             }
         } else {
-            return null;
+            return new MyLocalLeader();
         }
     }
 
