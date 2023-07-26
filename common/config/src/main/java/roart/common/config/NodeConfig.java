@@ -24,22 +24,27 @@ public class NodeConfig extends MyConfig {
         
     }
  
+    @JsonIgnore
     public double getMPCpu() {
         return (Double) getNotEmptyValueOrDefault(ConfigConstants.MPCPU);       
     }
     
+    @JsonIgnore
     public int getMPBatch() {
         return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPBATCH);       
     }
     
+    @JsonIgnore
     public int getMPThreadsFS() {
         return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSFS);       
     }
     
+    @JsonIgnore
     public int getMPThreadsConvert() {
         return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSCONVERT);       
     }
     
+    @JsonIgnore
     public int getMPThreadsIndex() {
         return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSINDEX);       
     }
@@ -561,9 +566,6 @@ public class NodeConfig extends MyConfig {
         return Optional.ofNullable(retVal).orElse(deflt.get(key));
     }
 
-    // TODO fix
-    public boolean admin = true;
-    
     /*
     public String[] languages = null;
     

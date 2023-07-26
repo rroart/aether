@@ -9,7 +9,7 @@ import roart.common.config.NodeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class MyConfig {
+public class MyConfig {
 
     protected static Logger log = LoggerFactory.getLogger(MyConfig.class);
     
@@ -22,6 +22,9 @@ public abstract class MyConfig {
     public static NodeConfig conf = null;
     
     public static long time = 0;
+    
+    // TODO fix
+    public boolean admin = true;
     
     public MyConfig() {
         //conf = new NodeConfig();
