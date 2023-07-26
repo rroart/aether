@@ -38,7 +38,7 @@ public abstract class IndexFilesAccess {
 
     public String constructor() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setNodename(ControlService.nodename);
+        param.setConfigname(ControlService.getConfigName());
         param.setConf(MyConfig.conf);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
         return result.error;
@@ -46,7 +46,7 @@ public abstract class IndexFilesAccess {
 
     public String destructor() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setNodename(ControlService.nodename);
+        param.setConfigname(ControlService.getConfigName());
         param.setConf(MyConfig.conf);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
         return result.error;
@@ -54,8 +54,8 @@ public abstract class IndexFilesAccess {
 
     public String clear() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setNodename(ControlService.nodename);
-        param.setConfigid(ControlService.configMd5);
+        param.setConfigname(ControlService.getConfigName());
+        param.setConfigid(ControlService.getConfigId());
         param.setConf(MyConfig.conf);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
         return result.error;
@@ -63,8 +63,8 @@ public abstract class IndexFilesAccess {
     
     public String drop() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setNodename(ControlService.nodename);
-        param.setConfigid(ControlService.configMd5);
+        param.setConfigname(ControlService.getConfigName());
+        param.setConfigid(ControlService.getConfigId());
         param.setConf(MyConfig.conf);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
         return result.error;

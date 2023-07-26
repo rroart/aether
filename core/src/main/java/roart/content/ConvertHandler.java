@@ -65,6 +65,9 @@ public class ConvertHandler {
         el.index.setFailedreason(null);
 
 	log.info("file {}", el.filename);
+	
+	// find converters
+	
         String converterString = MyConfig.conf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
@@ -76,7 +79,10 @@ public class ConvertHandler {
             log.error("File copy error");
             el.index.setFailedreason("File copy error");
             converters = new Converter[0];
-        }    
+        }
+        
+        // before convert
+        
         // null mime isbn
         InmemoryMessage str = null;
         for (int i = 0; i < converters.length; i++) {
@@ -108,6 +114,9 @@ public class ConvertHandler {
             }
         }
         inmemory.delete(message);
+        
+        // after convert
+        
         el.message = null;
         el.mimetype = mimetype;
         log.info("Mimetype {}", mimetype);
@@ -155,7 +164,7 @@ public class ConvertHandler {
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);
             FileLocation aFl = el.index.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
+            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(el.retlistnotid, ControlService.curatorClient, GetHazelcastInstance.instance()); 
             retlistnot.offer(ri);

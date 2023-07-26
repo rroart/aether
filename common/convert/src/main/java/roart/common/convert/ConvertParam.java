@@ -6,7 +6,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 
 public class ConvertParam {
 
-    public String nodename;
+    public String configname;
     public InmemoryMessage message;
     public NodeConfig conf;
     public Converter converter;

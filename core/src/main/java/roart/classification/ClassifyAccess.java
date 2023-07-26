@@ -27,7 +27,7 @@ public abstract class ClassifyAccess {
 
     public String constructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
-        param.nodename = ControlService.nodename;
+        param.configname = ControlService.getConfigName();
         param.conf = MyConfig.conf;
         MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);   	
         return result.error;
@@ -35,7 +35,7 @@ public abstract class ClassifyAccess {
     
     public String destructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
-        param.nodename = ControlService.nodename;
+        param.configname = ControlService.getConfigName();
         param.conf = MyConfig.conf;
         MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);   	
         return result.error;
@@ -43,8 +43,8 @@ public abstract class ClassifyAccess {
     
     public String classify( InmemoryMessage message, String language) {
     	MachineLearningClassifyParam param = new MachineLearningClassifyParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
     	param.message = message;
     	param.language = language;

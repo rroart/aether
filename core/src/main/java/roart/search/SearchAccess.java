@@ -50,7 +50,7 @@ public abstract class SearchAccess {
     
     public String constructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.nodename = ControlService.nodename;
+        param.configname = ControlService.getConfigName();
         param.conf = MyConfig.conf;
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
         return result.error;
@@ -58,7 +58,7 @@ public abstract class SearchAccess {
     
     public String destructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.nodename = ControlService.nodename;
+        param.configname = ControlService.getConfigName();
         param.conf = MyConfig.conf;
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
         return result.error;
@@ -66,8 +66,8 @@ public abstract class SearchAccess {
     
     public String clear() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
         return result.error;
@@ -75,8 +75,8 @@ public abstract class SearchAccess {
     
     public String drop() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
         return result.error;
@@ -91,8 +91,8 @@ public abstract class SearchAccess {
             str[i++] = name + "=" + value;
         }
         SearchEngineIndexParam param = new SearchEngineIndexParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.type = type;
         param.md5 = md5;
@@ -117,8 +117,8 @@ public abstract class SearchAccess {
 
     public ResultItem[] searchme(String str, String searchtype) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.str = str;
         param.searchtype = searchtype;
@@ -166,8 +166,8 @@ public abstract class SearchAccess {
 
     public ResultItem[] searchsimilar(String id, String searchtype) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.str = id;
         param.searchtype = searchtype;
@@ -184,7 +184,7 @@ public abstract class SearchAccess {
     
     public void delete(String str) {
         SearchEngineDeleteParam param = new SearchEngineDeleteParam();
-        param.nodename = ControlService.nodename;
+        param.configname = ControlService.getConfigName();
         param.conf = MyConfig.conf;
         param.delete = str;
         

@@ -25,7 +25,7 @@ public class ConvertDAO {
 
     public static InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
         ConvertParam param = new ConvertParam();
-        param.nodename = ControlService.nodename;
+        param.configname = ControlService.getConfigName();
         param.conf = MyConfig.conf;
         param.message = message;
         param.converter = converter;

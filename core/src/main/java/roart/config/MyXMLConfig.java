@@ -41,6 +41,7 @@ import roart.common.config.ConfigTreeMap;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.util.JsonUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
@@ -71,6 +72,8 @@ public class MyXMLConfig {
         if (configInstance == null) {
             configInstance = new NodeConfig();
             MyConfig.conf = configInstance;
+            MyConfig.time = System.currentTimeMillis();
+            
             if (instance == null) {
                 instance(configFile);
             }
@@ -212,12 +215,12 @@ public class MyXMLConfig {
 
     public NodeConfig mynode() {
         // TODO fix
-        return null; //getNode(ControlService.nodename);
+        return null; //getNode(ControlService.getConfigName());
     }
 
     public void myput(String nodename, NodeConfig config) {
         nodemap.put(nodename, config);
-        ZKMessageUtil.doreconfig(ControlService.nodename);
+        ZKMessageUtil.doreconfig(ControlService.getConfigName());
     }
 
     public void config() {
@@ -255,8 +258,10 @@ public class MyXMLConfig {
 
         configCurator();
 
-        nodemap = MyMaps.get(ConfigConstants.CONFIG, ControlService.curatorClient, GetHazelcastInstance.instance());
-        nodemap.put(ControlService.nodename, configInstance);
+        log.info("Conf size {}", JsonUtil.convert(configInstance).length());
+        // TODO
+        //nodemap = MyMaps.get(ConfigConstants.CONFIG, ControlService.curatorClient, GetHazelcastInstance.instance());
+        //nodemap.put(ControlService.getConfigName(), configInstance);
 
     }
 

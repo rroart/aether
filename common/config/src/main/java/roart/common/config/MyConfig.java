@@ -21,6 +21,8 @@ public abstract class MyConfig {
     
     public static NodeConfig conf = null;
     
+    public static long time = 0;
+    
     public MyConfig() {
         //conf = new NodeConfig();
         //createMaps();

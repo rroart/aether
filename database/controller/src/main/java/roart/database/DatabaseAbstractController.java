@@ -37,11 +37,11 @@ public abstract class DatabaseAbstractController {
 
     protected abstract DatabaseOperations createOperations(String nodename, NodeConfig nodeConf);
 
-    private DatabaseOperations getOperation(String nodename, String configid, NodeConfig nodeConf) {
+    private DatabaseOperations getOperation(String configname, String configid, NodeConfig nodeConf) {
         DatabaseOperations operation = operationMap.get(configid);
         if (operation == null) {
             operation = createOperations(configid, nodeConf);
-            operationMap.put(nodename, operation);
+            operationMap.put(configname, operation);
         }
         return operation;
     }
@@ -52,7 +52,7 @@ public abstract class DatabaseAbstractController {
             throws Exception {
         String error = null;
         try {
-            DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+            DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         } catch (Exception e) {
             log.error(roart.common.constants.Constants.EXCEPTION, e);
             error = e.getMessage();
@@ -66,7 +66,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseConstructorResult processDestructor(@RequestBody DatabaseConstructorParam param)
             throws Exception {
-        DatabaseOperations operation = operationMap.remove(param.getNodename());
+        DatabaseOperations operation = operationMap.remove(param.getConfigname());
         String error = null;
         if (operation != null) {
             try {
@@ -87,7 +87,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseConstructorResult processClear(@RequestBody DatabaseConstructorParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.clear(param);
     }
 
@@ -95,7 +95,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseConstructorResult processDrop(@RequestBody DatabaseConstructorParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.drop(param);
     }
 
@@ -103,7 +103,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processGetFilelocationsByMd5(@RequestBody DatabaseMd5Param param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getFilelocationsByMd5(param);
      }
 
@@ -111,7 +111,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetByFilelocation(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getByFilelocation(param);
     }
 
@@ -119,7 +119,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetByMd5(@RequestBody DatabaseMd5Param param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getByMd5(param);
     }
 
@@ -127,7 +127,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseMd5Result processGetMd5ByFilelocation(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getMd5ByFilelocation(param);
     }
 
@@ -135,7 +135,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetAll(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getAll(param);
     }
 
@@ -143,7 +143,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetAllFiles(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getAllFiles(param);
     }
 
@@ -151,7 +151,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processSave(@RequestBody DatabaseIndexFilesParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.save(param);
     }
 
@@ -159,7 +159,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processFlush(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.flush(param);
     }
 
@@ -167,7 +167,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processCommit(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.commit(param);
     }
 
@@ -175,7 +175,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processClose(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.close(param);
     }
 
@@ -183,7 +183,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseMd5Result processGetAllMd5(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getAllMd5(param);
     }
 
@@ -191,7 +191,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseLanguagesResult processGetLanguages(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.getLanguages(param);
     }
 
@@ -199,7 +199,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processDelete(@RequestBody DatabaseIndexFilesParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getNodename(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
         return operation.delete(param);
     }
 

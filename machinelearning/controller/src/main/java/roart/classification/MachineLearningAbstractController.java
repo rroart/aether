@@ -29,10 +29,10 @@ public abstract class MachineLearningAbstractController {
 
     private static Map<String, MachineLearningAbstractClassifier> classifierMap = new HashMap();
     
-    private MachineLearningAbstractClassifier getClassifier(String nodename, String configid, NodeConfig nodeConf) {
+    private MachineLearningAbstractClassifier getClassifier(String configname, String configid, NodeConfig nodeConf) {
 		MachineLearningAbstractClassifier classifier = classifierMap.get(configid);
 		if (classifier == null) {
-	    	classifier = createClassifier(nodename, nodeConf);
+	    	classifier = createClassifier(configname, nodeConf);
 			classifierMap.put(configid, classifier);
 		}
 		return classifier;
@@ -46,7 +46,7 @@ public abstract class MachineLearningAbstractController {
 	throws Exception {
     	String error = null;
     	try {
-      	MachineLearningAbstractClassifier classifier = getClassifier(param.nodename, param.configid, param.conf);
+      	MachineLearningAbstractClassifier classifier = getClassifier(param.configname, param.configid, param.conf);
 		} catch (Exception e) {
 		    log.error(roart.common.constants.Constants.EXCEPTION, e);
 		    error = e.getMessage();
@@ -60,11 +60,11 @@ public abstract class MachineLearningAbstractController {
 		    method = RequestMethod.POST)
 		    public MachineLearningConstructorResult processDestructor(@RequestBody MachineLearningConstructorParam param)
 	throws Exception {
-		MachineLearningAbstractClassifier classifier = classifierMap.remove(param.nodename);
+		MachineLearningAbstractClassifier classifier = classifierMap.remove(param.configname);
 		String error = null;
 		if (classifier != null) {
 			try {
-			classifier.destroy(param.nodename);
+			classifier.destroy(param.configname);
 		} catch (Exception e) {
 		    log.error(roart.common.constants.Constants.EXCEPTION, e);
 		    error = e.getMessage();
@@ -81,7 +81,7 @@ public abstract class MachineLearningAbstractController {
 		    method = RequestMethod.POST)
 		    public MachineLearningClassifyResult processClassify(@RequestBody MachineLearningClassifyParam param)
 	throws Exception {
-       	MachineLearningAbstractClassifier classifier = getClassifier(param.nodename, param.configid, param.conf);
+       	MachineLearningAbstractClassifier classifier = getClassifier(param.configname, param.configid, param.conf);
     	MachineLearningClassifyResult ret = classifier.classify(param);
     	return ret;
     }

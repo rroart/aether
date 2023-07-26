@@ -92,10 +92,28 @@ public class ControlService {
         return MyConfig.conf;
     }
 
-    static public String nodename = "localhost";
+    public static String nodename = "localhost";
+
+    public static String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
+    
+    public static String getConfigName() {
+        return getAppid();
+    }
+    
+    public static String getAppid() {
+        return appid;
+    }
+
+    public static void setAppid(String appid) {
+        ControlService.appid = appid;
+    }
 
     public static String configMd5 = "md5";
 
+    public static String getConfigId() {
+        return configMd5;
+    }
+    
     // old, probably oudated by overlapping?
     public List cleanupfs(String dirname) {
         //List<String> retlist = new ArrayList<String>();

@@ -43,7 +43,7 @@ public abstract class ConvertAbstractController {
 			method = RequestMethod.POST)
 	public ConvertResult processSearch(@RequestBody ConvertParam param)
 			throws Exception {
-		ConvertAbstract convert = getConvert(param.nodename, param.conf);
+		ConvertAbstract convert = getConvert(param.configname, param.conf);
 		ConvertResult ret = convert.convert(param);
 		return ret;
 	}

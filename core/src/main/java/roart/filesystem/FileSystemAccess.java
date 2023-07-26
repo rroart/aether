@@ -41,8 +41,8 @@ public class FileSystemAccess {
     public String constructor(String url) {
         this.url = url;
         FileSystemConstructorParam param = new FileSystemConstructorParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         //FileSystemConstructorResult result = WebFluxUtil.sendMe(FileSystemConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
         FileSystemConstructorResult result = WebFluxUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.CONSTRUCTOR);
@@ -51,16 +51,16 @@ public class FileSystemAccess {
 
     public String destructor() {
         FileSystemConstructorParam param = new FileSystemConstructorParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         FileSystemConstructorResult result = WebFluxUtil.sendMe(FileSystemConstructorResult.class, url, param, EurekaConstants.DESTRUCTOR);
         return result.error;
     }
     public List<FileObject> listFiles(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemFileObjectResult result = WebFluxUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.LISTFILES);
@@ -70,8 +70,8 @@ public class FileSystemAccess {
 
     public List<MyFile> listFilesFull(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemMyFileResult result = WebFluxUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.LISTFILESFULL);
@@ -81,8 +81,8 @@ public class FileSystemAccess {
 
     public boolean exists(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemBooleanResult result = WebFluxUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.EXIST);
@@ -92,8 +92,8 @@ public class FileSystemAccess {
 
     public String getAbsolutePath(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemPathResult result = WebFluxUtil.sendMe(FileSystemPathResult.class, url, param, EurekaConstants.GETABSOLUTEPATH);
@@ -103,8 +103,8 @@ public class FileSystemAccess {
 
     public boolean isDirectory(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemBooleanResult result = WebFluxUtil.sendMe(FileSystemBooleanResult.class, url, param, EurekaConstants.ISDIRECTORY);
@@ -114,8 +114,8 @@ public class FileSystemAccess {
 
     public InputStream getInputStream(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemByteResult result = WebFluxUtil.sendMe(FileSystemByteResult.class, url, param, EurekaConstants.GETINPUTSTREAM);
@@ -125,8 +125,8 @@ public class FileSystemAccess {
 
     public Map<String, MyFile> getWithInputStream(Set<FileObject> filenames) {
         FileSystemPathParam param = new FileSystemPathParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.paths = filenames;
         FileSystemMyFileResult result = WebFluxUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHINPUTSTREAM);
@@ -136,8 +136,8 @@ public class FileSystemAccess {
 
     public Map<String, MyFile> getWithoutInputStream(Set<FileObject> filenames) {
         FileSystemPathParam param = new FileSystemPathParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.paths = filenames;
         FileSystemMyFileResult result = WebFluxUtil.sendMe(FileSystemMyFileResult.class, url, param, EurekaConstants.GETWITHOUTINPUTSTREAM);
@@ -147,8 +147,8 @@ public class FileSystemAccess {
 
     public FileObject getParent(FileObject f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fo = f;
         FileSystemFileObjectResult result = WebFluxUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GETPARENT);
@@ -158,8 +158,8 @@ public class FileSystemAccess {
 
     public FileObject get(FileObject fo) {
         FileSystemPathParam param = new FileSystemPathParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.path = fo;
         FileSystemFileObjectResult result = WebFluxUtil.sendMe(FileSystemFileObjectResult.class, url, param, EurekaConstants.GET);
@@ -180,8 +180,8 @@ public class FileSystemAccess {
 
     public Map<String, InmemoryMessage> readFile(Set<FileObject> f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fos = f;
         FileSystemMessageResult result = WebFluxUtil.sendMe(FileSystemMessageResult.class, url, param, EurekaConstants.READFILE);
@@ -190,8 +190,8 @@ public class FileSystemAccess {
 
     public Map<String, String> getMd5(Set<FileObject> f) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
-        param.nodename = ControlService.nodename;
-        param.configid = ControlService.configMd5;
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
         param.conf = MyConfig.conf;
         param.fos = f;
         FileSystemStringResult result = WebFluxUtil.sendMe(FileSystemStringResult.class, url, param, EurekaConstants.GETMD5);

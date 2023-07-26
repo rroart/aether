@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = DatabaseIndexFilesParam.class, name = "roart.model.DatabaseIndexFilesParam"),  
     @Type(value = DatabaseMd5Param.class, name = "roart.model.DatabaseMd5Param") })  
 public abstract class DatabaseParam {
-    private String nodename;
+    private String configname;
     
     private String configid;
     
@@ -27,12 +27,12 @@ public abstract class DatabaseParam {
         super();
     }
 
-    public String getNodename() {
-        return nodename;
+    public String getConfigname() {
+        return configname;
     }
 
-    public void setNodename(String nodename) {
-        this.nodename = nodename;
+    public void setConfigname(String configname) {
+        this.configname = configname;
     }
 
     public String getConfigid() {

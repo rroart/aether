@@ -36,10 +36,10 @@ public abstract class SearchEngineAbstractController {
 
 	protected abstract SearchEngineAbstractSearcher createSearcher(String nodename, NodeConfig nodeConf);
 
-	private SearchEngineAbstractSearcher getSearch(String nodename, String configid, NodeConfig nodeConf) {
+	private SearchEngineAbstractSearcher getSearch(String configname, String configid, NodeConfig nodeConf) {
 		SearchEngineAbstractSearcher search = searchMap.get(configid);
 		if (search == null) {
-			search = createSearcher(nodename, nodeConf);
+			search = createSearcher(configname, nodeConf);
 			searchMap.put(configid, search);
 		}
 		return search;
@@ -51,7 +51,7 @@ public abstract class SearchEngineAbstractController {
 			throws Exception {
 		String error = null;
 		try {
-			SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+			SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
 		} catch (Exception e) {
 			log.error(roart.common.constants.Constants.EXCEPTION, e);
 			error = e.getMessage();
@@ -65,7 +65,7 @@ public abstract class SearchEngineAbstractController {
 			method = RequestMethod.POST)
 	public SearchEngineConstructorResult processDestructor(@RequestBody SearchEngineConstructorParam param)
 			throws Exception {
-		SearchEngineAbstractSearcher search = searchMap.remove(param.nodename);
+		SearchEngineAbstractSearcher search = searchMap.remove(param.configname);
 		String error = null;
 		if (search != null) {
 			try {
@@ -86,7 +86,7 @@ public abstract class SearchEngineAbstractController {
                 method = RequestMethod.POST)
 public SearchEngineConstructorResult processClear(@RequestBody SearchEngineConstructorParam param)
                 throws Exception {
-            SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+            SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
         String error = null;
         if (search != null) {
                 try {
@@ -107,7 +107,7 @@ public SearchEngineConstructorResult processClear(@RequestBody SearchEngineConst
                 method = RequestMethod.POST)
 public SearchEngineConstructorResult processDrop(@RequestBody SearchEngineConstructorParam param)
                 throws Exception {
-            SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+            SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
         String error = null;
         if (search != null) {
                 try {
@@ -128,7 +128,7 @@ public SearchEngineConstructorResult processDrop(@RequestBody SearchEngineConstr
 			method = RequestMethod.POST)
 	public SearchEngineDeleteResult processDelete(@RequestBody SearchEngineDeleteParam param)
 			throws Exception {
-		SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+		SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
 		SearchEngineDeleteResult ret = search.deleteme(param);
 		return ret;
 	}
@@ -137,7 +137,7 @@ public SearchEngineConstructorResult processDrop(@RequestBody SearchEngineConstr
 			method = RequestMethod.POST)
 	public SearchEngineIndexResult processIndex(@RequestBody SearchEngineIndexParam param)
 			throws Exception {
-		SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+		SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
 		SearchEngineIndexResult ret = search.indexme(param);
 		return ret;
 	}
@@ -146,7 +146,7 @@ public SearchEngineConstructorResult processDrop(@RequestBody SearchEngineConstr
 			method = RequestMethod.POST)
 	public SearchEngineSearchResult processSearch(@RequestBody SearchEngineSearchParam param)
 			throws Exception {
-		SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+		SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
 		SearchEngineSearchResult ret = search.searchme(param);
 		return ret;
 	}
@@ -155,7 +155,7 @@ public SearchEngineConstructorResult processDrop(@RequestBody SearchEngineConstr
 			method = RequestMethod.POST)
 	public SearchEngineSearchResult processSearchSimilar(@RequestBody SearchEngineSearchParam param)
 			throws Exception {
-		SearchEngineAbstractSearcher search = getSearch(param.nodename, param.configid, param.conf);
+		SearchEngineAbstractSearcher search = getSearch(param.configname, param.configid, param.conf);
 		SearchEngineSearchResult ret = search.searchmlt(param);
 		return ret;
 	}
