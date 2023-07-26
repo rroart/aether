@@ -23,5 +23,7 @@ module filesystem {
     //requires aether.shadow.zookeeper;
     requires common.model;
     requires common.util;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     //requires common.zookeeper;
 }

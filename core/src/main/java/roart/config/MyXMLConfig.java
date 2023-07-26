@@ -41,6 +41,9 @@ import roart.common.config.ConfigTreeMap;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.util.JsonUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.hcutil.GetHazelcastInstance;
@@ -224,6 +227,13 @@ public class MyXMLConfig {
     }
 
     public void config() {
+        Inmemory inmemory = InmemoryFactory.get(configInstance.getInmemoryServer(), configInstance.getInmemoryHazelcast(), configInstance.getInmemoryRedis());
+        String str = JsonUtil.convert(configInstance);
+        String md5 = DigestUtils.md5Hex( str );
+
+        InmemoryMessage msg = inmemory.send(ConfigConstants.CONFIG + ControlService.getAppid(), str, md5);
+        ControlService.iconf = msg;
+
         try {
             //LanguageDetect.init("./profiles/");
         } catch (Exception e) {

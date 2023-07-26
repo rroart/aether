@@ -24,6 +24,7 @@ import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -91,6 +92,8 @@ public class ControlService {
     private NodeConfig getConfig() {
         return MyConfig.conf;
     }
+
+    public static InmemoryMessage iconf = null;
 
     public static String nodename = "localhost";
 
