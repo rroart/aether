@@ -43,7 +43,10 @@ public class MyLocalLeader extends MyLeader {
     @Override
     public boolean await(long timeout, TimeUnit unit) {
         try {
-            return lock.tryLock(timeout, unit);
+            synchronized (MyLocalLeader.class) {
+                lock = map.computeIfAbsent(path, e -> new ReentrantLock());
+                return lock.tryLock(timeout, unit);
+            }
         } catch (InterruptedException e) {
             log.error(Constants.EXCEPTION, e);
             return false;
