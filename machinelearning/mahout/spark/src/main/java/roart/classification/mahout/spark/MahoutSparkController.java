@@ -19,7 +19,7 @@ public class MahoutSparkController extends MachineLearningAbstractController {
 	}
 
 	@Override
-	protected MachineLearningAbstractClassifier createClassifier(String nodename, NodeConfig nodeConf) {
-		return new MahoutSparkClassify(nodename, nodeConf);
+	protected MachineLearningAbstractClassifier createClassifier(String configname, String configid, NodeConfig nodeConf) {
+		return new MahoutSparkClassify(configname, configid, nodeConf);
 	}
 }

@@ -6,11 +6,13 @@ import roart.common.convert.ConvertResult;
 
 public abstract class ConvertAbstract {
     
-    private String nodename;
+    private String configname;
+    private String configid;
     protected NodeConfig nodeConf;
 
-    public ConvertAbstract(String nodename, NodeConfig nodeConf) {
-        this.nodename = nodename;
+    public ConvertAbstract(String configname, String configid, NodeConfig nodeConf) {
+        this.configname = configname;
+        this.configid = configid;
         this.nodeConf = nodeConf;
     }
     

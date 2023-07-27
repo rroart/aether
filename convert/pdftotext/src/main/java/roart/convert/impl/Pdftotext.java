@@ -33,8 +33,8 @@ public class Pdftotext extends ConvertAbstract {
 
     private static Logger log = LoggerFactory.getLogger(Pdftotext.class);
 
-    public Pdftotext(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);        
+    public Pdftotext(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);        
     }
 
     @Override

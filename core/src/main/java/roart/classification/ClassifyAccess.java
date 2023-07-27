@@ -1,12 +1,14 @@
 package roart.classification;
 
 import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
+import roart.common.machinelearning.MachineLearningParam;
 import roart.common.machinelearning.MachineLearningResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.eureka.util.EurekaUtil;
@@ -27,25 +29,21 @@ public abstract class ClassifyAccess {
 
     public String constructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
-        param.configname = ControlService.getConfigName();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);   	
         return result.error;
     }
     
     public String destructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
-        param.configname = ControlService.getConfigName();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);   	
         return result.error;
     }
     
     public String classify( InmemoryMessage message, String language) {
     	MachineLearningClassifyParam param = new MachineLearningClassifyParam();
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.conf = MyConfig.conf;
+        configureParam(param);
     	param.message = message;
     	param.language = language;
         MachineLearningClassifyResult result = EurekaUtil.sendMe(MachineLearningClassifyResult.class, param, getAppName(), EurekaConstants.CLASSIFY);
@@ -56,6 +54,16 @@ public abstract class ClassifyAccess {
         
         return result.result;
     }
+
+    private void configureParam(MachineLearningParam param) {
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
+        param.iconf = ControlService.iconf;
+        param.iserver = MyConfig.conf.getInmemoryServer();
+        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
+            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        }
+   }
 
 }
 

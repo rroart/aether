@@ -102,7 +102,7 @@ public class CassandraIndexFiles {
     private TypeCodec<UdtValue> filelocationTypeCodec;
     private MutableCodecRegistry codecRegistry;
     
-    public CassandraIndexFiles(CqlSession session, String nodename, NodeConfig nodeConf) {
+    public CassandraIndexFiles(CqlSession session, String configname, NodeConfig nodeConf) {
         String port = "9042";
         String host = "localhost";
         if (session == null) {
@@ -125,7 +125,7 @@ public class CassandraIndexFiles {
             this.session = session;
         }
         config.setSession(this.session);
-        config.setNodename(nodename);
+        config.setConfigname(configname);
         this.keyspace = CqlIdentifier.fromInternal(nodeConf.getCassandraKeyspace());
         try {
             createAKeyspace(keyspace, 1);

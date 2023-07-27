@@ -34,13 +34,13 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
     private static Logger log = LoggerFactory.getLogger(HibernateIndexFilesWrapper.class);
 
     private HibernateIndexFiles hibernateIndexFiles;
-    private String nodename;
+    private String configname;
 
     private NodeConfig nodeConf;
 
-    public HibernateIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
-        hibernateIndexFiles = new HibernateIndexFiles(nodename, nodeConf);
-        this.nodename = nodename;
+    public HibernateIndexFilesWrapper(String configname, String configid, NodeConfig nodeConf) {
+        hibernateIndexFiles = new HibernateIndexFiles(configname, nodeConf);
+        this.configname = configname;
         this.nodeConf = nodeConf;
     }
 
@@ -138,7 +138,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
     public DatabaseResult save(IndexFiles i) {
         log.info("Md5 {}", i.getMd5());
         try {
-            HibernateIndexFiles hif = new HibernateIndexFiles(nodename, nodeConf); //hibernateIndexFiles.ensureExistence(i.getMd5());
+            HibernateIndexFiles hif = new HibernateIndexFiles(configname, nodeConf); //hibernateIndexFiles.ensureExistence(i.getMd5());
             hif.setMd5(i.getMd5());
             hif.setIndexed(i.getIndexed());
             hif.setTimeindex(i.getTimeindex());

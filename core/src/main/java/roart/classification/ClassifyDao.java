@@ -21,44 +21,45 @@ public class ClassifyDao {
     private static ClassifyAccess classify = null;
 
     public static void instance(String type) {
-	System.out.println("instance " + type);
-	log.info("instance " + type);
-	if (type == null) {
-	  return;
-	}
-	if (classify != null) {
-		// TODO propagate error
-		try {
-			classify.destructor();
-        } catch (Exception e) {
-        	// TODO propagate
-            log.error(Constants.EXCEPTION, e); 
+        System.out.println("instance " + type);
+        log.info("instance " + type);
+        if (type == null) {
+            return;
         }
-	}
-	if (true || classify == null) {
-		// TODO make OO of this
-	    if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
-		classify = new MahoutClassifyAccess();
-	    }
-        if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
-        classify = new MahoutSparkClassifyAccess();
+        if (classify != null) {
+            // TODO propagate error
+            try {
+                classify.destructor();
+            } catch (Exception e) {
+                // TODO propagate
+                log.error(Constants.EXCEPTION, e); 
+            }
         }
-        if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
-        classify = new SparkMLClassifyAccess();
+        if (true || classify == null) {
+            // TODO make OO of this
+            if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
+                classify = new MahoutClassifyAccess();
+            }
+            if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
+                classify = new MahoutSparkClassifyAccess();
+            }
+            if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
+                classify = new SparkMLClassifyAccess();
+            }
+            if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
+                classify = new OpennlpClassifyAccess();
+            }
+            // TODO propagate
+            // TODO not
+            String error = classify.constructor();
         }
-	    if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
-		classify = new OpennlpClassifyAccess();
-	    }
-	    // TODO propagate
-	    String error = classify.constructor();
-	}
     }
 
     public static String classify(InmemoryMessage message, String language) {
-	if (classify == null) {
-	    return null;
-	}
-	return classify.classify(message, language);
+        if (classify == null) {
+            return null;
+        }
+        return classify.classify(message, language);
     }
 
 }

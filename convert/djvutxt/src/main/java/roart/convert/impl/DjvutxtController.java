@@ -19,8 +19,8 @@ public class DjvutxtController extends ConvertAbstractController {
 	}
 
     @Override
-    protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return new Djvutxt(nodename, nodeConf);
+    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
+        return new Djvutxt(configname, configid, nodeConf);
     }
 }
 

@@ -37,8 +37,8 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	private SparkMLConfig conf;
 
-	public SparkMLClassify(String nodename, NodeConfig nodeConf) {
-            super(nodename, nodeConf);
+	public SparkMLClassify(String configname, String configid, NodeConfig nodeConf) {
+            super(configname, configid, nodeConf);
 		try {
 			conf = new SparkMLConfig();
 
@@ -93,7 +93,7 @@ public class SparkMLClassify extends MachineLearningAbstractClassifier {
 
 	}
 
-	public MachineLearningConstructorResult destroy(String nodename) {
+	public MachineLearningConstructorResult destroy(String configname) {
 		conf.spark.stop();
 		return null;
 	}

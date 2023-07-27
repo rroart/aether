@@ -55,8 +55,8 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 	
 	private MahoutSparkConfig conf;
 
-	public MahoutSparkClassify(String nodename, NodeConfig nodeConf) {
-	    super(nodename, nodeConf);
+	public MahoutSparkClassify(String configname, String configid, NodeConfig nodeConf) {
+	    super(configname, configid, nodeConf);
 		try {
 			conf = new MahoutSparkConfig();
 			conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
@@ -181,7 +181,7 @@ public class MahoutSparkClassify extends MachineLearningAbstractClassifier imple
 
 	}
 
-	public MachineLearningConstructorResult destroy(String nodename) {
+	public MachineLearningConstructorResult destroy(String configname) {
 		conf.jsc.stop();
 		// TODO propagate
 		return null;

@@ -245,7 +245,7 @@ public class DynamodbIndexFiles {
     //Table filesTable;
     //Table indexTable;
     //DynamoDB ddb;
-    public DynamodbIndexFiles(DynamoDbClient ddb, String nodename, NodeConfig nodeConf) {
+    public DynamodbIndexFiles(DynamoDbClient ddb, String configname, NodeConfig nodeConf) {
         config = new DynamodbConfig();
         String port = "8000";
         String host = "localhost";
@@ -289,7 +289,7 @@ public class DynamodbIndexFiles {
          */
         //client.setEndpoint("http://" + host + ":" + port);
         config.setClient(this.client);
-        config.setNodename(nodename);
+        config.setConfigname(configname);
         config.setTableprefix(nodeConf.getDynamodbTableprefix());
 
         amain();

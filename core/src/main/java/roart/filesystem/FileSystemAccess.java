@@ -175,7 +175,6 @@ public class FileSystemAccess {
     private void configureParam(FileSystemParam param) {
         param.configname = ControlService.getConfigName();
         param.configid = ControlService.getConfigId();
-        param.configname = ControlService.getConfigName();
         param.iconf = ControlService.iconf;
         param.iserver = MyConfig.conf.getInmemoryServer();
         if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {

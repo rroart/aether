@@ -19,7 +19,7 @@ public class HbaseController extends DatabaseAbstractController {
 	}
 
 	@Override
-	protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new HbaseIndexFilesWrapper(nodename, nodeConf);
+	protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+		return new HbaseIndexFilesWrapper(configname, configid, nodeConf);
 	}
 }

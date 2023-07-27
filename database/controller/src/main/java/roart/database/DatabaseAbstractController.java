@@ -1,9 +1,11 @@
 package roart.database;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
@@ -15,6 +17,11 @@ import roart.common.database.DatabaseMd5Param;
 import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.util.IOUtil;
+import roart.common.util.JsonUtil;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,13 +42,27 @@ public abstract class DatabaseAbstractController {
 
     private static Map<String, DatabaseOperations> operationMap = new HashMap<>();
 
-    protected abstract DatabaseOperations createOperations(String nodename, NodeConfig nodeConf);
+    protected abstract DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf);
 
-    private DatabaseOperations getOperation(String configname, String configid, NodeConfig nodeConf) {
-        DatabaseOperations operation = operationMap.get(configid);
+    private DatabaseOperations getOperation(DatabaseParam param) {
+        DatabaseOperations operation = operationMap.get(param.getConfigid());
         if (operation == null) {
-            operation = createOperations(configid, nodeConf);
-            operationMap.put(configname, operation);
+            NodeConfig nodeConf = null;
+            if (param.getConf() == null) {
+                Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getConfigname(), param.getIconnection());
+                try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
+                    if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
+                        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
+                        nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
+                    }
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            } else {
+                nodeConf = param.getConf();
+            }
+            operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
+            operationMap.put(param.getConfigid(), operation);
         }
         return operation;
     }
@@ -52,7 +73,7 @@ public abstract class DatabaseAbstractController {
             throws Exception {
         String error = null;
         try {
-            DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+            DatabaseOperations operation = getOperation(param);
         } catch (Exception e) {
             log.error(roart.common.constants.Constants.EXCEPTION, e);
             error = e.getMessage();
@@ -66,7 +87,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseConstructorResult processDestructor(@RequestBody DatabaseConstructorParam param)
             throws Exception {
-        DatabaseOperations operation = operationMap.remove(param.getConfigname());
+        DatabaseOperations operation = operationMap.remove(param.getConfigid());
         String error = null;
         if (operation != null) {
             try {
@@ -87,7 +108,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseConstructorResult processClear(@RequestBody DatabaseConstructorParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.clear(param);
     }
 
@@ -95,7 +116,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseConstructorResult processDrop(@RequestBody DatabaseConstructorParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.drop(param);
     }
 
@@ -103,15 +124,15 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processGetFilelocationsByMd5(@RequestBody DatabaseMd5Param param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getFilelocationsByMd5(param);
-     }
+    }
 
     @RequestMapping(value = "/" + EurekaConstants.GETBYFILELOCATION,
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetByFilelocation(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getByFilelocation(param);
     }
 
@@ -119,7 +140,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetByMd5(@RequestBody DatabaseMd5Param param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getByMd5(param);
     }
 
@@ -127,7 +148,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseMd5Result processGetMd5ByFilelocation(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getMd5ByFilelocation(param);
     }
 
@@ -135,7 +156,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetAll(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getAll(param);
     }
 
@@ -143,7 +164,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseIndexFilesResult processGetAllFiles(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getAllFiles(param);
     }
 
@@ -151,7 +172,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processSave(@RequestBody DatabaseIndexFilesParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.save(param);
     }
 
@@ -159,7 +180,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processFlush(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.flush(param);
     }
 
@@ -167,7 +188,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processCommit(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.commit(param);
     }
 
@@ -175,7 +196,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processClose(@RequestBody DatabaseParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.close(param);
     }
 
@@ -183,7 +204,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseMd5Result processGetAllMd5(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getAllMd5(param);
     }
 
@@ -191,7 +212,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseLanguagesResult processGetLanguages(@RequestBody DatabaseFileLocationParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.getLanguages(param);
     }
 
@@ -199,7 +220,7 @@ public abstract class DatabaseAbstractController {
             method = RequestMethod.POST)
     public DatabaseResult processDelete(@RequestBody DatabaseIndexFilesParam param)
             throws Exception {
-        DatabaseOperations operation = getOperation(param.getConfigname(), param.getConfigid(), param.getConf());
+        DatabaseOperations operation = getOperation(param);
         return operation.delete(param);
     }
 

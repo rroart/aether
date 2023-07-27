@@ -19,7 +19,7 @@ public class DynamodbController extends DatabaseAbstractController {
 	}
 
 	@Override
-	protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new DynamodbIndexFilesWrapper(nodename, nodeConf);
+	protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+		return new DynamodbIndexFilesWrapper(configname, configid, nodeConf);
 	}
 }

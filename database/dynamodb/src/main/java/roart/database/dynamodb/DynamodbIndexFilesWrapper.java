@@ -35,8 +35,8 @@ public class DynamodbIndexFilesWrapper extends DatabaseOperations {
 
     private DynamodbIndexFiles dynamodbIndexFiles;
 
-    public DynamodbIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
-        dynamodbIndexFiles = new DynamodbIndexFiles(null, nodename, nodeConf);
+    public DynamodbIndexFilesWrapper(String configname, String configid, NodeConfig nodeConf) {
+        dynamodbIndexFiles = new DynamodbIndexFiles(null, configname, nodeConf);
     }
 
     @Override

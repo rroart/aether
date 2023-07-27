@@ -14,12 +14,12 @@ import roart.common.filesystem.FileSystemStringResult;
 
 public abstract class FileSystemOperations {
     
-    protected String nodename;
+    protected String configname;
     protected String configid;
     protected NodeConfig nodeConf;
 
-    public FileSystemOperations(String nodename, String configid, NodeConfig nodeConf) {
-        this.nodename = nodename;
+    public FileSystemOperations(String configname, String configid, NodeConfig nodeConf) {
+        this.configname = configname;
         this.configid = configid;
         this.nodeConf = nodeConf;
     }

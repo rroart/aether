@@ -74,11 +74,11 @@ import roart.common.model.IndexFiles;
         private String created;
         private String checked;
 	
-	private String nodename;
+	private String configname;
 	private NodeConfig nodeconf;
 	
-	public HibernateIndexFiles(String nodename, NodeConfig nodeConf) {
-        this.nodename = nodename;
+	public HibernateIndexFiles(String configname, NodeConfig nodeConf) {
+        this.configname = configname;
         this.nodeconf = nodeConf;
     }
 
@@ -288,7 +288,7 @@ import roart.common.model.IndexFiles;
 	public HibernateIndexFiles ensureExistence(String md5) throws Exception {
 	    HibernateIndexFiles fi = getByMd5(md5);
 	    if (fi == null) {
-		fi = new HibernateIndexFiles(nodename, null);
+		fi = new HibernateIndexFiles(configname, null);
 		fi.setMd5(md5);
 		log.info("Saving " + this.hashCode() + " " + md5);
 		HibernateUtil.currentSession(getH2Dir()).persist(fi);
@@ -408,7 +408,7 @@ import roart.common.model.IndexFiles;
 	    	HibernateIndexFiles ifile = getByMd5(md5);
 	    	if (ifile != null) {
 	    		Set<String> fls = ifile.getFilenames();
-	    		return FileLocation.getFilelocations(fls, nodename);
+	    		return FileLocation.getFilelocations(fls, configname);
 	    	}
 	    } catch (Exception e) {
 		log.error(Constants.EXCEPTION, e);

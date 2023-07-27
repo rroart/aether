@@ -15,7 +15,7 @@ public class SparkIT {
     @Test
     public void test() {
         try {
-            SparkMLClassify a = new SparkMLClassify(null, null);
+            SparkMLClassify a = new SparkMLClassify(null, null, null);
             System.out.println("here");
         //a.clean();
         } catch (Exception e) {

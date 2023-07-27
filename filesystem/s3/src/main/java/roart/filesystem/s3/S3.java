@@ -58,8 +58,8 @@ public class S3 extends FileSystemOperations {
 
     /*private*/ S3Config conf;
 
-    public S3(String nodename, String configid, NodeConfig nodeConf) {
-        super(nodename, configid, nodeConf);
+    public S3(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);
         try {
             
             AwsBasicCredentials credentials = AwsBasicCredentials.create(nodeConf.getS3AccessKey(), nodeConf.getS3SecretKey());

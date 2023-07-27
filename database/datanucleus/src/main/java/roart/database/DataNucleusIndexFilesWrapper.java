@@ -34,10 +34,10 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
     private DataNucleusFiles dataNucleusFiles;
     private String nodename;
 
-    public DataNucleusIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
+    public DataNucleusIndexFilesWrapper(String configname, String configid, NodeConfig nodeConf) {
         dataNucleusFiles = new DataNucleusFiles();
-        dataNucleusIndexFiles = new DataNucleusIndexFiles(dataNucleusFiles, nodename);
-        this.nodename = nodename;
+        dataNucleusIndexFiles = new DataNucleusIndexFiles(dataNucleusFiles, configname);
+        this.nodename = configname;
     }
 
     @Override

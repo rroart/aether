@@ -19,7 +19,7 @@ public class SparkMLController extends MachineLearningAbstractController {
 	}
 
 	@Override
-	protected MachineLearningAbstractClassifier createClassifier(String nodename, NodeConfig nodeConf) {
-		return new SparkMLClassify(nodename, nodeConf);
+	protected MachineLearningAbstractClassifier createClassifier(String configname, String configid, NodeConfig nodeConf) {
+		return new SparkMLClassify(configname, configid, nodeConf);
 	}
 }

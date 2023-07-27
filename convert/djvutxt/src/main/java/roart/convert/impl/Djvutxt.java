@@ -33,8 +33,8 @@ public class Djvutxt extends ConvertAbstract {
 
     private static Logger log = LoggerFactory.getLogger(Djvutxt.class);
 
-    public Djvutxt(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);        
+    public Djvutxt(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);        
     }
 
     @Override

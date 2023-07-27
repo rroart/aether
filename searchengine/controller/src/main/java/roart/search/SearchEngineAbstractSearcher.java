@@ -1,5 +1,6 @@
 package roart.search;
 
+import roart.common.config.NodeConfig;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -11,6 +12,16 @@ import roart.common.searchengine.SearchEngineSearchResult;
 
 public abstract class SearchEngineAbstractSearcher {
     
+    protected String configname;
+    protected String configid;
+    protected NodeConfig nodeConf;
+
+    public SearchEngineAbstractSearcher(String configname, String configid, NodeConfig nodeConf) {
+        this.configname = configname;
+        this.configid = configid;
+        this.nodeConf = nodeConf;
+    }
+
     public abstract SearchEngineConstructorResult destroy() throws Exception;
 	
     public abstract SearchEngineConstructorResult clear(SearchEngineConstructorParam param) throws Exception;

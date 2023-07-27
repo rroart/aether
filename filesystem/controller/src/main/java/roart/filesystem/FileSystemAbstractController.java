@@ -61,7 +61,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
 
     private static Map<String, FileSystemOperations> operationMap = new HashMap();
 
-    protected abstract FileSystemOperations createOperations(String nodename, String configid, NodeConfig nodeConf);
+    protected abstract FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf);
 
     private FileSystemOperations getOperations(FileSystemParam param) {
         FileSystemOperations operations = operationMap.get(param.configid);
@@ -72,13 +72,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
                 try (InputStream contentStream = inmemory.getInputStream(param.iconf)) {
                     if (InmemoryUtil.validate(param.iconf.getMd5(), contentStream)) {
                         String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.iconf)));
-                        MyConfig conf = JsonUtil.convertnostrip(content, MyConfig.class);
-                        nodeConf = new NodeConfig();
-                        nodeConf.configTreeMap = conf.configTreeMap;
-                        nodeConf.configValueMap = conf.configValueMap;
-                        nodeConf.deflt = conf.deflt;
-                        nodeConf.text = conf.text;
-                        nodeConf.type = conf.type;
+                        nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);

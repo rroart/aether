@@ -18,7 +18,7 @@ public class DataNucleusController extends DatabaseAbstractController {
 	}
 
 	@Override
-	protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new DataNucleusIndexFilesWrapper(nodename, nodeConf);
+	protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+		return new DataNucleusIndexFilesWrapper(configname, configid, nodeConf);
 	}
 }

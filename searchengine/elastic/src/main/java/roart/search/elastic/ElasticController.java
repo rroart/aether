@@ -19,7 +19,7 @@ public class ElasticController extends SearchEngineAbstractController {
 	}
 
 	@Override
-	protected SearchEngineAbstractSearcher createSearcher(String nodename, NodeConfig nodeConf) {
-		return new SearchElastic(nodename, nodeConf);
+	protected SearchEngineAbstractSearcher createSearcher(String configname, String configid, NodeConfig nodeConf) {
+		return new SearchElastic(configname, configid, nodeConf);
 	}
 }

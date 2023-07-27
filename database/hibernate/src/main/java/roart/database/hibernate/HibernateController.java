@@ -20,7 +20,7 @@ public class HibernateController extends DatabaseAbstractController {
     }
 
     @Override
-    protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
-        return new HibernateIndexFilesWrapper(nodename, nodeConf);
+    protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+        return new HibernateIndexFilesWrapper(configname, configid, nodeConf);
     }
 }

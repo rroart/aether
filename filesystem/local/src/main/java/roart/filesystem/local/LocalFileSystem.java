@@ -47,8 +47,8 @@ public class LocalFileSystem extends FileSystemOperations {
 
     private static final Logger log = LoggerFactory.getLogger(LocalFileSystem.class);
 
-    public LocalFileSystem(String nodename, String configid, NodeConfig nodeConf) {
-        super(nodename, configid, nodeConf);
+    public LocalFileSystem(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);
     }
 
     @Override

@@ -19,8 +19,8 @@ public class PdftotextController extends ConvertAbstractController {
 	}
 
     @Override
-    protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return new Pdftotext(nodename, nodeConf);
+    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
+        return new Pdftotext(configname, null, nodeConf);
     }
 }
 

@@ -33,8 +33,8 @@ public class Wvtext extends ConvertAbstract {
 
     private static Logger log = LoggerFactory.getLogger(Wvtext.class);
 
-    public Wvtext(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);        
+    public Wvtext(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);        
     }
 
     @Override

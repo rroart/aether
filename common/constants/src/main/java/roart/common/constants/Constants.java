@@ -38,6 +38,7 @@ public static final String ZOOKEEPER = "zookeeper";
 public static final String CURATOR = "curator";
 public static final String LOCAL = "local";
 public static final String GLOBALLOCK = "globallock";
+public static final String LUCENELOCK = "lucenelock";
 public static final String FILESTODOSETID = "filestodoset";
 public static final String FILESDONESETID = "filesdoneset";
 

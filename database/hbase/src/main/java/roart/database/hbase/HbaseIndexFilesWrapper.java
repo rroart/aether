@@ -46,8 +46,8 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 
     private HbaseIndexFiles hbaseIndexFiles;
 
-    public HbaseIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
-        hbaseIndexFiles = new HbaseIndexFiles(nodename, nodeConf);
+    public HbaseIndexFilesWrapper(String configname, String configid, NodeConfig nodeConf) {
+        hbaseIndexFiles = new HbaseIndexFiles(configname, nodeConf);
     }
 
     @Override

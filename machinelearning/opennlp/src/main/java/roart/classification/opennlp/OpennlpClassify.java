@@ -30,8 +30,8 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
 
     private OpenNLPConfig conf;
 
-    public OpennlpClassify(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);
+    public OpennlpClassify(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);
         try {
             conf = new OpenNLPConfig();
             conf.categorizerMap = new HashMap<String, DocumentCategorizerME>();
@@ -51,7 +51,7 @@ public class OpennlpClassify extends MachineLearningAbstractClassifier {
         }
     }
 
-    public MachineLearningConstructorResult destroy(String nodename) {
+    public MachineLearningConstructorResult destroy(String configname) {
         return null;
     }
 

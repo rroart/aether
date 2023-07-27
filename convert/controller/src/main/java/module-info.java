@@ -11,6 +11,8 @@ module convert {
     requires common.constants;
     requires common.convert;
     requires common.util;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires org.slf4j;
     requires spring.beans;
     requires spring.boot;

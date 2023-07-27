@@ -56,8 +56,8 @@ public class Tika extends ConvertAbstract {
 
     private static Logger log = LoggerFactory.getLogger(Tika.class);
 
-    public Tika(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);        
+    public Tika(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);        
     }
 
     @Override

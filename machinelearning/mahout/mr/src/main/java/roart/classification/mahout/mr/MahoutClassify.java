@@ -52,7 +52,7 @@ public class MahoutClassify extends MachineLearningAbstractClassifier {
 
     private MahoutMRConfig conf;
     
-    public MahoutClassify(String nodename, NodeConfig nodeConf) {
+    public MahoutClassify(String configname, String configid, NodeConfig nodeConf) {
     	try {
     		conf = new MahoutMRConfig();
 		conf.dictionaryMap = new HashMap<String, Map<String, Integer>>();
@@ -128,7 +128,7 @@ public class MahoutClassify extends MachineLearningAbstractClassifier {
 
     }
 
-	public MachineLearningConstructorResult destroy(String nodename) {
+	public MachineLearningConstructorResult destroy(String configname) {
 		return null;
 	}
 	

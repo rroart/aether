@@ -19,8 +19,8 @@ public class WvtextController extends ConvertAbstractController {
 	}
 
     @Override
-    protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return new Wvtext(nodename, nodeConf);
+    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
+        return new Wvtext(configname, null, nodeConf);
     }
 }
 

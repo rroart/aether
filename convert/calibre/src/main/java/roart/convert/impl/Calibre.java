@@ -28,8 +28,8 @@ public class Calibre extends ConvertAbstract {
 
     private static Logger log = LoggerFactory.getLogger(Calibre.class);
 
-    public Calibre(String nodename, NodeConfig nodeConf) {
-        super(nodename, nodeConf);        
+    public Calibre(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);        
     }
 
     @Override

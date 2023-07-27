@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import roart.common.config.NodeConfig;
+import roart.common.inmemory.model.InmemoryMessage;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -18,10 +19,16 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = DatabaseMd5Param.class, name = "roart.model.DatabaseMd5Param") })  
 public abstract class DatabaseParam {
     private String configname;
-    
+
     private String configid;
-    
+
     private NodeConfig conf;
+
+    private InmemoryMessage iconf;
+
+    private String iserver;
+
+    private String iconnection;
 
     public DatabaseParam() {
         super();
@@ -50,5 +57,29 @@ public abstract class DatabaseParam {
     public void setConf(NodeConfig conf) {
         this.conf = conf;
     }
-        
+
+    public InmemoryMessage getIconf() {
+        return iconf;
+    }
+
+    public void setIconf(InmemoryMessage iconf) {
+        this.iconf = iconf;
+    }
+
+    public String getIserver() {
+        return iserver;
+    }
+
+    public void setIserver(String iserver) {
+        this.iserver = iserver;
+    }
+
+    public String getIconnection() {
+        return iconnection;
+    }
+
+    public void setIconnection(String iconnection) {
+        this.iconnection = iconnection;
+    }
+
 }

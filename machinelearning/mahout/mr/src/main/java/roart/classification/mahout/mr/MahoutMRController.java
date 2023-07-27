@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MahoutMRController extends MachineLearningAbstractController {
 
 	@Override
-	protected MachineLearningAbstractClassifier createClassifier(String nodename, NodeConfig nodeConf) {
-		return new MahoutClassify(nodename, nodeConf);
+	protected MachineLearningAbstractClassifier createClassifier(String configname, String configid, NodeConfig nodeConf) {
+		return new MahoutClassify(configname, configid, nodeConf);
 	}
 
 	public static void main(String[] args) throws Exception {

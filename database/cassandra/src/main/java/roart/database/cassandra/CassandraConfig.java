@@ -8,7 +8,7 @@ public class CassandraConfig {
 
     private String port = null;
     
-    private String nodename = null;
+    private String configname = null;
     
     public CqlSession getSession() {
         return session;
@@ -26,12 +26,12 @@ public class CassandraConfig {
         this.port = port;
     }
 
-    public String getNodename() {
-        return nodename;
+    public String getConfigname() {
+        return configname;
     }
 
-    public void setNodename(String nodename) {
-        this.nodename = nodename;
+    public void setConfigname(String configname) {
+        this.configname = configname;
     }
 
 }

@@ -4,18 +4,18 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class DynamodbConfig {
 
-    private String nodename = null;
+    private String configname = null;
 
     private DynamoDbClient client;
     
     private String tableprefix;
     
-    public String getNodename() {
-        return nodename;
+    public String getConfigname() {
+        return configname;
     }
 
-    public void setNodename(String nodename) {
-        this.nodename = nodename;
+    public void setConfigname(String configname) {
+        this.configname = configname;
     }
 
     public void setClient(DynamoDbClient client) {

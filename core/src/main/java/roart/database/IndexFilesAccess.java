@@ -10,6 +10,7 @@ import java.util.Set;
 
 import roart.service.ControlService;
 import roart.common.config.MyConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
@@ -38,34 +39,28 @@ public abstract class IndexFilesAccess {
 
     public String constructor() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setConfigname(ControlService.getConfigName());
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
         return result.error;
     }
 
     public String destructor() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setConfigname(ControlService.getConfigName());
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
         return result.error;
     }
 
     public String clear() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setConfigname(ControlService.getConfigName());
-        param.setConfigid(ControlService.getConfigId());
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
         return result.error;
     }
-    
+
     public String drop() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
-        param.setConfigname(ControlService.getConfigName());
-        param.setConfigid(ControlService.getConfigId());
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseConstructorResult result = EurekaUtil.sendMe(DatabaseConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
         return result.error;
     }
@@ -73,7 +68,7 @@ public abstract class IndexFilesAccess {
     // not used
     public IndexFiles getByFilelocation(FileLocation fl) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         param.setFileLocation(fl);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYFILELOCATION);
         return result.getIndexFiles()[0];
@@ -82,7 +77,7 @@ public abstract class IndexFilesAccess {
     // todo qu
     public String getMd5ByFilelocation(FileLocation fl) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         Set<FileLocation> fls = new HashSet<>();
         fls.add(fl);
         param.setFileLocations(fls);
@@ -93,7 +88,7 @@ public abstract class IndexFilesAccess {
 
     public IndexFiles getByMd5(String md5) throws Exception {
         DatabaseMd5Param param = new DatabaseMd5Param();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         Set<String> md5s = new HashSet<>();
         md5s.add(md5);
         param.setMd5s(md5s);
@@ -104,7 +99,7 @@ public abstract class IndexFilesAccess {
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
         DatabaseMd5Param param = new DatabaseMd5Param();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         /*
         Set<String> md5s = new HashSet<>();
         md5s.add(md5);
@@ -118,7 +113,7 @@ public abstract class IndexFilesAccess {
 
     public List<IndexFiles> getAll() throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         long time = System.currentTimeMillis();
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALL);
         log.info("Load time {} for {}", (System.currentTimeMillis() - time) / 1000, result.getIndexFiles().length);
@@ -128,7 +123,7 @@ public abstract class IndexFilesAccess {
 
     public List<Files> getAllFiles() throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALLFILES);
         return Arrays.asList(result.getFiles());
 
@@ -136,7 +131,7 @@ public abstract class IndexFilesAccess {
 
     public void save(Set<IndexFiles> saves) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         param.setIndexFiles(saves);
         long time = System.currentTimeMillis();
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.SAVE);
@@ -147,40 +142,40 @@ public abstract class IndexFilesAccess {
 
     public void flush() throws Exception {
         DatabaseParam param = new DatabaseMd5Param();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.FLUSH);
     }
 
     public void close() throws Exception {
         DatabaseParam param = new DatabaseMd5Param();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.CLOSE);
     }
 
     public void commit() throws Exception {
         // just any param
         DatabaseParam param = new DatabaseMd5Param(); 
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.COMMIT);
     }
 
     public Set<String> getAllMd5() throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETALLMD5);
         return new HashSet(Arrays.asList(result.getMd5()));
     }
 
     public Set<String> getLanguages() throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         DatabaseLanguagesResult result = EurekaUtil.sendMe(DatabaseLanguagesResult.class, param, getAppName(), EurekaConstants.GETLANGUAGES);
         return new HashSet(Arrays.asList(result.languages));
     }
 
     public void delete(IndexFiles index) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         Set<IndexFiles> indexes = new HashSet<>();
         indexes.add(index);
         param.setIndexFiles(indexes);
@@ -189,7 +184,7 @@ public abstract class IndexFilesAccess {
 
     public void delete(Files index) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         Set<Files> indexes = new HashSet<>();
         indexes.add(index);
         param.setFiles(indexes);
@@ -198,7 +193,7 @@ public abstract class IndexFilesAccess {
 
     public Map<String, IndexFiles> getByMd5(Set<String> md5s) {
         DatabaseMd5Param param = new DatabaseMd5Param();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         param.setMd5s(md5s);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYMD5);
         Map<String, IndexFiles> fullMap = result.getIndexFilesMap();
@@ -212,7 +207,7 @@ public abstract class IndexFilesAccess {
 
     public Map<String, String> getMd5ByFilelocation(Set<FileLocation> fls) throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         param.setFileLocations(fls);
         DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETMD5BYFILELOCATION);
         Map<String, String> fullMap = result.getMd5Map();
@@ -226,7 +221,7 @@ public abstract class IndexFilesAccess {
 
     public List<Map> getBothByFilelocation(Set<FileLocation> fls) {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
-        param.setConf(MyConfig.conf);
+        configureParam(param);
         param.setFileLocations(fls);
         DatabaseMd5Result result = EurekaUtil.sendMe(DatabaseMd5Result.class, param, getAppName(), EurekaConstants.GETBOTHBYFILELOCATION);
         Map<String, String> fullMap = result.getMd5Map();
@@ -238,5 +233,15 @@ public abstract class IndexFilesAccess {
         return null; //simpleMap;
     }
 
+    private void configureParam(DatabaseParam param) {
+        param.setConfigname(ControlService.getConfigName());
+        param.setConfigid(ControlService.getConfigId());
+        param.setIconf(ControlService.iconf);
+        param.setIserver(MyConfig.conf.getInmemoryServer());
+        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
+            param.setIconnection(MyConfig.conf.getInmemoryRedis());
+        }
+    }
+    
 }
 

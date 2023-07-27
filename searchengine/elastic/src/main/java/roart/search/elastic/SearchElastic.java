@@ -72,7 +72,8 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
     private ElasticConfig conf;
 
-    public SearchElastic(String nodename, NodeConfig nodeConf) {
+    public SearchElastic(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);
         conf = new ElasticConfig();
         String myindex = nodeConf.elasticIndex();
         String host = nodeConf.getElasticHost(); 
@@ -80,7 +81,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         String username = nodeConf.getElasticUsername(); 
         String password = nodeConf.getElasticPassword(); 
         boolean ssl = nodeConf.getElasticSsl();
-        
+
         try {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
@@ -90,7 +91,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .setHttpClientConfigCallback(new HttpClientConfigCallback() {
                         @Override
                         public HttpAsyncClientBuilder customizeHttpClient(
-                            HttpAsyncClientBuilder httpClientBuilder) {
+                                HttpAsyncClientBuilder httpClientBuilder) {
                             HttpAsyncClientBuilder builder = httpClientBuilder
                                     .setDefaultCredentialsProvider(credentialsProvider);
                             if (ssl) {
@@ -101,7 +102,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                         }
                     }) 
                     .build();
-            
+
             // Create the transport with a Jackson mapper
             RestClientTransport transport = new RestClientTransport(
                     restclient, new JacksonJsonpMapper());
@@ -116,21 +117,21 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
             // And create the API client
             conf.client = new ElasticsearchClient(transport);
-            
+
             BooleanResponse response = conf.client.indices().exists(b -> b.index(myindex));
-            
+
             if (response.value()) {
                 return;
             }
-            
+
             conf.client.indices().create(c -> c.index(myindex)
                     .mappings(m -> m
                             .properties(SearchConstants.CONTENT, p -> p
                                     .text(t -> t.termVector(TermVectorOption.WithPositionsOffsets)
                                             .store(true))
+                                    )
                             )
-                    )
-            );
+                    );
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -165,7 +166,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
     @Override
     public SearchEngineConstructorResult drop(SearchEngineConstructorParam param) {
         try {
-            NodeConfig nodeConf = param.conf;
             String myindex = nodeConf.elasticIndex();
             log.info("myindex"+myindex);
             conf.client.indices().delete(d -> d.index(myindex));
@@ -182,7 +182,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             //NodeConfig nodeConf = param.conf;
             //String myindex = nodeConf.elasticIndex();
             //conf.client.indices().close(c -> c.index(myindex));
-                        throw new IOException();
+            throw new IOException();
         } catch (IOException e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -190,7 +190,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
     }
 
     public  SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
-        NodeConfig nodeConf = index.conf;
         String md5 = index.md5;  
         String[] metadata = index.metadata;
         String lang = index.lang;
@@ -217,7 +216,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         SearchEngineIndexResult result = new SearchEngineIndexResult();
         try {
             String myindex = nodeConf.elasticIndex();
-           Appdata appdata = new Appdata();
+            Appdata appdata = new Appdata();
             appdata.cat = cat;
             appdata.content = content;
             appdata.lang = lang;
@@ -226,7 +225,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .index(myindex)
                     .id(md5)
                     .document(appdata)
-                     .refresh(Refresh.True));
+                    .refresh(Refresh.True));
 
             // IndexResponse response = conf.client.index(new IndexRequest(indexName).id(md5).source(builder), RequestOptions.DEFAULT);
         } catch (Exception e) {
@@ -240,7 +239,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
     }
 
     public SearchEngineSearchResult searchme(SearchEngineSearchParam search) {
-        NodeConfig nodeConf = search.conf;
         String myindex = nodeConf.elasticIndex();
         String str = search.str;
         String searchtype = search.searchtype;
@@ -250,13 +248,13 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             SearchRequest.Builder sr = new SearchRequest.Builder()
                     .index(myindex)
                     .query(q -> q
-                    .term(t -> t
-                            .field(SearchConstants.CONTENT)
-                            .value(v -> v.stringValue(str))))
+                            .term(t -> t
+                                    .field(SearchConstants.CONTENT)
+                                    .value(v -> v.stringValue(str))))
                     .from(0)
                     .size(100)
                     .explain(true);
-            if (search.conf.getHighlightmlt()) {
+            if (nodeConf.getHighlightmlt()) {
                 sr.highlight(h -> h.fields(SearchConstants.CONTENT, v -> v.type(HighlighterType.Unified)));
             }
             SearchResponse<Appdata> response = conf.client.search(sr.build(), Appdata.class);
@@ -290,7 +288,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                 List<String> metadata = null; //new ArrayList(map.get(Constants.METADATA));
                 String[] highlights = null;
 
-                if (dohighlight && search.conf.getHighlightmlt()) {
+                if (dohighlight && nodeConf.getHighlightmlt()) {
                     Map<String, List<String>> m = d.highlight();
                     log.info("m"+m);
                     List<String> hlf = m.get(SearchConstants.CONTENT);
@@ -321,7 +319,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
     @Override
     public SearchEngineSearchResult searchmlt(SearchEngineSearchParam search) {
-        NodeConfig nodeConf = search.conf;
         String myindex = nodeConf.elasticIndex();
         String id = search.str;
         String searchtype = search.searchtype;
@@ -349,7 +346,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             log.error(Constants.EXCEPTION, e);            
         }
         HitsMetadata<Appdata> docs = response.hits();
-        
+
         try {
             SearchEngineSearchResult result = handleDocs(search, response, docs, false);
             return result;
@@ -361,7 +358,6 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
 
     // TODO untested
     public SearchEngineDeleteResult deleteme(SearchEngineDeleteParam delete) {
-        NodeConfig nodeConf = delete.conf;
         String myindex = nodeConf.elasticIndex();
         String str = delete.delete;
         //ActionFuture<DeleteResponse> action1 = conf.client.delete(myindex, mytype, str).execute();
@@ -382,7 +378,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         public String content;
         public List<String> metadata;
     }
-    
+
     private static class MyTrustManager implements X509TrustManager
     {
         @Override

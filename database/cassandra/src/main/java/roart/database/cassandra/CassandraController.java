@@ -21,7 +21,7 @@ public class CassandraController extends DatabaseAbstractController {
 	}
 
 	@Override
-	protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
-		return new CassandraIndexFilesWrapper(nodename, nodeConf);
+	protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+		return new CassandraIndexFilesWrapper(configname, nodeConf, configid);
 	}
 }

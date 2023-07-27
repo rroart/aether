@@ -29,7 +29,7 @@ public class SpringController extends DatabaseAbstractController {
     private SpringIndexFilesWrapper springIndexFilesWrapper;
     
     @Override
-    protected DatabaseOperations createOperations(String nodename, NodeConfig nodeConf) {
+    protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
         return springIndexFilesWrapper;
     }
 }

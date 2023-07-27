@@ -58,8 +58,8 @@ public class Swift extends FileSystemOperations {
 
     private static final Character DELIMITER = '/';
 
-    public Swift(String nodename, String configid, NodeConfig nodeConf) {
-        super(nodename, configid, nodeConf);
+    public Swift(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);
         try {
             conf = new SwiftConfig();
             String url = nodeConf.getSwiftUrl();

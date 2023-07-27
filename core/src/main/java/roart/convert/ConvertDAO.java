@@ -25,8 +25,7 @@ public class ConvertDAO {
 
     public static InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
         ConvertParam param = new ConvertParam();
-        param.configname = ControlService.getConfigName();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         param.message = message;
         param.converter = converter;
         param.filename = filename;
@@ -49,6 +48,16 @@ public class ConvertDAO {
         //String newparam = inmemory.read(result.message);
         ////inmemory.delete(message);
         //return newparam;
+    }
+
+    private static void configureParam(ConvertParam param) {
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
+        param.iconf = ControlService.iconf;
+        param.iserver = MyConfig.conf.getInmemoryServer();
+        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
+            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        }
     }
 
 }

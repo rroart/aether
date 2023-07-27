@@ -27,38 +27,39 @@ public class SearchDao {
     private static SearchAccess search = null;
 
     public static void instance(String type) {
-	System.out.println("instance " + type);
-	log.info("instance " + type);
-	if (search != null) {
-		// TODO propagate error
-		search.destructor();
-	}
-	if (true || search == null) {
-		// TODO make OO of this?
-	    if (type.equals(ConfigConstants.SEARCHENGINELUCENE)) {
-		search = new LuceneSearchAccess();
-	    }
-	    if (type.equals(ConfigConstants.SEARCHENGINESOLR)) {
-		search = new SolrSearchAccess();
-	    }
-	    if (type.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
-		search = new ElasticSearchAccess();
-	    }
-	    // TODO propagate
-	    String error = search.constructor();
-	}
+        System.out.println("instance " + type);
+        log.info("instance " + type);
+        if (search != null) {
+            // TODO propagate error
+            search.destructor();
+        }
+        if (true || search == null) {
+            // TODO make OO of this?
+            if (type.equals(ConfigConstants.SEARCHENGINELUCENE)) {
+                search = new LuceneSearchAccess();
+            }
+            if (type.equals(ConfigConstants.SEARCHENGINESOLR)) {
+                search = new SolrSearchAccess();
+            }
+            if (type.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
+                search = new ElasticSearchAccess();
+            }
+            // TODO propagate
+            // TODO not
+            String error = search.constructor();
+        }
     }
 
     public static int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
-	return search.indexme(type, md5, dbfilename, metadata, lang, classification, index, message);
+        return search.indexme(type, md5, dbfilename, metadata, lang, classification, index, message);
     }
 
     public static ResultItem[] searchme(String str, String searchtype) {
-	return search.searchme(str, searchtype);
+        return search.searchme(str, searchtype);
     }
 
     public static ResultItem[] searchsimilar(String md5i, String searchtype) {
-	return search.searchsimilar(md5i, searchtype);
+        return search.searchsimilar(md5i, searchtype);
     }
 
     /*
@@ -67,22 +68,22 @@ public class SearchDao {
 
     public static Query docsLike(int id, Document doc, IndexReader ind) throws IOException {
     }
-    */
+     */
 
     public void deleteme(String str) {
         search.delete(str);
     }
 
     public static List<String> removeDuplicate() throws Exception {
-	return null;
+        return null;
     }
 
     public static List<String> cleanup2() throws Exception {
-	return null;
+        return null;
     }
 
     public static List<String> removeDuplicate2() throws Exception {
-	return null;
+        return null;
     }
 
     public static void clear() {

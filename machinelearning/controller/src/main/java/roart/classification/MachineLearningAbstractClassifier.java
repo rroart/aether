@@ -7,15 +7,17 @@ import roart.common.machinelearning.MachineLearningConstructorResult;
 
 public abstract class MachineLearningAbstractClassifier {
 
-    protected final String nodename;
+    protected final String configname;
+    protected final String configid;
     protected final NodeConfig nodeConf;
     
-    public MachineLearningAbstractClassifier(String nodename, NodeConfig nodeConf) {
-        this.nodename = nodename;
+    public MachineLearningAbstractClassifier(String configname, String configid, NodeConfig nodeConf) {
+        this.configname = configname;
+        this.configid = configid;
         this.nodeConf = nodeConf;
     }
 
-    public abstract MachineLearningConstructorResult destroy(String nodename);
+    public abstract MachineLearningConstructorResult destroy(String configname);
 
     public abstract MachineLearningClassifyResult classify(MachineLearningClassifyParam classify);
     

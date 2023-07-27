@@ -89,7 +89,7 @@ public class HbaseIndexFiles {
     private final String INDEX = "index";
     private final String FILES = "files";
     
-    public HbaseIndexFiles(String nodename, NodeConfig nodeConf) {
+    public HbaseIndexFiles(String configname, NodeConfig nodeConf) {
         config = new HbaseConfig();
         try {
             Configuration conf = HBaseConfiguration.create();
@@ -102,7 +102,7 @@ public class HbaseIndexFiles {
 
             Connection hconn = ConnectionFactory.createConnection(conf);
             config.setConnection(hconn);
-            config.setNodename(nodename);
+            config.setConfigname(configname);
             config.setTableprefix(nodeConf.getHbaseTableprefix());
 
             Admin admin = hconn.getAdmin();

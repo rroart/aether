@@ -47,41 +47,35 @@ public abstract class SearchAccess {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public abstract String getAppName();
-    
+
     public String constructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.configname = ControlService.getConfigName();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
         return result.error;
     }
-    
+
     public String destructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.configname = ControlService.getConfigName();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
         return result.error;
     }
-    
+
     public String clear() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
         return result.error;
     }
-    
+
     public String drop() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
         return result.error;
     }
-    
+
     public int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
         Map<String, String> md = metadata;
         String[] str = new String[md.keySet().size()];
@@ -91,9 +85,7 @@ public abstract class SearchAccess {
             str[i++] = name + "=" + value;
         }
         SearchEngineIndexParam param = new SearchEngineIndexParam();
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         param.type = type;
         param.md5 = md5;
         param.dbfilename = dbfilename;
@@ -101,79 +93,38 @@ public abstract class SearchAccess {
         param.lang = lang;
         param.message = message;
         param.classification = classification;
-        
+
         SearchEngineIndexResult result = EurekaUtil.sendMe(SearchEngineIndexResult.class, param, getAppName(), EurekaConstants.INDEX);
 
         if (result == null) {
-        	return -1;
+            return -1;
         }
-        
+
         if (result.size == -1) {
-        	index.setNoindexreason(result.noindexreason);
+            index.setNoindexreason(result.noindexreason);
         }
-        
+
         return result.size;
     }
 
     public ResultItem[] searchme(String str, String searchtype) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         param.str = str;
         param.searchtype = searchtype;
-        
+
         SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH);
-    	return getResultItems(result);
+        return getResultItems(result);
     }
-
-	private ResultItem[] getResultItems(SearchEngineSearchResult result) {
-		SearchResult[] results = result.results;
-    	ResultItem[] strarr = new ResultItem[results.length + 1];
-    	strarr[0] = IndexFiles.getHeaderSearch();
-    	try {
-    		int i = 1;
-    		Set<String> md5s = new HashSet<>();
-                for (SearchResult res : results) {
-                    md5s.add(res.md5);
-                }
-                IndexFilesDao indexFilesDao = new IndexFilesDao();
-                Map<String, IndexFiles> indexmd5s = indexFilesDao.getByMd5(md5s);
-    		for (SearchResult res : results) {
-    			String md5 = res.md5;
-    			IndexFiles indexmd5 = indexmd5s.get(md5);
-
-    			String filename = indexmd5.getFilelocation();
-    			FileLocation aFl = indexmd5.getaFilelocation();
-    			log.info("Hit {}.{} : {} {}",i ,md5, filename, res.score);
-    			FileLocation maybeFl = null;
-    			/*
-    			try {
-    			    // slow
-    			    maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
-    			} catch (Exception e) {
-    			    log.error(Constants.EXCEPTION, e);
-    			}
-    			*/
-                        strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, aFl);
-                        i++;
-    		}
-    	} catch (Exception e) {
-    		log.error(roart.common.constants.Constants.EXCEPTION, e);
-    	}
-    	return strarr;
-	}
 
     public ResultItem[] searchsimilar(String id, String searchtype) {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         param.str = id;
         param.searchtype = searchtype;
-        
+
         SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT);
-       	return getResultItems(result);
+        return getResultItems(result);
     }
 
     /**
@@ -181,16 +132,63 @@ public abstract class SearchAccess {
      * 
      * @param str md5 id
      */
-    
+
     public void delete(String str) {
         SearchEngineDeleteParam param = new SearchEngineDeleteParam();
-        param.configname = ControlService.getConfigName();
-        param.conf = MyConfig.conf;
+        configureParam(param);
         param.delete = str;
-        
+
         SearchEngineDeleteResult result = EurekaUtil.sendMe(SearchEngineDeleteResult.class, param, getAppName(), EurekaConstants.DELETE);
 
     }
-    
+
+    private ResultItem[] getResultItems(SearchEngineSearchResult result) {
+        SearchResult[] results = result.results;
+        ResultItem[] strarr = new ResultItem[results.length + 1];
+        strarr[0] = IndexFiles.getHeaderSearch();
+        try {
+            int i = 1;
+            Set<String> md5s = new HashSet<>();
+            for (SearchResult res : results) {
+                md5s.add(res.md5);
+            }
+            IndexFilesDao indexFilesDao = new IndexFilesDao();
+            Map<String, IndexFiles> indexmd5s = indexFilesDao.getByMd5(md5s);
+            for (SearchResult res : results) {
+                String md5 = res.md5;
+                IndexFiles indexmd5 = indexmd5s.get(md5);
+
+                String filename = indexmd5.getFilelocation();
+                FileLocation aFl = indexmd5.getaFilelocation();
+                log.info("Hit {}.{} : {} {}",i ,md5, filename, res.score);
+                FileLocation maybeFl = null;
+                /*
+                        try {
+                            // slow
+                            maybeFl = Traverse.getExistingLocalFilelocationMaybe(indexmd5);
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e);
+                        }
+                 */
+                strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, aFl);
+                i++;
+            }
+        } catch (Exception e) {
+            log.error(roart.common.constants.Constants.EXCEPTION, e);
+        }
+        return strarr;
+    }
+
+    private void configureParam(SearchEngineParam param) {
+        param.configname = ControlService.getConfigName();
+        param.configid = ControlService.getConfigId();
+        param.iconf = ControlService.iconf;
+        param.iserver = MyConfig.conf.getInmemoryServer();
+        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
+            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        }
+    }
+
+
 }
 

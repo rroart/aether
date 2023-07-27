@@ -19,8 +19,8 @@ public class CalibreController extends ConvertAbstractController {
 	}
 
     @Override
-    protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return new Calibre(nodename, nodeConf);
+    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
+        return new Calibre(configname, configid, nodeConf);
     }
 }
 

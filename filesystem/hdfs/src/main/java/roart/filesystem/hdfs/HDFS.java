@@ -52,8 +52,8 @@ public class HDFS extends FileSystemOperations {
 
     private HDFSConfig conf;
 
-    public HDFS(String nodename, String configid, NodeConfig nodeConf) {
-        super(nodename, configid, nodeConf);
+    public HDFS(String configname, String configid, NodeConfig nodeConf) {
+        super(configname, configid, nodeConf);
         conf = new HDFSConfig();
         Configuration configuration = new Configuration();
         conf.configuration = configuration;

@@ -19,8 +19,8 @@ public class TikaController extends ConvertAbstractController {
 	}
 
     @Override
-    protected ConvertAbstract createConvert(String nodename, NodeConfig nodeConf) {
-        return new Tika(nodename, nodeConf);
+    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
+        return new Tika(configname, null, nodeConf);
     }
 }
 

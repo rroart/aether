@@ -19,7 +19,7 @@ public class LuceneController extends SearchEngineAbstractController {
 	}
 
 	@Override
-	protected SearchEngineAbstractSearcher createSearcher(String nodename, NodeConfig nodeConf) {
-		return new SearchLucene(nodename, nodeConf);
+	protected SearchEngineAbstractSearcher createSearcher(String configname, String configid, NodeConfig nodeConf) {
+		return new SearchLucene(configname, configid, nodeConf);
 	}
 }

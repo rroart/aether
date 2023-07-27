@@ -12,7 +12,7 @@ public class TikaTest {
 
     @Test
     public void test() {
-        Tika tika = new Tika(null, null);
+        Tika tika = new Tika(null, null, null);
         doReturn(convert2(null)).when(tika).convert2(any());
         ConvertResult result = tika.convert(null);
         System.out.println(result);

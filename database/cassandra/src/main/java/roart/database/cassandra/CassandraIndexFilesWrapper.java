@@ -35,8 +35,8 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     
     private CassandraIndexFiles cassandraIndexFiles;
 
-    public CassandraIndexFilesWrapper(String nodename, NodeConfig nodeConf) {
-        cassandraIndexFiles = new CassandraIndexFiles(null, nodename, nodeConf);
+    public CassandraIndexFilesWrapper(String configname, NodeConfig nodeConf, String configid) {
+        cassandraIndexFiles = new CassandraIndexFiles(null, configname, nodeConf);
     }
 
     @Override
