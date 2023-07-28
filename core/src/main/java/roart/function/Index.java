@@ -2,6 +2,7 @@ package roart.function;
 
 import java.util.List;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
@@ -9,8 +10,8 @@ import roart.queue.TraverseQueueElement;
 
 public class Index extends AbstractIndex {
 
-    public Index(ServiceParam param) {
-        super(param);
+    public Index(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override

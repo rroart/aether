@@ -1,13 +1,14 @@
 package roart.function;
 
+import roart.common.config.NodeConfig;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.queue.TraverseQueueElement;
 
 public class ReindexDate extends Reindex {
 
-    public ReindexDate(ServiceParam param) {
-        super(param);
+    public ReindexDate(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override

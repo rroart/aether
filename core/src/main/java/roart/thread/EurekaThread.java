@@ -11,10 +11,12 @@ import roart.eureka.util.EurekaUtil;
 
 public class EurekaThread implements Runnable {
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    Object parameter;
 
-    public EurekaThread(Object parameter) {
-        this.parameter = parameter;
+    private NodeConfig nodeConf;
+    
+    public EurekaThread(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
     }
 
     public void run() {
@@ -22,8 +24,8 @@ public class EurekaThread implements Runnable {
         while (noException == false) {
             try {
                 ServiceParam param = new ServiceParam();
-                param.config = (NodeConfig) parameter;
-                ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, EurekaConstants.AETHERSERVICEMANAGER, EurekaConstants.SETCONFIG);
+                param.config = nodeConf;
+                ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, EurekaConstants.AETHERSERVICEMANAGER, EurekaConstants.SETCONFIG, nodeConf);
                 noException = true;
                 log.info("got");
             } catch (Exception e) {

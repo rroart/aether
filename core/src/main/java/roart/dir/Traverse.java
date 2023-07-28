@@ -56,7 +56,7 @@ public class Traverse {
 
     public static final int MAXFILE = 500;
 
-    private IndexFilesDao indexFilesDao = new IndexFilesDao();
+    private IndexFilesDao indexFilesDao;
 
     //int max = 0;
     //int indexcount = 0;
@@ -80,10 +80,10 @@ public class Traverse {
 
     FileObject[] dirlistnot;
     SearchDisplay display;
-
+    NodeConfig nodeConf;
     //Set<String> md5sdone = new HashSet<String>();
 
-    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5, String filesdonesetid) {
+    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5, String filesdonesetid, NodeConfig nodeConf) {
 
         this.myid = myid;
         this.element = element;
@@ -97,8 +97,9 @@ public class Traverse {
         this.traversecountid = traversecountid;
         this.nomd5 = nomd5;
         this.filesdonesetid = filesdonesetid;
-        
-        dirlistnotarr = MyConfig.conf.getDirListNot();
+        this.nodeConf = nodeConf;
+        this.indexFilesDao = new IndexFilesDao(nodeConf);
+        dirlistnotarr = nodeConf.getDirListNot();
         dirlistnot = new FileObject[dirlistnotarr.length];
         int i = 0;
         for (String dir : dirlistnotarr) {
@@ -140,7 +141,7 @@ public class Traverse {
     // TODO concurrent
     public Set<String> doList(FileObject fileObject) throws Exception {
         Set<String> retset = new HashSet<>();
-        if (TraverseUtil.isMaxed(myid, element)) {
+        if (TraverseUtil.isMaxed(myid, element, nodeConf)) {
             return retset;
         }
 
@@ -149,8 +150,8 @@ public class Traverse {
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
-        FileObject dir = new FileSystemDao().get(fileObject);
-        List<MyFile> listDir = FileSystemDao.listFilesFull(dir);
+        FileObject dir = new FileSystemDao(nodeConf).get(fileObject);
+        List<MyFile> listDir = new FileSystemDao(nodeConf).listFilesFull(dir);
         long time1 = System.currentTimeMillis();
         log.debug("Time0 {}", usedTime(time1, time0));
         //log.info("dir " + dirname);
@@ -164,7 +165,7 @@ public class Traverse {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(notfoundsetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -182,11 +183,11 @@ public class Traverse {
             } else {
                 retset.add(filename);
                 if (!nomd5) {
-                    MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
+                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                     total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                    MyAtomicLong count = MyAtomicLongs.get(traversecountid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
@@ -208,7 +209,7 @@ public class Traverse {
     public String getExistingLocalFile(IndexFiles i) {
         FileLocation fl = null;
         try {
-            fl = TraverseUtil.getExistingLocalFilelocation(i);
+            fl = TraverseUtil.getExistingLocalFilelocation(i, nodeConf);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
@@ -219,11 +220,11 @@ public class Traverse {
     }
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
-        MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+        MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
         indexFilesDao.getAllFiles();
         List<IndexFiles> indexes = indexFilesDao.getAll();
         for (IndexFiles index : indexes) {
-            if (TraverseUtil.isMaxed(myid, element)) {
+            if (TraverseUtil.isMaxed(myid, element, nodeConf)) {
                 break;
             }
             String md5 = index.getMd5();
@@ -242,15 +243,15 @@ public class Traverse {
                 continue;
             }
             // config with finegrained distrib
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
             total.addAndGet(1);
-            MyAtomicLong count = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong count = MyAtomicLongs.get(traversecountid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
             count.addAndGet(1);
             // ?
             //queue.offer(trav);
             //String md5sdoneid = "md5sdoneid"+trav.getMyid();
             //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
-            TraverseFile traverseFile = new TraverseFile(indexFilesDao);
+            TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf);
             if (traverseFile.getDoIndex(trav, index, function)) {
                 traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
             }
@@ -270,16 +271,16 @@ public class Traverse {
                 //return doList(FsUtil.getFileObject(add));
                 FileObject fileObject = FsUtil.getFileObject(add);
                 ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5, filesdonesetid);
-                Queues.getListingQueue().offer(listQueueElement);
+                new Queues(nodeConf).getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
             return new HashSet<>();
             } else {
                 Set<String> retList = new HashSet<>();
-                String[] dirlist = MyConfig.conf.getDirList();
+                String[] dirlist = nodeConf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
                     FileObject fileObject = FsUtil.getFileObject(dirlist[i]);
                     ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5, filesdonesetid);
-                    Queues.getListingQueue().offer(listQueueElement);
+                    new Queues(nodeConf).getListingQueue().offer(listQueueElement);
                     //Queues.getListingQueueSize().incrementAndGet();
                     //retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));
                 }
@@ -301,7 +302,7 @@ public class Traverse {
     // ?
     @Deprecated
     public boolean isLocal(FileObject fo) {
-        return new FileSystemDao().exists(fo);
+        return new FileSystemDao(nodeConf).exists(fo);
     }
 
     private int usedTime(long time2, long time1) {

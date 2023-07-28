@@ -18,6 +18,7 @@ import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyQueues;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
@@ -36,157 +37,163 @@ import roart.service.ControlService;
 
 public class Queues {
 
-    private static Logger log = LoggerFactory.getLogger(Queues.class);
+    private Logger log = LoggerFactory.getLogger(Queues.class);
 
-    static final int limit = 100;
+    final int limit = 100;
 
-    //public static Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
+    //public Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
 
     /*
-    public static volatile Deque<ConvertQueueElement> convertQueue = new ConcurrentLinkedDeque<ConvertQueueElement>();
-    public static volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
-    public static volatile Queue<TraverseQueueElement>  getMy = new ConcurrentLinkedQueue<TraverseQueueElement>();
-    public static volatile Queue<ListQueueElement> listQueue = new ConcurrentLinkedQueue<>();
+    public volatile Deque<ConvertQueueElement> convertQueue = new ConcurrentLinkedDeque<ConvertQueueElement>();
+    public volatile Queue<IndexQueueElement> indexQueue = new ConcurrentLinkedQueue<IndexQueueElement>();
+    public volatile Queue<TraverseQueueElement>  getMy = new ConcurrentLinkedQueue<TraverseQueueElement>();
+    public volatile Queue<ListQueueElement> listQueue = new ConcurrentLinkedQueue<>();
 */
     
-    public static Set<Set> workQueues = new HashSet();
+    public Set<Set> workQueues = new HashSet();
 
-    public static volatile Queue<String> convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
+    public volatile Queue<String> convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
 
     /*
-    private static volatile AtomicInteger converts = new AtomicInteger(0);
-    private static volatile AtomicInteger indexs = new AtomicInteger(0);
-    private static volatile AtomicInteger clients = new AtomicInteger(0);
-    private static AtomicInteger traverses = new AtomicInteger(0);
-    private static AtomicInteger listings = new AtomicInteger(0);
+    private volatile AtomicInteger converts = new AtomicInteger(0);
+    private volatile AtomicInteger indexs = new AtomicInteger(0);
+    private volatile AtomicInteger clients = new AtomicInteger(0);
+    private AtomicInteger traverses = new AtomicInteger(0);
+    private AtomicInteger listings = new AtomicInteger(0);
 */
+    private NodeConfig nodeConf;    
 
-    public static long getConverts() {
+    public Queues(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
+    public long getConverts() {
         return getMyConverts().get();
     }
 
-    public static long getIndexs() {
+    public long getIndexs() {
         return getMyIndexs().get();
     }
 
-    public static long getClients() {
+    public long getClients() {
         return getMyClients().get();
     }
 
-    public static long getTraverses() {
+    public long getTraverses() {
         return getMyTraverses().get();
     }
 
-    public static long getListings() {
+    public long getListings() {
         return getMyListings().get();
     }
 
-    public static void incConverts() {
+    public void incConverts() {
         getMyConverts().incrementAndGet();
     }
 
-    public static void incIndexs() {
+    public void incIndexs() {
         getMyIndexs().incrementAndGet();
     }
 
-    public static void incClients() {
+    public void incClients() {
         getMyClients().incrementAndGet();
     }
 
-    public static void incTraverses() {
+    public void incTraverses() {
         getMyTraverses().incrementAndGet();
     }
 
-    public static void incListings() {
+    public void incListings() {
         getMyListings().incrementAndGet();
     }
 
-    public static void decConverts() {
+    public void decConverts() {
         getMyConverts().decrementAndGet();
     }
 
-    public static void decIndexs() {
+    public void decIndexs() {
         getMyIndexs().decrementAndGet();
     }
 
-    public static void decClients() {
+    public void decClients() {
         getMyClients().decrementAndGet();
     }
 
-    public static void decTraverses() {
+    public void decTraverses() {
         getMyTraverses().decrementAndGet();
     }
 
-    public static void decListings() {
+    public void decListings() {
         getMyListings().decrementAndGet();
     }
 
-    public static void resetConverts() {
+    public void resetConverts() {
         getMyConverts().set(0);
     }
 
-    public static void resetIndexs() {
+    public void resetIndexs() {
         getMyIndexs().set(0);
     }
 
-    public static void resetClients() {
+    public void resetClients() {
         getMyClients().set(0);
     }
 
-    public static void resetTraverses() {
+    public void resetTraverses() {
         getMyTraverses().set(0);
     }
 
-    public static void resetListings() {
+    public void resetListings() {
         getMyListings().set(0);
     }
 
-    public static boolean convertQueueHeavyLoaded() {
+    public boolean convertQueueHeavyLoaded() {
         return getConvertQueueSize() >= limit;
     }
 
-    public static boolean indexQueueHeavyLoaded() {
+    public boolean indexQueueHeavyLoaded() {
         return getIndexQueueSize() >= limit;
     }
 
-    public static boolean traverseQueueHeavyLoaded() {
+    public boolean traverseQueueHeavyLoaded() {
         return getTraverseQueueSize() >= limit;
     }
 
-    public static boolean listingQueueHeavyLoaded() {
+    public boolean listingQueueHeavyLoaded() {
         return getListingQueueSize() >= limit;
     }
 
-    public static String webstat() {
+    public String webstat() {
         return "q " + total() + " l " + getListings() + " \nf " + getTraverses() + " " + work() + "\nc " + getConvertQueueSize() + " " + getConverts() + "\ni " + getIndexQueueSize() + " " + getIndexs();
     }
 
-    public static String stat() {
+    public String stat() {
         return "q " + total() + " l " + getListings() + " f " + getTraverses() + " " + work() + " c " + getConvertQueueSize() + " " + getConverts() + " i " + getIndexQueueSize() + " " + getIndexs();
     }
 
-    public static void queueStat() {
+    public void queueStat() {
         log.info("Queues {}", stat());
     }
 
-    public static long queueSize() {
+    public long queueSize() {
         return getListingQueueSize() + getTraverseQueueSize() + getConvertQueueSize() + getIndexQueueSize();
     }
 
-    public static long runSize() {
+    public long runSize() {
         return getMyConverts().get() + getMyIndexs().get();
     }
 
-    public static void resetConvertTimeoutQueue() {
+    public void resetConvertTimeoutQueue() {
         convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
     }
 
-    public static long total() {
-        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, ControlService.curatorClient, GetHazelcastInstance.instance());
+    public long total() {
+        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         return total.get();
     }     
 
-    public static int work() {
+    public int work() {
         int ret = 0;
         for (Set set : workQueues) {
             ret += set.size();
@@ -194,71 +201,71 @@ public class Queues {
         return ret;
     }
 
-    public static MyQueue<ListQueueElement> getListingQueue() {
+    public MyQueue<ListQueueElement> getListingQueue() {
         String queueid = prefix() + Constants.LISTINGQUEUE;
-        MyQueue<ListQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ListQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
-    public static MyQueue<TraverseQueueElement> getTraverseQueue() {
+    public MyQueue<TraverseQueueElement> getTraverseQueue() {
         String queueid = prefix() + Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
-    public static MyQueue<ConvertQueueElement> getConvertQueue() {
+    public MyQueue<ConvertQueueElement> getConvertQueue() {
         String queueid = prefix() + Constants.CONVERTQUEUE;
-        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
-    public static MyQueue<IndexQueueElement> getIndexQueue() {
+    public MyQueue<IndexQueueElement> getIndexQueue() {
         String queueid = prefix() + Constants.INDEXQUEUE;
-        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
     
-    public static MyAtomicLong getMyConverts() {
-        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, ControlService.curatorClient, GetHazelcastInstance.instance());
+    public MyAtomicLong getMyConverts() {
+        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
-    public static MyAtomicLong getMyIndexs() {
-        return MyAtomicLongs.get(prefix() + Constants.INDEXS, ControlService.curatorClient, GetHazelcastInstance.instance());
+    public MyAtomicLong getMyIndexs() {
+        return MyAtomicLongs.get(prefix() + Constants.INDEXS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
-    public static MyAtomicLong getMyTraverses() {
-        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, ControlService.curatorClient, GetHazelcastInstance.instance());
+    public MyAtomicLong getMyTraverses() {
+        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
-    public static MyAtomicLong getMyListings() {
-        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, ControlService.curatorClient, GetHazelcastInstance.instance());
+    public MyAtomicLong getMyListings() {
+        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
-    public static MyAtomicLong getMyClients() {
-        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, ControlService.curatorClient, GetHazelcastInstance.instance());
+    public MyAtomicLong getMyClients() {
+        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
     }
 
-    public static int getListingQueueSize() {
+    public int getListingQueueSize() {
         return getListingQueue().size();
         //return MyAtomicLongs.get(Constants.LISTINGQUEUESIZE);
     }
 
-    public static int getTraverseQueueSize() {
+    public int getTraverseQueueSize() {
         return getTraverseQueue().size();
         //return MyAtomicLongs.get(Constants.TRAVERSEQUEUESIZE);
     }
 
-    public static int getConvertQueueSize() {
+    public int getConvertQueueSize() {
         return getConvertQueue().size();
         //return MyAtomicLongs.get(Constants.CONVERTQUEUESIZE);
     }
 
-    public static int getIndexQueueSize() {
+    public int getIndexQueueSize() {
         return getIndexQueue().size();
         //return MyAtomicLongs.get(Constants.INDEXQUEUESIZE);
     }
 
-    public static String prefix() {
+    public String prefix() {
         String appid = System.getenv(Constants.APPID);
         if (appid != null) {
             return appid;

@@ -11,11 +11,12 @@ import com.hazelcast.core.HazelcastInstance;
 import roart.common.collections.MyFactory;
 import roart.common.collections.MyList;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 
 public class MyListFactory extends MyFactory {
     
-    public MyList create(String listid, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (MyConfig.conf.wantDistributedTraverse()) {
+    public MyList create(String listid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
+        if (nodeConf.wantDistributedTraverse()) {
             return new MyHazelcastList(hz, listid);
         } else {
             return new MyJavaList();

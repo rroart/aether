@@ -11,6 +11,7 @@ import roart.common.collections.MySet;
 import roart.common.collections.impl.MyQueues;
 import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
@@ -31,14 +32,14 @@ import roart.service.ControlService;
 
 public class ConsistentClean extends AbstractFunction {
 
-    private FileSystemDao fileSystemDao = new FileSystemDao();
+    private FileSystemDao fileSystemDao = new FileSystemDao(nodeConf);
     
-    private IndexFilesDao indexFilesDao = new IndexFilesDao();
+    private IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
     
-    private SearchDao searchDao = new SearchDao();
+    private SearchDao searchDao = new SearchDao(nodeConf);
     
-    public ConsistentClean(ServiceParam param) {
-        super(param);
+    public ConsistentClean(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     public FileSystemDao getFileSystemDao() {
@@ -67,7 +68,7 @@ public class ConsistentClean extends AbstractFunction {
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         boolean clean = param.clean;
         List<ResultItem> delList = new ArrayList<>();
         List<ResultItem> nonexistList = new ArrayList<>();
@@ -86,17 +87,17 @@ public class ConsistentClean extends AbstractFunction {
 
         String myid = ControlService.getMyId();
         String newsetid = "newsetid"+myid;
-        MyQueue<String> newset = MyQueues.get(newsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<String> newset = MyQueues.get(newsetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         //MySets.put(newsetid, newset);
 
         String notfoundsetid = "notfoundsetid"+myid;
-        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         //MySets.put(notfoundsetid, notfoundset);
 
         //String md5sdoneid = "md5sdoneid"+myid;
         //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
-        //Traverse traverse = new Traverse(myid, param, null, null, newsetid, MyConfig.conf.getDirListNot(), notfoundsetid, null, null, true);
+        //Traverse traverse = new Traverse(myid, param, null, null, newsetid, nodeConf.getDirListNot(), notfoundsetid, null, null, true);
         String path = param.file;
 
         List<IndexFiles> indexes;
@@ -104,7 +105,7 @@ public class ConsistentClean extends AbstractFunction {
             try {
                 /*
                 MyLock lock = null;
-                if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
@@ -130,7 +131,7 @@ public class ConsistentClean extends AbstractFunction {
                     }
                 }
 
-                if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     ZKMessageUtil.dorefresh(ControlService.nodename);
                     //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");
@@ -152,7 +153,7 @@ public class ConsistentClean extends AbstractFunction {
                         String md5 = indexFilesDao.getMd5ByFilename(filename);
                         // common3?
                         if (md5 != null) {
-                            MyLock lock2 = MyLockFactory.create(null, MyConfig.conf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+                            MyLock lock2 = MyLockFactory.create(null, nodeConf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
                             lock2.lock();
                             IndexFiles ifile = indexFilesDao.getByMd5(md5);
                             FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
@@ -186,7 +187,7 @@ public class ConsistentClean extends AbstractFunction {
                         }
                     }
 
-                    if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                    if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                         ZKMessageUtil.dorefresh(ControlService.nodename);
                         //lock.unlock();
                     }

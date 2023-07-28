@@ -3,6 +3,7 @@ package roart.function;
 import java.util.ArrayList;
 import java.util.List;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
@@ -13,13 +14,13 @@ import roart.service.ControlService;
 
 public class DbSearch extends AbstractFunction {
 
-    public DbSearch(ServiceParam param) {
-        super(param);
+    public DbSearch(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         try {
             ServiceParam.Function function = param.function;
             String searchexpr = param.file;

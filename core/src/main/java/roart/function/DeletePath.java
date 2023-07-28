@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
@@ -22,19 +23,19 @@ import roart.common.model.FileObject;
 
 public class DeletePath extends AbstractFunction {
 
-    public DeletePath(ServiceParam param) {
-        super(param);
+    public DeletePath(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
-	ConsistentClean cc = new ConsistentClean(param);
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+	ConsistentClean cc = new ConsistentClean(param, nodeConf);
         synchronized (ControlService.writelock) {
             try {
                 /*
                 MyLock lock = null;
-                if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
@@ -88,7 +89,7 @@ public class DeletePath extends AbstractFunction {
                     TimeUnit.SECONDS.sleep(60);
                 }
 
-                if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     ZKMessageUtil.dorefresh(ControlService.nodename);
                     //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");

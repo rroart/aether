@@ -13,6 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
@@ -34,12 +35,14 @@ public class IndexFilesDao {
     @Deprecated
     private static volatile ConcurrentMap<String, IndexFiles> dbitemp = new ConcurrentHashMap<String, IndexFiles>();
 
-    private static IndexFilesAccess indexFiles = null;
+    private IndexFilesAccess indexFiles = null;
 
-    public static synchronized void instance(String type) {
-        if (indexFiles == null) {
-            indexFiles = IndexFilesAccessFactory.get(type);
-        }
+    private NodeConfig nodeConf;
+    
+    public IndexFilesDao(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+        this.indexFiles = IndexFilesAccessFactory.get(nodeConf);
     }
 
     // with zookeepersmall, lock must be held when entering here
@@ -78,7 +81,7 @@ public class IndexFilesDao {
         }
     }
 
-    public static IndexFiles getByFilelocationNot(FileLocation fl) throws Exception {
+    public IndexFiles getByFilelocationNot(FileLocation fl) throws Exception {
         synchronized(IndexFilesDao.class) {
             return indexFiles.getByFilelocation(fl);
         }

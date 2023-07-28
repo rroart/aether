@@ -58,7 +58,7 @@ public class ControlService {
     
     public void getRemoteConfig() {
         ServiceParam param = new ServiceParam();
-        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.GETCONFIG);
+        ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.GETCONFIG, nodeConf);
         conf = result.config;
         MyConfig.conf = conf;
     }
@@ -347,7 +347,7 @@ public class ControlService {
             ServiceParam param = new ServiceParam();
             param.config = getConfig();
             //param.function = Function.DELETEPATHDB;
-            DatabaseLanguagesResult result = EurekaUtil.sendMe(DatabaseLanguagesResult.class, param, getAppName(), EurekaConstants.GETLANGUAGES);
+            DatabaseLanguagesResult result = EurekaUtil.sendMe(DatabaseLanguagesResult.class, param, getAppName(), EurekaConstants.GETLANGUAGES, nodeConf);
             return new HashSet(Arrays.asList(result.languages));        
        }
 

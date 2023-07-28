@@ -7,6 +7,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Options;
 import org.junit.jupiter.api.BeforeAll;
 
+import roart.common.config.NodeConfig;
+
 import org.apache.hadoop.fs.FileContext;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileUtil;
@@ -19,6 +21,7 @@ public class HDFSUtil {
 
     private static Configuration configuration;
     private static FileContext  fc;
+    private static NodeConfig nodeConf;
     
     //@BeforeAll
     public static void ini() throws Exception {
@@ -29,8 +32,8 @@ public class HDFSUtil {
     
     public static void write(String fileName, String content) throws Exception {
         Path path = new Path(fileName);
-        FSDataOutputStream fin = fc.create(path, EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE),
-                new Options.CreateOpts[] {});
+        FSDataOutputStream fin = fc.create(path,
+                EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE), new Options.CreateOpts[] {});
         fin.writeUTF(content);
         fin.close();
     }

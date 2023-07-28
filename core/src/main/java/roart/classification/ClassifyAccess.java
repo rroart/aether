@@ -1,6 +1,7 @@
 package roart.classification;
 
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.inmemory.model.InmemoryMessage;
@@ -25,19 +26,26 @@ public abstract class ClassifyAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private NodeConfig nodeConf;
+
+    public ClassifyAccess(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
     public abstract String getAppName();
 
     public String constructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
         configureParam(param);
-        MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);   	
+        MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR, nodeConf);   	
         return result.error;
     }
     
     public String destructor() {
         MachineLearningConstructorParam param = new MachineLearningConstructorParam();
         configureParam(param);
-        MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);   	
+        MachineLearningConstructorResult result = EurekaUtil.sendMe(MachineLearningConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR, nodeConf);   	
         return result.error;
     }
     
@@ -46,7 +54,7 @@ public abstract class ClassifyAccess {
         configureParam(param);
     	param.message = message;
     	param.language = language;
-        MachineLearningClassifyResult result = EurekaUtil.sendMe(MachineLearningClassifyResult.class, param, getAppName(), EurekaConstants.CLASSIFY);
+        MachineLearningClassifyResult result = EurekaUtil.sendMe(MachineLearningClassifyResult.class, param, getAppName(), EurekaConstants.CLASSIFY, nodeConf);
 
         if (result == null) {
         	return null;
@@ -59,9 +67,9 @@ public abstract class ClassifyAccess {
         param.configname = ControlService.getConfigName();
         param.configid = ControlService.getConfigId();
         param.iconf = ControlService.iconf;
-        param.iserver = MyConfig.conf.getInmemoryServer();
-        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
-            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        param.iserver = nodeConf.getInmemoryServer();
+        if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+            param.iconnection = nodeConf.getInmemoryRedis();
         }
    }
 

@@ -88,7 +88,7 @@ public class ClientRunner implements Runnable {
                         ServiceResult result = null;
                         try {
                             ServiceParam param = Queues.clientQueue.poll();
-                            result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), param.webpath);
+                            result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), param.webpath, nodeConf);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e);
                         } catch (Error e) {

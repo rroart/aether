@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
@@ -15,13 +16,13 @@ import roart.service.ControlService;
 
 public class DbIndex extends AbstractFunction {
 
-    public DbIndex(ServiceParam param) {
-        super(param);
+    public DbIndex(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         try {
             ServiceParam.Function function = param.function;
             String md5 = param.file;

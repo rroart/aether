@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
@@ -39,6 +40,13 @@ public class FileSystemAccess {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public String getAppName() { return null; }
+ 
+    protected NodeConfig nodeConf;
+    
+    public FileSystemAccess(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
 
     public String constructor(String url) {
         this.url = url;
@@ -147,8 +155,8 @@ public class FileSystemAccess {
 
     @Deprecated
     public String getLocalFilesystemFile(FileObject fo) {
-        FileObject file = new FileSystemDao().get(fo);  
-        String fn = new FileSystemDao().getAbsolutePath(file);
+        FileObject file = new FileSystemDao(nodeConf).get(fo);  
+        String fn = new FileSystemDao(nodeConf).getAbsolutePath(file);
         // TODO
         if (fn.charAt(4) == ':') {
             fn = fn.substring(5);
@@ -176,9 +184,9 @@ public class FileSystemAccess {
         param.configname = ControlService.getConfigName();
         param.configid = ControlService.getConfigId();
         param.iconf = ControlService.iconf;
-        param.iserver = MyConfig.conf.getInmemoryServer();
-        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
-            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        param.iserver = nodeConf.getInmemoryServer();
+        if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+            param.iconnection = nodeConf.getInmemoryRedis();
         }
     }
 

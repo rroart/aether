@@ -32,7 +32,7 @@ public class SearchService {
         param.conf = getConfig();
         param.str = str;
         param.searchtype = type;
-        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH);
+        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH, nodeConf);
         List lists = result.list;        
         return lists;           
     }
@@ -54,7 +54,7 @@ public class SearchService {
         SearchEngineSearchParam param = new SearchEngineSearchParam();
         param.conf = getConfig();
         param.str = md5;
-        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT);
+        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT, nodeConf);
         return;           
     }
 

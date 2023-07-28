@@ -2,12 +2,13 @@ package roart.function;
 
 import java.util.List;
 
+import roart.common.config.NodeConfig;
 import roart.common.service.ServiceParam;
 
 public class Search extends AbstractFunction {
 
-    public Search(ServiceParam param) {
-        super(param);
+    public Search(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override

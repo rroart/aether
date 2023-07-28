@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import roart.common.config.Connector;
 import roart.common.config.Converter;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.convert.ConvertParam;
@@ -23,13 +24,20 @@ import roart.service.ControlService;
 
 public class ConvertDAO {
 
-    public static InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
+    private NodeConfig nodeConf;
+    
+    public ConvertDAO(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
+    public InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
         ConvertParam param = new ConvertParam();
         configureParam(param);
         param.message = message;
         param.converter = converter;
         param.filename = filename;
-        ConvertResult result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT);
+        ConvertResult result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT, nodeConf);
         if (result == null) {
             return null;
         }
@@ -50,13 +58,13 @@ public class ConvertDAO {
         //return newparam;
     }
 
-    private static void configureParam(ConvertParam param) {
+    private void configureParam(ConvertParam param) {
         param.configname = ControlService.getConfigName();
         param.configid = ControlService.getConfigId();
         param.iconf = ControlService.iconf;
-        param.iserver = MyConfig.conf.getInmemoryServer();
-        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
-            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        param.iserver = nodeConf.getInmemoryServer();
+        if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+            param.iconnection = nodeConf.getInmemoryRedis();
         }
     }
 

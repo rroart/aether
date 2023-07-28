@@ -1,5 +1,6 @@
 package roart.function;
 
+import roart.common.config.NodeConfig;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -10,8 +11,8 @@ import roart.queue.TraverseQueueElement;
 
 public class ReindexSuffix extends Reindex {
 
-    public ReindexSuffix(ServiceParam param) {
-        super(param);
+    public ReindexSuffix(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override

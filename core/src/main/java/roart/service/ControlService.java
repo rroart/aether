@@ -1,5 +1,7 @@
 package roart.service;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +12,11 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +25,15 @@ import roart.common.collections.MyList;
 import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
+import roart.common.collections.impl.MyHazelcastRemover;
 import roart.common.collections.impl.MyLists;
 import roart.common.collections.impl.MySets;
+import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
@@ -33,10 +43,12 @@ import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.util.FsUtil;
+import roart.common.util.JsonUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.content.ClientHandler;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
+import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.thread.CamelRunner;
@@ -44,6 +56,7 @@ import roart.thread.ClientQueueRunner;
 import roart.thread.ControlRunner;
 import roart.thread.ConvertRunner;
 import roart.thread.DbRunner;
+import roart.thread.EurekaThread;
 import roart.thread.IndexRunner;
 import roart.thread.LeaderRunner;
 import roart.thread.ListQueueRunner;
@@ -54,11 +67,19 @@ import roart.util.TraverseUtil;
 public class ControlService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private IndexFilesDao indexFilesDao = new IndexFilesDao();
+    private IndexFilesDao indexFilesDao;
 
     public static volatile Integer writelock = new Integer(-1);
 
     private static volatile int mycounter = 0;
+
+    private NodeConfig nodeConf;
+    
+    public ControlService(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+        this.indexFilesDao = new IndexFilesDao(nodeConf);
+    }
 
     // TODO concurrency
     @Deprecated
@@ -71,7 +92,7 @@ public class ControlService {
     }
 
     public NodeConfig getRemoteConfig() {
-        return MyConfig.conf;
+        return nodeConf;
         /*
             ServiceParam param = new ServiceParam();
             ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, getAppName(), EurekaConstants.GETCONFIG);
@@ -90,7 +111,7 @@ public class ControlService {
     }
 
     private NodeConfig getConfig() {
-        return MyConfig.conf;
+        return nodeConf;
     }
 
     public static InmemoryMessage iconf = null;
@@ -124,7 +145,7 @@ public class ControlService {
         try {
             String[] dirlist = { dirname };
             for (int i = 0; i < dirlist.length; i ++) {
-                Set<String> filesetnew2 = TraverseUtil.dupdir(FsUtil.getFileObject(dirlist[i]));
+                Set<String> filesetnew2 = TraverseUtil.dupdir(FsUtil.getFileObject(dirlist[i]), nodeConf);
                 filesetnew.addAll(filesetnew2);
             }
         } catch (Exception e) {
@@ -156,6 +177,11 @@ public class ControlService {
 
     public static CuratorFramework curatorClient = null;
     public void startThreads() {
+        if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
+        Runnable confMe = new EurekaThread(nodeConf);
+        confMe.run();
+        }
+
         if (convertRunnable == null) {
             startConvertWorker();
         }
@@ -168,10 +194,10 @@ public class ControlService {
         if (controlRunnable == null) {
             startControlWorker();
         }
-        if (MyConfig.conf.getZookeeper() != null && zkRunnable == null) {
+        if (nodeConf.getZookeeper() != null && zkRunnable == null) {
             startZKWorker();
         }
-        if (MyConfig.conf.getZookeeper() != null && MyConfig.conf.wantZookeeperSmall() && traverseQueueRunnable == null) {
+        if (nodeConf.getZookeeper() != null && nodeConf.wantZookeeperSmall() && traverseQueueRunnable == null) {
             startTraversequeueWorker();
         }
         if (traverseQueueRunnable == null) {
@@ -212,7 +238,7 @@ public class ControlService {
     }
 
     private void startControlWorker() {
-        controlRunnable = new ControlRunner();
+        controlRunnable = new ControlRunner(nodeConf, this);
         controlWorker = new Thread(controlRunnable);
         controlWorker.setName("ControlWorker");
         controlWorker.start();
@@ -220,10 +246,10 @@ public class ControlService {
     }
 
     public void startConvertWorker() {
-        int timeout = MyConfig.conf.getTikaTimeout();
+        int timeout = nodeConf.getTikaTimeout();
         ConvertRunner.timeout = timeout;
 
-        convertRunnable = new ConvertRunner();
+        convertRunnable = new ConvertRunner(nodeConf);
         convertWorker = new Thread(convertRunnable);
         convertWorker.setName("ConvertWorker");
         convertWorker.start();
@@ -231,7 +257,7 @@ public class ControlService {
     }
 
     public void startIndexWorker() {
-        indexRunnable = new IndexRunner();
+        indexRunnable = new IndexRunner(nodeConf);
         indexWorker = new Thread(indexRunnable);
         indexWorker.setName("IndexWorker");
         indexWorker.start();
@@ -247,7 +273,7 @@ public class ControlService {
     }
 
     public void startDbWorker() {
-        dbRunnable = new DbRunner();
+        dbRunnable = new DbRunner(nodeConf);
         dbWorker = new Thread(dbRunnable);
         dbWorker.setName("DbWorker");
         dbWorker.start();
@@ -255,7 +281,7 @@ public class ControlService {
     }
 
     public void startZKWorker() {
-        zkRunnable = new ZKRunner();
+        zkRunnable = new ZKRunner(nodeConf);
         zkWorker = new Thread(zkRunnable);
         zkWorker.setName("ZKWorker");
         zkWorker.start();
@@ -263,7 +289,7 @@ public class ControlService {
     }
 
     public void startTraversequeueWorker() {
-        traverseQueueRunnable = new TraverseQueueRunner();
+        traverseQueueRunnable = new TraverseQueueRunner(nodeConf);
         traverseQueueWorker = new Thread(traverseQueueRunnable);
         traverseQueueWorker.setName("TraverseWorker");
         traverseQueueWorker.start();
@@ -271,7 +297,7 @@ public class ControlService {
     }
 
     public void startListqueueWorker() {
-        listQueueRunnable = new ListQueueRunner();
+        listQueueRunnable = new ListQueueRunner(nodeConf);
         listQueueWorker = new Thread(listQueueRunnable);
         listQueueWorker.setName("ListWorker");
         listQueueWorker.start();
@@ -287,7 +313,7 @@ public class ControlService {
     }
 
     public void startLeaderWorker() {
-        leaderRunnable = new LeaderRunner();
+        leaderRunnable = new LeaderRunner(nodeConf);
         leaderWorker = new Thread(leaderRunnable);
         leaderWorker.setName("LeaderWorker");
         leaderWorker.start();
@@ -365,4 +391,61 @@ public class ControlService {
             }
         }
     }
+
+    public void configCurator() {
+        if (true || roart.common.constants.Constants.CURATOR.equals(nodeConf.getLocker())) {
+            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
+            String zookeeperConnectionString = nodeConf.getZookeeper();
+            ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+            ControlService.curatorClient.start();
+            log.info("Curator client started");
+        }
+    }
+
+    public void config() {
+        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+        String str = JsonUtil.convert(nodeConf);
+        String md5 = DigestUtils.md5Hex( str );
+
+        InmemoryMessage msg = inmemory.send(ConfigConstants.CONFIG + ControlService.getAppid(), str, md5);
+        ControlService.iconf = msg;
+
+        configCurator();
+
+        try {
+            //LanguageDetect.init("./profiles/");
+        } catch (Exception e) {
+            log.error("Exception", e);
+        }
+
+        String nodename  = nodeConf.getNodename();
+        if (nodename == null) {
+            try {
+                nodename = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                log.error(Constants.EXCEPTION, e);
+            }
+        }
+        ControlService.nodename = nodename;
+        log.info("nodename {}", nodename);
+
+        //String languages = getLanguages();
+        //configInstance.languages = languages.split(",");
+
+        configDistributed();
+
+        log.info("Conf size {}", JsonUtil.convert(nodeConf).length());
+        // TODO
+        //nodemap = MyMaps.get(ConfigConstants.CONFIG, ControlService.curatorClient, GetHazelcastInstance.instance());
+        //nodemap.put(ControlService.getConfigName(), configInstance);
+
+    }
+
+    private void configDistributed() {
+        if (nodeConf.wantDistributedTraverse()) {
+            GetHazelcastInstance.instance();
+            MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance());
+        }
+    }
+
 }

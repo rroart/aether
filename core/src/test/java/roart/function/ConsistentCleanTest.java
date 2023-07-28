@@ -38,9 +38,11 @@ public class ConsistentCleanTest {
     
     TestData testData = new TestData();
     
+    static NodeConfig nodeConf;
+    
     @BeforeAll
     public static void first() {
-        MyConfig.conf = mock(NodeConfig.class);
+        nodeConf = mock(NodeConfig.class);
         ControlService.curatorClient = mock(CuratorFramework.class);
         //when(ControlService.curatorClient.checkExists().forPath(any()).).thenReturn(true);        
     }
@@ -53,7 +55,7 @@ public class ConsistentCleanTest {
         List<ResultItem> delList = new ArrayList<>();
         Set<FileObject> delfileset = new HashSet<>(); 
         Set<IndexFiles> ifs = new HashSet<>();
-        ConsistentClean cl = new ConsistentClean(null);
+        ConsistentClean cl = new ConsistentClean(null, nodeConf);
         cl.setFileSystemDao(fileSystemDao);
         cl.setIndexFilesDao(indexFilesDao);
         cl.setSearchDao(searchDao);
@@ -77,7 +79,7 @@ public class ConsistentCleanTest {
         List<ResultItem> delList = new ArrayList<>();
         Set<FileObject> delfileset = new HashSet<>(); 
         Set<IndexFiles> ifs = new HashSet<>();
-        ConsistentClean cl = new ConsistentClean(null);
+        ConsistentClean cl = new ConsistentClean(null, nodeConf);
         cl.setFileSystemDao(fileSystemDao);
         cl.setIndexFilesDao(indexFilesDao);
         cl.setSearchDao(searchDao);
@@ -103,7 +105,7 @@ public class ConsistentCleanTest {
         List<ResultItem> delList = new ArrayList<>();
         Set<FileObject> delfileset = new HashSet<>(); 
         Set<IndexFiles> ifs = new HashSet<>();
-        ConsistentClean cl = new ConsistentClean(null);
+        ConsistentClean cl = new ConsistentClean(null, nodeConf);
         cl.setFileSystemDao(fileSystemDao);
         cl.setIndexFilesDao(indexFilesDao);
         cl.setSearchDao(searchDao);

@@ -27,6 +27,7 @@ import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.database.DatabaseLanguagesResult;
@@ -56,47 +57,47 @@ import roart.service.SearchService;
 //@ComponentScan(basePackages = { "roart.eureka.util" })
 public class ServiceController implements CommandLineRunner {
 
-        private Logger log = LoggerFactory.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
-        @Lazy
-        @Autowired
-        public EurekaClient eurekaClient;
-        
-        //@Lazy
-        //@Autowired
-        public DiscoveryClient discoveryClient = null;
+    @Lazy
+    @Autowired
+    public EurekaClient eurekaClient;
 
-        private ControlService instance;
-        private SearchService instance2;
-        
-        private ControlService getInstance() {
-                if (instance == null) {
-                        instance = new ControlService();
-                }
-                return instance;
+    //@Lazy
+    //@Autowired
+    public DiscoveryClient discoveryClient = null;
+
+    private ControlService controlService;
+    private SearchService searchService; // = new SearchService(nodeConf);
+
+    private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(null);
+
+    private ClientHandler clientHandler = new ClientHandler(nodeConf);
+    private ControlService getControlService() {
+        return controlService;
+    }
+
+    private SearchService getInstance2() {
+        if (searchService == null) {
+            searchService = new SearchService(nodeConf);
         }
-        
-        private SearchService getInstance2() {
-                if (instance2 == null) {
-                        instance2 = new SearchService();
-                }
-                return instance2;
+        return searchService;
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.SETCONFIG,
+            method = RequestMethod.POST)
+    public ServiceResult configDb(@RequestBody ServiceParam param)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            // TODO fix
+            //getInstance().config(param.config);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            result.error = e.getMessage();
         }
-        
-        @RequestMapping(value = "/" + EurekaConstants.SETCONFIG,
-                        method = RequestMethod.POST)
-        public ServiceResult configDb(@RequestBody ServiceParam param)
-                        throws Exception {
-                ServiceResult result = new ServiceResult();
-                try {
-                    // TODO fix
-                        //getInstance().config(param.config);
-                } catch (Exception e) {
-                        log.error(Constants.EXCEPTION, e);
-                        result.error = e.getMessage();
-                }
-                return result;
-        }
+        return result;
+    }
 
     @RequestMapping(value = "/" + EurekaConstants.GETCONFIG,
             method = RequestMethod.POST)
@@ -118,7 +119,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         DatabaseLanguagesResult result = new DatabaseLanguagesResult();
         try {
-            result.languages = getInstance().getLanguages();
+            result.languages = getControlService().getLanguages();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             //result.error = e.getMessage();
@@ -132,11 +133,11 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-	    if (param.add == null) {
-		result.list = ClientHandler.doClient(param);
-	    } else {
-	        result.list = ClientHandler.doClient(param);
-	    }
+            if (param.add == null) {
+                result.list = clientHandler.doClient(param);
+            } else {
+                result.list = clientHandler.doClient(param);
+            }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -150,7 +151,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -164,7 +165,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -178,7 +179,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -192,7 +193,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -206,7 +207,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -220,7 +221,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -234,7 +235,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().cleanupfs(param.dirname);
+            result.list = getControlService().cleanupfs(param.dirname);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -248,7 +249,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -262,7 +263,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -276,11 +277,11 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-	    if (param.add == null) {
-            result.list = ClientHandler.doClient(param);
-	    } else {
-		result.list = ClientHandler.doClient(param);
-	    }
+            if (param.add == null) {
+                result.list = clientHandler.doClient(param);
+            } else {
+                result.list = clientHandler.doClient(param);
+            }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -294,11 +295,11 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-	    if (param.add == null) {
-            result.list = ClientHandler.doClient(param);
-	    } else {
-		result.list = ClientHandler.doClient(param);
-	    }
+            if (param.add == null) {
+                result.list = clientHandler.doClient(param);
+            } else {
+                result.list = clientHandler.doClient(param);
+            }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -312,11 +313,11 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-	    if (param.add == null) {
-            result.list = ClientHandler.doClient(param);
-	    } else {
-		result.list = ClientHandler.doClient(param);
-	    }
+            if (param.add == null) {
+                result.list = clientHandler.doClient(param);
+            } else {
+                result.list = clientHandler.doClient(param);
+            }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -330,7 +331,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -344,7 +345,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -358,7 +359,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = ClientHandler.doClient(param);
+            result.list = clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -372,7 +373,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            ClientHandler.doClient(param);
+            clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -386,7 +387,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            ClientHandler.doClient(param);
+            clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -400,7 +401,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            return ClientHandler.doClient(param);
+            return clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -414,7 +415,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            ClientHandler.doClient(param);
+            clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -428,7 +429,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            ClientHandler.doClient(param);
+            clientHandler.doClient(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -442,7 +443,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().searchengine(param);
+            result.list = getControlService().searchengine(param);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -456,7 +457,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().database(param.name);
+            result.list = getControlService().database(param.name);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -470,7 +471,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().filesystem(param.name);
+            result.list = getControlService().filesystem(param.name);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -484,7 +485,7 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = getInstance().machinelearning(param.name);
+            result.list = getControlService().machinelearning(param.name);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -527,15 +528,15 @@ public class ServiceController implements CommandLineRunner {
             method = RequestMethod.GET)
     public @ResponseBody byte[] getDownload(@PathVariable String id)
             throws Exception {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         InputStream result = null;
         try {
             String md5 = id;
             IndexFiles index = indexFilesDao.getByMd5(md5);
             FileLocation fl = index.getaFilelocation();
             FileObject f = FsUtil.getFileObject(fl);
-            Inmemory inmemory = InmemoryFactory.get(MyConfig.conf.getInmemoryServer(), MyConfig.conf.getInmemoryHazelcast(), MyConfig.conf.getInmemoryRedis());
-            InmemoryMessage message = FileSystemDao.readFile(f);
+            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+            InmemoryMessage message = new FileSystemDao(nodeConf).readFile(f);
             result = inmemory.getInputStream(message);
             inmemory.delete(message);
             //result = FileSystemDao.getInputStream(f);
@@ -549,41 +550,38 @@ public class ServiceController implements CommandLineRunner {
     }
 
     // TODO move this
-    private static void doConfig(String configFile) {
-        MyXMLConfig conf = MyXMLConfig.instance(configFile);
-        conf.config();
-        
-        //ControlService.lock = MyLockFactory.create();
-        
-        ControlService maininst = new ControlService();
-        maininst.startThreads();
+    private void doConfig(String configFile) {
+        getControlService().config();
+
+        getControlService().startThreads();
 
         System.out.println("config done");
         //log.info("config done");
- 
-    }
-    
-        public static void main(String[] args) throws Exception {
-                SpringApplication.run(ServiceController.class, args);
-        }
 
-        @Override
-        public void run(String... args) throws InterruptedException {
-            EurekaUtil.initEurekaClient();
-            EurekaUtil.discoveryClient = discoveryClient;
-            EurekaUtil.eurekaClient = eurekaClient;
-            String configFile = null;
-            if (args != null && args.length > 0) {
+    }
+
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(ServiceController.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws InterruptedException {
+        controlService = new ControlService(nodeConf);
+        EurekaUtil.initEurekaClient();
+        EurekaUtil.discoveryClient = discoveryClient;
+        EurekaUtil.eurekaClient = eurekaClient;
+        String configFile = null;
+        if (args != null && args.length > 0) {
             System.out.println("args " + args[0]);
             log.info("args " + args[0]);
-            }
-            if (args != null && args.length > 0) {
-                configFile = args[0];
-            }
-            try {
-                doConfig(configFile);
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
-            }
         }
+        if (args != null && args.length > 0) {
+            configFile = args[0];
+        }
+        try {
+            doConfig(configFile);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+    }
 }

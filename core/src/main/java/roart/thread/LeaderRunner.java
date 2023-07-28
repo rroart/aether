@@ -12,6 +12,7 @@ import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 import roart.common.leader.impl.MyLeaderFactory;
 import roart.common.leader.MyLeader;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 
 public class LeaderRunner implements Runnable {
@@ -23,9 +24,11 @@ public class LeaderRunner implements Runnable {
 
     ThreadPoolExecutor /*ExecutorService*/ pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
 
+    private NodeConfig nodeConf;
+    
     @SuppressWarnings("squid:S2189")
     public void run() {
-        MyLeader leader = new MyLeaderFactory().create(ControlService.nodename, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyLeader leader = new MyLeaderFactory().create(ControlService.nodename, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
         while (true) {
             boolean leading = leader.await(1, TimeUnit.SECONDS);
             if (!leading) {
@@ -40,6 +43,11 @@ public class LeaderRunner implements Runnable {
                 log.error(Constants.EXCEPTION, e);
             }
         }
+    }
+
+    public LeaderRunner(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
     }
 
 }

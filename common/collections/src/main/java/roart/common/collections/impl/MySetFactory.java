@@ -11,13 +11,14 @@ import com.hazelcast.core.HazelcastInstance;
 import roart.common.collections.MyFactory;
 import roart.common.collections.MySet;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 
 public class MySetFactory extends MyFactory {
     
-    public MySet create(String setid, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (MyConfig.conf.wantDistributedTraverse()) {
-            if (MyConfig.conf.getRedis() != null) {
-                return new MyRedisSet(MyConfig.conf.getRedis(), setid);
+    public MySet create(String setid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
+        if (nodeConf.wantDistributedTraverse()) {
+            if (nodeConf.getRedis() != null) {
+                return new MyRedisSet(nodeConf.getRedis(), setid);
             } else {
                 return new MyHazelcastSet(hz, setid);
             }

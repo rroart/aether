@@ -30,6 +30,7 @@ import com.netflix.discovery.shared.Application;
 
 import roart.common.config.Connector;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
@@ -96,8 +97,8 @@ public class EurekaUtil {
         return eurekaClient;
     }
 
-    public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path) {
-        String connectorString = MyConfig.conf.getConnectors();
+    public static <T> T sendMe(Class<T> myclass, Object param, String appName, String path, NodeConfig nodeConf) {
+        String connectorString = nodeConf.getConnectors();
         Connector[] connectors = JsonUtil.convert(connectorString, Connector[].class);
         Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
         Connector connector = connectMap.get(appName.toLowerCase());

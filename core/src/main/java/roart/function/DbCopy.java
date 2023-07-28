@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
@@ -18,8 +19,8 @@ import roart.database.IndexFilesDao;
 
 public class DbCopy extends AbstractFunction {
 
-    public DbCopy(ServiceParam param) {
-        super(param);
+    public DbCopy(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
@@ -27,11 +28,11 @@ public class DbCopy extends AbstractFunction {
         List<Integer> retList = new ArrayList<>();
         //List<IndexFiles> list = new IndexFilesDao().getAll();
         //List<Files> list2 = new IndexFilesDao().getAllFiles();
-        IndexFilesDao out = new IndexFilesDao();
+        IndexFilesDao out = new IndexFilesDao(nodeConf);
         String src = param.name;
         String dst = param.add;
-        IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src);
-        IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst);
+        IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src, nodeConf);
+        IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst, nodeConf);
         try {
             long time0;
             dstAccess.clear();

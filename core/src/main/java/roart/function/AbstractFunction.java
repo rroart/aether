@@ -20,6 +20,7 @@ import roart.common.collections.impl.MyLists;
 import roart.common.collections.impl.MyQueues;
 import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
@@ -39,15 +40,18 @@ public abstract class AbstractFunction {
 
     private ServiceParam param;
 
-    public AbstractFunction(ServiceParam param) {
+    protected NodeConfig nodeConf;
+    
+    public AbstractFunction(ServiceParam param, NodeConfig nodeConf) {
         this.param = param;
+        this.nodeConf = nodeConf;
     }
 
     public abstract List doClient(ServiceParam param);
 
     @SuppressWarnings("rawtypes")
     public List<List> clientDo(ServiceParam el) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         synchronized (ControlService.writelock) {
             try {
                 /*
@@ -82,35 +86,35 @@ public abstract class AbstractFunction {
                 retNotExistList.add(new ResultItem("File does not exist"));
                 List<String> notfoundList = new ArrayList<>();
                 List<String> newfileList = new ArrayList<>();
-                
+                Queues queues = new Queues(nodeConf);
                 String myid = ControlService.getMyId();
-                String filesetnewid = Queues.prefix() + Constants.FILESETNEWID + myid;
-                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String filesetnewid = queues.prefix() + Constants.FILESETNEWID + myid;
+                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(filesetnewid, filesetnew);
 
-                String notfoundsetid = Queues.prefix() + Constants.NOTFOUNDSETID + myid;
-                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String notfoundsetid = queues.prefix() + Constants.NOTFOUNDSETID + myid;
+                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(notfoundsetid, notfoundset);
 
-                String retlistid = Queues.prefix() + Constants.RETLISTID + myid;
-                MyQueue retQueue = MyQueues.get(retlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String retlistid = queues.prefix() + Constants.RETLISTID + myid;
+                MyQueue retQueue = MyQueues.get(retlistid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retlistid, retlist);
 
-                String retnotlistid = Queues.prefix() + Constants.RETNOTLISTID + myid;
-                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String retnotlistid = queues.prefix() + Constants.RETNOTLISTID + myid;
+                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
 
-                String traversecountid = Queues.prefix() + Constants.TRAVERSECOUNT + myid;
-                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String traversecountid = queues.prefix() + Constants.TRAVERSECOUNT + myid;
+                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
 
-                String filestodosetid = Queues.prefix() + Constants.FILESTODOSETID + myid;
-                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, ControlService.curatorClient, GetHazelcastInstance.instance());
-                String filesdonesetid = Queues.prefix() + Constants.FILESDONESETID + myid;
-                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String filestodosetid = queues.prefix() + Constants.FILESTODOSETID + myid;
+                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                String filesdonesetid = queues.prefix() + Constants.FILESDONESETID + myid;
+                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
-                Queues.workQueues.add(filestodoSet);
+               queues.workQueues.add(filestodoSet);
 
-                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, MyConfig.conf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid);
+                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, nodeConf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid, nodeConf);
 
                 // filesystem
                 // reindexsuffix
@@ -123,9 +127,10 @@ public abstract class AbstractFunction {
 
                 TimeUnit.SECONDS.sleep(5);
 
-                while ((traversecount.get() + Queues.queueSize() + Queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
+                while ((traversecount.get() + queues.queueSize() + queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
+                    log.info("My queues {} {} {} {} {} {} {}", traversecount.get(), queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize(), queues.getMyConverts().get(), queues.getMyIndexs().get());
                     TimeUnit.SECONDS.sleep(5);
-                    Queues.queueStat();
+                   queues.queueStat();
                     fromQueueToList(retList, retQueue, ResultItem.class);
                     fromQueueToList(retNotList, retnotQueue, ResultItem.class);
                     fromQueueToList(filestodoSet, filestodoQueue, String.class);
@@ -140,11 +145,11 @@ public abstract class AbstractFunction {
                     System.out.println("todo " + str);
                 }
 
-                for (String ret : Queues.convertTimeoutQueue) {
+                for (String ret : queues.convertTimeoutQueue) {
                     retConvertTimeoutList.add(new ResultItem(ret));
                 }
 
-                Queues.resetConvertTimeoutQueue();
+               queues.resetConvertTimeoutQueue();
                 //IndexFilesDao.commit();
                 while (indexFilesDao.dirty() > 0) {
                     TimeUnit.SECONDS.sleep(60);
@@ -166,7 +171,7 @@ public abstract class AbstractFunction {
                 MyCollections.remove(filesetnewid);
                 MyCollections.remove(filestodosetid);
                 MyCollections.remove(traversecountid);
-                Queues.workQueues.remove(filestodoSet);
+               queues.workQueues.remove(filestodoSet);
 
                 retlistlist.add(retList);
                 retlistlist.add(retNotList);
@@ -174,7 +179,7 @@ public abstract class AbstractFunction {
                 retlistlist.add(retDeletedList);
                 retlistlist.add(retTikaTimeoutList);
                 retlistlist.add(retNotExistList);
-                if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
+                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     ZKMessageUtil.dorefresh(ControlService.nodename);
                     //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");

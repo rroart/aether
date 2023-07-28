@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileObject;
 
@@ -19,13 +20,17 @@ public class RemoteFileSystemAccess extends FileSystemAccess {
 
     private static Logger log = LoggerFactory.getLogger(RemoteFileSystemAccess.class);
 
+    public RemoteFileSystemAccess(NodeConfig nodeConf) {
+        super(nodeConf);
+    }
+
     // not used
-    public static String copyFileToTmp(FileObject filename){
+    public String copyFileToTmp(FileObject filename){
         int i = filename.object.lastIndexOf("/");
         String fn = "/tmp/hdfs" + filename.object.substring(i + 1);
         log.info("copy to local filenames {} {}",filename, fn);
-        FileObject file = new FileSystemDao().get(filename);
-        InputStream in = FileSystemDao.getInputStream(file);
+        FileObject file = new FileSystemDao(nodeConf).get(filename);
+        InputStream in = new FileSystemDao(nodeConf).getInputStream(file);
         OutputStream out;
         try {
             out = new FileOutputStream(new File(fn));

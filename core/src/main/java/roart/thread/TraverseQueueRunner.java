@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueues;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
@@ -42,22 +43,31 @@ public class TraverseQueueRunner implements Runnable {
 
     private static final int LIMIT = 100;
 
-    private IndexFilesDao indexFilesDao = new IndexFilesDao();
+    private IndexFilesDao indexFilesDao;
 
-    private TraverseFile traverseFile = new TraverseFile(indexFilesDao); 
+    private TraverseFile traverseFile; 
 
     ThreadPoolExecutor /*ExecutorService*/ pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
+
+    private NodeConfig nodeConf;
+
+    public TraverseQueueRunner(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+        this.traverseFile = new TraverseFile(indexFilesDao, nodeConf);
+        this.indexFilesDao = new IndexFilesDao(nodeConf);
+    }
 
     @SuppressWarnings("squid:S2189")
     public void run() {
         Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
         int nThreads = ControlRunner.getThreads();
-        nThreads = MyConfig.instance().conf.getMPThreadsFS();
+        nThreads = nodeConf.getMPThreadsFS();
         int running = 0;
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        if (Queues.getTraverses() > 0) {
+        if (new Queues(nodeConf).getTraverses() > 0) {
             log.info("resetting traverses");
             //Queues.resetTraverses();
         }
@@ -99,15 +109,15 @@ public class TraverseQueueRunner implements Runnable {
             for (Future<Object> key: removes) {
                 map.remove(key);
                 running--;
-                Queues.decTraverses();
+                new Queues(nodeConf).decTraverses();
             }
             if (false && removes.size() > 0) {
                 log.info("active 0 " + executorService.getActiveCount());
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (Queues.getTraverseQueueSize() == 0 || Queues.convertQueueHeavyLoaded()) {
-                if (Queues.convertQueueHeavyLoaded()) {
+            if (new Queues(nodeConf).getTraverseQueueSize() == 0 || new Queues(nodeConf).convertQueueHeavyLoaded()) {
+                if (new Queues(nodeConf).convertQueueHeavyLoaded()) {
                     log.info("Convert queue heavy loaded, sleeping");
                 }
                 try {
@@ -145,8 +155,8 @@ public class TraverseQueueRunner implements Runnable {
 
                 Future<Object> task = executorService.submit(callable);
                 map.put(task, new Date());
-                Queues.queueStat();
-                Queues.incTraverses();
+                new Queues(nodeConf).queueStat();
+                new Queues(nodeConf).incTraverses();
                 running++;
                 log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
                 log.info("queue " + executorService.getQueue());
@@ -165,11 +175,11 @@ public class TraverseQueueRunner implements Runnable {
     }
 
     private void doTraverseTimeout(Queue<MyLock> locks) {
-        int limit = MyConfig.instance().conf.getMPBatch();
+        int limit = nodeConf.getMPBatch();
         if (limit < 1) {
             limit = LIMIT;
         }
-        MyQueue<TraverseQueueElement> queue = Queues.getTraverseQueue();
+        MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
         List<TraverseQueueElement> traverseList = new ArrayList<>();
         for (int i = 0; i < limit; i++) {
             TraverseQueueElement trav = queue.poll(TraverseQueueElement.class);
@@ -201,6 +211,9 @@ public class TraverseQueueRunner implements Runnable {
             handleList3(traverseList, locks);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
+            for (TraverseQueueElement trav : traverseList) {
+                queue.offer(trav);
+            }
         } catch (Error e) {
             System.gc();
             log.error("Error " + Thread.currentThread().getId());
@@ -246,7 +259,7 @@ public class TraverseQueueRunner implements Runnable {
         }
         long time0 = System.currentTimeMillis();
         // Get MyFile data from filesystem
-        Map<FileObject, MyFile> fsMap = FileSystemDao.getWithoutInputStream(filenames);
+        Map<FileObject, MyFile> fsMap = new FileSystemDao(nodeConf).getWithoutInputStream(filenames);
         long time1 = System.currentTimeMillis();
         // Get Md5s by fileobject from database
         // TODO check if need full indexfiles?

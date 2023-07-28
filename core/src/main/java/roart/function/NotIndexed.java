@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
@@ -14,13 +15,13 @@ import roart.util.TraverseUtil;
 
 public class NotIndexed extends AbstractFunction {
 
-    public NotIndexed(ServiceParam param) {
-        super(param);
+    public NotIndexed(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         List<List> retlistlist = new ArrayList<>();
         List<ResultItem> retlist = new ArrayList<>();
         List<ResultItem> retlist2 = new ArrayList<>();

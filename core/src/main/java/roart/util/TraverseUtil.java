@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
@@ -29,10 +30,10 @@ import roart.service.ControlService;
 public class TraverseUtil {
     public static Logger log = LoggerFactory.getLogger(TraverseUtil.class);
 
-    public static boolean isMaxed(String myid, ServiceParam element) {
-        int max = MyConfig.conf.getReindexLimit();
-        int maxindex = MyConfig.conf.getIndexLimit();
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+    public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf) {
+        int max = nodeConf.getReindexLimit();
+        int maxindex = nodeConf.getIndexLimit();
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
             isMaxed = true;
@@ -44,25 +45,25 @@ public class TraverseUtil {
     }
 
     // old, probably oudated by overlapping?
-    public static Set<String> dupdir (FileObject fileObject) throws Exception {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+    public static Set<String> dupdir (FileObject fileObject, NodeConfig nodeConf) throws Exception {
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         boolean onlyone = false;
         boolean error = false;
         int count = 0;
         long size = 0;
         Set<String> retset = new HashSet<>();
         HashSet<String> md5set = new HashSet<>();
-        FileObject dir = new FileSystemDao().get(fileObject);
-        List<FileObject> listDir = FileSystemDao.listFiles(dir);
+        FileObject dir = new FileSystemDao(nodeConf).get(fileObject);
+        List<FileObject> listDir = new FileSystemDao(nodeConf).listFiles(dir);
         for (FileObject fo : listDir) {
-            String filename = FileSystemDao.getAbsolutePath(fo);
+            String filename = new FileSystemDao(nodeConf).getAbsolutePath(fo);
             if (filename.length() > Traverse.MAXFILE) {
                 log.info("Too large filesize {}", filename);
                 error = true;
                 continue;
             }
-            if (FileSystemDao.isDirectory(fo)) {
-                retset.addAll(dupdir(fo));
+            if (new FileSystemDao(nodeConf).isDirectory(fo)) {
+                retset.addAll(dupdir(fo, nodeConf));
             } else {
                 if (error) {
                     continue;
@@ -131,18 +132,18 @@ public class TraverseUtil {
     // retset will be returned empty
     // dirset will contain a map of directories, and the md5 files is contains
     // fileset will contain a map of md5 and the directories it has files in
-    public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset) throws Exception {
+    public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset, NodeConfig nodeConf) throws Exception {
         Set<String> retset = new HashSet<>();
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
 
         List<IndexFiles> files = indexFilesDao.getAll();
         log.info("size {}", files.size());
         for (IndexFiles file : files) {
             String md5 = file.getMd5();
             for (FileLocation filename : file.getFilelocations()) {
-                FileObject tmpfile = new FileSystemDao().get(FsUtil.getFileObject(filename));
-                FileObject dir = FileSystemDao.getParent(tmpfile);
-                String dirname = FileSystemDao.getAbsolutePath(dir);
+                FileObject tmpfile = new FileSystemDao(nodeConf).get(FsUtil.getFileObject(filename));
+                FileObject dir = new FileSystemDao(nodeConf).getParent(tmpfile);
+                String dirname = new FileSystemDao(nodeConf).getAbsolutePath(dir);
                 HashSet<String> md5set = dirset.get(dirname);
                 if (md5set == null) {
                     md5set = new HashSet<>();
@@ -161,7 +162,7 @@ public class TraverseUtil {
         return retset;
     }
 
-    public static FileLocation getExistingLocalFilelocation(IndexFiles i) {
+    public static FileLocation getExistingLocalFilelocation(IndexFiles i, NodeConfig nodeConf) {
         // next up : locations
         Set<FileLocation> filelocations = i.getFilelocations();
         if (filelocations == null) {
@@ -171,12 +172,12 @@ public class TraverseUtil {
             Location node = FsUtil.getLocation(filelocation.getNode());
             String filename = filelocation.getFilename();
             if (node == null || node.equals(ControlService.nodename)) {
-                FileObject file = new FileSystemDao().get(new FileObject(node, filename));
+                FileObject file = new FileSystemDao(nodeConf).get(new FileObject(node, filename));
                 if (file == null) {
                     log.error("try file {}", filename);
                     continue;
                 }
-                if (new FileSystemDao().exists(file)) {
+                if (new FileSystemDao(nodeConf).exists(file)) {
                     return filelocation;			
                 }
             }
@@ -185,9 +186,9 @@ public class TraverseUtil {
     }
 
     @Deprecated
-    public static FileLocation getExistingLocalFilelocationMaybe(IndexFiles i) {
+    public static FileLocation getExistingLocalFilelocationMaybe(IndexFiles i, NodeConfig nodeConf) {
         // next up : locations
-        FileLocation fl = getExistingLocalFilelocation(i);
+        FileLocation fl = getExistingLocalFilelocation(i, nodeConf);
         if (fl != null) {
             return fl;
         }

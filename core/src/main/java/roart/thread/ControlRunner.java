@@ -13,38 +13,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.service.ControlService;
 
 public class ControlRunner implements Runnable {
-	
-	private static Logger log = LoggerFactory.getLogger(ControlRunner.class);
-	
+
+    private static Logger log = LoggerFactory.getLogger(ControlRunner.class);
+
+    private NodeConfig nodeConf;
+
+    private ControlService controlService;
+
+    public ControlRunner(NodeConfig nodeConf, ControlService controlService) {
+        super();
+        this.controlService = controlService;
+        this.nodeConf = nodeConf;
+    }
+
     public void run() {
-    	while (true) {
-    			try {	
-    				TimeUnit.SECONDS.sleep(60);
-    			} catch (InterruptedException e) {
-    				// TODO Auto-generated catch block
-    				log.error(Constants.EXCEPTION, e);
-    			}
-    			ControlService cs = new ControlService();
-    			if (!ControlService.indexWorker.isAlive()) {
-    				cs.startIndexWorker();
-    			}
-    			if (!ControlService.dbWorker.isAlive()) {
-    				cs.startDbWorker();
-    			}
-    			if (MyConfig.conf.getZookeeper() != null && !ControlService.zkWorker.isAlive()) {
-    				//cs.startZKWorker();
-    			}
-                if (!ControlService.traverseQueueWorker.isAlive()) {
-                    cs.startTraversequeueWorker();
-                }
-                //if (ControlService.zookeeper != null && ControlService.zookeepersmall && !ControlService.zkQueueWorker.isAlive()) {
-                //    cs.startZKQueueWorker();
-                //}
-     	}
+        while (true) {
+            try {	
+                TimeUnit.SECONDS.sleep(60);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                log.error(Constants.EXCEPTION, e);
+            }
+            if (!ControlService.indexWorker.isAlive()) {
+                controlService.startIndexWorker();
+            }
+            if (!ControlService.dbWorker.isAlive()) {
+                controlService.startDbWorker();
+            }
+            if (nodeConf.getZookeeper() != null && !ControlService.zkWorker.isAlive()) {
+                //cs.startZKWorker();
+            }
+            if (!ControlService.traverseQueueWorker.isAlive()) {
+                controlService.startTraversequeueWorker();
+            }
+            //if (ControlService.zookeeper != null && ControlService.zookeepersmall && !ControlService.zkQueueWorker.isAlive()) {
+            //    cs.startZKQueueWorker();
+            //}
+        }
     }
 
     public static int getThreads() {

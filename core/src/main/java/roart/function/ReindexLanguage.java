@@ -1,13 +1,14 @@
 package roart.function;
 
+import roart.common.config.NodeConfig;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.queue.TraverseQueueElement;
 
 public class ReindexLanguage extends Reindex {
 
-    public ReindexLanguage(ServiceParam param) {
-        super(param);
+    public ReindexLanguage(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override

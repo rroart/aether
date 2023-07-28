@@ -29,10 +29,10 @@ if [ $eureka -eq 1 ]; then
     $COMMAND "java -jar aether-eureka-0.10-SNAPSHOT.jar" &
 fi
 if [ $service -eq 1 ]; then
-    $COMMAND "java $SERVICEDEBUG -jar aether-servicemanager-simple-0.10-SNAPSHOT.jar $CONF" &
+    $COMMAND "java $SERVICEDEBUG -Dconfig=$CONF -jar aether-servicemanager-simple-0.10-SNAPSHOT.jar" &
 fi
 if [ $core -eq 1 ]; then
-    $COMMAND "java $HAZELCAST $COREDEBUG -jar aether-core-0.10-SNAPSHOT.jar $CONF" &
+    $COMMAND "java $HAZELCAST $COREDEBUG -Dconfig=$CONF -jar aether-core-0.10-SNAPSHOT.jar" &
 fi
 if [ $web -eq 1 ]; then
     $COMMAND "java $WEBDEBUG -jar aether-web-0.10-SNAPSHOT.jar" &

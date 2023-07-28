@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.dir.Traverse;
 import roart.queue.IndexQueueElement;
@@ -31,15 +32,22 @@ public class IndexRunner implements Runnable {
 
     public static volatile int timeout = 3600;
 
+    private NodeConfig nodeConf;
+    
+    public IndexRunner(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
     public void run() {
         Map<Future<Object>, Date> map = new HashMap<Future<Object>, Date>();
         int nThreads = ControlRunner.getThreads();
-        nThreads = MyConfig.instance().conf.getMPThreadsIndex();
+        nThreads = nodeConf.getMPThreadsIndex();
         int running = 0;
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        if (Queues.getIndexs() > 0) {
+        if (new Queues(nodeConf).getIndexs() > 0) {
             log.info("resetting indexs");
             //Queues.resetIndexs();
         }
@@ -81,9 +89,9 @@ public class IndexRunner implements Runnable {
             for (Future<Object> key: removes) {
                 map.remove(key);
                 running--;
-                Queues.decIndexs();
+                new Queues(nodeConf).decIndexs();
             }
-            if (Queues.getIndexQueueSize() == 0 /*|| Queues.indexQueueHeavyLoaded()*/) {
+            if (new Queues(nodeConf).getIndexQueueSize() == 0 /*|| Queues.indexQueueHeavyLoaded()*/) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -115,8 +123,8 @@ public class IndexRunner implements Runnable {
 
                 Future<Object> task = executorService.submit(callable);
                 map.put(task, new Date());
-                Queues.queueStat();
-                Queues.incIndexs();
+                new Queues(nodeConf).queueStat();
+                new Queues(nodeConf).incIndexs();
                 running++;
                 log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
                 log.info("queue " + executorService.getQueue());
@@ -151,7 +159,7 @@ public class IndexRunner implements Runnable {
         }
     }
 
-    public static String doIndexTimeout() {
+    public String doIndexTimeout() {
         class IndexTimeout implements Runnable {
             private IndexQueueElement el;
             IndexTimeout(IndexQueueElement el) {
@@ -160,14 +168,14 @@ public class IndexRunner implements Runnable {
 
             public void run() {
                 try {
-                    Search.indexme(el);
+                    new Search(nodeConf).indexme(el);
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
                 }
             }
         }
 
-        IndexQueueElement el = Queues.getIndexQueue().poll(IndexQueueElement.class);
+        IndexQueueElement el = new Queues(nodeConf).getIndexQueue().poll(IndexQueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;

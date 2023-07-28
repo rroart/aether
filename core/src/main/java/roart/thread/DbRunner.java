@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.queue.Queues;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.database.IndexFilesDao;
 
@@ -34,8 +35,15 @@ public class DbRunner implements Runnable {
 
     //public static volatile boolean doupdate = true;
 
+    private NodeConfig nodeConf;
+    
+    public DbRunner(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
     public void run() {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         while (true) {
             long now = System.currentTimeMillis();
             log.debug("updatetime {}", (int) ((now - lastupdate)/1000));

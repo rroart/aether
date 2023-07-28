@@ -87,12 +87,14 @@ public class MyXMLConfig {
     private static Configuration config = null;
     private static XMLConfiguration configxml = null;
 
-    public MyXMLConfig(String configFile) {
+    public MyXMLConfig(String configFileNot) {
         try {
-            String myConfigFile = configFile;
+            //String myConfigFile = configFile;
+            String myConfigFile = System.getProperty("config");
             if (myConfigFile == null) {
-                myConfigFile = "../conf/" + ConfigConstants.CONFIGFILE;
+                myConfigFile = ConfigConstants.CONFIGFILE;
             }
+            myConfigFile = "../conf/" + myConfigFile;
             // md5 myconfigfile 
             ControlService.configMd5 = DigestUtils.md5Hex(FileUtils.openInputStream(new File(myConfigFile)));
             log.info("myconf " + myConfigFile);
@@ -156,10 +158,12 @@ public class MyXMLConfig {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e); 
         }
+        /*
         if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
         Runnable confMe = new EurekaThread(configInstance);
         confMe.run();
         }
+        */
         //new Thread(confMe).start();
 
     }
@@ -226,150 +230,4 @@ public class MyXMLConfig {
         ZKMessageUtil.doreconfig(ControlService.getConfigName());
     }
 
-    public void config() {
-        Inmemory inmemory = InmemoryFactory.get(configInstance.getInmemoryServer(), configInstance.getInmemoryHazelcast(), configInstance.getInmemoryRedis());
-        String str = JsonUtil.convert(configInstance);
-        String md5 = DigestUtils.md5Hex( str );
-
-        InmemoryMessage msg = inmemory.send(ConfigConstants.CONFIG + ControlService.getAppid(), str, md5);
-        ControlService.iconf = msg;
-
-        try {
-            //LanguageDetect.init("./profiles/");
-        } catch (Exception e) {
-            log.error("Exception", e);
-        }
-
-        String nodename  = configInstance.getNodename();
-        if (nodename == null) {
-            try {
-                nodename = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
-                log.error(Constants.EXCEPTION, e);
-            }
-        }
-        ControlService.nodename = nodename;
-        log.info("nodename {}", nodename);
-
-        //String languages = getLanguages();
-        //configInstance.languages = languages.split(",");
-
-        configIndexing();
-
-        configDb();
-
-        configHdfs();
-
-        configSwift();
-
-        configClassify();
-
-        configDistributed();
-
-        configCurator();
-
-        log.info("Conf size {}", JsonUtil.convert(configInstance).length());
-        // TODO
-        //nodemap = MyMaps.get(ConfigConstants.CONFIG, ControlService.curatorClient, GetHazelcastInstance.instance());
-        //nodemap.put(ControlService.getConfigName(), configInstance);
-
-    }
-
-    private void configDistributed() {
-        if (configInstance.wantDistributedTraverse()) {
-            GetHazelcastInstance.instance();
-            MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance());
-        }
-    }
-
-    private void configCurator() {
-        if (true || roart.common.constants.Constants.CURATOR.equals(configInstance.getLocker())) {
-            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
-            String zookeeperConnectionString = configInstance.getZookeeper();
-            ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
-            ControlService.curatorClient.start();
-            log.info("Curator client started");
-        }
-    }
-
-    public void configClassify() {
-        if (!configInstance.wantClassify()) {
-            return;
-        }
-        try {
-            String classify = null;
-            if (configInstance.wantSparkML()) {
-                classify = ConfigConstants.MACHINELEARNINGSPARKML;
-            } else if (configInstance.wantMahoutSpark()) {
-                classify = ConfigConstants.MACHINELEARNINGMAHOUTSPARK;
-            } else if (configInstance.wantMahout()) {
-                classify = ConfigConstants.MACHINELEARNINGMAHOUT;
-            } else if (configInstance.wantOpenNLP()) {
-                classify = ConfigConstants.MACHINELEARNINGOPENNLP;
-            }
-            if (classify != null) {
-                roart.classification.ClassifyDao.instance(classify);
-            }
-        } catch (Exception e) {
-            // TODO propagate
-            log.error(Constants.EXCEPTION, e); 
-        }
-    }
-
-    private void configHdfs() {
-        if (configInstance.wantHDFS()) {
-            new roart.filesystem.LocalFileSystemAccess();
-        }
-    }
-
-    private void configSwift() {
-        if (configInstance.wantSwift()) {
-            new roart.filesystem.SwiftAccess();
-        }
-    }
-
-    private void configDb() {
-        String db = null;
-        System.out.println("type " + configInstance);
-        if (configInstance.wantHBase()) {
-            db = ConfigConstants.DATABASEHBASE;
-        } else if (configInstance.wantCassandra()) {
-            db = ConfigConstants.DATABASECASSANDRA;
-        } else if (configInstance.wantDynamodb()) {
-            db = ConfigConstants.DATABASEDYNAMODB;
-        } else if (configInstance.wantDataNucleus()) {
-            db = ConfigConstants.DATABASEDATANUCLEUS;
-        } else if (configInstance.wantHibernate()) {
-            db = ConfigConstants.DATABASEHIBERNATE;
-        } else if (configInstance.wantSpringData()) {
-            db = ConfigConstants.DATABASESPRING;
-        }
-        if (db != null) {
-            System.out.println("type " + db);
-            log.info("Type {}", db);
-            roart.database.IndexFilesDao.instance(db);
-        } else {
-            log.error("No db selected");
-        }
-    }
-
-    public void configIndexing() {
-        try {
-            String index = null;
-            if (configInstance.wantLucene()) {
-                index = ConfigConstants.SEARCHENGINELUCENE;
-            } else if (configInstance.wantSolr()) {
-                index = ConfigConstants.SEARCHENGINESOLR;
-            } else if (configInstance.wantElastic()) {
-                index = ConfigConstants.SEARCHENGINEELASTIC;
-            }
-            if (index != null) {
-                //ControlService.index = index;
-                roart.search.SearchDao.instance(index);
-            }
-        } catch (Exception e) {
-            // TODO propagate
-            log.error(Constants.EXCEPTION, e); 
-        }
-    }
 }

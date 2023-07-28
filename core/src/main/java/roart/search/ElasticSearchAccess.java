@@ -1,5 +1,6 @@
 package roart.search;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
@@ -18,6 +19,10 @@ import org.slf4j.LoggerFactory;
 public class ElasticSearchAccess extends SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    public ElasticSearchAccess(NodeConfig nodeConf) {
+        super(nodeConf);
+    }
 
     public String getAppName() {
     	return EurekaConstants.ELASTIC;

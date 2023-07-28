@@ -11,6 +11,7 @@ import java.io.*;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.database.IndexFilesDao;
@@ -21,46 +22,53 @@ import org.slf4j.LoggerFactory;
 public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private NodeConfig nodeConf;
+    
+    public SearchService(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
     public List searchme(SearchEngineSearchParam e) {
         return searchmeDo(e);
     }
 
     public List<List> searchmeDo(SearchEngineSearchParam e) {
-	String str = e.str;
-	String type = e.searchtype;
-	List strlist = new ArrayList<String>();
+        String str = e.str;
+        String type = e.searchtype;
+        List strlist = new ArrayList<String>();
 
-	ResultItem[] strarr = roart.search.Search.searchme(str, type);
-	
-	for (ResultItem stri : strarr) {
-	    strlist.add(stri);
-	}
-	List<List> strlistlist = new ArrayList<List>();
-	strlistlist.add(strlist);
-	return strlistlist;
+        ResultItem[] strarr = new roart.search.Search(nodeConf).searchme(str, type);
+
+        for (ResultItem stri : strarr) {
+            strlist.add(stri);
+        }
+        List<List> strlistlist = new ArrayList<List>();
+        strlistlist.add(strlist);
+        return strlistlist;
     }
 
     public List<List> searchsimilarDo(SearchEngineSearchParam e) {
-	String str = e.str;
-	String type = e.searchtype;
-	List strlist = new ArrayList<String>();
+        String str = e.str;
+        String type = e.searchtype;
+        List strlist = new ArrayList<String>();
 
-	ResultItem[] strarr = roart.search.Search.searchsimilar(str, type);
+        ResultItem[] strarr = new roart.search.Search(nodeConf).searchsimilar(str, type);
 
-	for (ResultItem stri : strarr) {
-	    strlist.add(stri);
-	}
-	List<List> strlistlist = new ArrayList<List>();
-	strlistlist.add(strlist);
-	return strlistlist;
+        for (ResultItem stri : strarr) {
+            strlist.add(stri);
+        }
+        List<List> strlistlist = new ArrayList<List>();
+        strlistlist.add(strlist);
+        return strlistlist;
     }
 
-	public static boolean isHighlightMLT() {
-		
-		return MyConfig.conf.getHighlightmlt();
-	}
-    
+    public boolean isHighlightMLT() {
+
+        return nodeConf.getHighlightmlt();
+    }
+
     public List searchsimilar(SearchEngineSearchParam e) {
-            return searchsimilarDo(e);
-	    }
+        return searchsimilarDo(e);
+    }
 }

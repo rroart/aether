@@ -12,6 +12,7 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.MyFile;
@@ -26,18 +27,25 @@ public class FileSystemDao {
 
     private static Logger log = LoggerFactory.getLogger(FileSystemDao.class);
 
-    private static FileSystemAccess filesystemJpa = null;
+    private FileSystemAccess filesystemJpa = null;
+
+    private NodeConfig nodeConf;
+    
+    public FileSystemDao(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
 
     //private static Map<String, MyServer> myservers = new HashMap<>();
 
-    public static void instance(String type) {
+    public void instance(String type) {
     }
 
-    public static List<FileObject> listFiles(FileObject f) {
+    public List<FileObject> listFiles(FileObject f) {
         return getFileSystemAccess(f).listFiles(f);
     }
 
-    public static List<MyFile> listFilesFull(FileObject f) {
+    public List<MyFile> listFilesFull(FileObject f) {
         return getFileSystemAccess(f).listFilesFull(f);
     }
 
@@ -45,19 +53,19 @@ public class FileSystemDao {
         return getFileSystemAccess(f).exists(f);
     }
 
-    public static boolean isDirectory(FileObject f) {
+    public boolean isDirectory(FileObject f) {
         return getFileSystemAccess(f).isDirectory(f);
     }
 
-    public static String getAbsolutePath(FileObject f) {
+    public String getAbsolutePath(FileObject f) {
         return getFileSystemAccess(f).getAbsolutePath(f);
     }
     
-    public static InputStream getInputStream(FileObject f) {
+    public InputStream getInputStream(FileObject f) {
         return getFileSystemAccess(f).getInputStream(f);
     }
 
-    public static Map<FileObject, MyFile> getWithInputStream(Set<FileObject> filenames) {
+    public Map<FileObject, MyFile> getWithInputStream(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
         Map<String, MyFile> map = getFileSystemAccess(f).getWithInputStream(filenames);
         Map<FileObject, MyFile> retMap = new HashMap<>();
@@ -67,7 +75,7 @@ public class FileSystemDao {
         return retMap;
     }
 
-    public static Map<FileObject, MyFile> getWithoutInputStream(Set<FileObject> filenames) {
+    public Map<FileObject, MyFile> getWithoutInputStream(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
         Map<String, MyFile> map = getFileSystemAccess(f).getWithoutInputStream(filenames);
         Map<FileObject, MyFile> retMap = new HashMap<>();
@@ -81,18 +89,18 @@ public class FileSystemDao {
         return getFileSystemAccess(fo).get(fo);
     }
 
-    public static FileObject getParent(FileObject f) {
+    public FileObject getParent(FileObject f) {
         return getFileSystemAccess(f).getParent(f);
     }
 
-    public static InmemoryMessage readFile(FileObject f) {
+    public InmemoryMessage readFile(FileObject f) {
         Set<FileObject> filenames = new HashSet<>();
         filenames.add(f);
         Map<FileObject, InmemoryMessage> map = readFile(filenames);
         return map.get(f);
     }
 
-    public static Map<FileObject, InmemoryMessage> readFile(Set<FileObject> filenames) {
+    public Map<FileObject, InmemoryMessage> readFile(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
         Map<String, InmemoryMessage> map = getFileSystemAccess(f).readFile(filenames);
         Map<FileObject, InmemoryMessage> retMap = new HashMap<>();
@@ -102,7 +110,7 @@ public class FileSystemDao {
         return retMap;
     }
 
-    public static Map<FileObject, String> getMd5(Set<FileObject> filenames) {
+    public Map<FileObject, String> getMd5(Set<FileObject> filenames) {
         FileObject f = filenames.iterator().next();
         Map<String, String> map = getFileSystemAccess(f).getMd5(filenames);
         Map<FileObject, String> retMap = new HashMap<>();
@@ -113,10 +121,10 @@ public class FileSystemDao {
     }
 
     // TODO make this OO
-    private static FileSystemAccess getFileSystemAccess(FileObject f) {
+    private FileSystemAccess getFileSystemAccess(FileObject f) {
         if (f == null) {
             log.error("f null");
-            return new LocalFileSystemAccess();
+            return new LocalFileSystemAccess(nodeConf);
         }
         /*
         if (f.fs == null) {
@@ -134,7 +142,7 @@ public class FileSystemDao {
         return getFileSystemAccess(f.location, f.object);
     }
     
-    private static FileSystemAccess getFileSystemAccess(Location fs, String path) {
+    private FileSystemAccess getFileSystemAccess(Location fs, String path) {
         Location fs2 = new Location(fs.nodename, fs.fs, fs.extra);
         if (fs2.fs == null || fs2.fs.isEmpty()) {
             fs2.fs = FileSystemConstants.LOCALTYPE;
@@ -144,12 +152,12 @@ public class FileSystemDao {
             log.error("URL null for {} {}", fs, path);
             return null;
         }
-        FileSystemAccess access = new FileSystemAccess();
+        FileSystemAccess access = new FileSystemAccess(nodeConf);
         access.constructor("http://" + url + "/");
         return access;
     }
 
-    static String getUrl(CuratorFramework curatorClient, Location fs, String path, String s) {
+    String getUrl(CuratorFramework curatorClient, Location fs, String path, String s) {
         // //fstype/path
         // node and openshift?
         // zk nodename type path
@@ -193,7 +201,7 @@ public class FileSystemDao {
         return url;
     }
 
-    private static String stringOrNull(String string) {
+    private String stringOrNull(String string) {
         if (string == null || string.isEmpty()) {
             return "";
         } else {

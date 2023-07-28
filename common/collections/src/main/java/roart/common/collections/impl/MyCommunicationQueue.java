@@ -21,10 +21,10 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
     private MyAtomicLong size;
     private Communication comm;
     
-    public MyCommunicationQueue(String queuename, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        String name = NodeConfig.conf.getSynchronizationCommunicationName();
-        String connection = NodeConfig.conf.getSynchronizationCommunicationConnection();
-        size = MyAtomicLongs.get(queuename + "size", curatorFramework, hz);
+    public MyCommunicationQueue(String queuename, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
+        String name = nodeConf.getSynchronizationCommunicationName();
+        String connection = nodeConf.getSynchronizationCommunicationConnection();
+        size = MyAtomicLongs.get(queuename + "size", nodeConf, curatorFramework, hz);
         comm = CommunicationFactory.get(name, String.class, queuename, new ObjectMapper(), true, true, false, connection, false);
     }
     

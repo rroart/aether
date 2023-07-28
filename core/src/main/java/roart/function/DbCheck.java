@@ -2,6 +2,7 @@ package roart.function;
 
 import java.util.List;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.Files;
@@ -17,13 +18,13 @@ import roart.common.model.ResultItem;
 
 public class DbCheck extends AbstractFunction {
 
-    public DbCheck(ServiceParam param) {
-        super(param);
+    public DbCheck(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao();
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
         try {
             List<IndexFiles> indexes;
             List<Files> files;
@@ -32,7 +33,7 @@ public class DbCheck extends AbstractFunction {
                 indexes = indexFilesDao.getAll();
                 files = indexFilesDao.getAllFiles();
             } else {
-                IndexFilesAccess access = IndexFilesAccessFactory.get(db);
+                IndexFilesAccess access = IndexFilesAccessFactory.get(db, nodeConf);
                 indexes = access.getAll();
                 files = access.getAllFiles();
             }

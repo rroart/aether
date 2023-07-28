@@ -2,6 +2,7 @@ package roart.search;
 
 import roart.service.ControlService;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.inmemory.model.InmemoryMessage;
@@ -46,33 +47,40 @@ public abstract class SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private NodeConfig nodeConf;
+    
+    public SearchAccess(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+    }
+
     public abstract String getAppName();
 
     public String constructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
         configureParam(param);
-        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR);
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CONSTRUCTOR, nodeConf);
         return result.error;
     }
 
     public String destructor() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
         configureParam(param);
-        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR);
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DESTRUCTOR, nodeConf);
         return result.error;
     }
 
     public String clear() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
         configureParam(param);
-        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR);
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.CLEAR, nodeConf);
         return result.error;
     }
 
     public String drop() {
         SearchEngineConstructorParam param = new SearchEngineConstructorParam();
         configureParam(param);
-        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DROP);
+        SearchEngineConstructorResult result = EurekaUtil.sendMe(SearchEngineConstructorResult.class, param, getAppName(), EurekaConstants.DROP, nodeConf);
         return result.error;
     }
 
@@ -94,7 +102,7 @@ public abstract class SearchAccess {
         param.message = message;
         param.classification = classification;
 
-        SearchEngineIndexResult result = EurekaUtil.sendMe(SearchEngineIndexResult.class, param, getAppName(), EurekaConstants.INDEX);
+        SearchEngineIndexResult result = EurekaUtil.sendMe(SearchEngineIndexResult.class, param, getAppName(), EurekaConstants.INDEX, nodeConf);
 
         if (result == null) {
             return -1;
@@ -113,7 +121,7 @@ public abstract class SearchAccess {
         param.str = str;
         param.searchtype = searchtype;
 
-        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH);
+        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCH, nodeConf);
         return getResultItems(result);
     }
 
@@ -123,7 +131,7 @@ public abstract class SearchAccess {
         param.str = id;
         param.searchtype = searchtype;
 
-        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT);
+        SearchEngineSearchResult result = EurekaUtil.sendMe(SearchEngineSearchResult.class, param, getAppName(), EurekaConstants.SEARCHMLT, nodeConf);
         return getResultItems(result);
     }
 
@@ -138,7 +146,7 @@ public abstract class SearchAccess {
         configureParam(param);
         param.delete = str;
 
-        SearchEngineDeleteResult result = EurekaUtil.sendMe(SearchEngineDeleteResult.class, param, getAppName(), EurekaConstants.DELETE);
+        SearchEngineDeleteResult result = EurekaUtil.sendMe(SearchEngineDeleteResult.class, param, getAppName(), EurekaConstants.DELETE, nodeConf);
 
     }
 
@@ -152,7 +160,7 @@ public abstract class SearchAccess {
             for (SearchResult res : results) {
                 md5s.add(res.md5);
             }
-            IndexFilesDao indexFilesDao = new IndexFilesDao();
+            IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
             Map<String, IndexFiles> indexmd5s = indexFilesDao.getByMd5(md5s);
             for (SearchResult res : results) {
                 String md5 = res.md5;
@@ -183,9 +191,9 @@ public abstract class SearchAccess {
         param.configname = ControlService.getConfigName();
         param.configid = ControlService.getConfigId();
         param.iconf = ControlService.iconf;
-        param.iserver = MyConfig.conf.getInmemoryServer();
-        if (Constants.REDIS.equals(MyConfig.conf.getInmemoryServer())) {
-            param.iconnection = MyConfig.conf.getInmemoryRedis();
+        param.iserver = nodeConf.getInmemoryServer();
+        if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+            param.iconnection = nodeConf.getInmemoryRedis();
         }
     }
 

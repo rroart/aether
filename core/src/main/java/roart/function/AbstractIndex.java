@@ -3,6 +3,7 @@ package roart.function;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.config.MyConfig;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
@@ -13,8 +14,8 @@ import roart.service.ControlService;
 
 public abstract class AbstractIndex extends AbstractFunction {
 
-    public AbstractIndex(ServiceParam param) {
-        super(param);
+    public AbstractIndex(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     public boolean filterindex(IndexFiles index, TraverseQueueElement trav)
@@ -36,12 +37,12 @@ public abstract class AbstractIndex extends AbstractFunction {
         // and a failed limit it set
         // and the file has come to that limit
 
-        int maxfailed = MyConfig.conf.getFailedLimit();
+        int maxfailed = nodeConf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
             return false;
         }
 
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), ControlService.curatorClient, GetHazelcastInstance.instance()); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
 
         boolean indexinc = indexFilter(index, trav);
         if (indexinc) {

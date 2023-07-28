@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.collections.impl.MyRemover;
+import roart.common.config.NodeConfig;
 
 public abstract class MyCollections<T> {
     protected static Logger log = LoggerFactory.getLogger(MyCollections.class);
@@ -17,13 +18,13 @@ public abstract class MyCollections<T> {
 
     public static MyRemover remover = null;
     
-    public static Object get(String id, MyFactory myfactory, CuratorFramework curatorFramework, HazelcastInstance hz) {
+    public static Object get(String id, NodeConfig nodeConf, MyFactory myfactory, CuratorFramework curatorFramework, HazelcastInstance hz) {
 	Object obj = null;
 	if (id != null) {
 	    obj = mycollections.get(id);
 	}
 	if (obj == null) {
-	    obj = myfactory.create(id, curatorFramework, hz);
+	    obj = myfactory.create(id, nodeConf, curatorFramework, hz);
 	    put(id, obj);
 	}
 	return obj;
@@ -33,8 +34,8 @@ public abstract class MyCollections<T> {
         mycollections.put(id, obj);
     }
 
-    public static void put(String id, MyFactory myfactory, CuratorFramework curatorFramework, HazelcastInstance hz) {
-	Object obj = myfactory.create(id, curatorFramework, hz);
+    public static void put(String id, NodeConfig nodeConf, MyFactory myfactory, CuratorFramework curatorFramework, HazelcastInstance hz) {
+	Object obj = myfactory.create(id, nodeConf, curatorFramework, hz);
 	put(id, obj);
     }
     

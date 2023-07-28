@@ -18,6 +18,8 @@ public class Util {
 
     private Sender sender;
     
+    private NodeConfig nodeConf;
+    
     public Util(Sender sender) {
         this.sender = sender;
     }
@@ -245,7 +247,7 @@ public class Util {
     }
     
     private NodeConfig getConfig() {
-        return MyConfig.conf;
+        return nodeConf;
     }
 
     private String getAppName() {

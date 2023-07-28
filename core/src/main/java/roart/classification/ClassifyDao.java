@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.HashSet;
 
 import roart.common.config.ConfigConstants;
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.inmemory.model.InmemoryMessage;
 
@@ -18,44 +19,17 @@ import org.slf4j.LoggerFactory;
 public class ClassifyDao {
     private static Logger log = LoggerFactory.getLogger(ClassifyDao.class);
 
-    private static ClassifyAccess classify = null;
+    private ClassifyAccess classify = null;
 
-    public static void instance(String type) {
-        System.out.println("instance " + type);
-        log.info("instance " + type);
-        if (type == null) {
-            return;
-        }
-        if (classify != null) {
-            // TODO propagate error
-            try {
-                classify.destructor();
-            } catch (Exception e) {
-                // TODO propagate
-                log.error(Constants.EXCEPTION, e); 
-            }
-        }
-        if (true || classify == null) {
-            // TODO make OO of this
-            if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
-                classify = new MahoutClassifyAccess();
-            }
-            if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
-                classify = new MahoutSparkClassifyAccess();
-            }
-            if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
-                classify = new SparkMLClassifyAccess();
-            }
-            if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
-                classify = new OpennlpClassifyAccess();
-            }
-            // TODO propagate
-            // TODO not
-            String error = classify.constructor();
-        }
+    private NodeConfig nodeConf;
+    
+    public ClassifyDao(NodeConfig nodeConf) {
+        super();
+        this.nodeConf = nodeConf;
+        this.classify = ClassifyAccessFactory.get(nodeConf);
     }
 
-    public static String classify(InmemoryMessage message, String language) {
+    public String classify(InmemoryMessage message, String language) {
         if (classify == null) {
             return null;
         }

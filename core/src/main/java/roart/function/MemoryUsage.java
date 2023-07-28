@@ -3,14 +3,15 @@ package roart.function;
 import java.util.ArrayList;
 import java.util.List;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 
 public class MemoryUsage extends AbstractFunction {
 
-    public MemoryUsage(ServiceParam param) {
-        super(param);
+    public MemoryUsage(ServiceParam param, NodeConfig nodeConf) {
+        super(param, nodeConf);
     }
 
     @Override
