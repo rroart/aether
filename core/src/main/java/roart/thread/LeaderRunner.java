@@ -25,10 +25,18 @@ public class LeaderRunner implements Runnable {
     ThreadPoolExecutor /*ExecutorService*/ pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
+    public LeaderRunner(NodeConfig nodeConf, ControlService controlService) {
+        super();
+        this.nodeConf = nodeConf;
+        this.controlService = controlService;
+    }
+
     @SuppressWarnings("squid:S2189")
     public void run() {
-        MyLeader leader = new MyLeaderFactory().create(ControlService.nodename, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         while (true) {
             boolean leading = leader.await(1, TimeUnit.SECONDS);
             if (!leading) {
@@ -43,11 +51,6 @@ public class LeaderRunner implements Runnable {
                 log.error(Constants.EXCEPTION, e);
             }
         }
-    }
-
-    public LeaderRunner(NodeConfig nodeConf) {
-        super();
-        this.nodeConf = nodeConf;
     }
 
 }

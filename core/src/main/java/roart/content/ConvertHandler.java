@@ -48,10 +48,13 @@ public class ConvertHandler {
     private Logger log = LoggerFactory.getLogger(ConvertHandler.class);
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public ConvertHandler(NodeConfig nodeConf) {
+    public ConvertHandler(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public void doConvert(ConvertQueueElement el, NodeConfig nodeConf) {
@@ -62,13 +65,13 @@ public class ConvertHandler {
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = el.metadata;
         log.info("incTikas {}", filename);
-        new Queues(nodeConf).convertTimeoutQueue.add(filename.toString());
+        new Queues(nodeConf, controlService).convertTimeoutQueue.add(filename.toString());
         int size = 0;
 
         //String content = new TikaHandler().getString(el.fsData.getInputStream());
         //Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         //InmemoryMessage message = inmemory.send(el.md5, content);
-        InmemoryMessage message = new FileSystemDao(nodeConf).readFile(el.filename);
+        InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(el.filename);
         el.message = message;
         el.index.setFailedreason(null);
 
@@ -109,7 +112,7 @@ public class ConvertHandler {
             // TODO error
 	    long now = System.currentTimeMillis();
             try {
-                str = new ConvertDAO(nodeConf).convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), el.index);
+                str = new ConvertDAO(nodeConf, controlService).convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), el.index);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -142,7 +145,7 @@ public class ConvertHandler {
                 }
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                     long now = System.currentTimeMillis();
-                    String classification = new ClassifyDao(nodeConf).classify(str, lang);
+                    String classification = new ClassifyDao(nodeConf, controlService).classify(str, lang);
                     long time = System.currentTimeMillis() - now;
                     log.info("classtime {} {}", filename, time);
                     el.index.setTimeclass("" + time);
@@ -166,15 +169,15 @@ public class ConvertHandler {
             //InmemoryMessage message = inmemory2.send(el.md5, content);
             elem.message = str;
             elem.convertsw = el.convertsw;
-            new Queues(nodeConf).getIndexQueue().offer(elem);
+            new Queues(nodeConf, controlService).getIndexQueue().offer(elem);
             //Queues.getIndexQueueSize().incrementAndGet();
 
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);
             FileLocation aFl = el.index.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.getConfigName(), aFl);
+            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), controlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(el.retlistnotid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(el.retlistnotid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             retlistnot.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
@@ -184,9 +187,9 @@ public class ConvertHandler {
             index.setPriority(1);
             // file unlock dbindex
             // config with finegrained distrib
-            new IndexFilesDao(nodeConf).add(index);
+            new IndexFilesDao(nodeConf, controlService).add(index);
         }
-        boolean success = new Queues(nodeConf).convertTimeoutQueue.remove(filename.toString());
+        boolean success = new Queues(nodeConf, controlService).convertTimeoutQueue.remove(filename.toString());
         if (!success) {
             log.error("queue not having {}", filename);
         }

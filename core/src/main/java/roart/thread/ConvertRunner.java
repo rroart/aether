@@ -26,6 +26,7 @@ import roart.content.ConvertHandler;
 import roart.content.ConvertHandler;
 import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
+import roart.service.ControlService;
 import roart.queue.ConvertQueueElement;
 
 public class ConvertRunner implements Runnable {
@@ -38,9 +39,12 @@ public class ConvertRunner implements Runnable {
 
     private NodeConfig nodeConf;
 
-    public ConvertRunner(NodeConfig nodeConf) {
+    private ControlService controlService;
+
+    public ConvertRunner(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public NodeConfig getNodeConf() {
@@ -59,7 +63,7 @@ public class ConvertRunner implements Runnable {
         log.info("nthreads " + nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        if (new Queues(nodeConf).getConverts() > 0) {
+        if (new Queues(nodeConf, controlService).getConverts() > 0) {
             log.info("resetting converts");
             //Queues.resetConverts();
         }
@@ -126,15 +130,15 @@ public class ConvertRunner implements Runnable {
             for (Future<Object> key: removes) {
                 map.remove(key);
                 running--;
-                new Queues(nodeConf).decConverts();
+                new Queues(nodeConf, controlService).decConverts();
             }
             if (false && removes.size() > 0) {
                 log.info("active 0 " + executorService.getActiveCount());
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (new Queues(nodeConf).getConvertQueueSize() == 0 || new Queues(nodeConf).indexQueueHeavyLoaded()) {
-                if (new Queues(nodeConf).indexQueueHeavyLoaded()) {
+            if (new Queues(nodeConf, controlService).getConvertQueueSize() == 0 || new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
+                if (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
                     log.info("Index queue heavy loaded, sleeping");
                 }
                 try {
@@ -168,8 +172,8 @@ public class ConvertRunner implements Runnable {
 
                 Future<Object> task = executorService.submit(callable);
                 map.put(task, new Date());
-                new Queues(nodeConf).queueStat();
-                new Queues(nodeConf).incConverts();
+                new Queues(nodeConf, controlService).queueStat();
+                new Queues(nodeConf, controlService).incConverts();
                 running++;
                 log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
                 log.info("queue " + executorService.getQueue());
@@ -187,7 +191,7 @@ public class ConvertRunner implements Runnable {
         }
     }
 
-    public static String doConvertTimeout(NodeConfig nodeConf) {
+    public String doConvertTimeout(NodeConfig nodeConf) {
         class ConvertTimeout implements Runnable {
             private ConvertQueueElement el;
             ConvertTimeout(ConvertQueueElement el) {
@@ -196,14 +200,14 @@ public class ConvertRunner implements Runnable {
 
             public void run() {
                 try {
-                    new ConvertHandler(nodeConf).doConvert(el, nodeConf);
+                    new ConvertHandler(nodeConf, controlService).doConvert(el, nodeConf);
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
                 }
             }
         }
 
-        ConvertQueueElement el = new Queues(nodeConf).getConvertQueue().poll(ConvertQueueElement.class);
+        ConvertQueueElement el = new Queues(nodeConf, controlService).getConvertQueue().poll(ConvertQueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;
@@ -248,7 +252,7 @@ public class ConvertRunner implements Runnable {
 
     // not used
 
-    public static String doConvertTimeout2(NodeConfig nodeConf) {
+    public String doConvertTimeout2(NodeConfig nodeConf) {
         Callable<Object> callable = new Callable<Object>() {
             public Object call() throws Exception {
                 /*
@@ -258,7 +262,7 @@ public class ConvertRunner implements Runnable {
                     return null;
                 }
                  */
-                new ConvertHandler(nodeConf).doConvert(null, nodeConf); // CHECK fix if changes
+                new ConvertHandler(nodeConf, controlService).doConvert(null, nodeConf); // CHECK fix if changes
                 return null;
             }
         };

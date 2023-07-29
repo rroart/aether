@@ -23,15 +23,15 @@ import roart.common.model.FileObject;
 
 public class DeletePath extends AbstractFunction {
 
-    public DeletePath(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public DeletePath(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
-	ConsistentClean cc = new ConsistentClean(param, nodeConf);
-        synchronized (ControlService.writelock) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
+	ConsistentClean cc = new ConsistentClean(param, nodeConf, controlService);
+        synchronized (controlService.writelock) {
             try {
                 /*
                 MyLock lock = null;
@@ -90,7 +90,7 @@ public class DeletePath extends AbstractFunction {
                 }
 
                 if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
-                    ZKMessageUtil.dorefresh(ControlService.nodename);
+                    ZKMessageUtil.dorefresh(controlService.nodename);
                     //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");
                 }

@@ -15,16 +15,17 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import roart.common.model.ResultItem;
+import roart.service.ControlService;
 
 public class DbCheck extends AbstractFunction {
 
-    public DbCheck(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public DbCheck(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         try {
             List<IndexFiles> indexes;
             List<Files> files;
@@ -33,7 +34,7 @@ public class DbCheck extends AbstractFunction {
                 indexes = indexFilesDao.getAll();
                 files = indexFilesDao.getAllFiles();
             } else {
-                IndexFilesAccess access = IndexFilesAccessFactory.get(db, nodeConf);
+                IndexFilesAccess access = IndexFilesAccessFactory.get(db, nodeConf, controlService);
                 indexes = access.getAll();
                 files = access.getAllFiles();
             }

@@ -21,18 +21,21 @@ public class ZKRunner implements Runnable {
     static Logger log = LoggerFactory.getLogger(ZKRunner.class);
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public ZKRunner(NodeConfig nodeConf) {
+    public ZKRunner(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public void run() {
 
     	List<String> children = null;
 
-    	ZKInitialize.initZK(nodeConf.getZookeeper(), new DummyWatcher(), ControlService.nodename);
-    	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + ControlService.nodename;
+    	ZKInitialize.initZK(nodeConf.getZookeeper(), new DummyWatcher(), controlService.nodename);
+    	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + controlService.nodename;
 
     	while (true) {
     		log.info("get children");
@@ -67,13 +70,13 @@ public class ZKRunner implements Runnable {
     try {
         for (String child : children) {
         if (child.equals(Constants.REFRESH)) {
-            new IndexFilesDao(nodeConf).getAll();
-            log.info(Constants.REFRESH + " " + ControlService.nodename);
+            new IndexFilesDao(nodeConf, controlService).getAll();
+            log.info(Constants.REFRESH + " " + controlService.nodename);
             //ClientRunner.notify("Finished refresh");
         } else if (child.equals(Constants.RECONFIG)) {
             // TODO fix
                 //MyConfig.instance().reconfig();
-                log.info(Constants.RECONFIG + " " + ControlService.nodename);
+                log.info(Constants.RECONFIG + " " + controlService.nodename);
             //ClientRunner.replace();
                 //ClientRunner.notify("Finished reconfig");
         } else {

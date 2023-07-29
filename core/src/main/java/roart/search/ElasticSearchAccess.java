@@ -8,6 +8,7 @@ import roart.common.model.SearchDisplay;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
+import roart.service.ControlService;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ public class ElasticSearchAccess extends SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public ElasticSearchAccess(NodeConfig nodeConf) {
-        super(nodeConf);
+    public ElasticSearchAccess(NodeConfig nodeConf, ControlService controlService) {
+        super(nodeConf, controlService);
     }
 
     public String getAppName() {

@@ -28,9 +28,12 @@ public abstract class ClassifyAccess {
 
     private NodeConfig nodeConf;
 
-    public ClassifyAccess(NodeConfig nodeConf) {
+    private ControlService controlService;
+
+    public ClassifyAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public abstract String getAppName();
@@ -64,9 +67,9 @@ public abstract class ClassifyAccess {
     }
 
     private void configureParam(MachineLearningParam param) {
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.iconf = ControlService.iconf;
+        param.configname = controlService.getConfigName();
+        param.configid = controlService.getConfigId();
+        param.iconf = controlService.iconf;
         param.iserver = nodeConf.getInmemoryServer();
         if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
             param.iconnection = nodeConf.getInmemoryRedis();

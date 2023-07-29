@@ -38,11 +38,14 @@ public class IndexFilesDao {
     private IndexFilesAccess indexFiles = null;
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public IndexFilesDao(NodeConfig nodeConf) {
+    public IndexFilesDao(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-        this.indexFiles = IndexFilesAccessFactory.get(nodeConf);
+        this.indexFiles = IndexFilesAccessFactory.get(nodeConf, controlService);
+        this.controlService = controlService;
     }
 
     // with zookeepersmall, lock must be held when entering here
@@ -359,7 +362,7 @@ public class IndexFilesDao {
 
     // not used
     public List<Map> getBothByFilename(Set<String> filenames) throws Exception {
-        String nodename = ControlService.nodename;
+        String nodename = controlService.nodename;
         Set<FileLocation> fls = new HashSet<>();
         for (String filename : filenames) {
             FileLocation fl = new FileLocation(nodename, filename);

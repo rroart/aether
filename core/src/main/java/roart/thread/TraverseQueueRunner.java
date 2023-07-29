@@ -32,6 +32,8 @@ import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
+import roart.service.ControlService;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -51,11 +53,14 @@ public class TraverseQueueRunner implements Runnable {
 
     private NodeConfig nodeConf;
 
-    public TraverseQueueRunner(NodeConfig nodeConf) {
+    private ControlService controlService;
+
+    public TraverseQueueRunner(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-        this.traverseFile = new TraverseFile(indexFilesDao, nodeConf);
-        this.indexFilesDao = new IndexFilesDao(nodeConf);
+        this.traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService);
+        this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
+        this.controlService = controlService;
     }
 
     @SuppressWarnings("squid:S2189")
@@ -67,7 +72,7 @@ public class TraverseQueueRunner implements Runnable {
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        if (new Queues(nodeConf).getTraverses() > 0) {
+        if (new Queues(nodeConf, controlService).getTraverses() > 0) {
             log.info("resetting traverses");
             //Queues.resetTraverses();
         }
@@ -109,15 +114,15 @@ public class TraverseQueueRunner implements Runnable {
             for (Future<Object> key: removes) {
                 map.remove(key);
                 running--;
-                new Queues(nodeConf).decTraverses();
+                new Queues(nodeConf, controlService).decTraverses();
             }
             if (false && removes.size() > 0) {
                 log.info("active 0 " + executorService.getActiveCount());
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (new Queues(nodeConf).getTraverseQueueSize() == 0 || new Queues(nodeConf).convertQueueHeavyLoaded()) {
-                if (new Queues(nodeConf).convertQueueHeavyLoaded()) {
+            if (new Queues(nodeConf, controlService).getTraverseQueueSize() == 0 || new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
+                if (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
                     log.info("Convert queue heavy loaded, sleeping");
                 }
                 try {
@@ -155,8 +160,8 @@ public class TraverseQueueRunner implements Runnable {
 
                 Future<Object> task = executorService.submit(callable);
                 map.put(task, new Date());
-                new Queues(nodeConf).queueStat();
-                new Queues(nodeConf).incTraverses();
+                new Queues(nodeConf, controlService).queueStat();
+                new Queues(nodeConf, controlService).incTraverses();
                 running++;
                 log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
                 log.info("queue " + executorService.getQueue());
@@ -179,7 +184,7 @@ public class TraverseQueueRunner implements Runnable {
         if (limit < 1) {
             limit = LIMIT;
         }
-        MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
+        MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         List<TraverseQueueElement> traverseList = new ArrayList<>();
         for (int i = 0; i < limit; i++) {
             TraverseQueueElement trav = queue.poll(TraverseQueueElement.class);
@@ -259,7 +264,7 @@ public class TraverseQueueRunner implements Runnable {
         }
         long time0 = System.currentTimeMillis();
         // Get MyFile data from filesystem
-        Map<FileObject, MyFile> fsMap = new FileSystemDao(nodeConf).getWithoutInputStream(filenames);
+        Map<FileObject, MyFile> fsMap = new FileSystemDao(nodeConf, controlService).getWithoutInputStream(filenames);
         long time1 = System.currentTimeMillis();
         // Get Md5s by fileobject from database
         // TODO check if need full indexfiles?

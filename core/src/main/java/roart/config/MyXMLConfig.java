@@ -87,16 +87,9 @@ public class MyXMLConfig {
     private static Configuration config = null;
     private static XMLConfiguration configxml = null;
 
-    public MyXMLConfig(String configFileNot) {
+    public MyXMLConfig(String myConfigFile) {
         try {
             //String myConfigFile = configFile;
-            String myConfigFile = System.getProperty("config");
-            if (myConfigFile == null) {
-                myConfigFile = ConfigConstants.CONFIGFILE;
-            }
-            myConfigFile = "../conf/" + myConfigFile;
-            // md5 myconfigfile 
-            ControlService.configMd5 = DigestUtils.md5Hex(FileUtils.openInputStream(new File(myConfigFile)));
             log.info("myconf " + myConfigFile);
             getConfigInstance(myConfigFile);
             configxml = new XMLConfiguration();
@@ -227,7 +220,7 @@ public class MyXMLConfig {
 
     public void myput(String nodename, NodeConfig config) {
         nodemap.put(nodename, config);
-        ZKMessageUtil.doreconfig(ControlService.getConfigName());
+        ZKMessageUtil.doreconfig(null /*controlService.getConfigName()*/);
     }
 
 }

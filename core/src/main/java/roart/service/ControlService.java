@@ -71,23 +71,15 @@ public class ControlService {
 
     public static volatile Integer writelock = new Integer(-1);
 
-    private static volatile int mycounter = 0;
-
     private NodeConfig nodeConf;
-    
+
     public ControlService(NodeConfig nodeConf) {
         super();
         this.nodeConf = nodeConf;
-        this.indexFilesDao = new IndexFilesDao(nodeConf);
+        this.indexFilesDao = new IndexFilesDao(nodeConf, this);
     }
 
-    // TODO concurrency
-    @Deprecated
-    public static int getMyCounter() {
-        return mycounter++;
-    }
-
-    public static String getMyId() {
+    public String getMyId() {
         return nodename + UUID.randomUUID();
     }
 
@@ -114,30 +106,30 @@ public class ControlService {
         return nodeConf;
     }
 
-    public static InmemoryMessage iconf = null;
+    public InmemoryMessage iconf = null;
 
-    public static String nodename = "localhost";
+    public String nodename = "localhost";
 
-    public static String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
-    
-    public static String getConfigName() {
+    public String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
+
+    public String getConfigName() {
         return getAppid();
     }
-    
-    public static String getAppid() {
+
+    public String getAppid() {
         return appid;
     }
 
-    public static void setAppid(String appid) {
-        ControlService.appid = appid;
+    public void setAppid(String appid) {
+        this.appid = appid;
     }
 
-    public static String configMd5 = "md5";
+    public String configMd5 = "md5";
 
-    public static String getConfigId() {
+    public String getConfigId() {
         return configMd5;
     }
-    
+
     // old, probably oudated by overlapping?
     public List cleanupfs(String dirname) {
         //List<String> retlist = new ArrayList<String>();
@@ -145,7 +137,7 @@ public class ControlService {
         try {
             String[] dirlist = { dirname };
             for (int i = 0; i < dirlist.length; i ++) {
-                Set<String> filesetnew2 = TraverseUtil.dupdir(FsUtil.getFileObject(dirlist[i]), nodeConf);
+                Set<String> filesetnew2 = TraverseUtil.dupdir(FsUtil.getFileObject(dirlist[i]), nodeConf, this);
                 filesetnew.addAll(filesetnew2);
             }
         } catch (Exception e) {
@@ -154,32 +146,32 @@ public class ControlService {
         return new ArrayList<String>(filesetnew);
     }
 
-    private static ConvertRunner convertRunnable = null;
-    public static Thread convertWorker = null;
-    private static IndexRunner indexRunnable = null;
-    public static Thread indexWorker = null;
-    private static DbRunner dbRunnable = null;
-    public static Thread dbWorker = null;
-    private static ControlRunner controlRunnable = null;
-    private static Thread controlWorker = null;
-    private static ZKRunner zkRunnable = null;
-    public static Thread zkWorker = null;
-    private static TraverseQueueRunner traverseQueueRunnable = null;
-    private static ListQueueRunner listQueueRunnable = null;
-    private static LeaderRunner leaderRunnable = null;
-    private static ClientQueueRunner clientQueueRunnable = null;
-    public static Thread traverseQueueWorker = null;
-    public static Thread listQueueWorker = null;
-    public static Thread clientQueueWorker = null;
-    public static Thread leaderWorker = null;
-    private static CamelRunner camelRunnable = null;
-    public static Thread camelWorker = null;
+    private ConvertRunner convertRunnable = null;
+    private Thread convertWorker = null;
+    private IndexRunner indexRunnable = null;
+    public Thread indexWorker = null;
+    private DbRunner dbRunnable = null;
+    public Thread dbWorker = null;
+    private ControlRunner controlRunnable = null;
+    private Thread controlWorker = null;
+    private ZKRunner zkRunnable = null;
+    public Thread zkWorker = null;
+    private TraverseQueueRunner traverseQueueRunnable = null;
+    private ListQueueRunner listQueueRunnable = null;
+    private LeaderRunner leaderRunnable = null;
+    private ClientQueueRunner clientQueueRunnable = null;
+    public Thread traverseQueueWorker = null;
+    private Thread listQueueWorker = null;
+    private Thread clientQueueWorker = null;
+    private Thread leaderWorker = null;
+    private CamelRunner camelRunnable = null;
+    private Thread camelWorker = null;
 
-    public static CuratorFramework curatorClient = null;
+    public CuratorFramework curatorClient = null;
     public void startThreads() {
         if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
-        Runnable confMe = new EurekaThread(nodeConf);
-        confMe.run();
+            Runnable confMe = new EurekaThread(nodeConf);
+            confMe.run();
         }
 
         if (convertRunnable == null) {
@@ -249,7 +241,7 @@ public class ControlService {
         int timeout = nodeConf.getTikaTimeout();
         ConvertRunner.timeout = timeout;
 
-        convertRunnable = new ConvertRunner(nodeConf);
+        convertRunnable = new ConvertRunner(nodeConf, this);
         convertWorker = new Thread(convertRunnable);
         convertWorker.setName("ConvertWorker");
         convertWorker.start();
@@ -257,7 +249,7 @@ public class ControlService {
     }
 
     public void startIndexWorker() {
-        indexRunnable = new IndexRunner(nodeConf);
+        indexRunnable = new IndexRunner(nodeConf, this);
         indexWorker = new Thread(indexRunnable);
         indexWorker.setName("IndexWorker");
         indexWorker.start();
@@ -273,7 +265,7 @@ public class ControlService {
     }
 
     public void startDbWorker() {
-        dbRunnable = new DbRunner(nodeConf);
+        dbRunnable = new DbRunner(nodeConf, this);
         dbWorker = new Thread(dbRunnable);
         dbWorker.setName("DbWorker");
         dbWorker.start();
@@ -281,7 +273,7 @@ public class ControlService {
     }
 
     public void startZKWorker() {
-        zkRunnable = new ZKRunner(nodeConf);
+        zkRunnable = new ZKRunner(nodeConf, this);
         zkWorker = new Thread(zkRunnable);
         zkWorker.setName("ZKWorker");
         zkWorker.start();
@@ -289,7 +281,7 @@ public class ControlService {
     }
 
     public void startTraversequeueWorker() {
-        traverseQueueRunnable = new TraverseQueueRunner(nodeConf);
+        traverseQueueRunnable = new TraverseQueueRunner(nodeConf, this);
         traverseQueueWorker = new Thread(traverseQueueRunnable);
         traverseQueueWorker.setName("TraverseWorker");
         traverseQueueWorker.start();
@@ -297,7 +289,7 @@ public class ControlService {
     }
 
     public void startListqueueWorker() {
-        listQueueRunnable = new ListQueueRunner(nodeConf);
+        listQueueRunnable = new ListQueueRunner(nodeConf, this);
         listQueueWorker = new Thread(listQueueRunnable);
         listQueueWorker.setName("ListWorker");
         listQueueWorker.start();
@@ -313,7 +305,7 @@ public class ControlService {
     }
 
     public void startLeaderWorker() {
-        leaderRunnable = new LeaderRunner(nodeConf);
+        leaderRunnable = new LeaderRunner(nodeConf, this);
         leaderWorker = new Thread(leaderRunnable);
         leaderWorker.setName("LeaderWorker");
         leaderWorker.start();
@@ -396,8 +388,8 @@ public class ControlService {
         if (true || roart.common.constants.Constants.CURATOR.equals(nodeConf.getLocker())) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
             String zookeeperConnectionString = nodeConf.getZookeeper();
-            ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
-            ControlService.curatorClient.start();
+            this.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+            this.curatorClient.start();
             log.info("Curator client started");
         }
     }
@@ -407,8 +399,8 @@ public class ControlService {
         String str = JsonUtil.convert(nodeConf);
         String md5 = DigestUtils.md5Hex( str );
 
-        InmemoryMessage msg = inmemory.send(ConfigConstants.CONFIG + ControlService.getAppid(), str, md5);
-        ControlService.iconf = msg;
+        InmemoryMessage msg = inmemory.send(ConfigConstants.CONFIG + this.getAppid(), str, md5);
+        this.iconf = msg;
 
         configCurator();
 
@@ -426,7 +418,7 @@ public class ControlService {
                 log.error(Constants.EXCEPTION, e);
             }
         }
-        ControlService.nodename = nodename;
+        this.nodename = nodename;
         log.info("nodename {}", nodename);
 
         //String languages = getLanguages();

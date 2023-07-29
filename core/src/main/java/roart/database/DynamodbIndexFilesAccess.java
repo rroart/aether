@@ -5,13 +5,14 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.service.ControlService;
 
 public class DynamodbIndexFilesAccess extends IndexFilesAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public DynamodbIndexFilesAccess(NodeConfig nodeConf) {
-        super(nodeConf);
+    public DynamodbIndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+        super(nodeConf, controlService);
         // TODO Auto-generated constructor stub
     }
 

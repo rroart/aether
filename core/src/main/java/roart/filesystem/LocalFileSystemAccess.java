@@ -2,11 +2,12 @@ package roart.filesystem;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.service.ControlService;
 
 public class LocalFileSystemAccess extends FileSystemAccess {
 
-    public LocalFileSystemAccess(NodeConfig nodeConf) {
-        super(nodeConf);
+    public LocalFileSystemAccess(NodeConfig nodeConf, ControlService controlService) {
+        super(nodeConf, controlService);
     }
 
     @Override

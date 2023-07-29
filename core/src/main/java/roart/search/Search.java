@@ -44,9 +44,12 @@ public class Search {
 
     private NodeConfig nodeConf;
 
-    public Search(NodeConfig nodeConf) {
+    private ControlService controlService;
+
+    public Search(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
@@ -56,7 +59,7 @@ public class Search {
             return;
         }
         // vulnerable spot
-        new Queues(nodeConf).incIndexs();
+        new Queues(nodeConf, controlService).incIndexs();
         long now = System.currentTimeMillis();
 
         String type = el.type;
@@ -68,13 +71,13 @@ public class Search {
         String lang = el.lang;
         InmemoryMessage message = el.message;
         String classification = el.index.getClassification();
-        MyQueue<ResultItem> retlist = MyQueues.get(el.retlistid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
-        MyQueue<ResultItem> retlistnot = MyQueues.get(el.retlistnotid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ResultItem> retlist = MyQueues.get(el.retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ResultItem> retlistnot = MyQueues.get(el.retlistnotid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
 
         int retsize = 0;
 
         try {
-            retsize = new SearchDao(nodeConf).indexme(type, md5, dbfilename, metadata, lang, classification, dbindex, message);
+            retsize = new SearchDao(nodeConf, controlService).indexme(type, md5, dbfilename, metadata, lang, classification, dbindex, message);
         } catch (Exception e) {
             log.error(roart.common.constants.Constants.EXCEPTION, e);
             dbindex.setNoindexreason("index exception " + e.getClass().getName());
@@ -90,7 +93,7 @@ public class Search {
         if (retsize < 0) {
             //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
             FileLocation aFl = el.index.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), ControlService.nodename, aFl);
+            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), controlService.nodename, aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
             retlistnot.offer(ri);
         } else {
@@ -105,8 +108,8 @@ public class Search {
             dbindex.setTimeindex("" + time);
             log.info("timerStop filename " + time);
 
-            FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(el.index, nodeConf);
-            ResultItem ri = IndexFiles.getResultItem(el.index, lang, ControlService.nodename, maybeFl);
+            FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(el.index, nodeConf, controlService);
+            ResultItem ri = IndexFiles.getResultItem(el.index, lang, controlService.nodename, maybeFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
             retlist.offer(ri);
 
@@ -114,8 +117,8 @@ public class Search {
         dbindex.setPriority(1);
         // file unlock dbindex
         // config with finegrained distrib
-        new IndexFilesDao(nodeConf).add(dbindex);
-        new Queues(nodeConf).decIndexs();
+        new IndexFilesDao(nodeConf, controlService).add(dbindex);
+        new Queues(nodeConf, controlService).decIndexs();
 
         if (el.message != null) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
@@ -124,12 +127,12 @@ public class Search {
     }
 
     public ResultItem[] searchme(String str, String searchtype) {
-        return new SearchDao(nodeConf).searchme(str, searchtype);
+        return new SearchDao(nodeConf, controlService).searchme(str, searchtype);
     }
 
     // not yet usable, lacking termvector
     public ResultItem[] searchsimilar(String md5i, String searchtype) {
-        return new SearchDao(nodeConf).searchsimilar(md5i, searchtype);
+        return new SearchDao(nodeConf, controlService).searchsimilar(md5i, searchtype);
     }
 
     // not yet usable, lacking termvector
@@ -137,7 +140,7 @@ public class Search {
     }
 
     public void deleteme(String str) {
-        new SearchDao(nodeConf).deleteme(str);
+        new SearchDao(nodeConf, controlService).deleteme(str);
     }
 
     // outdated, did run once, had a bug which made duplicates

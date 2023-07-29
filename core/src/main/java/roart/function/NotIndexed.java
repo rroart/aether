@@ -12,16 +12,17 @@ import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.database.IndexFilesDao;
 import roart.util.TraverseUtil;
+import roart.service.ControlService;
 
 public class NotIndexed extends AbstractFunction {
 
-    public NotIndexed(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public NotIndexed(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         List<List> retlistlist = new ArrayList<>();
         List<ResultItem> retlist = new ArrayList<>();
         List<ResultItem> retlist2 = new ArrayList<>();
@@ -32,8 +33,8 @@ public class NotIndexed extends AbstractFunction {
         retlist2.add(ri3);
         List<ResultItem> retlistyes = null;
         try {
-            retlist.addAll(TraverseUtil.notindexed(param, indexFilesDao));
-            retlistyes = TraverseUtil.indexed(param, indexFilesDao);
+            retlist.addAll(TraverseUtil.notindexed(param, indexFilesDao, controlService));
+            retlistyes = TraverseUtil.indexed(param, indexFilesDao, controlService);
             Map<String, Integer> plusretlist = new HashMap<>();
             Map<String, Integer> plusretlistyes = new HashMap<>();
             for(ResultItem ri : retlist) {

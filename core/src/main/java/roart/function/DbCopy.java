@@ -16,11 +16,12 @@ import roart.common.service.ServiceParam;
 import roart.database.IndexFilesAccess;
 import roart.database.IndexFilesAccessFactory;
 import roart.database.IndexFilesDao;
+import roart.service.ControlService;
 
 public class DbCopy extends AbstractFunction {
 
-    public DbCopy(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public DbCopy(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override
@@ -28,11 +29,11 @@ public class DbCopy extends AbstractFunction {
         List<Integer> retList = new ArrayList<>();
         //List<IndexFiles> list = new IndexFilesDao().getAll();
         //List<Files> list2 = new IndexFilesDao().getAllFiles();
-        IndexFilesDao out = new IndexFilesDao(nodeConf);
+        IndexFilesDao out = new IndexFilesDao(nodeConf, controlService);
         String src = param.name;
         String dst = param.add;
-        IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src, nodeConf);
-        IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst, nodeConf);
+        IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src, nodeConf, controlService);
+        IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst, nodeConf, controlService);
         try {
             long time0;
             dstAccess.clear();

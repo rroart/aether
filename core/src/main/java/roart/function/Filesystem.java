@@ -6,11 +6,12 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.service.ServiceParam;
 import roart.dir.Traverse;
+import roart.service.ControlService;
 
 public class Filesystem extends AbstractFunction {
 
-    public Filesystem(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public Filesystem(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override

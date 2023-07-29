@@ -13,11 +13,12 @@ import roart.common.constants.Constants;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.util.TraverseUtil;
+import roart.service.ControlService;
 
 public class Overlapping extends AbstractFunction {
 
-    public Overlapping(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public Overlapping(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     private static int dirsizelimit = 100;
@@ -49,7 +50,7 @@ public class Overlapping extends AbstractFunction {
         // dirset will contain a map of directories, and the md5 files is contains
         // fileset will contain a map of md5 and the directories it has files in
         try {
-            Set<String> filesetnew2 = TraverseUtil.doList2(dirset, fileset, nodeConf);
+            Set<String> filesetnew2 = TraverseUtil.doList2(dirset, fileset, nodeConf, controlService);
             filesetnew.addAll(filesetnew2);
         } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);

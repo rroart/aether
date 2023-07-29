@@ -11,6 +11,7 @@ import roart.common.searchengine.SearchEngineIndexParam;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
+import roart.service.ControlService;
 
 import java.util.List;
 
@@ -23,8 +24,8 @@ public class SolrSearchAccess extends SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public SolrSearchAccess(NodeConfig nodeConf) {
-        super(nodeConf);
+    public SolrSearchAccess(NodeConfig nodeConf, ControlService controlService) {
+        super(nodeConf, controlService);
     }
 
     public String getAppName() {

@@ -14,8 +14,8 @@ import roart.service.ControlService;
 
 public abstract class AbstractIndex extends AbstractFunction {
 
-    public AbstractIndex(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public AbstractIndex(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     public boolean filterindex(IndexFiles index, TraverseQueueElement trav)
@@ -42,7 +42,7 @@ public abstract class AbstractIndex extends AbstractFunction {
             return false;
         }
 
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
 
         boolean indexinc = indexFilter(index, trav);
         if (indexinc) {

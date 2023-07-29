@@ -48,10 +48,13 @@ public abstract class SearchAccess {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public SearchAccess(NodeConfig nodeConf) {
+    public SearchAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public abstract String getAppName();
@@ -160,7 +163,7 @@ public abstract class SearchAccess {
             for (SearchResult res : results) {
                 md5s.add(res.md5);
             }
-            IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+            IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
             Map<String, IndexFiles> indexmd5s = indexFilesDao.getByMd5(md5s);
             for (SearchResult res : results) {
                 String md5 = res.md5;
@@ -178,7 +181,7 @@ public abstract class SearchAccess {
                             log.error(Constants.EXCEPTION, e);
                         }
                  */
-                strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, ControlService.nodename, aFl);
+                strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, controlService.nodename, aFl);
                 i++;
             }
         } catch (Exception e) {
@@ -188,9 +191,9 @@ public abstract class SearchAccess {
     }
 
     private void configureParam(SearchEngineParam param) {
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.iconf = ControlService.iconf;
+        param.configname = controlService.getConfigName();
+        param.configid = controlService.getConfigId();
+        param.iconf = controlService.iconf;
         param.iserver = nodeConf.getInmemoryServer();
         if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
             param.iconnection = nodeConf.getInmemoryRedis();

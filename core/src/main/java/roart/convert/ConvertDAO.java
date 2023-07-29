@@ -25,10 +25,12 @@ import roart.service.ControlService;
 public class ConvertDAO {
 
     private NodeConfig nodeConf;
+    private ControlService controlService;
     
-    public ConvertDAO(NodeConfig nodeConf) {
+    public ConvertDAO(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
@@ -59,9 +61,9 @@ public class ConvertDAO {
     }
 
     private void configureParam(ConvertParam param) {
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.iconf = ControlService.iconf;
+        param.configname = controlService.getConfigName();
+        param.configid = controlService.getConfigId();
+        param.iconf = controlService.iconf;
         param.iserver = nodeConf.getInmemoryServer();
         if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
             param.iconnection = nodeConf.getInmemoryRedis();

@@ -5,35 +5,36 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
+import roart.service.ControlService;
 
 public class IndexFilesAccessFactory {
 
     private static Logger log = LoggerFactory.getLogger(IndexFilesAccessFactory.class);
 
-    public static IndexFilesAccess get(NodeConfig nodeConf) {
+    public static IndexFilesAccess get(NodeConfig nodeConf, ControlService controlService) {
         String type = configDb(nodeConf);
-        return get(type, nodeConf);
+        return get(type, nodeConf, controlService);
     }
     
-    public static IndexFilesAccess get(String type, NodeConfig nodeConf) {
+    public static IndexFilesAccess get(String type, NodeConfig nodeConf, ControlService controlService) {
         IndexFilesAccess indexFiles = null;
         if (type.equals(ConfigConstants.DATABASEHIBERNATE)) {
-            indexFiles  = new HibernateIndexFilesAccess(nodeConf);
+            indexFiles  = new HibernateIndexFilesAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASEHBASE)) {
-            indexFiles = new HbaseIndexFilesAccess(nodeConf);
+            indexFiles = new HbaseIndexFilesAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASECASSANDRA)) {
-            indexFiles = new CassandraIndexFilesAccess(nodeConf);
+            indexFiles = new CassandraIndexFilesAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASEDYNAMODB)) {
-            indexFiles = new DynamodbIndexFilesAccess(nodeConf);
+            indexFiles = new DynamodbIndexFilesAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASEDATANUCLEUS)) {
-            indexFiles = new DataNucleusIndexFilesAccess(nodeConf);
+            indexFiles = new DataNucleusIndexFilesAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASESPRING)) {
-            indexFiles = new SpringDataIndexFilesAccess(nodeConf);
+            indexFiles = new SpringDataIndexFilesAccess(nodeConf, controlService);
         }
         return indexFiles;
     }

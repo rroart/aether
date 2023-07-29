@@ -30,10 +30,10 @@ import roart.service.ControlService;
 public class TraverseUtil {
     public static Logger log = LoggerFactory.getLogger(TraverseUtil.class);
 
-    public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf) {
+    public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf, ControlService controlService) {
         int max = nodeConf.getReindexLimit();
         int maxindex = nodeConf.getIndexLimit();
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
             isMaxed = true;
@@ -45,25 +45,25 @@ public class TraverseUtil {
     }
 
     // old, probably oudated by overlapping?
-    public static Set<String> dupdir (FileObject fileObject, NodeConfig nodeConf) throws Exception {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+    public static Set<String> dupdir (FileObject fileObject, NodeConfig nodeConf, ControlService controlService) throws Exception {
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         boolean onlyone = false;
         boolean error = false;
         int count = 0;
         long size = 0;
         Set<String> retset = new HashSet<>();
         HashSet<String> md5set = new HashSet<>();
-        FileObject dir = new FileSystemDao(nodeConf).get(fileObject);
-        List<FileObject> listDir = new FileSystemDao(nodeConf).listFiles(dir);
+        FileObject dir = new FileSystemDao(nodeConf, controlService).get(fileObject);
+        List<FileObject> listDir = new FileSystemDao(nodeConf, controlService).listFiles(dir);
         for (FileObject fo : listDir) {
-            String filename = new FileSystemDao(nodeConf).getAbsolutePath(fo);
+            String filename = new FileSystemDao(nodeConf, controlService).getAbsolutePath(fo);
             if (filename.length() > Traverse.MAXFILE) {
                 log.info("Too large filesize {}", filename);
                 error = true;
                 continue;
             }
-            if (new FileSystemDao(nodeConf).isDirectory(fo)) {
-                retset.addAll(dupdir(fo, nodeConf));
+            if (new FileSystemDao(nodeConf, controlService).isDirectory(fo)) {
+                retset.addAll(dupdir(fo, nodeConf, controlService));
             } else {
                 if (error) {
                     continue;
@@ -93,7 +93,7 @@ public class TraverseUtil {
         return retset;
     }
 
-    public static List<ResultItem> notindexed(ServiceParam el, IndexFilesDao indexFilesDao) throws Exception {
+    public static List<ResultItem> notindexed(ServiceParam el, IndexFilesDao indexFilesDao, ControlService controlService) throws Exception {
         List<ResultItem> retlist = new ArrayList<>();
         ResultItem ri = new ResultItem();
         retlist.add(IndexFiles.getHeader());
@@ -105,13 +105,13 @@ public class TraverseUtil {
                 continue;
             }
             FileLocation aFl = index.getaFilelocation();
-            ri = IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, aFl);
+            ri = IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl);
             retlist.add(ri);
         }
         return retlist;
     }
 
-    public static List<ResultItem> indexed(ServiceParam el, IndexFilesDao indexFilesDao) throws Exception {
+    public static List<ResultItem> indexed(ServiceParam el, IndexFilesDao indexFilesDao, ControlService controlService) throws Exception {
         List<ResultItem> retlist = new ArrayList<ResultItem>();
         List<IndexFiles> indexes = indexFilesDao.getAll();
         log.info("sizes {}", indexes.size());
@@ -121,7 +121,7 @@ public class TraverseUtil {
                 if (indexed != null) {
                     if (indexed.booleanValue()) {
                         FileLocation aFl = index.getaFilelocation();
-                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, aFl));
+                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
                     }
                 }
             }
@@ -132,18 +132,18 @@ public class TraverseUtil {
     // retset will be returned empty
     // dirset will contain a map of directories, and the md5 files is contains
     // fileset will contain a map of md5 and the directories it has files in
-    public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset, NodeConfig nodeConf) throws Exception {
+    public static Set<String> doList2 (Map<String, HashSet<String>> dirset, Map<String, HashSet<String>> fileset, NodeConfig nodeConf, ControlService controlService) throws Exception {
         Set<String> retset = new HashSet<>();
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
 
         List<IndexFiles> files = indexFilesDao.getAll();
         log.info("size {}", files.size());
         for (IndexFiles file : files) {
             String md5 = file.getMd5();
             for (FileLocation filename : file.getFilelocations()) {
-                FileObject tmpfile = new FileSystemDao(nodeConf).get(FsUtil.getFileObject(filename));
-                FileObject dir = new FileSystemDao(nodeConf).getParent(tmpfile);
-                String dirname = new FileSystemDao(nodeConf).getAbsolutePath(dir);
+                FileObject tmpfile = new FileSystemDao(nodeConf, controlService).get(FsUtil.getFileObject(filename));
+                FileObject dir = new FileSystemDao(nodeConf, controlService).getParent(tmpfile);
+                String dirname = new FileSystemDao(nodeConf, controlService).getAbsolutePath(dir);
                 HashSet<String> md5set = dirset.get(dirname);
                 if (md5set == null) {
                     md5set = new HashSet<>();
@@ -162,7 +162,7 @@ public class TraverseUtil {
         return retset;
     }
 
-    public static FileLocation getExistingLocalFilelocation(IndexFiles i, NodeConfig nodeConf) {
+    public static FileLocation getExistingLocalFilelocation(IndexFiles i, NodeConfig nodeConf, ControlService controlService) {
         // next up : locations
         Set<FileLocation> filelocations = i.getFilelocations();
         if (filelocations == null) {
@@ -171,13 +171,13 @@ public class TraverseUtil {
         for (FileLocation filelocation : filelocations) {
             Location node = FsUtil.getLocation(filelocation.getNode());
             String filename = filelocation.getFilename();
-            if (node == null || node.equals(ControlService.nodename)) {
-                FileObject file = new FileSystemDao(nodeConf).get(new FileObject(node, filename));
+            if (node == null || node.equals(controlService.nodename)) {
+                FileObject file = new FileSystemDao(nodeConf, controlService).get(new FileObject(node, filename));
                 if (file == null) {
                     log.error("try file {}", filename);
                     continue;
                 }
-                if (new FileSystemDao(nodeConf).exists(file)) {
+                if (new FileSystemDao(nodeConf, controlService).exists(file)) {
                     return filelocation;			
                 }
             }
@@ -186,9 +186,9 @@ public class TraverseUtil {
     }
 
     @Deprecated
-    public static FileLocation getExistingLocalFilelocationMaybe(IndexFiles i, NodeConfig nodeConf) {
+    public static FileLocation getExistingLocalFilelocationMaybe(IndexFiles i, NodeConfig nodeConf, ControlService controlService) {
         // next up : locations
-        FileLocation fl = getExistingLocalFilelocation(i, nodeConf);
+        FileLocation fl = getExistingLocalFilelocation(i, nodeConf, controlService);
         if (fl != null) {
             return fl;
         }

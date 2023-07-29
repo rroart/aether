@@ -1,6 +1,7 @@
 package roart.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -17,13 +18,14 @@ import roart.common.synchronization.impl.MyCuratorLock;
 import roart.service.ControlService;
 
 public class MyCuratorLockTest {
-   
+
+    ControlService controlService = mock(ControlService.class);
     @BeforeEach
     public void before() {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
         String zookeeperConnectionString = "localhost:2181";
-        ControlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
-        ControlService.curatorClient.start();
+        controlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        controlService.curatorClient.start();
     }
     
     @Test
@@ -35,7 +37,7 @@ public class MyCuratorLockTest {
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
                 String id = MyLocalLockTestUtil.getId();
-                MyLock lock = new MyCuratorLock(id, ControlService.curatorClient);
+                MyLock lock = new MyCuratorLock(id, controlService.curatorClient);
                 try {
                     lock.lock();
                     lock.unlock();

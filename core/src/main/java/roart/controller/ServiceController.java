@@ -1,8 +1,12 @@
 package roart.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 
+import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -70,16 +75,16 @@ public class ServiceController implements CommandLineRunner {
     private ControlService controlService;
     private SearchService searchService; // = new SearchService(nodeConf);
 
-    private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(null);
+    private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(getConfigfile());
 
-    private ClientHandler clientHandler = new ClientHandler(nodeConf);
+    private ClientHandler clientHandler;
     private ControlService getControlService() {
         return controlService;
     }
 
     private SearchService getInstance2() {
         if (searchService == null) {
-            searchService = new SearchService(nodeConf);
+            searchService = new SearchService(nodeConf, controlService);
         }
         return searchService;
     }
@@ -528,7 +533,7 @@ public class ServiceController implements CommandLineRunner {
             method = RequestMethod.GET)
     public @ResponseBody byte[] getDownload(@PathVariable String id)
             throws Exception {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         InputStream result = null;
         try {
             String md5 = id;
@@ -536,7 +541,7 @@ public class ServiceController implements CommandLineRunner {
             FileLocation fl = index.getaFilelocation();
             FileObject f = FsUtil.getFileObject(fl);
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            InmemoryMessage message = new FileSystemDao(nodeConf).readFile(f);
+            InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(f);
             result = inmemory.getInputStream(message);
             inmemory.delete(message);
             //result = FileSystemDao.getInputStream(f);
@@ -567,6 +572,13 @@ public class ServiceController implements CommandLineRunner {
     @Override
     public void run(String... args) throws InterruptedException {
         controlService = new ControlService(nodeConf);
+        try {
+            // md5 myconfigfile 
+            controlService.configMd5 = DigestUtils.md5Hex(FileUtils.openInputStream(new File(getConfigfile())));
+        } catch (IOException e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        clientHandler = new ClientHandler(nodeConf, controlService);        
         EurekaUtil.initEurekaClient();
         EurekaUtil.discoveryClient = discoveryClient;
         EurekaUtil.eurekaClient = eurekaClient;
@@ -584,4 +596,14 @@ public class ServiceController implements CommandLineRunner {
             log.error(Constants.EXCEPTION, e);
         }
     }
+    
+    private String getConfigfile() {
+        String myConfigFile = System.getProperty("config");
+        if (myConfigFile == null) {
+            myConfigFile = ConfigConstants.CONFIGFILE;
+        }
+        myConfigFile = "../conf/" + myConfigFile;
+        return myConfigFile;
+    }
+
 }

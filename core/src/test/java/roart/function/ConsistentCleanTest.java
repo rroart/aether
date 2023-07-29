@@ -40,10 +40,13 @@ public class ConsistentCleanTest {
     
     static NodeConfig nodeConf;
     
+    static ControlService controlService;
+    
     @BeforeAll
     public static void first() {
         nodeConf = mock(NodeConfig.class);
-        ControlService.curatorClient = mock(CuratorFramework.class);
+        controlService = mock(ControlService.class);
+        //ControlService.curatorClient = mock(CuratorFramework.class);
         //when(ControlService.curatorClient.checkExists().forPath(any()).).thenReturn(true);        
     }
     
@@ -55,7 +58,7 @@ public class ConsistentCleanTest {
         List<ResultItem> delList = new ArrayList<>();
         Set<FileObject> delfileset = new HashSet<>(); 
         Set<IndexFiles> ifs = new HashSet<>();
-        ConsistentClean cl = new ConsistentClean(null, nodeConf);
+        ConsistentClean cl = new ConsistentClean(null, nodeConf, controlService);
         cl.setFileSystemDao(fileSystemDao);
         cl.setIndexFilesDao(indexFilesDao);
         cl.setSearchDao(searchDao);
@@ -79,7 +82,7 @@ public class ConsistentCleanTest {
         List<ResultItem> delList = new ArrayList<>();
         Set<FileObject> delfileset = new HashSet<>(); 
         Set<IndexFiles> ifs = new HashSet<>();
-        ConsistentClean cl = new ConsistentClean(null, nodeConf);
+        ConsistentClean cl = new ConsistentClean(null, nodeConf, controlService);
         cl.setFileSystemDao(fileSystemDao);
         cl.setIndexFilesDao(indexFilesDao);
         cl.setSearchDao(searchDao);
@@ -105,7 +108,7 @@ public class ConsistentCleanTest {
         List<ResultItem> delList = new ArrayList<>();
         Set<FileObject> delfileset = new HashSet<>(); 
         Set<IndexFiles> ifs = new HashSet<>();
-        ConsistentClean cl = new ConsistentClean(null, nodeConf);
+        ConsistentClean cl = new ConsistentClean(null, nodeConf, controlService);
         cl.setFileSystemDao(fileSystemDao);
         cl.setIndexFilesDao(indexFilesDao);
         cl.setSearchDao(searchDao);

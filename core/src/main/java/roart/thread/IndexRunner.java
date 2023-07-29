@@ -25,6 +25,7 @@ import roart.dir.Traverse;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.search.Search;
+import roart.service.ControlService;
 
 public class IndexRunner implements Runnable {
 
@@ -33,10 +34,13 @@ public class IndexRunner implements Runnable {
     public static volatile int timeout = 3600;
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public IndexRunner(NodeConfig nodeConf) {
+    public IndexRunner(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public void run() {
@@ -47,7 +51,7 @@ public class IndexRunner implements Runnable {
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        if (new Queues(nodeConf).getIndexs() > 0) {
+        if (new Queues(nodeConf, controlService).getIndexs() > 0) {
             log.info("resetting indexs");
             //Queues.resetIndexs();
         }
@@ -89,9 +93,9 @@ public class IndexRunner implements Runnable {
             for (Future<Object> key: removes) {
                 map.remove(key);
                 running--;
-                new Queues(nodeConf).decIndexs();
+                new Queues(nodeConf, controlService).decIndexs();
             }
-            if (new Queues(nodeConf).getIndexQueueSize() == 0 /*|| Queues.indexQueueHeavyLoaded()*/) {
+            if (new Queues(nodeConf, controlService).getIndexQueueSize() == 0 /*|| Queues.indexQueueHeavyLoaded()*/) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -123,8 +127,8 @@ public class IndexRunner implements Runnable {
 
                 Future<Object> task = executorService.submit(callable);
                 map.put(task, new Date());
-                new Queues(nodeConf).queueStat();
-                new Queues(nodeConf).incIndexs();
+                new Queues(nodeConf, controlService).queueStat();
+                new Queues(nodeConf, controlService).incIndexs();
                 running++;
                 log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
                 log.info("queue " + executorService.getQueue());
@@ -168,14 +172,14 @@ public class IndexRunner implements Runnable {
 
             public void run() {
                 try {
-                    new Search(nodeConf).indexme(el);
+                    new Search(nodeConf, controlService).indexme(el);
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
                 }
             }
         }
 
-        IndexQueueElement el = new Queues(nodeConf).getIndexQueue().poll(IndexQueueElement.class);
+        IndexQueueElement el = new Queues(nodeConf, controlService).getIndexQueue().poll(IndexQueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;

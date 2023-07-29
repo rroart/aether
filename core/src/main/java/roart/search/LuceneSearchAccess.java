@@ -5,6 +5,7 @@ import roart.common.constants.EurekaConstants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.model.SearchDisplay;
+import roart.service.ControlService;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class LuceneSearchAccess extends SearchAccess {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public LuceneSearchAccess(NodeConfig nodeConf) {
-        super(nodeConf);
+    public LuceneSearchAccess(NodeConfig nodeConf, ControlService controlService) {
+        super(nodeConf, controlService);
     }
 
     public String getAppName() {

@@ -10,6 +10,7 @@ import roart.common.service.ServiceParam;
 import roart.function.AbstractFunction;
 import roart.function.FunctionFactory;
 import roart.queue.Queues;
+import roart.service.ControlService;
 
 public class ClientHandler {
 
@@ -18,10 +19,13 @@ public class ClientHandler {
     public static final int timeout = 3600;
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public ClientHandler(NodeConfig nodeConf) {
+    public ClientHandler(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public List doClient()  {
@@ -31,16 +35,16 @@ public class ClientHandler {
             return null;
         }
         // vulnerable spot
-        new Queues(nodeConf).incClients();
+        new Queues(nodeConf, controlService).incClients();
 
         return doClient(el);
     }
 
     public List doClient(ServiceParam el)  {
         List list = null;
-        AbstractFunction function = FunctionFactory.factory(el, nodeConf);
+        AbstractFunction function = FunctionFactory.factory(el, nodeConf, controlService);
         list = function.doClient(el);
-        new Queues(nodeConf).decClients();
+        new Queues(nodeConf, controlService).decClients();
         return list;
     }
 

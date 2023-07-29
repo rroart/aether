@@ -18,6 +18,7 @@ import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
+import roart.service.ControlService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,10 @@ public class SearchDao {
 
     private NodeConfig nodeConf;
     
-    public SearchDao(NodeConfig nodeConf) {
+    public SearchDao(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-        this.search = SearchAccessFactory.get(nodeConf);
+        this.search = SearchAccessFactory.get(nodeConf, controlService);
     }
 
     public int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {

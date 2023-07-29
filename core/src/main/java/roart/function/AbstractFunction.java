@@ -41,18 +41,21 @@ public abstract class AbstractFunction {
     private ServiceParam param;
 
     protected NodeConfig nodeConf;
+
+    protected ControlService controlService;
     
-    public AbstractFunction(ServiceParam param, NodeConfig nodeConf) {
+    public AbstractFunction(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
         this.param = param;
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public abstract List doClient(ServiceParam param);
 
     @SuppressWarnings("rawtypes")
     public List<List> clientDo(ServiceParam el) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
-        synchronized (ControlService.writelock) {
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
+        synchronized (controlService.writelock) {
             try {
                 /*
                 MyLock lock = null;
@@ -86,35 +89,35 @@ public abstract class AbstractFunction {
                 retNotExistList.add(new ResultItem("File does not exist"));
                 List<String> notfoundList = new ArrayList<>();
                 List<String> newfileList = new ArrayList<>();
-                Queues queues = new Queues(nodeConf);
-                String myid = ControlService.getMyId();
+                Queues queues = new Queues(nodeConf, controlService);
+                String myid = controlService.getMyId();
                 String filesetnewid = queues.prefix() + Constants.FILESETNEWID + myid;
-                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(filesetnewid, filesetnew);
 
                 String notfoundsetid = queues.prefix() + Constants.NOTFOUNDSETID + myid;
-                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 //MySets.put(notfoundsetid, notfoundset);
 
                 String retlistid = queues.prefix() + Constants.RETLISTID + myid;
-                MyQueue retQueue = MyQueues.get(retlistid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retlistid, retlist);
 
                 String retnotlistid = queues.prefix() + Constants.RETNOTLISTID + myid;
-                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
 
                 String traversecountid = queues.prefix() + Constants.TRAVERSECOUNT + myid;
-                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
 
                 String filestodosetid = queues.prefix() + Constants.FILESTODOSETID + myid;
-                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 String filesdonesetid = queues.prefix() + Constants.FILESDONESETID + myid;
-                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 //MyLists.put(retnotlistid, retnotlist);
                queues.workQueues.add(filestodoSet);
 
-                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, nodeConf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid, nodeConf);
+                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, nodeConf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid, nodeConf, controlService);
 
                 // filesystem
                 // reindexsuffix
@@ -180,7 +183,7 @@ public abstract class AbstractFunction {
                 retlistlist.add(retTikaTimeoutList);
                 retlistlist.add(retNotExistList);
                 if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
-                    ZKMessageUtil.dorefresh(ControlService.nodename);
+                    ZKMessageUtil.dorefresh(controlService.nodename);
                     //lock.unlock();
                     //ClientRunner.notify("Sending refresh request");
                 }

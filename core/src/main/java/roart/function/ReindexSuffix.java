@@ -8,11 +8,12 @@ import roart.common.service.ServiceParam;
 import roart.common.util.FsUtil;
 import roart.filesystem.FileSystemDao;
 import roart.queue.TraverseQueueElement;
+import roart.service.ControlService;
 
 public class ReindexSuffix extends Reindex {
 
-    public ReindexSuffix(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public ReindexSuffix(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override

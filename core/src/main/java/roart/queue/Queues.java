@@ -61,11 +61,14 @@ public class Queues {
     private AtomicInteger traverses = new AtomicInteger(0);
     private AtomicInteger listings = new AtomicInteger(0);
 */
-    private NodeConfig nodeConf;    
+    private NodeConfig nodeConf;
 
-    public Queues(NodeConfig nodeConf) {
+    private ControlService controlService;    
+
+    public Queues(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public long getConverts() {
@@ -189,7 +192,7 @@ public class Queues {
     }
 
     public long total() {
-        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return total.get();
     }     
 
@@ -203,46 +206,46 @@ public class Queues {
 
     public MyQueue<ListQueueElement> getListingQueue() {
         String queueid = prefix() + Constants.LISTINGQUEUE;
-        MyQueue<ListQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ListQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public MyQueue<TraverseQueueElement> getTraverseQueue() {
         String queueid = prefix() + Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public MyQueue<ConvertQueueElement> getConvertQueue() {
         String queueid = prefix() + Constants.CONVERTQUEUE;
-        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
     public MyQueue<IndexQueueElement> getIndexQueue() {
         String queueid = prefix() + Constants.INDEXQUEUE;
-        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
     
     public MyAtomicLong getMyConverts() {
-        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public MyAtomicLong getMyIndexs() {
-        return MyAtomicLongs.get(prefix() + Constants.INDEXS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.INDEXS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public MyAtomicLong getMyTraverses() {
-        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public MyAtomicLong getMyListings() {
-        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public MyAtomicLong getMyClients() {
-        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public int getListingQueueSize() {

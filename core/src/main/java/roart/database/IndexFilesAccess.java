@@ -37,10 +37,13 @@ public abstract class IndexFilesAccess {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private NodeConfig nodeConf;
+
+    protected ControlService controlService;
     
-    public IndexFilesAccess(NodeConfig nodeConf) {
+    public IndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public abstract String getAppName();
@@ -242,9 +245,9 @@ public abstract class IndexFilesAccess {
     }
 
     private void configureParam(DatabaseParam param) {
-        param.setConfigname(ControlService.getConfigName());
-        param.setConfigid(ControlService.getConfigId());
-        param.setIconf(ControlService.iconf);
+        param.setConfigname(controlService.getConfigName());
+        param.setConfigid(controlService.getConfigId());
+        param.setIconf(controlService.iconf);
         param.setIserver(nodeConf.getInmemoryServer());
         if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
             param.setIconnection(nodeConf.getInmemoryRedis());

@@ -7,11 +7,12 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
+import roart.service.ControlService;
 
 public class MemoryUsage extends AbstractFunction {
 
-    public MemoryUsage(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public MemoryUsage(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override

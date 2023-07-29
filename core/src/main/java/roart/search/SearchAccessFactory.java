@@ -7,23 +7,24 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.database.IndexFilesAccessFactory;
+import roart.service.ControlService;
 
 public class SearchAccessFactory {
 
     private static Logger log = LoggerFactory.getLogger(SearchAccessFactory.class);
 
-    public static SearchAccess get(NodeConfig nodeConf) {
+    public static SearchAccess get(NodeConfig nodeConf, ControlService controlService) {
         String type = configIndexing(nodeConf);
         // TODO make OO of this?
         SearchAccess search = null;
         if (type.equals(ConfigConstants.SEARCHENGINELUCENE)) {
-            search = new LuceneSearchAccess(nodeConf);
+            search = new LuceneSearchAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.SEARCHENGINESOLR)) {
-            search = new SolrSearchAccess(nodeConf);
+            search = new SolrSearchAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
-            search = new ElasticSearchAccess(nodeConf);
+            search = new ElasticSearchAccess(nodeConf, controlService);
         }
         return search;
     }
@@ -39,7 +40,7 @@ public class SearchAccessFactory {
                 index = ConfigConstants.SEARCHENGINEELASTIC;
             }
             if (index != null) {
-                //ControlService.index = index;
+                //controlService.index = index;
                 //roart.search.SearchDao.instance(index);
             }
             return index;

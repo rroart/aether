@@ -6,26 +6,27 @@ import org.slf4j.LoggerFactory;
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.service.ControlService;
 import roart.thread.ControlRunner;
 
 public class ClassifyAccessFactory {
 
     private static Logger log = LoggerFactory.getLogger(ClassifyAccessFactory.class);
     
-    public static ClassifyAccess get(NodeConfig nodeConf) {
+    public static ClassifyAccess get(NodeConfig nodeConf, ControlService controlService) {
         ClassifyAccess classify = null;
         String type = configClassify(nodeConf);
         if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
-            classify = new MahoutClassifyAccess(nodeConf);
+            classify = new MahoutClassifyAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
-            classify = new MahoutSparkClassifyAccess(nodeConf);
+            classify = new MahoutSparkClassifyAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
-            classify = new SparkMLClassifyAccess(nodeConf);
+            classify = new SparkMLClassifyAccess(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
-            classify = new OpennlpClassifyAccess(nodeConf);
+            classify = new OpennlpClassifyAccess(nodeConf, controlService);
         }
         return classify;
     }

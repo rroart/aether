@@ -8,11 +8,12 @@ import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.dir.Traverse;
 import roart.queue.TraverseQueueElement;
+import roart.service.ControlService;
 
 public class FilesystemLucenenew extends AbstractIndex {
 
-    public FilesystemLucenenew(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public FilesystemLucenenew(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override

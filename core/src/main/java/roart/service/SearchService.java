@@ -23,11 +23,14 @@ public class SearchService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public SearchService(NodeConfig nodeConf) {
+    public SearchService(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-    }
+        this.controlService = controlService;
+  }
 
     public List searchme(SearchEngineSearchParam e) {
         return searchmeDo(e);
@@ -38,7 +41,7 @@ public class SearchService {
         String type = e.searchtype;
         List strlist = new ArrayList<String>();
 
-        ResultItem[] strarr = new roart.search.Search(nodeConf).searchme(str, type);
+        ResultItem[] strarr = new roart.search.Search(nodeConf, controlService).searchme(str, type);
 
         for (ResultItem stri : strarr) {
             strlist.add(stri);
@@ -53,7 +56,7 @@ public class SearchService {
         String type = e.searchtype;
         List strlist = new ArrayList<String>();
 
-        ResultItem[] strarr = new roart.search.Search(nodeConf).searchsimilar(str, type);
+        ResultItem[] strarr = new roart.search.Search(nodeConf, controlService).searchsimilar(str, type);
 
         for (ResultItem stri : strarr) {
             strlist.add(stri);

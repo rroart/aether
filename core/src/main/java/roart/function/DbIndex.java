@@ -16,13 +16,13 @@ import roart.service.ControlService;
 
 public class DbIndex extends AbstractFunction {
 
-    public DbIndex(ServiceParam param, NodeConfig nodeConf) {
-        super(param, nodeConf);
+    public DbIndex(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
+        super(param, nodeConf, controlService);
     }
 
     @Override
     public List doClient(ServiceParam param) {
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         try {
             ServiceParam.Function function = param.function;
             String md5 = param.file;
@@ -39,7 +39,7 @@ public class DbIndex extends AbstractFunction {
             IndexFiles index = indexFilesDao.getByMd5(md5);
             if (index != null) {
                 FileLocation aFl = index.getaFilelocation();
-                indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), ControlService.nodename, aFl));
+                indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
                 Set<FileLocation> files = index.getFilelocations();
                 if (files != null) {
                     for (FileLocation filename : files) {

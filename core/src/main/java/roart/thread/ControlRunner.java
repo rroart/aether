@@ -39,19 +39,19 @@ public class ControlRunner implements Runnable {
                 // TODO Auto-generated catch block
                 log.error(Constants.EXCEPTION, e);
             }
-            if (!ControlService.indexWorker.isAlive()) {
+            if (!controlService.indexWorker.isAlive()) {
                 controlService.startIndexWorker();
             }
-            if (!ControlService.dbWorker.isAlive()) {
+            if (!controlService.dbWorker.isAlive()) {
                 controlService.startDbWorker();
             }
-            if (nodeConf.getZookeeper() != null && !ControlService.zkWorker.isAlive()) {
+            if (nodeConf.getZookeeper() != null && !controlService.zkWorker.isAlive()) {
                 //cs.startZKWorker();
             }
-            if (!ControlService.traverseQueueWorker.isAlive()) {
+            if (!controlService.traverseQueueWorker.isAlive()) {
                 controlService.startTraversequeueWorker();
             }
-            //if (ControlService.zookeeper != null && ControlService.zookeepersmall && !ControlService.zkQueueWorker.isAlive()) {
+            //if (controlService.zookeeper != null && controlService.zookeepersmall && !controlService.zkQueueWorker.isAlive()) {
             //    cs.startZKQueueWorker();
             //}
         }

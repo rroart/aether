@@ -30,10 +30,13 @@ public class FileSystemDao {
     private FileSystemAccess filesystemJpa = null;
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public FileSystemDao(NodeConfig nodeConf) {
+    public FileSystemDao(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     //private static Map<String, MyServer> myservers = new HashMap<>();
@@ -124,7 +127,7 @@ public class FileSystemDao {
     private FileSystemAccess getFileSystemAccess(FileObject f) {
         if (f == null) {
             log.error("f null");
-            return new LocalFileSystemAccess(nodeConf);
+            return new LocalFileSystemAccess(nodeConf, controlService);
         }
         /*
         if (f.fs == null) {
@@ -147,12 +150,12 @@ public class FileSystemDao {
         if (fs2.fs == null || fs2.fs.isEmpty()) {
             fs2.fs = FileSystemConstants.LOCALTYPE;
         }
-        String url = getUrl(ControlService.curatorClient, fs2, path, "");
+        String url = getUrl(controlService.curatorClient, fs2, path, "");
         if (url == null) {
             log.error("URL null for {} {}", fs, path);
             return null;
         }
-        FileSystemAccess access = new FileSystemAccess(nodeConf);
+        FileSystemAccess access = new FileSystemAccess(nodeConf, controlService);
         access.constructor("http://" + url + "/");
         return access;
     }

@@ -67,12 +67,15 @@ public class TraverseFile {
     private IndexFilesDao indexFilesDao;
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public TraverseFile(IndexFilesDao indexFilesDao, NodeConfig nodeConf) {
+    public TraverseFile(IndexFilesDao indexFilesDao, NodeConfig nodeConf, ControlService controlService) {
         super();
         this.indexFilesDao = indexFilesDao;
         this.nodeConf = nodeConf;
-        this.indexFilesDao = new IndexFilesDao(nodeConf);
+        this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
+        this.controlService = controlService;
     }
 
     /**
@@ -85,28 +88,28 @@ public class TraverseFile {
     @Deprecated // ?
     public void handleFo3(TraverseQueueElement trav)
             throws Exception {
-        //          if (ControlService.zookeepersmall) {
+        //          if (controlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
         //          } else {
         // config with finegrained distrib
-        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf);
-        if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf)) {
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
+        if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             count.addAndGet(-1);
             log.debug("Count dec {}", trav.getFileobject());
             return;
         }
         FileObject filename = trav.getFileobject();
-        FileObject fo = new FileSystemDao(nodeConf).get(filename);
+        FileObject fo = new FileSystemDao(nodeConf, controlService).get(filename);
 
         //MyLock lock2 = MyLockFactory.create();
         //lock2.lock(fo.toString());
         log.debug("timer");
         String md5 = indexFilesDao.getMd5ByFilename(filename);
         log.debug("info {} {}", md5, filename);
-        MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+        MySet<String> filestodoset = (MySet<String>) MySets.get(trav.getFilestodoid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
         if (!filestodoset.add(filename.toString())) {
             log.error("already added {}", filename);
         }
@@ -115,11 +118,11 @@ public class TraverseFile {
         boolean lockwait = false;
         if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
-                if (!new FileSystemDao(nodeConf).exists(fo)) {
+                if (!new FileSystemDao(nodeConf, controlService).exists(fo)) {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
                 if (trav.getClientQueueElement().function != ServiceParam.Function.INDEX) {
-                    try (InputStream fis = new FileSystemDao(nodeConf).getInputStream(fo)) {
+                    try (InputStream fis = new FileSystemDao(nodeConf, controlService).getInputStream(fo)) {
                         md5 = DigestUtils.md5Hex( fis );
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -127,7 +130,7 @@ public class TraverseFile {
                     if (files == null) {
                         //z.lock(md5);
                         // get read file
-                        lock = MyLockFactory.create(md5, nodeConf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+                        lock = MyLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
                         lock.lock();
                         files = indexFilesDao.getByMd5(md5);
                     }
@@ -139,24 +142,24 @@ public class TraverseFile {
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
-                        MySet<String> newset = (MySet<String>) MySets.get(trav.getNewsetid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                        MySet<String> newset = (MySet<String>) MySets.get(trav.getNewsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                         newset.add(filename.toString());
                     }
                 }
             } catch (FileNotFoundException e) {
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 count.addAndGet(-1);
                 log.error(Constants.EXCEPTION, e);
-                MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                MySet<String> notfoundset = (MySet<String>) MySets.get(trav.getNotfoundsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.add(filename.toString());
                 log.debug("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 count.addAndGet(-1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
@@ -166,7 +169,7 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MyLockFactory.create(md5, nodeConf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+            lock = MyLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
             lock.lock();
             files = indexFilesDao.getByMd5(md5);
             // TODO implement other wise
@@ -187,7 +190,7 @@ public class TraverseFile {
         }
         String md5sdoneid = "md5sdoneid"+trav.getMyid();
         // TODO mysets -> queue
-        MySet<String> md5sdoneset = MySets.get(md5sdoneid, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        MySet<String> md5sdoneset = MySets.get(md5sdoneid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
 
         try {
             if (md5 != null && md5sdoneset != null && !md5sdoneset.add(md5)) {
@@ -225,9 +228,9 @@ public class TraverseFile {
             if (!filestodoset.remove(filename.toString())) {
                 log.error("already removed {}", filename);
             }
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             count.addAndGet(-1);
             log.debug("Count dec {}", trav.getFileobject());
         }
@@ -236,14 +239,14 @@ public class TraverseFile {
 
     public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Map<FileObject, String> contentMap, Queue<MyLock> locks)
             throws Exception {
-        //          if (ControlService.zookeepersmall) {
+        //          if (controlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
         //          } else {
         // config with finegrained distrib
-        if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf)) {
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+        if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             count.addAndGet(-1);
             log.debug("Count dec {}", trav.getFileobject());
             return;
@@ -251,10 +254,10 @@ public class TraverseFile {
         FileObject filename = trav.getFileobject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
-        MyLock folock = MyLockFactory.create(filename.toString(), nodeConf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+        MyLock folock = MyLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
         boolean flocked = folock.tryLock();
         if (!flocked) {
-            MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
+            MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
             /*
             MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
             total.addAndGet(1);
@@ -300,10 +303,10 @@ public class TraverseFile {
                 // get read file
                 // todo lock file name
                 
-                lock = MyLockFactory.create(md5, nodeConf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+                lock = MyLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
                 boolean locked = lock.tryLock();
                 if (!locked) {
-                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
+                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     /*
                     MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                     total.addAndGet(1);
@@ -344,24 +347,24 @@ public class TraverseFile {
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
                     if (trav.getNewsetid() != null) {
-                        MyQueue<String> newset = (MyQueue<String>) MyQueues.get(trav.getNewsetid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                        MyQueue<String> newset = (MyQueue<String>) MyQueues.get(trav.getNewsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                         newset.offer(filename.toString());
                     }
                 }
             } catch (FileNotFoundException e) {
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 count.addAndGet(-1);
                 log.error(Constants.EXCEPTION, e);
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(trav.getNotfoundsetid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(trav.getNotfoundsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename.toString());
                 log.debug("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                 count.addAndGet(-1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
@@ -371,10 +374,10 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MyLockFactory.create(md5, nodeConf.getLocker(), ControlService.curatorClient, GetHazelcastInstance.instance());
+            lock = MyLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
             boolean locked = lock.tryLock();
             if (!locked) {
-                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
+                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                 /*
                 MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
                 total.addAndGet(1);
@@ -442,11 +445,11 @@ public class TraverseFile {
                     unlock.unlock();
                 }
             }
-            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(trav.getFilesdoneid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(trav.getFilesdoneid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             filesdoneset.offer(filename.toString());
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
             count.addAndGet(-1);
             log.debug("Count dec {}", trav.getFileobject());
         }
@@ -498,7 +501,7 @@ public class TraverseFile {
         //Queues.tikaQueue.add(e);
         String content = null; //contentMap.get(filename);
         ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
-        new Queues(nodeConf).getConvertQueue().offer(e2);
+        new Queues(nodeConf, controlService).getConvertQueue().offer(e2);
         //Queues.getConvertQueueSize().incrementAndGet();
     //size = doTika(filename, filename, md5, index, retlist);
     }
@@ -525,7 +528,7 @@ public class TraverseFile {
         if (filenames.isEmpty()) {
             return contentMap;
         }
-        Map<FileObject, InmemoryMessage> messageMap = new FileSystemDao(nodeConf).readFile(filenames);
+        Map<FileObject, InmemoryMessage> messageMap = new FileSystemDao(nodeConf, controlService).readFile(filenames);
         for (Entry<FileObject, InmemoryMessage> entry : messageMap.entrySet()) {
             FileObject filename = entry.getKey();
             InmemoryMessage message = entry.getValue();
@@ -561,6 +564,6 @@ public class TraverseFile {
         if (filenames.isEmpty()) {
             return new HashMap<>();
         }
-        return new FileSystemDao(nodeConf).getMd5(filenames);
+        return new FileSystemDao(nodeConf, controlService).getMd5(filenames);
     }
 }

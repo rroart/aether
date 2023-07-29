@@ -42,10 +42,13 @@ public class FileSystemAccess {
     public String getAppName() { return null; }
  
     protected NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public FileSystemAccess(NodeConfig nodeConf) {
+    public FileSystemAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public String constructor(String url) {
@@ -155,8 +158,8 @@ public class FileSystemAccess {
 
     @Deprecated
     public String getLocalFilesystemFile(FileObject fo) {
-        FileObject file = new FileSystemDao(nodeConf).get(fo);  
-        String fn = new FileSystemDao(nodeConf).getAbsolutePath(file);
+        FileObject file = new FileSystemDao(nodeConf, controlService).get(fo);  
+        String fn = new FileSystemDao(nodeConf, controlService).getAbsolutePath(file);
         // TODO
         if (fn.charAt(4) == ':') {
             fn = fn.substring(5);
@@ -181,9 +184,9 @@ public class FileSystemAccess {
     }
 
     private void configureParam(FileSystemParam param) {
-        param.configname = ControlService.getConfigName();
-        param.configid = ControlService.getConfigId();
-        param.iconf = ControlService.iconf;
+        param.configname = controlService.getConfigName();
+        param.configid = controlService.getConfigId();
+        param.iconf = controlService.iconf;
         param.iserver = nodeConf.getInmemoryServer();
         if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
             param.iconnection = nodeConf.getInmemoryRedis();

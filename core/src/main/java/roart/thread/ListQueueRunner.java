@@ -56,11 +56,14 @@ public class ListQueueRunner implements Runnable {
     private FileObject[] dirlistnot;
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public ListQueueRunner(NodeConfig nodeConf) {
+    public ListQueueRunner(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-        this.indexFilesDao = new IndexFilesDao(nodeConf);
+        this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
+        this.controlService = controlService;
     }
 
     @SuppressWarnings("squid:S2189")
@@ -73,7 +76,7 @@ public class ListQueueRunner implements Runnable {
         log.info("nthreads {}", nThreads);
         ThreadPoolExecutor /*ExecutorService*/ executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 
-        if (new Queues(nodeConf).getListings() > 0) {
+        if (new Queues(nodeConf, controlService).getListings() > 0) {
             log.info("resetting listings");
             //Queues.resetListings();
         }
@@ -115,15 +118,15 @@ public class ListQueueRunner implements Runnable {
             for (Future<Object> key: removes) {
                 map.remove(key);
                 running--;
-                new Queues(nodeConf).decListings();
+                new Queues(nodeConf, controlService).decListings();
             }
             if (false && removes.size() > 0) {
                 log.info("active 0 " + executorService.getActiveCount());
                 executorService.purge();
                 log.info("active 1 " + executorService.getActiveCount());
             }
-            if (new Queues(nodeConf).getListingQueueSize() == 0 || new Queues(nodeConf).traverseQueueHeavyLoaded()) {
-                if (new Queues(nodeConf).traverseQueueHeavyLoaded()) {
+            if (new Queues(nodeConf, controlService).getListingQueueSize() == 0 || new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
+                if (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
                     log.info("Traverse queue heavy loaded, sleeping");
                 }
                 try {
@@ -157,8 +160,8 @@ public class ListQueueRunner implements Runnable {
 
                 Future<Object> task = executorService.submit(callable);
                 map.put(task, new Date());
-                new Queues(nodeConf).queueStat();
-                new Queues(nodeConf).incListings();
+                new Queues(nodeConf, controlService).queueStat();
+                new Queues(nodeConf, controlService).incListings();
                 running++;
                 log.info("submit " + task + " " + running + " service count " + executorService.getActiveCount());
                 log.info("queue " + executorService.getQueue());
@@ -181,7 +184,7 @@ public class ListQueueRunner implements Runnable {
         if (limit < 1) {
             limit = LIMIT;
         }
-        MyQueue<ListQueueElement> queue = new Queues(nodeConf).getListingQueue();
+        MyQueue<ListQueueElement> queue = new Queues(nodeConf, controlService).getListingQueue();
         ListQueueElement listing = queue.poll(ListQueueElement.class);
         /*
         List<ListQueueElement> listingList = new ArrayList<>();
@@ -292,7 +295,7 @@ public class ListQueueRunner implements Runnable {
     public Set<String> doList(ListQueueElement element) throws Exception {
         FileObject fileObject = element.getFileObject();
         Set<String> retset = new HashSet<>();
-        if (TraverseUtil.isMaxed(element.getMyid(), element.getElement(), nodeConf)) {
+        if (TraverseUtil.isMaxed(element.getMyid(), element.getElement(), nodeConf, controlService)) {
             return retset;
         }
 
@@ -301,8 +304,8 @@ public class ListQueueRunner implements Runnable {
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
-        FileObject dir = new FileSystemDao(nodeConf).get(fileObject);
-        List<MyFile> listDir = new FileSystemDao(nodeConf).listFilesFull(dir);
+        FileObject dir = new FileSystemDao(nodeConf, controlService).get(fileObject);
+        List<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFull(dir);
         long time1 = System.currentTimeMillis();
         log.debug("Time0 {}", usedTime(time1, time0));
         //log.info("dir " + dirname);
@@ -316,7 +319,7 @@ public class ListQueueRunner implements Runnable {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(element.getNotfoundsetid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(element.getNotfoundsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -332,21 +335,21 @@ public class ListQueueRunner implements Runnable {
                 log.debug("isdir {}", filename);
                 FileObject dirObject = file.fileObject[0];
                 ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.isNomd5(), element.getFilesdonesetid());
-                new Queues(nodeConf).getListingQueue().offer(listQueueElement);
+                new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
             } else {
                 retset.add(filename);
                 if (!element.isNomd5()) {
-                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf).getTraverseQueue();
+                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.getFilesdonesetid());
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                     total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(element.getTraversecountid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance());
+                    MyAtomicLong count = MyAtomicLongs.get(element.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
                     count.addAndGet(1);
                     // save
                     queue.offer(trav);
-                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid(), nodeConf, ControlService.curatorClient, GetHazelcastInstance.instance()); 
+                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                     filestodoset.offer(trav.getFileobject().toString());
                     //Queues.getTraverseQueueSize().incrementAndGet();
                     log.debug("Count inc {}", trav.getFileobject());
