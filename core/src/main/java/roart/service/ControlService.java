@@ -69,8 +69,6 @@ public class ControlService {
 
     private IndexFilesDao indexFilesDao;
 
-    public static volatile Integer writelock = new Integer(-1);
-
     private NodeConfig nodeConf;
 
     public ControlService(NodeConfig nodeConf) {

@@ -43,7 +43,7 @@ public abstract class AbstractFunction {
     protected NodeConfig nodeConf;
 
     protected ControlService controlService;
-    
+
     public AbstractFunction(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
         this.param = param;
         this.nodeConf = nodeConf;
@@ -55,142 +55,140 @@ public abstract class AbstractFunction {
     @SuppressWarnings("rawtypes")
     public List<List> clientDo(ServiceParam el) {
         IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
-        synchronized (controlService.writelock) {
-            try {
-                /*
+        try {
+            /*
                 MyLock lock = null;
                 if (MyConfig.conf.getZookeeper() != null && !MyConfig.conf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
-                */
-                ServiceParam.Function function = el.function;
-                String filename = el.add;
-                //boolean reindex = el.reindex;
-                //boolean newmd5 = el.md5change;
-                log.info("function " + function + " " + filename + " " + el.reindex);
+             */
+            ServiceParam.Function function = el.function;
+            String filename = el.add;
+            //boolean reindex = el.reindex;
+            //boolean newmd5 = el.md5change;
+            log.info("function " + function + " " + filename + " " + el.reindex);
 
-                Set<String> filestodoSet = new HashSet<>();
-                
-                List<List> retlistlist = new ArrayList<>();
-                List<ResultItem> retList = new ArrayList<>();
-                retList.add(IndexFiles.getHeader());
-                List<ResultItem> retTikaTimeoutList = new ArrayList<>();
-                retTikaTimeoutList.add(new ResultItem("Tika timeout"));
-                List<ResultItem> retConvertTimeoutList = new ArrayList<>();
-                retConvertTimeoutList.add(new ResultItem("Convert timeout"));
-                List<ResultItem> retNotList = new ArrayList<>();
-                retNotList.add(IndexFiles.getHeader());
-                List<ResultItem> retNewFilesList = new ArrayList<>();
-                retNewFilesList.add(new ResultItem("New file"));
-                List<ResultItem> retDeletedList = new ArrayList<>();
-                retDeletedList.add(new ResultItem("Deleted"));
-                List<ResultItem> retNotExistList = new ArrayList<>();
-                retNotExistList.add(new ResultItem("File does not exist"));
-                List<String> notfoundList = new ArrayList<>();
-                List<String> newfileList = new ArrayList<>();
-                Queues queues = new Queues(nodeConf, controlService);
-                String myid = controlService.getMyId();
-                String filesetnewid = queues.prefix() + Constants.FILESETNEWID + myid;
-                 MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                //MySets.put(filesetnewid, filesetnew);
+            Set<String> filestodoSet = new HashSet<>();
 
-                String notfoundsetid = queues.prefix() + Constants.NOTFOUNDSETID + myid;
-                MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                //MySets.put(notfoundsetid, notfoundset);
+            List<List> retlistlist = new ArrayList<>();
+            List<ResultItem> retList = new ArrayList<>();
+            retList.add(IndexFiles.getHeader());
+            List<ResultItem> retTikaTimeoutList = new ArrayList<>();
+            retTikaTimeoutList.add(new ResultItem("Tika timeout"));
+            List<ResultItem> retConvertTimeoutList = new ArrayList<>();
+            retConvertTimeoutList.add(new ResultItem("Convert timeout"));
+            List<ResultItem> retNotList = new ArrayList<>();
+            retNotList.add(IndexFiles.getHeader());
+            List<ResultItem> retNewFilesList = new ArrayList<>();
+            retNewFilesList.add(new ResultItem("New file"));
+            List<ResultItem> retDeletedList = new ArrayList<>();
+            retDeletedList.add(new ResultItem("Deleted"));
+            List<ResultItem> retNotExistList = new ArrayList<>();
+            retNotExistList.add(new ResultItem("File does not exist"));
+            List<String> notfoundList = new ArrayList<>();
+            List<String> newfileList = new ArrayList<>();
+            Queues queues = new Queues(nodeConf, controlService);
+            String myid = controlService.getMyId();
+            String filesetnewid = queues.prefix() + Constants.FILESETNEWID + myid;
+            MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            //MySets.put(filesetnewid, filesetnew);
 
-                String retlistid = queues.prefix() + Constants.RETLISTID + myid;
-                MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                //MyLists.put(retlistid, retlist);
+            String notfoundsetid = queues.prefix() + Constants.NOTFOUNDSETID + myid;
+            MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            //MySets.put(notfoundsetid, notfoundset);
 
-                String retnotlistid = queues.prefix() + Constants.RETNOTLISTID + myid;
-                MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                //MyLists.put(retnotlistid, retnotlist);
+            String retlistid = queues.prefix() + Constants.RETLISTID + myid;
+            MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            //MyLists.put(retlistid, retlist);
 
-                String traversecountid = queues.prefix() + Constants.TRAVERSECOUNT + myid;
-                MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            String retnotlistid = queues.prefix() + Constants.RETNOTLISTID + myid;
+            MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            //MyLists.put(retnotlistid, retnotlist);
 
-                String filestodosetid = queues.prefix() + Constants.FILESTODOSETID + myid;
-                MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                String filesdonesetid = queues.prefix() + Constants.FILESDONESETID + myid;
-                MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                //MyLists.put(retnotlistid, retnotlist);
-               queues.workQueues.add(filestodoSet);
+            String traversecountid = queues.prefix() + Constants.TRAVERSECOUNT + myid;
+            MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
 
-                Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, nodeConf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid, nodeConf, controlService);
+            String filestodosetid = queues.prefix() + Constants.FILESTODOSETID + myid;
+            MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            String filesdonesetid = queues.prefix() + Constants.FILESDONESETID + myid;
+            MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            //MyLists.put(retnotlistid, retnotlist);
+            queues.workQueues.add(filestodoSet);
 
-                // filesystem
-                // reindexsuffix
-                // index
-                // reindexdate
-                // filesystemlucenenew
+            Traverse traverse = new Traverse(myid, el, retlistid, retnotlistid, filesetnewid, nodeConf.getDirListNot(), notfoundsetid, filestodosetid, traversecountid, false, filesdonesetid, nodeConf, controlService);
 
-                traverse(filename, traverse);
-                //traverse.traverse(filename, this);
+            // filesystem
+            // reindexsuffix
+            // index
+            // reindexdate
+            // filesystemlucenenew
 
+            traverse(filename, traverse);
+            //traverse.traverse(filename, this);
+
+            TimeUnit.SECONDS.sleep(5);
+
+            while ((traversecount.get() + queues.queueSize() + queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
+                log.info("My queues {} {} {} {} {} {} {}", traversecount.get(), queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize(), queues.getMyConverts().get(), queues.getMyIndexs().get());
                 TimeUnit.SECONDS.sleep(5);
-
-                while ((traversecount.get() + queues.queueSize() + queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
-                    log.info("My queues {} {} {} {} {} {} {}", traversecount.get(), queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize(), queues.getMyConverts().get(), queues.getMyIndexs().get());
-                    TimeUnit.SECONDS.sleep(5);
-                   queues.queueStat();
-                    fromQueueToList(retList, retQueue, ResultItem.class);
-                    fromQueueToList(retNotList, retnotQueue, ResultItem.class);
-                    fromQueueToList(filestodoSet, filestodoQueue, String.class);
-                    Set<String> filesdoneSet = new HashSet<>();
-                    fromQueueToList(filesdoneSet, filesdoneQueue, String.class);
-                    filestodoSet.removeAll(filesdoneSet);
-                    fromQueueToList(newfileList, newfileQueue, String.class);
-                    fromQueueToList(notfoundList, notfoundQueue, String.class);
-                }
-
-                for (String str : filestodoSet) {
-                    System.out.println("todo " + str);
-                }
-
-                for (String ret : queues.convertTimeoutQueue) {
-                    retConvertTimeoutList.add(new ResultItem(ret));
-                }
-
-               queues.resetConvertTimeoutQueue();
-                //IndexFilesDao.commit();
-                while (indexFilesDao.dirty() > 0) {
-                    TimeUnit.SECONDS.sleep(60);
-                }
-
-                for (String file : notfoundList) {
-                    retNotExistList.add(new ResultItem(file));
-                }
-
-                for (String s : newfileList) {
-                    retNewFilesList.add(new ResultItem(s));
-                }
-
-                // TODO set clear
-
-                MyCollections.remove(retlistid);
-                MyCollections.remove(retnotlistid);
-                MyCollections.remove(notfoundsetid);
-                MyCollections.remove(filesetnewid);
-                MyCollections.remove(filestodosetid);
-                MyCollections.remove(traversecountid);
-               queues.workQueues.remove(filestodoSet);
-
-                retlistlist.add(retList);
-                retlistlist.add(retNotList);
-                retlistlist.add(retNewFilesList);
-                retlistlist.add(retDeletedList);
-                retlistlist.add(retTikaTimeoutList);
-                retlistlist.add(retNotExistList);
-                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
-                    ZKMessageUtil.dorefresh(controlService.nodename);
-                    //lock.unlock();
-                    //ClientRunner.notify("Sending refresh request");
-                }
-                return retlistlist;
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
+                queues.queueStat();
+                fromQueueToList(retList, retQueue, ResultItem.class);
+                fromQueueToList(retNotList, retnotQueue, ResultItem.class);
+                fromQueueToList(filestodoSet, filestodoQueue, String.class);
+                Set<String> filesdoneSet = new HashSet<>();
+                fromQueueToList(filesdoneSet, filesdoneQueue, String.class);
+                filestodoSet.removeAll(filesdoneSet);
+                fromQueueToList(newfileList, newfileQueue, String.class);
+                fromQueueToList(notfoundList, notfoundQueue, String.class);
             }
+
+            for (String str : filestodoSet) {
+                System.out.println("todo " + str);
+            }
+
+            for (String ret : queues.convertTimeoutQueue) {
+                retConvertTimeoutList.add(new ResultItem(ret));
+            }
+
+            queues.resetConvertTimeoutQueue();
+            //IndexFilesDao.commit();
+            while (indexFilesDao.dirty() > 0) {
+                TimeUnit.SECONDS.sleep(60);
+            }
+
+            for (String file : notfoundList) {
+                retNotExistList.add(new ResultItem(file));
+            }
+
+            for (String s : newfileList) {
+                retNewFilesList.add(new ResultItem(s));
+            }
+
+            // TODO set clear
+
+            MyCollections.remove(retlistid);
+            MyCollections.remove(retnotlistid);
+            MyCollections.remove(notfoundsetid);
+            MyCollections.remove(filesetnewid);
+            MyCollections.remove(filestodosetid);
+            MyCollections.remove(traversecountid);
+            queues.workQueues.remove(filestodoSet);
+
+            retlistlist.add(retList);
+            retlistlist.add(retNotList);
+            retlistlist.add(retNewFilesList);
+            retlistlist.add(retDeletedList);
+            retlistlist.add(retTikaTimeoutList);
+            retlistlist.add(retNotExistList);
+            if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
+                ZKMessageUtil.dorefresh(controlService.nodename);
+                //lock.unlock();
+                //ClientRunner.notify("Sending refresh request");
+            }
+            return retlistlist;
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
         return null;        
     }

@@ -30,33 +30,32 @@ public class DeletePath extends AbstractFunction {
     @Override
     public List doClient(ServiceParam param) {
         IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
-	ConsistentClean cc = new ConsistentClean(param, nodeConf, controlService);
-        synchronized (controlService.writelock) {
-            try {
-                /*
+        ConsistentClean cc = new ConsistentClean(param, nodeConf, controlService);
+        try {
+            /*
                 MyLock lock = null;
                 if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
-                */
-                List<List> retlistlist = new ArrayList<>();
-                List<ResultItem> delList = new ArrayList<>();
-                delList.add(new ResultItem("Deleted"));
-                Set<IndexFiles> ifs = new HashSet<>();
-                String path = param.file;
-                if (path.isEmpty()) {
-                    log.info("skipping empty path");
-                    retlistlist.add(delList);
-                    return retlistlist;
-                }
-                //Set<String> indexes = IndexFilesDao.getAllMd5();
-		List<IndexFiles> indexes;
-		indexes = indexFilesDao.getAll();
+             */
+            List<List> retlistlist = new ArrayList<>();
+            List<ResultItem> delList = new ArrayList<>();
+            delList.add(new ResultItem("Deleted"));
+            Set<IndexFiles> ifs = new HashSet<>();
+            String path = param.file;
+            if (path.isEmpty()) {
+                log.info("skipping empty path");
+                retlistlist.add(delList);
+                return retlistlist;
+            }
+            //Set<String> indexes = IndexFilesDao.getAllMd5();
+            List<IndexFiles> indexes;
+            indexes = indexFilesDao.getAll();
 
-                Set<FileObject> delfileset = new HashSet<>();
-                cc.extracted(delList, delfileset, path, indexes, ifs, false, true);
-		/*
+            Set<FileObject> delfileset = new HashSet<>();
+            cc.extracted(delList, delfileset, path, indexes, ifs, false, true);
+            /*
                 for (IndexFiles index : indexes) {
                     MyLock lock2 = MyLockFactory.create();
                     lock2.lock(index.getMd5());               
@@ -84,21 +83,20 @@ public class DeletePath extends AbstractFunction {
                     }
                     lock2.unlock();
                 }
-		*/
-                while (indexFilesDao.dirty() > 0) {
-                    TimeUnit.SECONDS.sleep(60);
-                }
-
-                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
-                    ZKMessageUtil.dorefresh(controlService.nodename);
-                    //lock.unlock();
-                    //ClientRunner.notify("Sending refresh request");
-                }
-                retlistlist.add(delList);
-                return retlistlist;
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
+             */
+            while (indexFilesDao.dirty() > 0) {
+                TimeUnit.SECONDS.sleep(60);
             }
+
+            if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
+                ZKMessageUtil.dorefresh(controlService.nodename);
+                //lock.unlock();
+                //ClientRunner.notify("Sending refresh request");
+            }
+            retlistlist.add(delList);
+            return retlistlist;
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
         return null;
     }

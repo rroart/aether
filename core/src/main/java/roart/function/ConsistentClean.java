@@ -33,11 +33,11 @@ import roart.service.ControlService;
 public class ConsistentClean extends AbstractFunction {
 
     private FileSystemDao fileSystemDao = new FileSystemDao(nodeConf, controlService);
-    
+
     private IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
-    
+
     private SearchDao searchDao = new SearchDao(nodeConf, controlService);
-    
+
     public ConsistentClean(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
         super(param, nodeConf, controlService);
     }
@@ -101,42 +101,41 @@ public class ConsistentClean extends AbstractFunction {
         String path = param.file;
 
         List<IndexFiles> indexes;
-        synchronized (controlService.writelock) {
-            try {
-                /*
+        try {
+            /*
                 MyLock lock = null;
                 if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                     lock = MyLockFactory.create();
                     lock.lock(Constants.GLOBALLOCK);
                 }
-                */
-                Set<IndexFiles> ifs = new HashSet<>();
-                indexes = indexFilesDao.getAll();
-                extracted(delList, delfileset, path, indexes, ifs, true, clean);
+             */
+            Set<IndexFiles> ifs = new HashSet<>();
+            indexes = indexFilesDao.getAll();
+            extracted(delList, delfileset, path, indexes, ifs, true, clean);
 
-                while (indexFilesDao.dirty() > 0) {
-                    TimeUnit.SECONDS.sleep(60);
-                }
+            while (indexFilesDao.dirty() > 0) {
+                TimeUnit.SECONDS.sleep(60);
+            }
 
-                // TODO why copied from below?
-                // TODO or indexes?
-                // TODO not here?
-                for (IndexFiles i : ifs) {
-                    MyLock filelock = i.getLock();
-                    if (false && filelock != null) {
-                        filelock.unlock();
-                        i.setLock(null);
-                    } else {
-                        System.out.println("locknull");
-                    }
+            // TODO why copied from below?
+            // TODO or indexes?
+            // TODO not here?
+            for (IndexFiles i : ifs) {
+                MyLock filelock = i.getLock();
+                if (false && filelock != null) {
+                    filelock.unlock();
+                    i.setLock(null);
+                } else {
+                    System.out.println("locknull");
                 }
+            }
 
-                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
-                    ZKMessageUtil.dorefresh(controlService.nodename);
-                    //lock.unlock();
-                    //ClientRunner.notify("Sending refresh request");
-                }
-                /*
+            if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
+                ZKMessageUtil.dorefresh(controlService.nodename);
+                //lock.unlock();
+                //ClientRunner.notify("Sending refresh request");
+            }
+            /*
                 traverse.traverse(null, this);
 
                 for (String file : newset.getAll()) {
@@ -145,57 +144,56 @@ public class ConsistentClean extends AbstractFunction {
                 for (String file : notfoundset.getAll()) {
                     nonexistList.add(new ResultItem(file));
                 }
-                */
+             */
 
-                if (false && clean) {
-                    //DbRunner.doupdate = false;
-                    for (FileObject filename : delfileset) {
-                        String md5 = indexFilesDao.getMd5ByFilename(filename);
-                        // common3?
-                        if (md5 != null) {
-                            MyLock lock2 = MyLockFactory.create(null, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
-                            lock2.lock();
-                            IndexFiles ifile = indexFilesDao.getByMd5(md5);
+            if (false && clean) {
+                //DbRunner.doupdate = false;
+                for (FileObject filename : delfileset) {
+                    String md5 = indexFilesDao.getMd5ByFilename(filename);
+                    // common3?
+                    if (md5 != null) {
+                        MyLock lock2 = MyLockFactory.create(null, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+                        lock2.lock();
+                        IndexFiles ifile = indexFilesDao.getByMd5(md5);
+                        FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
+                        boolean removed = ifile.removeFilelocation(fl);
+                        //log.info("fls2 size " + removed + ifile.getFilelocations().size());
+                        //IndexFilesDao.add(ifile);
+                        ifs.add(ifile);
+                    } else {
+                        log.info("trying the hard way, no md5 for " + filename);
+                        for (IndexFiles index : indexes) {
                             FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
-                            boolean removed = ifile.removeFilelocation(fl);
-                            //log.info("fls2 size " + removed + ifile.getFilelocations().size());
-                            //IndexFilesDao.add(ifile);
-                            ifs.add(ifile);
-                        } else {
-                            log.info("trying the hard way, no md5 for " + filename);
-                            for (IndexFiles index : indexes) {
-                                FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
-                                if (index.getFilelocations().contains(fl)) {
-                                    boolean removed = index.removeFilelocation(fl);
-                                    //log.info("fls3 size " + removed + index.getFilelocations().size());
-                                    //IndexFilesDao.add(index);
-                                    ifs.add(index);
-                                }
+                            if (index.getFilelocations().contains(fl)) {
+                                boolean removed = index.removeFilelocation(fl);
+                                //log.info("fls3 size " + removed + index.getFilelocations().size());
+                                //IndexFilesDao.add(index);
+                                ifs.add(index);
                             }
                         }
                     }
-                    //DbRunner.doupdate = true;
-                    //IndexFilesDao.commit();
-                    while (indexFilesDao.dirty() > 0) {
-                        TimeUnit.SECONDS.sleep(60);
-                    }
-                    for (IndexFiles i : ifs) {
-                        MyLock filelock = i.getLock();
-                        if (filelock != null) {
-                            filelock.unlock();
-                            i.setLock(null);
-                        }
-                    }
-
-                    if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
-                        ZKMessageUtil.dorefresh(controlService.nodename);
-                        //lock.unlock();
+                }
+                //DbRunner.doupdate = true;
+                //IndexFilesDao.commit();
+                while (indexFilesDao.dirty() > 0) {
+                    TimeUnit.SECONDS.sleep(60);
+                }
+                for (IndexFiles i : ifs) {
+                    MyLock filelock = i.getLock();
+                    if (filelock != null) {
+                        filelock.unlock();
+                        i.setLock(null);
                     }
                 }
 
-            } catch (Exception e) {
-                log.error(Constants.EXCEPTION, e);
+                if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
+                    ZKMessageUtil.dorefresh(controlService.nodename);
+                    //lock.unlock();
+                }
             }
+
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
         }
 
         List<List> retlistlist = new ArrayList<>();
