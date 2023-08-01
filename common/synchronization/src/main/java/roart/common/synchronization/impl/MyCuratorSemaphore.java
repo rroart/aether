@@ -2,25 +2,25 @@ package roart.common.synchronization.impl;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 
 import roart.common.constants.Constants;
-import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MySemaphore;
 import org.apache.curator.framework.CuratorFramework;
 
-public class MyCuratorLock extends MyLock {
+public class MyCuratorSemaphore extends MySemaphore {
 
     private String path;
     
     private CuratorFramework curatorClient;
        
-    private InterProcessMutex lock;
+    private InterProcessSemaphoreMutex lock;
 
-    public MyCuratorLock(String path, CuratorFramework curatorClient) {
+    public MyCuratorSemaphore(String path, CuratorFramework curatorClient) {
         super();
         this.path = path;
         this.curatorClient = curatorClient;
-        this.lock = new InterProcessMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
+        this.lock = new InterProcessSemaphoreMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class MyCuratorLock extends MyLock {
         log.info("lock {}", path);
         lock.acquire(1, TimeUnit.SECONDS);
         log.info("locka {}", path);
-        return lock.isOwnedByCurrentThread();
+        return lock.isAcquiredInThisProcess();
     }
 
     @Override
