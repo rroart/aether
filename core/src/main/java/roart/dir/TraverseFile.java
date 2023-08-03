@@ -84,11 +84,7 @@ public class TraverseFile {
         // config with finegrained distrib
         IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            count.addAndGet(-1);
-            log.debug("Count dec {}", trav.getFileobject());
+            doCounters(trav, -1);
             return;
         }
         FileObject filename = trav.getFileobject();
@@ -218,11 +214,7 @@ public class TraverseFile {
             if (!filestodoset.remove(filename.toString())) {
                 log.error("already removed {}", filename);
             }
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            count.addAndGet(-1);
-            log.debug("Count dec {}", trav.getFileobject());
+            doCounters(trav, -1);
         }
         //md5set.add(md5);
     }
@@ -234,11 +226,7 @@ public class TraverseFile {
         //          } else {
         // config with finegrained distrib
         if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            count.addAndGet(-1);
-            log.debug("Count dec {}", trav.getFileobject());
+            doCounters(trav, -1);
             return;
         }
         FileObject filename = trav.getFileobject();
@@ -386,23 +374,15 @@ public class TraverseFile {
                     }
                 }
             } catch (FileNotFoundException e) {
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                count.addAndGet(-1);
+                doCounters(trav, -1);
                 log.error(Constants.EXCEPTION, e);
                 MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(trav.getNotfoundsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename.toString());
-                log.debug("Count dec {}", trav.getFileobject());
                 return;
             } catch (Exception e) {
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                total.addAndGet(-1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                count.addAndGet(-1);
+                doCounters(trav, -1);
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
-                log.debug("Count dec {}", trav.getFileobject());
                 return;
             }
         } else {
@@ -484,11 +464,7 @@ public class TraverseFile {
             }
             MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(trav.getFilesdoneid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             filesdoneset.offer(filename.toString());
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            total.addAndGet(-1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            count.addAndGet(-1);
-            log.debug("Count dec {}", trav.getFileobject());
+            doCounters(trav, -1);
         }
         //md5set.add(md5);
         // TODO this is new unlock
@@ -603,4 +579,13 @@ public class TraverseFile {
         }
         return new FileSystemDao(nodeConf, controlService).getMd5(filenames);
     }
+
+    private void doCounters(TraverseQueueElement trav, int value) {
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        total.addAndGet(value);
+        MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        count.addAndGet(value);
+        log.debug("Count {} {}", value, trav.getFileobject());
+    }
+
 }
