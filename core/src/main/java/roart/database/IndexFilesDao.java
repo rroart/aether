@@ -20,6 +20,7 @@ import roart.common.model.FileObject;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MySemaphore;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -171,7 +172,7 @@ public class IndexFilesDao {
 
     public void add(IndexFiles i) {
         synchronized(IndexFilesDao.class) {
-        dbi.putIfAbsent(i.getMd5(), i);
+            dbi.putIfAbsent(i.getMd5(), i);
         }
     }
 
@@ -257,6 +258,13 @@ public class IndexFilesDao {
                 queue.offer(i.getFlock());
             }
             dbi.remove(key);
+            Queue<MySemaphore> semaphoreQueue = (Queue<MySemaphore>) i.getSemaphorelockqueue();
+            if (i.getSemaphorelock() != null) {
+                semaphoreQueue.offer(i.getSemaphorelock());
+           }
+           if (i.getSemaphoreflock() != null) {
+               semaphoreQueue.offer(i.getSemaphoreflock());
+           }
         }
         }
         // todo unlock
