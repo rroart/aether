@@ -25,22 +25,22 @@ public class MyCuratorLock extends MyLock {
 
     @Override
     public void lock() throws Exception {
-        log.info("lock {}", path);
+        log.debug("lock {}", path);
         lock.acquire();
-        log.info("locka {}", path);
+        log.debug("locka {}", path);
     }
 
     @Override
     public boolean tryLock() throws Exception {
-        log.info("lock {}", path);
-        lock.acquire(1, TimeUnit.SECONDS);
-        log.info("locka {}", path);
-        return lock.isOwnedByCurrentThread();
+        log.debug("lock {}", path);
+        boolean locked = lock.acquire(1, TimeUnit.SECONDS);
+        log.debug("locka {}", path);
+        return locked;
     }
 
     @Override
     public void unlock() {
-        log.info("unlock {}", path);
+        log.debug("unlock {}", path);
         if (lock != null) {
             try {
                 lock.release();
@@ -48,12 +48,12 @@ public class MyCuratorLock extends MyLock {
                 log.error(Constants.EXCEPTION, e);
            }
         }
-        log.info("unlocka {}", path);
+        log.debug("unlocka {}", path);
     }
 
     @Override
     public boolean isLocked() {
-        return lock.isAcquiredInThisProcess();
+        return lock.isOwnedByCurrentThread();
     }
 
 }
