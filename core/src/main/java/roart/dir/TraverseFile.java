@@ -221,9 +221,6 @@ public class TraverseFile {
 
     public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Map<FileObject, String> contentMap, Queue<MyLock> locks, Queue<MySemaphore> semaphores)
             throws Exception {
-        //          if (controlService.zookeepersmall) {
-        //              handleFo2(retset, md5set, filename);
-        //          } else {
         // config with finegrained distrib
         if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
             doCounters(trav, -1);
@@ -236,31 +233,17 @@ public class TraverseFile {
         boolean flocked = folock.tryLock();
         if (!flocked) {
             MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-            /*
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-            total.addAndGet(1);
-            MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-            count.addAndGet(1);
-             */
             // save
             queue.offer(trav);
             //Queues.getTraverseQueueSize().incrementAndGet();
             log.info("Already locked: {}", filename.toString());
             return;
         }
-        try {
-            FileObject fo = fsMap.get(filename).fileObject[0];
-        } catch (Exception e) {
-            int jj = 0;
-        }
-        //MyLock lock2 = MyLockFactory.create();
-        //lock2.lock(fo.toString());
         log.debug("timer");
         String md5 = filenameMd5Map.get(filename);
         log.debug("info {} {}", md5, filename);
         IndexFiles indexfiles = null;
         MySemaphore lock = null; 
-        boolean lockwait = false;
         boolean created = false;
         if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
@@ -273,26 +256,10 @@ public class TraverseFile {
                     log.error("Md5 null");
                     throw new Exception("Md5 null");
                 }
-                if("37a6259cc0c1dae299a7866489dff0bd".equals(md5)) {
-                    int jj = 0;
-                    // d41d8cd98f00b204e9800998ecf8427e
-                }
-
-                //if (files == null) {
-                //z.lock(md5);
-                // get read file
-                // todo lock file name
-
                 lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
                 boolean locked = lock.tryLock();
                 if (!locked) {
                     MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                    /*
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-                    total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-                    count.addAndGet(1);
-                     */
                     folock.unlock();
                     // save
                     queue.offer(trav);
@@ -392,12 +359,6 @@ public class TraverseFile {
             boolean locked = lock.tryLock();
             if (!locked) {
                 MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                /*
-                MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-                total.addAndGet(1);
-                MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-                count.addAndGet(1);
-                 */
                 folock.unlock();
                 // save
                 queue.offer(trav);
@@ -428,7 +389,6 @@ public class TraverseFile {
         try {
             // TODO new criteria
             boolean doindex = getDoIndex(trav, indexfiles, null);
-            lockwait = true;
             // TODO indexfiles is new, created
             doindex = doindex && created;
             if (doindex) {
@@ -443,25 +403,6 @@ public class TraverseFile {
             log.error(Constants.EXCEPTION, e);
         } finally {
             log.debug("hereend");
-            if (false && lockwait) {
-                // TODO better flag than this?
-                // TODO not used
-                LinkedBlockingQueue lockqueue2 = (LinkedBlockingQueue) indexfiles.getLockqueue();
-                if (lockqueue2 != null) {
-                    log.debug("waiting");
-                    lockqueue2.take();
-                    log.debug("done waiting");
-                }
-            }
-            if (false && indexfiles != null) {
-                // TODO not here
-                MySemaphore unlock = indexfiles.getSemaphorelock();
-                if (unlock != null) {
-                    indexfiles.setLock(null);
-                    log.debug("Files {}", indexfiles);
-                    unlock.unlock();
-                }
-            }
             MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(trav.getFilesdoneid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             filesdoneset.offer(filename.toString());
             doCounters(trav, -1);
