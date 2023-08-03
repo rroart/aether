@@ -27,11 +27,13 @@ import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MySemaphore;
 import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
+import roart.search.SearchDao;
 import roart.service.ControlService;
 
 import java.util.Queue;
@@ -55,12 +57,15 @@ public class TraverseQueueRunner implements Runnable {
 
     private ControlService controlService;
 
-    public TraverseQueueRunner(NodeConfig nodeConf, ControlService controlService) {
+    private SearchDao searchDao;
+
+    public TraverseQueueRunner(NodeConfig nodeConf, ControlService controlService, SearchDao searchDao) {
         super();
         this.nodeConf = nodeConf;
-        this.traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService);
+        this.traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService, searchDao);
         this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         this.controlService = controlService;
+        this.searchDao = searchDao;
     }
 
     @SuppressWarnings("squid:S2189")
@@ -141,8 +146,9 @@ public class TraverseQueueRunner implements Runnable {
                     public Object call() /* throws Exception*/ {
                         try {
                             Queue<MyLock> locks = new ConcurrentLinkedQueue<>();
+                            Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
                             while (true) {
-                                doTraverseTimeout(locks);
+                                doTraverseTimeout(locks, semaphores);
                             }
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e);
@@ -179,13 +185,14 @@ public class TraverseQueueRunner implements Runnable {
         }
     }
 
-    private void doTraverseTimeout(Queue<MyLock> locks) {
+    private void doTraverseTimeout(Queue<MyLock> locks, Queue<MySemaphore> semaphores) {
         int limit = nodeConf.getMPBatch();
         if (limit < 1) {
             limit = LIMIT;
         }
         MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         List<TraverseQueueElement> traverseList = new ArrayList<>();
+        // limit = 1;
         for (int i = 0; i < limit; i++) {
             TraverseQueueElement trav = queue.poll(TraverseQueueElement.class);
             if (trav == null) {
@@ -213,7 +220,7 @@ public class TraverseQueueRunner implements Runnable {
         try {
             //handleList(pool, traverseList);
             //handleList2(traverseList);
-            handleList3(traverseList, locks);
+            handleList3(traverseList, locks, semaphores);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             for (TraverseQueueElement trav : traverseList) {
@@ -233,6 +240,11 @@ public class TraverseQueueRunner implements Runnable {
             log.error(Constants.EXCEPTION, e); 
         }                   
         try {
+            unlockSemaphores(semaphores);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
+        try {
             TimeUnit.SECONDS.sleep(1);
             return;
         } catch (InterruptedException e) {
@@ -241,9 +253,28 @@ public class TraverseQueueRunner implements Runnable {
     }
 
     private void unlock(Queue<MyLock> locks) {
+        if (!locks.isEmpty()) {
+            log.info("unlock");
+        }
         while (!locks.isEmpty()) {
             MyLock lock = locks.poll();
             lock.unlock();
+            if (locks.isEmpty()) {
+                log.info("unlock");
+            }
+        }
+    }
+
+    private void unlockSemaphores(Queue<MySemaphore> locks) {
+        if (!locks.isEmpty()) {
+            log.info("unlock");
+        }
+        while (!locks.isEmpty()) {
+            MySemaphore lock = locks.poll();
+            lock.unlock();
+            if (locks.isEmpty()) {
+                log.info("unlock");
+            }
         }
     }
 
@@ -253,10 +284,11 @@ public class TraverseQueueRunner implements Runnable {
      * 
      * @param traverseList
      * @param locks 
+     * @param semaphores TODO
      * @throws Exception
      */
     
-    private void handleList3(List<TraverseQueueElement> traverseList, Queue<MyLock> locks) throws Exception {
+    private void handleList3(List<TraverseQueueElement> traverseList, Queue<MyLock> locks, Queue<MySemaphore> semaphores) throws Exception {
         Set<FileObject> filenames = new HashSet<>();
         // Create filenames set
         for (TraverseQueueElement trav : traverseList) {
@@ -275,6 +307,7 @@ public class TraverseQueueRunner implements Runnable {
         Map<FileObject, String> contentMap = new HashMap<>(); // TraverseFile.readFiles(traverseList, fsMap);
         long time2 = System.currentTimeMillis();
         Map<String, IndexFiles> ifOldMap = indexFilesDao.getByMd5(new HashSet<>(filenameMd5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
+        // with side effect
         Map<String, IndexFiles> ifNewMap = indexFilesDao.getByMd5(new HashSet<>(filenameNewMd5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())), false);
         Map<String, IndexFiles> ifMap = new HashMap<>(ifOldMap);
         ifMap.putAll(ifNewMap);
@@ -282,7 +315,7 @@ public class TraverseQueueRunner implements Runnable {
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            traverseFile.handleFo(trav, fsMap, filenameMd5Map, ifMap, filenameNewMd5Map, contentMap, locks);
+            traverseFile.handleFo(trav, fsMap, filenameMd5Map, ifMap, filenameNewMd5Map, contentMap, locks, semaphores);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));

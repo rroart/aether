@@ -2,23 +2,25 @@ package roart.dir;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import roart.queue.ConvertQueueElement;
-import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
-import roart.service.ControlService;
-import roart.service.SearchService;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyQueues;
 import roart.common.collections.impl.MySets;
-import roart.common.config.ConfigConstants;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
@@ -26,39 +28,24 @@ import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.model.InmemoryUtil;
-import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
-import roart.common.model.ResultItem;
-import roart.common.model.SearchDisplay;
 import roart.common.service.ServiceParam;
-import roart.common.service.ServiceParam.Function;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyLockFactory;
-import roart.common.util.ExecCommand;
+import roart.common.synchronization.impl.MySemaphoreFactory;
 import roart.common.util.IOUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
 import roart.hcutil.GetHazelcastInstance;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
+import roart.queue.ConvertQueueElement;
+import roart.queue.Queues;
+import roart.queue.TraverseQueueElement;
+import roart.search.SearchDao;
+import roart.service.ControlService;
 import roart.util.TraverseUtil;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
 public class TraverseFile {
 
@@ -69,13 +56,16 @@ public class TraverseFile {
     private NodeConfig nodeConf;
 
     private ControlService controlService;
-    
-    public TraverseFile(IndexFilesDao indexFilesDao, NodeConfig nodeConf, ControlService controlService) {
+
+    private SearchDao searchDao;
+
+    public TraverseFile(IndexFilesDao indexFilesDao, NodeConfig nodeConf, ControlService controlService, SearchDao searchDao) {
         super();
         this.indexFilesDao = indexFilesDao;
         this.nodeConf = nodeConf;
         this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         this.controlService = controlService;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -84,7 +74,7 @@ public class TraverseFile {
      * @param trav traverse queue element
      * @throws Exception
      */
-    
+
     @Deprecated // ?
     public void handleFo3(TraverseQueueElement trav)
             throws Exception {
@@ -237,7 +227,7 @@ public class TraverseFile {
         //md5set.add(md5);
     }
 
-    public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Map<FileObject, String> contentMap, Queue<MyLock> locks)
+    public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Map<FileObject, String> contentMap, Queue<MyLock> locks, Queue<MySemaphore> semaphores)
             throws Exception {
         //          if (controlService.zookeepersmall) {
         //              handleFo2(retset, md5set, filename);
@@ -254,7 +244,7 @@ public class TraverseFile {
         FileObject filename = trav.getFileobject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
-        MyLock folock = MyLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+        MySemaphore folock = MySemaphoreFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
         boolean flocked = folock.tryLock();
         if (!flocked) {
             MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -263,7 +253,7 @@ public class TraverseFile {
             total.addAndGet(1);
             MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
             count.addAndGet(1);
-            */
+             */
             // save
             queue.offer(trav);
             //Queues.getTraverseQueueSize().incrementAndGet();
@@ -271,7 +261,7 @@ public class TraverseFile {
             return;
         }
         try {
-        FileObject fo = fsMap.get(filename).fileObject[0];
+            FileObject fo = fsMap.get(filename).fileObject[0];
         } catch (Exception e) {
             int jj = 0;
         }
@@ -281,13 +271,15 @@ public class TraverseFile {
         String md5 = filenameMd5Map.get(filename);
         log.debug("info {} {}", md5, filename);
         IndexFiles indexfiles = null;
-        MyLock lock = null; 
+        MySemaphore lock = null; 
         boolean lockwait = false;
+        boolean created = false;
         if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
                 if (!fsMap.get(filename).exists) {
                     throw new FileNotFoundException("File does not exist " + filename);
                 }
+                String oldMd5 = md5;
                 md5 = filenameNewMd5Map.get(filename);
                 if (md5 == null) {
                     log.error("Md5 null");
@@ -302,8 +294,8 @@ public class TraverseFile {
                 //z.lock(md5);
                 // get read file
                 // todo lock file name
-                
-                lock = MyLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+
+                lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
                 boolean locked = lock.tryLock();
                 if (!locked) {
                     MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -312,7 +304,7 @@ public class TraverseFile {
                     total.addAndGet(1);
                     MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
                     count.addAndGet(1);
-                    */
+                     */
                     folock.unlock();
                     // save
                     queue.offer(trav);
@@ -320,6 +312,46 @@ public class TraverseFile {
                     return;
                 }
                 
+                if (trav.getClientQueueElement().md5checknew == true) {
+                    if (oldMd5 != null && !md5.equals(oldMd5)) {
+                        log.info("Changed md5 {} {} {}", filename, oldMd5, md5);
+                        MySemaphore oldLock = MySemaphoreFactory.create(oldMd5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+                        boolean oldLocked = oldLock.tryLock();
+                        if (!oldLocked) {
+                            MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                            lock.unlock();
+                            folock.unlock();
+                            // save
+                            queue.offer(trav);
+                            log.info("Already locked: {}", oldMd5);
+                            return;
+                        }
+                        IndexFiles oldindexfiles = ifMap.get(oldMd5);
+                        // null check
+                        if (oldindexfiles == null) {
+                            int jj = 0;
+                        }
+                        oldindexfiles.removeFile(filename.location.toString(), filename.object);
+                        if (!oldindexfiles.getFilelocations().isEmpty()) {
+                            indexFilesDao.add(oldindexfiles);
+                            //oldindexfiles.setFlock(folock);
+                            oldindexfiles.setSemaphorelock(oldLock);
+                            oldindexfiles.setLockqueue(locks);
+                            oldindexfiles.setSemaphorelockqueue(semaphores);
+                        } else {
+                            indexFilesDao.delete(oldindexfiles);
+                            searchDao.deleteme(oldindexfiles.getMd5());
+                            oldLock.unlock();
+                        }
+                    } else {
+                        // TODO break
+                        //MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                        //lock.unlock();
+                        //folock.unlock();
+
+                    }
+                }
+
                 indexfiles = ifMap.get(md5);
                 //}
                 if (indexfiles == null) {
@@ -331,7 +363,8 @@ public class TraverseFile {
                     // TODO bieffect
                     // not need? indexfiles = indexFilesDao.getByMd5(md5);
                     indexfiles = new IndexFiles(md5);
-                    indexfiles.setCreated("" + System.currentTimeMillis());             
+                    indexfiles.setCreated("" + System.currentTimeMillis());
+                    created = true;
                 }
                 if (indexfiles == null /* && md5 != null*/) {
                     // not used
@@ -341,6 +374,7 @@ public class TraverseFile {
                 log.debug("Files {}", indexfiles);
                 indexfiles.setChecked("" + System.currentTimeMillis());
                 // modify write file
+                // todo duplicate add
                 indexfiles.addFile(filename.location.toString(), filename.object);
                 //indexFilesDao.addTemp(indexfiles);
                 log.info("adding md5 file {}", filename);
@@ -374,7 +408,7 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MyLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+            lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
             boolean locked = lock.tryLock();
             if (!locked) {
                 MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -383,7 +417,7 @@ public class TraverseFile {
                 total.addAndGet(1);
                 MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
                 count.addAndGet(1);
-                */
+                 */
                 folock.unlock();
                 // save
                 queue.offer(trav);
@@ -403,9 +437,10 @@ public class TraverseFile {
             log.debug("info {} {}", md5, indexfiles);
         }
         if (indexfiles != null && lock != null) {
-            indexfiles.setFlock(folock);
-            indexfiles.setLock(lock);
+            indexfiles.setSemaphoreflock(folock);
+            indexfiles.setSemaphorelock(lock);
             indexfiles.setLockqueue(locks);
+            indexfiles.setSemaphorelockqueue(semaphores);
         }
         //String md5sdoneid = "md5sdoneid"+trav.getMyid();
         //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
@@ -414,13 +449,15 @@ public class TraverseFile {
             // TODO new criteria
             boolean doindex = getDoIndex(trav, indexfiles, null);
             lockwait = true;
-            doindex = doindex && indexfiles.getFilelocations().size() == 1;
+            // TODO indexfiles is new, created
+            doindex = doindex && created;
             if (doindex) {
                 indexFilesDao.add(indexfiles);                
                 indexsingle(trav, md5, filename, indexfiles);
             } else {
                 indexFilesDao.add(indexfiles);                
             }
+            log.info("Added {}", indexfiles);
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
             log.error(Constants.EXCEPTION, e);
@@ -438,10 +475,10 @@ public class TraverseFile {
             }
             if (false && indexfiles != null) {
                 // TODO not here
-                MyLock unlock = indexfiles.getLock();
+                MySemaphore unlock = indexfiles.getSemaphorelock();
                 if (unlock != null) {
                     indexfiles.setLock(null);
-		    log.debug("Files {}", indexfiles);
+                    log.debug("Files {}", indexfiles);
                     unlock.unlock();
                 }
             }
@@ -479,7 +516,7 @@ public class TraverseFile {
      * @param filename to be indexed
      * @param index db representation
      */
-    
+
     public void indexsingle(TraverseQueueElement trav,
             String md5, FileObject filename, IndexFiles index) {
         int maxfailed = nodeConf.getFailedLimit();
@@ -503,7 +540,7 @@ public class TraverseFile {
         ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
         new Queues(nodeConf, controlService).getConvertQueue().offer(e2);
         //Queues.getConvertQueueSize().incrementAndGet();
-    //size = doTika(filename, filename, md5, index, retlist);
+        //size = doTika(filename, filename, md5, index, retlist);
     }
 
     public Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
@@ -539,7 +576,7 @@ public class TraverseFile {
         }
         return contentMap;
     }
-    
+
     public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map) {
         Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {

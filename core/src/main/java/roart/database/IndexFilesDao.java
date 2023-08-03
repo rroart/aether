@@ -172,7 +172,10 @@ public class IndexFilesDao {
 
     public void add(IndexFiles i) {
         synchronized(IndexFilesDao.class) {
-            dbi.putIfAbsent(i.getMd5(), i);
+            IndexFiles prev = dbi.putIfAbsent(i.getMd5(), i);
+            if (prev != null) {
+                log.error("Already present {}", prev.getMd5());
+            }
         }
     }
 
@@ -250,6 +253,7 @@ public class IndexFilesDao {
         for (Entry<String, IndexFiles> entry : dbi.entrySet()) {
             String key = entry.getKey();
             IndexFiles i = entry.getValue();
+            dbi.remove(key);
             Queue<MyLock> queue = (Queue<MyLock>) i.getLockqueue();
             if (i.getLock() != null) {
                  queue.offer(i.getLock());
@@ -257,7 +261,6 @@ public class IndexFilesDao {
             if (i.getFlock() != null) {
                 queue.offer(i.getFlock());
             }
-            dbi.remove(key);
             Queue<MySemaphore> semaphoreQueue = (Queue<MySemaphore>) i.getSemaphorelockqueue();
             if (i.getSemaphorelock() != null) {
                 semaphoreQueue.offer(i.getSemaphorelock());
@@ -318,6 +321,7 @@ public class IndexFilesDao {
         try {
             synchronized(IndexFilesDao.class) {
                 indexFiles.delete(index);
+                indexFiles.commit();
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);

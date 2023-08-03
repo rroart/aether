@@ -69,12 +69,15 @@ public class ControlService {
 
     private IndexFilesDao indexFilesDao;
 
+    private SearchDao searchDao;
+    
     private NodeConfig nodeConf;
 
     public ControlService(NodeConfig nodeConf) {
         super();
         this.nodeConf = nodeConf;
         this.indexFilesDao = new IndexFilesDao(nodeConf, this);
+        this.searchDao = new SearchDao(nodeConf, this);
     }
 
     public String getMyId() {
@@ -279,7 +282,7 @@ public class ControlService {
     }
 
     public void startTraversequeueWorker() {
-        traverseQueueRunnable = new TraverseQueueRunner(nodeConf, this);
+        traverseQueueRunnable = new TraverseQueueRunner(nodeConf, this, searchDao);
         traverseQueueWorker = new Thread(traverseQueueRunnable);
         traverseQueueWorker.setName("TraverseWorker");
         traverseQueueWorker.start();

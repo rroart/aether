@@ -19,4 +19,17 @@ public class LocalFSUtil {
         new File(dir).delete();
     }
 
+    public static void rmdir(String dir) {
+        rmdir(new File(dir));
+    }
+    
+    public static boolean rmdir(File dir) {
+        File[] allContents = dir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                rmdir(file);
+            }
+        }
+        return dir.delete();    }
+
 }

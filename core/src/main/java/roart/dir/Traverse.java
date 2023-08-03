@@ -8,6 +8,7 @@ import java.io.InputStream;
 import roart.queue.ListQueueElement;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
+import roart.search.SearchDao;
 import roart.service.ControlService;
 import roart.service.SearchService;
 import roart.common.collections.MyQueue;
@@ -84,6 +85,8 @@ public class Traverse {
     ControlService controlService;
     //Set<String> md5sdone = new HashSet<String>();
 
+    private SearchDao searchDao;
+
     public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5, String filesdonesetid, NodeConfig nodeConf, ControlService controlService) {
 
         this.myid = myid;
@@ -101,6 +104,7 @@ public class Traverse {
         this.nodeConf = nodeConf;
         this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         this.controlService = controlService;
+        this.searchDao = new SearchDao(nodeConf, controlService);
         dirlistnotarr = nodeConf.getDirListNot();
         dirlistnot = new FileObject[dirlistnotarr.length];
         int i = 0;
@@ -253,7 +257,7 @@ public class Traverse {
             //queue.offer(trav);
             //String md5sdoneid = "md5sdoneid"+trav.getMyid();
             //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
-            TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService);
+            TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService, searchDao);
             if (traverseFile.getDoIndex(trav, index, function)) {
                 traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
             }

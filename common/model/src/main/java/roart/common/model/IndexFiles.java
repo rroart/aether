@@ -233,7 +233,10 @@ public class IndexFiles {
 
     public void addFile(FileLocation filelocation) {
         changed |= true;
-        filelocations.add(filelocation);
+        boolean added = filelocations.add(filelocation);
+        if (!added) {
+            log.error("Already added {} {}", md5, filelocation);
+        }
         log.debug("fls {}", filelocations);
         if (filelocation.toString().length() > 500) {
             log.error("filename {}", filelocation.toString().length());                
