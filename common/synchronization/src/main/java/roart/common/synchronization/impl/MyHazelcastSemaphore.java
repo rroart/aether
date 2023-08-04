@@ -1,7 +1,7 @@
 package roart.common.synchronization.impl;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ISemaphore;
+import com.hazelcast.cp.ISemaphore;
 
 import roart.common.synchronization.MySemaphore;
 

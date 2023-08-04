@@ -243,11 +243,6 @@
     </dependency>
     <dependency>
       <groupId>com.hazelcast</groupId>
-      <artifactId>hazelcast-client</artifactId>
-      <version>${hazelcastclient.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast-sql</artifactId>
       <version>${hazelcast.version}</version>
     </dependency>
