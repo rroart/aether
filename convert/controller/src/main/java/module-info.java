@@ -13,6 +13,7 @@ module convert {
     requires common.util;
     requires common.inmemory.model;
     requires common.inmemory.factory;
+    requires common.collections;
     requires org.slf4j;
     requires spring.beans;
     requires spring.boot;
@@ -20,4 +21,6 @@ module convert {
     requires spring.cloud.commons;
     requires spring.context;
     requires spring.web;
+    requires com.hazelcast.core;
+    requires curator.framework;
 }

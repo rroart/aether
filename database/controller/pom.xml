@@ -64,5 +64,20 @@
       <artifactId>aether-common-inmemory-model</artifactId>
       <version>${aether.version}</version>
     </dependency>
-  </dependencies>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-common-collections</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-framework</artifactId>
+      <version>${curator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast</artifactId>
+      <version>${hazelcast.version}</version>
+    </dependency>
+ </dependencies>
 </project>

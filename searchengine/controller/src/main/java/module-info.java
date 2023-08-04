@@ -11,6 +11,7 @@ module searchengine {
     requires common.config;
     requires common.constants;
     requires common.searchengine;
+    requires common.collections;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.slf4j;
@@ -19,4 +20,5 @@ module searchengine {
     requires spring.web;
     requires spring.boot;
     requires common.util;
+    requires com.hazelcast.core;
 }

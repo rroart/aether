@@ -11,6 +11,7 @@ module filesystem {
     requires common.config;
     requires common.constants;
     requires common.filesystem;
+    requires common.collections;
     requires curator.client;
     requires curator.framework;
     requires org.slf4j;
@@ -26,4 +27,5 @@ module filesystem {
     requires common.inmemory.model;
     requires common.inmemory.factory;
     //requires common.zookeeper;
+    requires com.hazelcast.core;
 }

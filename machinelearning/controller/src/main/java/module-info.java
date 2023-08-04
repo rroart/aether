@@ -11,6 +11,7 @@ module classification {
     requires common.config;
     requires common.constants;
     requires common.machinelearning;
+    requires common.collections;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.slf4j;
@@ -19,4 +20,6 @@ module classification {
     requires spring.cloud.commons;
     requires spring.web;
     requires common.util;
+    requires com.hazelcast.core;
+    requires spring.context;
 }
