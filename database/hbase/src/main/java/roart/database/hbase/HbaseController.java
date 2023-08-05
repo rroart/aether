@@ -1,6 +1,7 @@
 package roart.database.hbase;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.QueueConstants;
 import roart.database.DatabaseAbstractController;
 import roart.database.DatabaseOperations;
 
@@ -14,12 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 public class HbaseController extends DatabaseAbstractController {
 
-	public static void main(String[] args) {
-		SpringApplication.run(HbaseController.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(HbaseController.class, args);
+    }
 
-	@Override
-	protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
-		return new HbaseIndexFilesWrapper(configname, configid, nodeConf);
-	}
+    @Override
+    protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+        return new HbaseIndexFilesWrapper(configname, configid, nodeConf);
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.HBASE;
+    }
+
 }

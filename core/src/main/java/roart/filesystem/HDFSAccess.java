@@ -2,6 +2,7 @@ package roart.filesystem;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
 public class HDFSAccess extends RemoteFileSystemAccess {
@@ -13,6 +14,11 @@ public class HDFSAccess extends RemoteFileSystemAccess {
     @Override
     public String getAppName() {
         return EurekaConstants.HDFS;
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.HDFS;
     }
 
 }

@@ -2,6 +2,7 @@ package roart.filesystem.local;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.FileSystemConstants;
+import roart.common.constants.QueueConstants;
 import roart.filesystem.FileSystemAbstractController;
 import roart.filesystem.FileSystemOperations;
 
@@ -15,17 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 public class LocalController extends FileSystemAbstractController {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(LocalController.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(LocalController.class, args);
+    }
 
-	@Override
-	protected FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
-		return new LocalFileSystem(configname, configid, nodeConf);
-	}
+    @Override
+    protected FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+        return new LocalFileSystem(configname, configid, nodeConf);
+    }
 
-        @Override
-        protected String getFs() {
-            return FileSystemConstants.LOCALTYPE;
-        }
+    @Override
+    protected String getFs() {
+        return FileSystemConstants.LOCALTYPE;
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.LOCAL;
+    }
 }

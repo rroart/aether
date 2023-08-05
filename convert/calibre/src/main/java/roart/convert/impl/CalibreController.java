@@ -1,6 +1,7 @@
 package roart.convert.impl;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.QueueConstants;
 import roart.convert.ConvertAbstract;
 import roart.convert.ConvertAbstractController;
 
@@ -14,13 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 public class CalibreController extends ConvertAbstractController {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(CalibreController.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(CalibreController.class, args);
+    }
 
     @Override
     protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
         return new Calibre(configname, configid, nodeConf);
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.CALIBRE;
     }
 }
 

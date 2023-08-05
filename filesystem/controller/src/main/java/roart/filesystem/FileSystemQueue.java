@@ -14,7 +14,7 @@ public class FileSystemQueue {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public FileSystemQueue() {
+    public FileSystemQueue(String type) {
         NodeConfig nodeConf = null;
         CuratorFramework curatorFramework = null;
         HazelcastInstance hz = null;

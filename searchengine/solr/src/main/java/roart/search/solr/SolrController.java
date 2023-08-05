@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.*;
 import org.springframework.web.bind.annotation.*;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.QueueConstants;
 import roart.search.SearchEngineAbstractController;
 import roart.search.SearchEngineAbstractSearcher;
 
@@ -15,12 +16,17 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class SolrController extends SearchEngineAbstractController {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SolrController.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SolrController.class, args);
+    }
 
-	@Override
-	protected SearchEngineAbstractSearcher createSearcher(String configname, String configid, NodeConfig nodeConf) {
-		return new SearchSolr(configname, configid, nodeConf);
-	}
+    @Override
+    protected SearchEngineAbstractSearcher createSearcher(String configname, String configid, NodeConfig nodeConf) {
+        return new SearchSolr(configname, configid, nodeConf);
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.SOLR;
+    }
 }

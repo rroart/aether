@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.*;
 import org.springframework.web.bind.annotation.*;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.QueueConstants;
 import roart.database.DatabaseAbstractController;
 import roart.database.DatabaseOperations;
 
@@ -31,5 +32,15 @@ public class SpringController extends DatabaseAbstractController {
     @Override
     protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
         return springIndexFilesWrapper;
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.SPRING;
+    }
+
+    @Override
+    public boolean useAppId() {
+        return true;
     }
 }

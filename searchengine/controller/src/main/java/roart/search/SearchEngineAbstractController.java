@@ -185,4 +185,7 @@ public abstract class SearchEngineAbstractController {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(SearchEngineAbstractController.class, args);
     }
+
+    public abstract String getQueueName();
+    
 }

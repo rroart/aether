@@ -1,6 +1,7 @@
 package roart.database.cassandra;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.QueueConstants;
 import roart.database.DatabaseAbstractController;
 import roart.database.DatabaseOperations;
 
@@ -15,13 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 public class CassandraController extends DatabaseAbstractController {
 
-	public static void main(String[] args) {
-	    System.out.println("main");
-		SpringApplication.run(CassandraController.class, args);
-	}
+    public static void main(String[] args) {
+        System.out.println("main");
+        SpringApplication.run(CassandraController.class, args);
+    }
 
-	@Override
-	protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
-		return new CassandraIndexFilesWrapper(configname, nodeConf, configid);
-	}
+    @Override
+    protected DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
+        return new CassandraIndexFilesWrapper(configname, nodeConf, configid);
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.CASSANDRA;
+    }
+
 }

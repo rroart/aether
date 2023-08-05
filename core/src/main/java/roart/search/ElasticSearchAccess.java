@@ -2,6 +2,7 @@ package roart.search;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.QueueConstants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.model.SearchDisplay;
@@ -29,5 +30,10 @@ public class ElasticSearchAccess extends SearchAccess {
     	return EurekaConstants.ELASTIC;
     }
     
+    @Override
+    public String getQueueName() {
+        return QueueConstants.ELASTIC;
+    }
+
 }
 

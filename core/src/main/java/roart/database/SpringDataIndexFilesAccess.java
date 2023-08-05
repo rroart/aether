@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
 public class SpringDataIndexFilesAccess extends IndexFilesAccess {
@@ -18,4 +19,13 @@ public class SpringDataIndexFilesAccess extends IndexFilesAccess {
         return EurekaConstants.SPRINGDATA;
     }
 
+    @Override
+    public String getQueueName() {
+        return QueueConstants.SPRING;
+    }
+
+    @Override
+    public boolean queueWithAppId() {
+        return true;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.QueueConstants;
 import roart.common.convert.ConvertParam;
 import roart.common.convert.ConvertResult;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -73,4 +74,6 @@ public abstract class ConvertAbstractController {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(ConvertAbstractController.class, args);
     }
+
+    public abstract String getQueueName();
 }

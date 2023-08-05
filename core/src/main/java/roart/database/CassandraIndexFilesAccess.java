@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
 public class CassandraIndexFilesAccess extends IndexFilesAccess {
@@ -17,6 +18,10 @@ public class CassandraIndexFilesAccess extends IndexFilesAccess {
 
     public String getAppName() {
 	return EurekaConstants.CASSANDRA;
+    }
+
+    public String getQueueName() {
+        return QueueConstants.CASSANDRA;
     }
 
 }

@@ -48,6 +48,12 @@ public abstract class IndexFilesAccess {
 
     public abstract String getAppName();
 
+    public abstract String getQueueName();
+    
+    public boolean queueWithAppId() {
+        return false;
+    }
+
     public String constructor() {
         DatabaseConstructorParam param = new DatabaseConstructorParam();
         configureParam(param);

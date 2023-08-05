@@ -200,6 +200,7 @@ public abstract class SearchAccess {
         }
     }
 
+    public abstract String getQueueName();
 
 }
 

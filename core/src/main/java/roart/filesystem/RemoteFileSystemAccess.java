@@ -17,7 +17,7 @@ import roart.common.constants.Constants;
 import roart.common.model.FileObject;
 import roart.service.ControlService;
 
-public class RemoteFileSystemAccess extends FileSystemAccess {
+public abstract class RemoteFileSystemAccess extends FileSystemAccess {
 
     private static Logger log = LoggerFactory.getLogger(RemoteFileSystemAccess.class);
 

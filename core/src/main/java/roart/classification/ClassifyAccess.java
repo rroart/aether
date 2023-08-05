@@ -76,5 +76,7 @@ public abstract class ClassifyAccess {
         }
    }
 
+    public abstract String getQueueName();
+
 }
 

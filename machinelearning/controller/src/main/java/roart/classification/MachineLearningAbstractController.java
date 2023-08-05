@@ -109,4 +109,6 @@ public abstract class MachineLearningAbstractController {
         return ret;
     }
 
+    public abstract String getQueueName();
+    
 }

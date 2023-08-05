@@ -37,6 +37,7 @@ import roart.common.inmemory.model.InmemoryUtil;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,11 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Bean
+    FileSystemQueue getQueue() {
+        return new FileSystemQueue(getFs());
+    }
+    
     private static Map<String, FileSystemOperations> operationMap = new HashMap();
 
     protected abstract FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf);
@@ -327,4 +333,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             return "/" + string;
         }
     }
+
+    public abstract String getQueueName();
+    
 }

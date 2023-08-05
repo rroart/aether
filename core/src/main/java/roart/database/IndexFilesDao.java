@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
@@ -393,4 +395,9 @@ public class IndexFilesDao {
         indexFiles.drop();
     }
 
+    public void sendDelete(IndexFiles indexFiles) {
+        //new MyQueueFactory().create(name, nodeConf, curatorFramework, hz);
+        //MyQueue<T> queue = null;
+        //queue.offer(indexFiles);
+    }
 }

@@ -3,6 +3,7 @@ package roart.search;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.QueueConstants;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.model.SearchDisplay;
@@ -30,6 +31,11 @@ public class SolrSearchAccess extends SearchAccess {
 
     public String getAppName() {
     	return EurekaConstants.SOLR;
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.SOLR;
     }
 
 }

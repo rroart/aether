@@ -3,6 +3,7 @@ package roart.classification.spark.ml;
 import roart.classification.MachineLearningAbstractClassifier;
 import roart.classification.MachineLearningAbstractController;
 import roart.common.config.NodeConfig;
+import roart.common.constants.QueueConstants;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,12 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 public class SparkMLController extends MachineLearningAbstractController {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SparkMLController.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SparkMLController.class, args);
+    }
 
-	@Override
-	protected MachineLearningAbstractClassifier createClassifier(String configname, String configid, NodeConfig nodeConf) {
-		return new SparkMLClassify(configname, configid, nodeConf);
-	}
+    @Override
+    protected MachineLearningAbstractClassifier createClassifier(String configname, String configid, NodeConfig nodeConf) {
+        return new SparkMLClassify(configname, configid, nodeConf);
+    }
+
+    @Override
+    public String getQueueName() {
+        return QueueConstants.SPARKML;
+    }
 }

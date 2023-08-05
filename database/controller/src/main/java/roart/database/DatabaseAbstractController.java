@@ -26,6 +26,7 @@ import roart.common.util.JsonUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,6 +40,12 @@ import org.slf4j.LoggerFactory;
 public abstract class DatabaseAbstractController {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    
+    @Bean
+    DatabaseQueue getQueue() {
+        String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
+        return new DatabaseQueue(getQueueName() + appid);
+    }
 
     private static Map<String, DatabaseOperations> operationMap = new HashMap<>();
 
@@ -227,4 +234,10 @@ public abstract class DatabaseAbstractController {
     public static void main(String[] args) {
         SpringApplication.run(DatabaseAbstractController.class, args);
     }
+    
+    public abstract String getQueueName();
+    
+    public boolean useAppId( ) {
+        return false;
+    };
 }

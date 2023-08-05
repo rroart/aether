@@ -193,4 +193,8 @@ public class FileSystemAccess {
         }
     }
 
+    public String getQueueName() {
+        return null;
+    }
+
 }
