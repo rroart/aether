@@ -343,17 +343,11 @@ public class ListQueueRunner implements Runnable {
                 if (!element.isNomd5()) {
                     MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.getFilesdonesetid());
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                    total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(element.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                    count.addAndGet(1);
+                    TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                     // save
                     queue.offer(trav);
                     MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                     filestodoset.offer(trav.getFileobject().toString());
-                    //Queues.getTraverseQueueSize().incrementAndGet();
-                    log.debug("Count inc {}", trav.getFileobject());
-                    //TraverseFile.handleFo3(null, fo);
                 }
             }
         }

@@ -191,15 +191,9 @@ public class Traverse {
                 if (!nomd5) {
                     MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
-                    MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                    total.addAndGet(1);
-                    MyAtomicLong count = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-                    count.addAndGet(1);
+                    TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                     // save
                     queue.offer(trav);
-                    //Queues.getTraverseQueueSize().incrementAndGet();
-                    log.debug("Count inc {}", trav.getFileobject());
-                    //TraverseFile.handleFo3(null, fo);
                 }
             }
         }
@@ -249,11 +243,8 @@ public class Traverse {
                 continue;
             }
             // config with finegrained distrib
-            MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            total.addAndGet(1);
-            MyAtomicLong count = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-            count.addAndGet(1);
-            // ?
+            TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
+        // ?
             //queue.offer(trav);
             //String md5sdoneid = "md5sdoneid"+trav.getMyid();
             //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
@@ -261,10 +252,7 @@ public class Traverse {
             if (traverseFile.getDoIndex(trav, index, function)) {
                 traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
             }
-            //MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT);
-            total.addAndGet(-1);
-            //MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid());
-            count.addAndGet(-1);
+            TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
         }
 
         return null;

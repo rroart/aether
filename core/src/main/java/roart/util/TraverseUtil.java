@@ -23,12 +23,14 @@ import roart.common.service.ServiceParam;
 import roart.common.util.FsUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
+import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.hcutil.GetHazelcastInstance;
+import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 
 public class TraverseUtil {
-    public static Logger log = LoggerFactory.getLogger(TraverseUtil.class);
+    private static Logger log = LoggerFactory.getLogger(TraverseUtil.class);
 
     public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf, ControlService controlService) {
         int max = nodeConf.getReindexLimit();
@@ -223,6 +225,14 @@ public class TraverseUtil {
             }
         }
         return false;
+    }
+
+    public static void doCounters(TraverseQueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        total.addAndGet(value);
+        MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        count.addAndGet(value);
+        log.debug("Count {} {}", value, trav.getFileobject());
     }
 
 }
