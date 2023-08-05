@@ -292,15 +292,14 @@ public class ListQueueRunner implements Runnable {
     // check gives fs for new with path, eventually also compute new md5
     // then index if new
 
-    public Set<String> doList(ListQueueElement element) throws Exception {
+    public void doList(ListQueueElement element) throws Exception {
         FileObject fileObject = element.getFileObject();
-        Set<String> retset = new HashSet<>();
         if (TraverseUtil.isMaxed(element.getMyid(), element.getElement(), nodeConf, controlService)) {
-            return retset;
+            return;
         }
 
         if (TraverseUtil.indirlistnot(fileObject, dirlistnot)) {
-            return retset;
+            return;
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
@@ -311,7 +310,7 @@ public class ListQueueRunner implements Runnable {
         //log.info("dir " + dirname);
         //log.info("listDir " + listDir.length);
         if (listDir == null) {
-            return retset;
+            return;
         }
         for (MyFile file : listDir) {
             FileObject fo = file.fileObject[0];
@@ -339,7 +338,6 @@ public class ListQueueRunner implements Runnable {
                 //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
             } else {
-                retset.add(filename);
                 if (!element.isNomd5()) {
                     MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.getFilesdonesetid());
@@ -351,13 +349,6 @@ public class ListQueueRunner implements Runnable {
                 }
             }
         }
-        /*
-        if (dirset != null) {
-            dirset.put(dirname, md5set);
-        }
-         */
-        //log.info("retsize " + retset.size());
-        return retset;
     }
 
     public void getdirlistnot() {
@@ -369,4 +360,5 @@ public class ListQueueRunner implements Runnable {
         }
 
     }
+
 }
