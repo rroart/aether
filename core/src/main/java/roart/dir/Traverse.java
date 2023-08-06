@@ -31,6 +31,7 @@ import roart.common.synchronization.MyLock;
 import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.util.ExecCommand;
 import roart.common.util.FsUtil;
+import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
@@ -64,20 +65,11 @@ public class Traverse {
 
     String myid;
     ServiceParam element;
-    String retlistid = null;
-    String retnotlistid = null;
     //List<ResultItem> retList = null;
     //List<ResultItem> retNotList = null;
     String newsetid = null; 
-    //  MySet<String> newset = null; 
-    //  Map<String, HashSet<String>> dirset;
-    String notfoundsetid;
-    //boolean reindex = false;
-    //boolean calculatenewmd5;
-    String filestodosetid;
     String traversecountid;
     boolean nomd5;
-    String filesdonesetid;
 
     FileObject[] dirlistnot;
     SearchDisplay display;
@@ -87,20 +79,14 @@ public class Traverse {
 
     private SearchDao searchDao;
 
-    public Traverse(String myid, ServiceParam element, String retlistid, String retnotlistid, String newsetid, String[] dirlistnotarr, String notfoundsetid, String filestodosetid, String traversecountid, boolean nomd5, String filesdonesetid, NodeConfig nodeConf, ControlService controlService) {
+    public Traverse(String myid, ServiceParam element, String[] dirlistnotarr, String traversecountid, boolean nomd5, NodeConfig nodeConf, ControlService controlService) {
 
         this.myid = myid;
         this.element = element;
-        this.retlistid = retlistid;
-        this.retnotlistid = retnotlistid;
-        this.newsetid = newsetid;
-        this.notfoundsetid = notfoundsetid;
         //this.reindex = reindex;
         //this.calculatenewmd5 = newmd5;
-        this.filestodosetid = filestodosetid;
         this.traversecountid = traversecountid;
         this.nomd5 = nomd5;
-        this.filesdonesetid = filesdonesetid;
         this.nodeConf = nodeConf;
         this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         this.controlService = controlService;
@@ -151,7 +137,7 @@ public class Traverse {
             return retset;
         }
 
-        if (TraverseUtil.indirlistnot(fileObject, dirlistnot)) {
+        if (TraverseUtil.indirlist(fileObject, dirlistnot)) {
             return retset;
         }
         //HashSet<String> md5set = new HashSet<String>();
@@ -171,7 +157,7 @@ public class Traverse {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -190,7 +176,7 @@ public class Traverse {
                 retset.add(filename);
                 if (!nomd5) {
                     MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                    TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
+                    TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element);
                     TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                     // save
                     queue.offer(trav);
@@ -238,7 +224,7 @@ public class Traverse {
             }
             */
             // TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, filesdonesetid);
+            TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element);
             if (!function.indexFilter(index, trav)) {
                 continue;
             }
@@ -264,7 +250,7 @@ public class Traverse {
             if (add != null) {
                 //return doList(FsUtil.getFileObject(add));
                 FileObject fileObject = FsUtil.getFileObject(add);
-                ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5, filesdonesetid);
+                ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element);
                 new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
             return new HashSet<>();
@@ -273,7 +259,7 @@ public class Traverse {
                 String[] dirlist = nodeConf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
                     FileObject fileObject = FsUtil.getFileObject(dirlist[i]);
-                    ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element, retlistid, retnotlistid, newsetid, notfoundsetid, filestodosetid, traversecountid, nomd5, filesdonesetid);
+                    ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element);
                     new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                     //Queues.getListingQueueSize().incrementAndGet();
                     //retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));

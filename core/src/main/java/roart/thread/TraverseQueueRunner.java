@@ -140,6 +140,7 @@ public class TraverseQueueRunner implements Runnable {
             }
             //Queues.queueStat();
 
+            nThreads = 1;
             nThreads = 3;
             for(int i = running; i < nThreads; i++) {
                 Callable<Object> callable = new Callable<Object>() {
@@ -295,16 +296,13 @@ public class TraverseQueueRunner implements Runnable {
             filenames.add(trav.getFileobject());
         }
         long time0 = System.currentTimeMillis();
-        // Get MyFile data from filesystem
-        Map<FileObject, MyFile> fsMap = new FileSystemDao(nodeConf, controlService).getWithoutInputStream(filenames);
         long time1 = System.currentTimeMillis();
         // Get Md5s by fileobject from database
         // TODO check if need full indexfiles?
+        // TODO file may be gone after list
         Map<FileObject, String> filenameMd5Map = indexFilesDao.getMd5ByFilename(filenames);
         // Batch read md5, if have none or wants to calculate new
-        Map<FileObject, String> filenameNewMd5Map = traverseFile.getMd5(traverseList, fsMap, filenameMd5Map);
-        // Batch read content
-        Map<FileObject, String> contentMap = new HashMap<>(); // TraverseFile.readFiles(traverseList, fsMap);
+        Map<FileObject, String> filenameNewMd5Map = traverseFile.getMd5(traverseList, filenameMd5Map);
         long time2 = System.currentTimeMillis();
         Map<String, IndexFiles> ifOldMap = indexFilesDao.getByMd5(new HashSet<>(filenameMd5Map.values().stream().filter(e -> e != null).collect(Collectors.toList())));
         // with side effect
@@ -315,7 +313,7 @@ public class TraverseQueueRunner implements Runnable {
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
         for (TraverseQueueElement trav : traverseList) {
-            traverseFile.handleFo(trav, fsMap, filenameMd5Map, ifMap, filenameNewMd5Map, contentMap, locks, semaphores);
+            traverseFile.handleFo(trav, filenameMd5Map, ifMap, filenameNewMd5Map, locks, semaphores);
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));

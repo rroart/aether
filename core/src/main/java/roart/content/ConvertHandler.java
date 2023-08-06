@@ -21,16 +21,17 @@ import roart.common.config.Converter;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
+import roart.common.util.QueueUtil;
 import roart.convert.ConvertDAO;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
@@ -58,7 +59,7 @@ public class ConvertHandler {
     }
 
     public void doConvert(ConvertQueueElement el, NodeConfig nodeConf) {
-        FileObject filename = el.filename;
+        FileObject filename = el.fileObject;
         String md5 = el.md5;
         IndexFiles index = el.index;
         //List<ResultItem> retlist = el.retlistid;
@@ -71,11 +72,12 @@ public class ConvertHandler {
         //String content = new TikaHandler().getString(el.fsData.getInputStream());
         //Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         //InmemoryMessage message = inmemory.send(el.md5, content);
-        InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(el.filename);
+        // may not exist
+        InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(el.fileObject);
         el.message = message;
         el.index.setFailedreason(null);
 
-	log.info("file {}", el.filename);
+	log.info("file {}", el.fileObject);
 	
 	// find converters
 	
@@ -104,7 +106,7 @@ public class ConvertHandler {
                 }
             }
             if (converter.getSuffixes().length > 0) {
-                String myfilename = el.filename.object.toLowerCase();
+                String myfilename = el.fileObject.object.toLowerCase();
                 if (!Arrays.asList(converter.getSuffixes()).stream().anyMatch(myfilename::endsWith)) {
                     continue;
                 }
@@ -118,7 +120,7 @@ public class ConvertHandler {
             }
 	    long time = System.currentTimeMillis() - now;
             if (str != null) {
-                el.convertsw = converter.getName();
+                el.index.setConvertsw(converter.getName());
 		el.index.setConverttime("" + time);
 	        break;
             } else {
@@ -129,7 +131,6 @@ public class ConvertHandler {
         // after convert
         
         el.message = null;
-        el.mimetype = mimetype;
         log.info("Mimetype {}", mimetype);
         if (mimetype != null) {
             metadata.put(Constants.FILESCONTENTTYPE, mimetype);
@@ -161,14 +162,12 @@ public class ConvertHandler {
                 log.error(Constants.EXCEPTION, e);
             }
             //size = SearchLucene.indexme("all", md5, inputStream);
-            IndexQueueElement elem = new IndexQueueElement(null, md5, index, el.retlistid, el.retlistnotid, filename, metadata, str);
-            elem.lang = lang;
+            IndexQueueElement elem = new IndexQueueElement(el.myid, filename, md5, index, metadata, str);
             //elem.content = content;
             //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
             //Inmemory inmemory2 = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             //InmemoryMessage message = inmemory2.send(el.md5, content);
             elem.message = str;
-            elem.convertsw = el.convertsw;
             new Queues(nodeConf, controlService).getIndexQueue().offer(elem);
             //Queues.getIndexQueueSize().incrementAndGet();
 
@@ -177,7 +176,7 @@ public class ConvertHandler {
             FileLocation aFl = el.index.getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), controlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(el.retlistnotid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(el.myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             retlistnot.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
@@ -193,7 +192,7 @@ public class ConvertHandler {
         if (!success) {
             log.error("queue not having {}", filename);
         }
-        log.info("ending {} {}", el.md5, el.filename);
+        log.info("ending {} {}", el.md5, el.fileObject);
     }
 
     private String getMimetype(InputStream content, String filename) throws IOException {

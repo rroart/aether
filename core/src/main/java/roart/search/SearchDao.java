@@ -36,8 +36,8 @@ public class SearchDao {
         this.search = SearchAccessFactory.get(nodeConf, controlService);
     }
 
-    public int indexme(String type, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
-        return search.indexme(type, md5, dbfilename, metadata, lang, classification, index, message);
+    public int indexme(String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
+        return search.indexme(md5, dbfilename, metadata, lang, classification, index, message);
     }
 
     public ResultItem[] searchme(String str, String searchtype) {

@@ -15,10 +15,10 @@ import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
 import roart.common.util.JsonUtil;
+import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.hcutil.GetHazelcastInstance;
 import roart.common.inmemory.model.InmemoryMessage;
-import roart.common.inmemory.model.Inmemory;
 import roart.common.collections.MyList;
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyLists;
@@ -26,6 +26,7 @@ import roart.common.collections.impl.MyQueues;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 
 import java.io.*;
@@ -62,29 +63,28 @@ public class Search {
         new Queues(nodeConf, controlService).incIndexs();
         long now = System.currentTimeMillis();
 
-        String type = el.type;
         String md5 = el.md5;
         //InputStream inputStream = el.inputStream;
         IndexFiles dbindex = el.index;
-        FileObject dbfilename = el.dbfilename;
+        FileObject filename = el.fileObject;
         Map<String, String> metadata = el.metadata;
-        String lang = el.lang;
+        String lang = el.index.getLanguage();
         InmemoryMessage message = el.message;
         String classification = el.index.getClassification();
-        MyQueue<ResultItem> retlist = MyQueues.get(el.retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-        MyQueue<ResultItem> retlistnot = MyQueues.get(el.retlistnotid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
 
         int retsize = 0;
 
         try {
-            retsize = new SearchDao(nodeConf, controlService).indexme(type, md5, dbfilename, metadata, lang, classification, dbindex, message);
+            retsize = new SearchDao(nodeConf, controlService).indexme(md5, filename, metadata, lang, classification, dbindex, message);
         } catch (Exception e) {
             log.error(roart.common.constants.Constants.EXCEPTION, e);
             dbindex.setNoindexreason("index exception " + e.getClass().getName());
             retsize = -1;
         } catch (OutOfMemoryError e) {
             System.gc();
-            log.error("Error " + Thread.currentThread().getId() + " " + dbfilename);
+            log.error("Error " + Thread.currentThread().getId() + " " + filename);
             log.error(roart.common.constants.Constants.ERROR, e);
             dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
             retsize = -1;
@@ -94,15 +94,13 @@ public class Search {
             //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
             FileLocation aFl = el.index.getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), controlService.nodename, aFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
+            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             retlistnot.offer(ri);
         } else {
 
             log.info("size2 " + md5 + " " + retsize);
-            el.size = retsize;
             dbindex.setIndexed(Boolean.TRUE);
             dbindex.setTimestamp("" + System.currentTimeMillis());
-            dbindex.setConvertsw(el.convertsw);
             //dbindex.save();
             long time = System.currentTimeMillis() - now;
             dbindex.setTimeindex("" + time);
@@ -110,7 +108,7 @@ public class Search {
 
             FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(el.index, nodeConf, controlService);
             ResultItem ri = IndexFiles.getResultItem(el.index, lang, controlService.nodename, maybeFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, dbfilename);
+            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             retlist.offer(ri);
 
         }

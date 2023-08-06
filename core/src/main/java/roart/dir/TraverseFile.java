@@ -24,10 +24,10 @@ import roart.common.collections.impl.MySets;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.filesystem.MyFile;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
@@ -36,6 +36,7 @@ import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.synchronization.impl.MySemaphoreFactory;
 import roart.common.util.IOUtil;
+import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
@@ -68,7 +69,7 @@ public class TraverseFile {
         this.searchDao = searchDao;
     }
 
-    public void handleFo(TraverseQueueElement trav, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Map<FileObject, String> contentMap, Queue<MyLock> locks, Queue<MySemaphore> semaphores)
+    public void handleFo(TraverseQueueElement trav, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Queue<MyLock> locks, Queue<MySemaphore> semaphores)
             throws Exception {
         // config with finegrained distrib
         if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
@@ -96,9 +97,6 @@ public class TraverseFile {
         boolean created = false;
         if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
-                if (!fsMap.get(filename).exists) {
-                    throw new FileNotFoundException("File does not exist " + filename);
-                }
                 String oldMd5 = md5;
                 md5 = filenameNewMd5Map.get(filename);
                 if (md5 == null) {
@@ -184,15 +182,13 @@ public class TraverseFile {
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
-                    if (trav.getNewsetid() != null) {
-                        MyQueue<String> newset = (MyQueue<String>) MyQueues.get(trav.getNewsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
-                        newset.offer(filename.toString());
-                    }
+                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                    newset.offer(filename.toString());
                 }
             } catch (FileNotFoundException e) {
                 TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
                 log.error(Constants.EXCEPTION, e);
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(trav.getNotfoundsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename.toString());
                 return;
             } catch (Exception e) {
@@ -252,7 +248,7 @@ public class TraverseFile {
             log.error(Constants.EXCEPTION, e);
         } finally {
             log.debug("hereend");
-            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(trav.getFilesdoneid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             filesdoneset.offer(filename.toString());
             TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
         }
@@ -303,12 +299,14 @@ public class TraverseFile {
         //TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), fsData);
         //Queues.tikaQueue.add(e);
         String content = null; //contentMap.get(filename);
-        ConvertQueueElement e2 = new ConvertQueueElement(filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new HashMap<>(), null, content);
+        ConvertQueueElement e2 = new ConvertQueueElement(trav.getMyid(), filename, md5, index, new HashMap<>(), null);
         new Queues(nodeConf, controlService).getConvertQueue().offer(e2);
         //Queues.getConvertQueueSize().incrementAndGet();
         //size = doTika(filename, filename, md5, index, retlist);
     }
 
+    // not used
+    @Deprecated
     public Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
         Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {
@@ -343,20 +341,14 @@ public class TraverseFile {
         return contentMap;
     }
 
-    public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap, Map<FileObject, String> filenameMd5Map) {
+    public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, String> filenameMd5Map) {
         Set<FileObject> filenames = new HashSet<>();
         for (TraverseQueueElement trav : traverseList) {
             FileObject filename = trav.getFileobject();
             String md5 = filenameMd5Map.get(filename);
             if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
                 try {
-                    if (!fsMap.get(filename).exists) {
-                        throw new FileNotFoundException("File does not exist " + filename);
-                    }
                     filenames.add(filename);
-                } catch (FileNotFoundException e) {
-                    log.error(Constants.EXCEPTION, e);
-                    log.debug("Count dec {}", trav.getFileobject());
                 } catch (Exception e) {
                     log.info("Error: {}", e.getMessage());
                     log.error(Constants.EXCEPTION, e);

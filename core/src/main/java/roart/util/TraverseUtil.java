@@ -21,6 +21,7 @@ import roart.common.model.Location;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.util.FsUtil;
+import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.dir.TraverseFile;
@@ -208,19 +209,19 @@ public class TraverseUtil {
      * Check if filename/directory is among excluded directories
      * 
      * @param fileObject of file to be tested
-     * @param dirlistnot2 an array of excluded directories
+     * @param dirlist an array of excluded directories
      * @return whether excluded
      */
 
-    public static boolean indirlistnot(FileObject fileObject, FileObject[] dirlistnot2) {
-        if (dirlistnot2 == null) {
+    public static boolean indirlist(FileObject fileObject, FileObject[] dirlist) {
+        if (dirlist == null) {
             return false;
         }
-        for (int i = 0; i < dirlistnot2.length; i++) {
-            if (!fileObject.location.equals(dirlistnot2[i].location)) {
+        for (int i = 0; i < dirlist.length; i++) {
+            if (!fileObject.location.equals(dirlist[i].location)) {
                 continue;
             }
-            if (!dirlistnot2[i].object.isEmpty() && fileObject.object.indexOf(dirlistnot2[i].object)>=0) {
+            if (!dirlist[i].object.isEmpty() && fileObject.object.indexOf(dirlist[i].object)>=0) {
                 return true;
             }
         }
@@ -230,9 +231,24 @@ public class TraverseUtil {
     public static void doCounters(TraverseQueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
         MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         total.addAndGet(value);
-        MyAtomicLong count = MyAtomicLongs.get(trav.getTraversecountid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         count.addAndGet(value);
         log.debug("Count {} {}", value, trav.getFileobject());
+    }
+
+    public static FileObject indirlistmatch(FileObject fileObject, FileObject[] dirlist) {
+        if (dirlist == null) {
+            return null;
+        }
+        for (int i = 0; i < dirlist.length; i++) {
+            if (!fileObject.location.equals(dirlist[i].location)) {
+                continue;
+            }
+            if (!dirlist[i].object.isEmpty() && fileObject.object.indexOf(dirlist[i].object)>=0) {
+                return dirlist[i];
+            }
+        }
+        return null;
     }
 
 }

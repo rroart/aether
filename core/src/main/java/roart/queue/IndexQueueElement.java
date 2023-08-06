@@ -7,20 +7,11 @@ import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 
 public class IndexQueueElement {
-    public String type;
+    public String myid;
     public String md5;
-    public String lang;
-    // public String classification;
-    // TODO also remove
-    //public String content; // made from inputStream
-    //public InputStream inputStream;
     public volatile IndexFiles index;
-    public String retlistid;
-    public String retlistnotid;
-    public int size;
-    public FileObject dbfilename;
+    public FileObject fileObject;
     public Map<String, String> metadata;
-    public String convertsw;
     public InmemoryMessage message;
 
     // for Jackson
@@ -28,13 +19,11 @@ public class IndexQueueElement {
         super();
     }
 
-    public IndexQueueElement(String type, String md5, IndexFiles index, String retlistid, String retlistnotid, FileObject dbfilename, Map<String, String> metadata, InmemoryMessage message) {
-        this.type = type;
+    public IndexQueueElement(String myid, FileObject fileObject, String md5, IndexFiles index, Map<String, String> metadata, InmemoryMessage message) {
+        this.myid = myid;
         this.md5 = md5;
         this.index = index;
-        this.retlistid = retlistid;
-        this.retlistnotid = retlistnotid;
-        this.dbfilename = dbfilename;
+        this.fileObject = fileObject;
         this.metadata = metadata;
         this.message = message;
     }

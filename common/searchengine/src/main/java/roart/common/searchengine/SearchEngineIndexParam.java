@@ -5,7 +5,6 @@ import roart.common.model.FileObject;
 
 public class SearchEngineIndexParam extends SearchEngineParam {
 
-    public String type;
     public String md5;
     public FileObject dbfilename;
     public String[] metadata;

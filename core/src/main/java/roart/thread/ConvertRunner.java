@@ -237,7 +237,7 @@ public class ConvertRunner implements Runnable {
         }
         convertWorker.stop(); // .interrupt();
         el.index.setTimeoutreason("converttimeout" + timeout);
-        log.info("Convertworker timeout " + el.filename + " " + convertWorker + " " + convertRunnable);
+        log.info("Convertworker timeout " + el.fileObject + " " + convertWorker + " " + convertRunnable);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
