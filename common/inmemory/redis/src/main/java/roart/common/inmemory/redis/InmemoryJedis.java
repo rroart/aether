@@ -3,7 +3,7 @@ package roart.common.inmemory.redis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import roart.common.constants.Constants;
-import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.common.Inmemory;
 
 public class InmemoryJedis extends Inmemory {
 

@@ -2,9 +2,9 @@ package roart.search.lucene;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.searchengine.SearchConstants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;

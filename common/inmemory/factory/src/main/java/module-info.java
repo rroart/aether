@@ -10,5 +10,6 @@ module common.inmemory.factory {
     requires common.inmemory.hazelcast;
     requires common.inmemory.model;
     requires common.inmemory.redis;
+    requires common.inmemory.message;
     requires common.constants;
 }

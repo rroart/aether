@@ -1,4 +1,4 @@
-package roart.common.inmemory.model;
+package roart.common.inmemory.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import roart.common.constants.Constants;
+import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.util.JsonUtil;
 
 public abstract class Inmemory {

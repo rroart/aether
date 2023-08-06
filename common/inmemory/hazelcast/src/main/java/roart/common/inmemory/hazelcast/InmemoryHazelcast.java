@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.constants.Constants;
-import roart.common.inmemory.model.Inmemory;
+import roart.common.inmemory.common.Inmemory;
 
 import com.hazelcast.core.HazelcastInstance;
 

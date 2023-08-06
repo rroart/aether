@@ -13,6 +13,7 @@ module mahout.spark {
     requires common.config;
     requires common.constants;
     requires common.machinelearning;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires guava;

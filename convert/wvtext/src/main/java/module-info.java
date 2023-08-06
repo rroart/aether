@@ -10,6 +10,7 @@ module wvtext {
     requires common.constants;
     requires common.convert;
     requires common.model;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires convert;

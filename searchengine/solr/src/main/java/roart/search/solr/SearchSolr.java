@@ -27,9 +27,9 @@ import org.apache.solr.client.solrj.SolrServerException;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.searchengine.SearchConstants;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
@@ -100,7 +100,6 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
     }
 
     public SearchEngineIndexResult indexme(SearchEngineIndexParam index) {
-        String type = index.type;
         String md5 = index.md5; 
         //InputStream inputStream,
         String[] metadata = index.metadata;

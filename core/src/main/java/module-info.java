@@ -56,6 +56,7 @@ module core {
     requires spring.core;
     requires spring.web;
     requires aether.shadow.zookeeper;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.apache.commons.io;

@@ -36,8 +36,8 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.database.DatabaseLanguagesResult;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
@@ -541,6 +541,7 @@ public class ServiceController implements CommandLineRunner {
             FileLocation fl = index.getaFilelocation();
             FileObject f = FsUtil.getFileObject(fl);
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+            // may not exist
             InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(f);
             result = inmemory.getInputStream(message);
             inmemory.delete(message);

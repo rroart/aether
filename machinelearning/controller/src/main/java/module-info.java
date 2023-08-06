@@ -12,6 +12,7 @@ module classification {
     requires common.constants;
     requires common.machinelearning;
     requires common.collections;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.slf4j;

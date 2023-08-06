@@ -17,6 +17,7 @@
     <!--module>stream</module-->
     <module>factory</module>
     <module>hazelcast</module>
+    <module>message</module>
     <module>model</module>
     <module>redis</module>
   </modules>

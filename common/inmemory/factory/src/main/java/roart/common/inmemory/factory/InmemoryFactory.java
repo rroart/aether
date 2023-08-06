@@ -1,7 +1,7 @@
 package roart.common.inmemory.factory;
 
-import roart.common.inmemory.model.Inmemory;
 import roart.common.constants.Constants;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.hazelcast.InmemoryHazelcast;
 import roart.common.inmemory.redis.InmemoryJedis;
 

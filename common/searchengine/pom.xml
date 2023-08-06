@@ -24,6 +24,11 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
+      <artifactId>aether-common-model</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
       <artifactId>aether-common-inmemory-model</artifactId>
       <version>${aether.version}</version>
     </dependency>

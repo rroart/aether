@@ -12,6 +12,7 @@ module s3 {
     requires common.constants;
     requires common.filesystem;
     requires common.model;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires filesystem;

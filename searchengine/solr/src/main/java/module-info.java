@@ -12,6 +12,7 @@ module solr {
     requires common.config;
     requires common.constants;
     requires common.searchengine;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.slf4j;

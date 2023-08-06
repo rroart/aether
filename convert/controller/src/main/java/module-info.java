@@ -11,6 +11,7 @@ module convert {
     requires common.constants;
     requires common.convert;
     requires common.util;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires common.collections;

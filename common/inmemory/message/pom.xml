@@ -7,24 +7,14 @@
     <version>0.10-SNAPSHOT</version>
   </parent>
   <groupId>roart</groupId>
-  <artifactId>aether-common-inmemory-redis</artifactId>
+  <artifactId>aether-common-inmemory-message</artifactId>
   <packaging>jar</packaging>
   <version>0.10-SNAPSHOT</version>
-  <name>Aether Common Inmemory Redis</name>
+  <name>Aether Common Inmemory Message</name>
   <dependencies>
     <dependency>
       <groupId>roart</groupId>
       <artifactId>aether-common-constants</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>roart</groupId>
-      <artifactId>aether-common-model</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>roart</groupId>
-      <artifactId>aether-common-util</artifactId>
       <version>${aether.version}</version>
     </dependency>
     <dependency>
@@ -34,13 +24,8 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
-      <artifactId>aether-common-inmemory-message</artifactId>
+      <artifactId>aether-common-util</artifactId>
       <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>redis.clients</groupId>
-      <artifactId>jedis</artifactId>
-      <version>${redisclient.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -58,9 +43,24 @@
       <version>${guava.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.15</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -22,10 +22,10 @@ import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
 import roart.common.convert.ConvertParam;
 import roart.common.convert.ConvertResult;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
 import roart.common.inmemory.model.InmemoryMessage;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 
 //import roart.queue.TikaQueueElement;
 

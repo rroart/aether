@@ -1,4 +1,4 @@
-package roart.common.inmemory.model;
+package roart.common.inmemory.util;
 
 import java.io.IOException;
 import java.io.InputStream;

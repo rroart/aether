@@ -12,6 +12,7 @@ module searchengine {
     requires common.constants;
     requires common.searchengine;
     requires common.collections;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires org.slf4j;

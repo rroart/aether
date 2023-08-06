@@ -16,9 +16,9 @@ import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineParam;
 import roart.common.searchengine.SearchEngineSearchParam;
 import roart.common.searchengine.SearchEngineSearchResult;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
 

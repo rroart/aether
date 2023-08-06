@@ -13,6 +13,7 @@ module local {
     requires common.filesystem;
     requires common.model;
     requires commons.io;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     requires filesystem;
