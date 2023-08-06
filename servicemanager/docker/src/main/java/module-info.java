@@ -17,4 +17,5 @@ module servicemanager.docker {
     requires common.config;
     requires common.util;
     requires common.service;
+    requires common.model;
 }
