@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -27,7 +29,9 @@ import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.FileObject;
+import roart.common.queue.QueueElement;
 import roart.common.webflux.WebFluxUtil;
+import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -44,6 +48,10 @@ public class FileSystemAccess {
     protected NodeConfig nodeConf;
 
     private ControlService controlService;
+
+    private String queueName;
+
+    private MyQueue<QueueElement> queue;
     
     public FileSystemAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
@@ -194,6 +202,21 @@ public class FileSystemAccess {
     }
 
     public String getQueueName() {
+        return null;
+    }
+
+    public void setQueue(String queueName) {
+        this.queueName = queueName;
+        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    }
+
+    public List<MyFile> listFilesFullQueue(QueueElement element, FileObject fileObject) {
+        FileSystemFileObjectParam param = new FileSystemFileObjectParam();
+        configureParam(param);
+        param.fo = fileObject;
+        element.setOpid("listfilesfull");
+        element.setFileSystemFileObjectParam(param);
+        queue.offer(element);
         return null;
     }
 

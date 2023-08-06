@@ -26,6 +26,7 @@
     <module>leader</module>
     <module>machinelearning</module>
     <module>model</module>
+    <module>queue</module>
     <module>searchengine</module>
     <module>service</module>
     <module>synchronization</module>

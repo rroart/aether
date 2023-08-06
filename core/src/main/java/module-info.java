@@ -59,6 +59,7 @@ module core {
     requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
+    requires common.queue;
     requires org.apache.commons.io;
     requires commons.validator;
     requires com.fasterxml.jackson.core;

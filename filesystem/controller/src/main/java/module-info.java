@@ -12,6 +12,7 @@ module filesystem {
     requires common.constants;
     requires common.filesystem;
     requires common.collections;
+    requires common.queue;
     requires curator.client;
     requires curator.framework;
     requires org.slf4j;
@@ -24,6 +25,7 @@ module filesystem {
     //requires aether.shadow.zookeeper;
     requires common.model;
     requires common.util;
+    requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
     //requires common.zookeeper;

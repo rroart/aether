@@ -31,9 +31,9 @@ import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.FileObject;
 import roart.common.util.FsUtil;
+import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
-import roart.common.inmemory.model.Inmemory;
-import roart.common.inmemory.model.InmemoryUtil;
+import roart.common.inmemory.util.InmemoryUtil;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -62,14 +62,14 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
 
     @Bean
     FileSystemQueue getQueue() {
-        return new FileSystemQueue(getFs());
+        return new FileSystemQueue(getQueueName(), this);
     }
     
     private static Map<String, FileSystemOperations> operationMap = new HashMap();
 
     protected abstract FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf);
 
-    private FileSystemOperations getOperations(FileSystemParam param) {
+    FileSystemOperations getOperations(FileSystemParam param) {
         FileSystemOperations operations = operationMap.get(param.configid);
         if (operations == null) {
             NodeConfig nodeConf = null;

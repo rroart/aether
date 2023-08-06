@@ -19,8 +19,11 @@ import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.queue.QueueElement;
 import roart.common.util.FsUtil;
 import roart.service.ControlService;
+import roart.util.TraverseUtil;
+
 import java.util.Map.Entry;
 
 public class FileSystemDao {
@@ -210,5 +213,22 @@ public class FileSystemDao {
         } else {
             return "/" + string;
         }
+    }
+    private FileSystemAccess getFileSystemAccessQueue(FileObject f) {
+        String[] dirlistarr = nodeConf.getDirList();
+        FileObject[] dirlist = new FileObject[dirlistarr.length];
+        int i = 0;
+        for (String dir : dirlistarr) {
+            dirlist[i++] = FsUtil.getFileObject(dir);
+        }
+        FileObject fo = TraverseUtil.indirlistmatch(f, dirlist);
+        FileSystemAccess access = new FileSystemAccess(nodeConf, controlService);
+        String queueName = fo.toString();
+        access.setQueue(queueName);
+        return access;
+    }
+
+    public List<MyFile> listFilesFullQueue(QueueElement element, FileObject fileObject) {
+        return getFileSystemAccessQueue(fileObject).listFilesFullQueue(element, fileObject);
     }
 }

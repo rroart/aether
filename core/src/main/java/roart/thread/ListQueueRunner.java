@@ -31,6 +31,7 @@ import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.util.FsUtil;
+import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.dir.TraverseFile;
@@ -41,6 +42,7 @@ import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.util.TraverseUtil;
+import roart.common.queue.QueueElement;
 
 public class ListQueueRunner implements Runnable {
     static Logger log = LoggerFactory.getLogger(ListQueueRunner.class);
@@ -58,7 +60,7 @@ public class ListQueueRunner implements Runnable {
     private NodeConfig nodeConf;
 
     private ControlService controlService;
-    
+
     public ListQueueRunner(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
@@ -201,7 +203,7 @@ public class ListQueueRunner implements Runnable {
             FileObject filename = trav.getFileObject();
             log.debug("Listing file {}", filename);
         }
-        */
+         */
         if (listing == null) {
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -243,7 +245,7 @@ public class ListQueueRunner implements Runnable {
         Runnable runnable = new MyRunnable3(listing);
         pool.execute(runnable);
     }
-    
+
     class MyRunnable3 implements Runnable {
         ListQueueElement listing;
 
@@ -298,13 +300,12 @@ public class ListQueueRunner implements Runnable {
             return;
         }
 
-        if (TraverseUtil.indirlistnot(fileObject, dirlistnot)) {
+        if (TraverseUtil.indirlist(fileObject, dirlistnot)) {
             return;
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
-        FileObject dir = new FileSystemDao(nodeConf, controlService).get(fileObject);
-        List<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFull(dir);
+        List<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFull(fileObject);
         long time1 = System.currentTimeMillis();
         log.debug("Time0 {}", usedTime(time1, time0));
         //log.info("dir " + dirname);
@@ -318,7 +319,7 @@ public class ListQueueRunner implements Runnable {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(element.getNotfoundsetid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -333,20 +334,18 @@ public class ListQueueRunner implements Runnable {
             if (file.isDirectory) {
                 log.debug("isdir {}", filename);
                 FileObject dirObject = file.fileObject[0];
-                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.isNomd5(), element.getFilesdonesetid());
+                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement());
                 new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
             } else {
-                if (!element.isNomd5()) {
-                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                    TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement(), element.getRetlistid(), element.getRetnotlistid(), element.getNewsetid(), element.getNotfoundsetid(), element.getFilestodosetid(), element.getTraversecountid(), element.getFilesdonesetid());
-                    TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
-                    // save
-                    queue.offer(trav);
-                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(trav.getFilestodoid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
-                    filestodoset.offer(trav.getFileobject().toString());
-                }
+                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement());
+                TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
+                // save
+                queue.offer(trav);
+                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                filestodoset.offer(trav.getFileobject().toString());
             }
         }
     }
@@ -359,6 +358,62 @@ public class ListQueueRunner implements Runnable {
             dirlistnot[i++] = FsUtil.getFileObject(dir);
         }
 
+    }
+
+    public void doListQueue(QueueElement element) throws Exception {
+        FileObject fileObject = element.getFileObject();
+        if (TraverseUtil.isMaxed(element.getMyid(), element.getClientQueueElement(), nodeConf, controlService)) {
+            return;
+        }
+
+        if (TraverseUtil.indirlist(fileObject, dirlistnot)) {
+            return;
+        }
+        //HashSet<String> md5set = new HashSet<String>();
+        long time0 = System.currentTimeMillis();
+        List<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFullQueue(element, fileObject);
+        long time1 = System.currentTimeMillis();
+        log.debug("Time0 {}", usedTime(time1, time0));
+        //log.info("dir " + dirname);
+        //log.info("listDir " + listDir.length);
+        if (listDir == null) {
+            return;
+        }
+        for (MyFile file : listDir) {
+            FileObject fo = file.fileObject[0];
+            long time2 = System.currentTimeMillis();
+            String filename = file.absolutePath;
+            // for encoding problems
+            if (!file.exists) {
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                notfoundset.offer(filename);
+                continue;
+                //throw new FileNotFoundException("File does not exist " + filename);
+            }
+            long time3 = System.currentTimeMillis();
+            log.debug("Time2 {}", usedTime(time3, time2));
+            if (filename.length() > Traverse.MAXFILE) {
+                log.info("Too large filesize {}", filename);
+                continue;
+            }
+            //log.info("file " + filename);
+            if (file.isDirectory) {
+                log.debug("isdir {}", filename);
+                FileObject dirObject = file.fileObject[0];
+                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getClientQueueElement());
+                new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
+                //Queues.getListingQueueSize().incrementAndGet();
+                //retset.addAll(doList(fo));
+            } else {
+                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getClientQueueElement());
+                TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
+                // save
+                queue.offer(trav);
+                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                filestodoset.offer(trav.getFileobject().toString());
+            }
+        }
     }
 
 }
