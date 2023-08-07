@@ -42,8 +42,7 @@ import roart.lang.LanguageDetectFactory;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.util.ISBNUtil;
-import roart.queue.ConvertQueueElement;
-import roart.queue.IndexQueueElement;
+import roart.common.queue.QueueElement;
 
 public class ConvertHandler {
     private Logger log = LoggerFactory.getLogger(ConvertHandler.class);
@@ -58,13 +57,14 @@ public class ConvertHandler {
         this.controlService = controlService;
     }
 
-    public void doConvert(ConvertQueueElement el, NodeConfig nodeConf) {
-        FileObject filename = el.fileObject;
-        String md5 = el.md5;
-        IndexFiles index = el.index;
+    public void doConvert(QueueElement el, NodeConfig nodeConf) {
+        FileObject filename = el.getFileObject();
+        String md5 = el.getMd5();
+        // TODO trylock
+        IndexFiles index = el.getIndexFiles();
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
-        Map<String, String> metadata = el.metadata;
+        Map<String, String> metadata = el.getMetadata();
         log.info("incTikas {}", filename);
         new Queues(nodeConf, controlService).convertTimeoutQueue.add(filename.toString());
         int size = 0;
@@ -73,11 +73,11 @@ public class ConvertHandler {
         //Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         //InmemoryMessage message = inmemory.send(el.md5, content);
         // may not exist
-        InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(el.fileObject);
-        el.message = message;
-        el.index.setFailedreason(null);
+        InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(el.getFileObject());
+        el.setMessage(message);
+        el.getIndexFiles().setFailedreason(null);
 
-	log.info("file {}", el.fileObject);
+	log.info("file {}", el.getFileObject());
 	
 	// find converters
 	
@@ -90,7 +90,7 @@ public class ConvertHandler {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             log.error("File copy error");
-            el.index.setFailedreason("File copy error");
+            el.getIndexFiles().setFailedreason("File copy error");
             converters = new Converter[0];
         }
         
@@ -106,7 +106,7 @@ public class ConvertHandler {
                 }
             }
             if (converter.getSuffixes().length > 0) {
-                String myfilename = el.fileObject.object.toLowerCase();
+                String myfilename = el.getFileObject().object.toLowerCase();
                 if (!Arrays.asList(converter.getSuffixes()).stream().anyMatch(myfilename::endsWith)) {
                     continue;
                 }
@@ -114,14 +114,14 @@ public class ConvertHandler {
             // TODO error
 	    long now = System.currentTimeMillis();
             try {
-                str = new ConvertDAO(nodeConf, controlService).convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), el.index);
+                str = new ConvertDAO(nodeConf, controlService).convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), el.getIndexFiles());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
 	    long time = System.currentTimeMillis() - now;
             if (str != null) {
-                el.index.setConvertsw(converter.getName());
-		el.index.setConverttime("" + time);
+                el.getIndexFiles().setConvertsw(converter.getName());
+		el.getIndexFiles().setConverttime("" + time);
 	        break;
             } else {
             }
@@ -130,7 +130,7 @@ public class ConvertHandler {
         
         // after convert
         
-        el.message = null;
+        el.setMessage(null);
         log.info("Mimetype {}", mimetype);
         if (mimetype != null) {
             metadata.put(Constants.FILESCONTENTTYPE, mimetype);
@@ -142,41 +142,41 @@ public class ConvertHandler {
                 LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
                 lang = languageDetect.detect(content);
                 if (lang != null) {
-                    el.index.setLanguage(lang);
+                    el.getIndexFiles().setLanguage(lang);
                 }
                 if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                     long now = System.currentTimeMillis();
                     String classification = new ClassifyDao(nodeConf, controlService).classify(str, lang);
                     long time = System.currentTimeMillis() - now;
                     log.info("classtime {} {}", filename, time);
-                    el.index.setTimeclass("" + time);
-                    el.index.setClassification(classification);
+                    el.getIndexFiles().setTimeclass("" + time);
+                    el.getIndexFiles().setClassification(classification);
                 }
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
             try {
-                el.index.setIsbn(new ISBNUtil().extract(content, false));
-                log.info("ISBN {}", el.index.getIsbn());
+                el.getIndexFiles().setIsbn(new ISBNUtil().extract(content, false));
+                log.info("ISBN {}", el.getIndexFiles().getIsbn());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
-            //size = SearchLucene.indexme("all", md5, inputStream);
-            IndexQueueElement elem = new IndexQueueElement(el.myid, filename, md5, index, metadata, str);
+            //size = SearchLucene.getMyid()me("all", md5, inputStream);
+            //QueueElement elem = new QueueElement(el.getMyid(), filename, md5, index, metadata, str);
             //elem.content = content;
             //Inmemory inmemory = InmemoryFactory.get(config.getInmemoryServer(), config.getInmemoryHazelcast(), config.getInmemoryRedis());
             //Inmemory inmemory2 = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             //InmemoryMessage message = inmemory2.send(el.md5, content);
-            elem.message = str;
-            new Queues(nodeConf, controlService).getIndexQueue().offer(elem);
+            //elem.setMessage(str);
+            new Queues(nodeConf, controlService).getIndexQueue().offer(el);
             //Queues.getIndexQueueSize().incrementAndGet();
 
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);
-            FileLocation aFl = el.index.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), controlService.getConfigName(), aFl);
+            FileLocation aFl = el.getIndexFiles().getaFilelocation();
+            ResultItem ri = IndexFiles.getResultItem(el.getIndexFiles(), el.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(el.myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
             retlistnot.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
@@ -192,7 +192,7 @@ public class ConvertHandler {
         if (!success) {
             log.error("queue not having {}", filename);
         }
-        log.info("ending {} {}", el.md5, el.fileObject);
+        log.info("ending {} {}", el.getMd5(), el.getFileObject());
     }
 
     private String getMimetype(InputStream content, String filename) throws IOException {

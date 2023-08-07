@@ -125,6 +125,7 @@ public class ConfigConstants {
     @Deprecated
     public static final String BIG = "big";
     public static final String SYNCHRONIZATIONDISTRIBUTEDPROCESS = "synchronization.distributedprocess[@enable]";
+    public static final String SYNCHRONIZATIONASYNC = "synchronization.async[@enable]";
     public static final String CONFIG = "config";
 
     public static final String INMEMORY = "inmemory";

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
+import roart.common.constants.QueueConstants;
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
@@ -223,12 +224,12 @@ public class FileSystemDao {
         }
         FileObject fo = TraverseUtil.indirlistmatch(f, dirlist);
         FileSystemAccess access = new FileSystemAccess(nodeConf, controlService);
-        String queueName = fo.toString();
+        String queueName = QueueConstants.FS + "_" + fo.toString();
         access.setQueue(queueName);
         return access;
     }
 
-    public List<MyFile> listFilesFullQueue(QueueElement element, FileObject fileObject) {
-        return getFileSystemAccessQueue(fileObject).listFilesFullQueue(element, fileObject);
+    public void listFilesFullQueue(QueueElement element, FileObject fileObject) {
+        getFileSystemAccessQueue(fileObject).listFilesFullQueue(element, fileObject);
     }
 }

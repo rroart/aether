@@ -32,7 +32,7 @@ import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
+import roart.common.queue.QueueElement;
 import roart.search.SearchDao;
 import roart.service.ControlService;
 
@@ -191,21 +191,21 @@ public class TraverseQueueRunner implements Runnable {
         if (limit < 1) {
             limit = LIMIT;
         }
-        MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-        List<TraverseQueueElement> traverseList = new ArrayList<>();
+        MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+        List<QueueElement> traverseList = new ArrayList<>();
         // limit = 1;
         for (int i = 0; i < limit; i++) {
-            TraverseQueueElement trav = queue.poll(TraverseQueueElement.class);
+            QueueElement trav = queue.poll(QueueElement.class);
             if (trav == null) {
                 break;
             }
-            if (!traverseList.isEmpty() && !traverseList.get(0).getFileobject().location.equals(trav.getFileobject().location)) {
+            if (!traverseList.isEmpty() && !traverseList.get(0).getFileObject().location.equals(trav.getFileObject().location)) {
                 queue.offer(trav);
                 break;
             }
             //Queues.getTraverseQueueSize().decrementAndGet();
             traverseList.add(trav);
-            FileObject filename = trav.getFileobject();
+            FileObject filename = trav.getFileObject();
             log.debug("Traverse file {}", filename);
         }
         if (traverseList.isEmpty()) {
@@ -224,7 +224,7 @@ public class TraverseQueueRunner implements Runnable {
             handleList3(traverseList, locks, semaphores);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
-            for (TraverseQueueElement trav : traverseList) {
+            for (QueueElement trav : traverseList) {
                 queue.offer(trav);
             }
         } catch (Error e) {
@@ -289,11 +289,11 @@ public class TraverseQueueRunner implements Runnable {
      * @throws Exception
      */
     
-    private void handleList3(List<TraverseQueueElement> traverseList, Queue<MyLock> locks, Queue<MySemaphore> semaphores) throws Exception {
+    private void handleList3(List<QueueElement> traverseList, Queue<MyLock> locks, Queue<MySemaphore> semaphores) throws Exception {
         Set<FileObject> filenames = new HashSet<>();
         // Create filenames set
-        for (TraverseQueueElement trav : traverseList) {
-            filenames.add(trav.getFileobject());
+        for (QueueElement trav : traverseList) {
+            filenames.add(trav.getFileObject());
         }
         long time0 = System.currentTimeMillis();
         long time1 = System.currentTimeMillis();
@@ -312,7 +312,7 @@ public class TraverseQueueRunner implements Runnable {
         // Get IndexFiles by Md5 from database
         long time3 = System.currentTimeMillis();
         // Do individual traverse, index etc
-        for (TraverseQueueElement trav : traverseList) {
+        for (QueueElement trav : traverseList) {
             traverseFile.handleFo(trav, filenameMd5Map, ifMap, filenameNewMd5Map, locks, semaphores);
         }
         long time4 = System.currentTimeMillis();

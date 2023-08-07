@@ -29,6 +29,7 @@ import roart.filesystem.FileSystemDao;
 import roart.hcutil.GetHazelcastInstance;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
+import roart.common.queue.QueueElement;
 
 public class TraverseUtil {
     private static Logger log = LoggerFactory.getLogger(TraverseUtil.class);
@@ -228,12 +229,12 @@ public class TraverseUtil {
         return false;
     }
 
-    public static void doCounters(TraverseQueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
+    public static void doCounters(QueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
         MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         total.addAndGet(value);
         MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         count.addAndGet(value);
-        log.debug("Count {} {}", value, trav.getFileobject());
+        log.debug("Count {} {}", value, trav.getFileObject());
     }
 
     public static FileObject indirlistmatch(FileObject fileObject, FileObject[] dirlist) {

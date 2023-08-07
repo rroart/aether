@@ -2,6 +2,7 @@ package roart.common.constants;
 
 public class QueueConstants {
 
+    public static final String FS = "fs";
     public static final String LOCAL = "local";
     public static final String HDFS= "hdfs";
     public static final String SWIFT = "swift";

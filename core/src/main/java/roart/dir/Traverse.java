@@ -5,9 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import roart.queue.ListQueueElement;
 import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
 import roart.search.SearchDao;
 import roart.service.ControlService;
 import roart.service.SearchService;
@@ -49,6 +47,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import roart.util.TraverseUtil;
+import roart.common.queue.QueueElement;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
@@ -175,8 +174,8 @@ public class Traverse {
             } else {
                 retset.add(filename);
                 if (!nomd5) {
-                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                    TraverseQueueElement trav = new TraverseQueueElement(myid, fo, element);
+                    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                    QueueElement trav = new QueueElement(myid, fo, element, null);
                     TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                     // save
                     queue.offer(trav);
@@ -206,7 +205,7 @@ public class Traverse {
     }
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
-        MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+        MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         indexFilesDao.getAllFiles();
         List<IndexFiles> indexes = indexFilesDao.getAll();
         for (IndexFiles index : indexes) {
@@ -224,10 +223,11 @@ public class Traverse {
             }
             */
             // TODO check if fo needed
-            TraverseQueueElement trav = new TraverseQueueElement(myid, filename, element);
+            QueueElement trav = new QueueElement(myid, filename, element, null);
             if (!function.indexFilter(index, trav)) {
                 continue;
             }
+            trav.setIndexFiles(index);
             // config with finegrained distrib
             TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
         // ?
@@ -250,7 +250,7 @@ public class Traverse {
             if (add != null) {
                 //return doList(FsUtil.getFileObject(add));
                 FileObject fileObject = FsUtil.getFileObject(add);
-                ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element);
+                QueueElement listQueueElement = new QueueElement(myid, fileObject, element, null);
                 new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
             return new HashSet<>();
@@ -259,7 +259,7 @@ public class Traverse {
                 String[] dirlist = nodeConf.getDirList();
                 for (int i = 0; i < dirlist.length; i ++) {
                     FileObject fileObject = FsUtil.getFileObject(dirlist[i]);
-                    ListQueueElement listQueueElement = new ListQueueElement(fileObject, myid, element);
+                    QueueElement listQueueElement = new QueueElement(myid, fileObject, element, null);
                     new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                     //Queues.getListingQueueSize().incrementAndGet();
                     //retList.addAll(doList(FsUtil.getFileObject(dirlist[i])));

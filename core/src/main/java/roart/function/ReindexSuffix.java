@@ -4,10 +4,10 @@ import roart.common.config.NodeConfig;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.queue.QueueElement;
 import roart.common.service.ServiceParam;
 import roart.common.util.FsUtil;
 import roart.filesystem.FileSystemDao;
-import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 
 public class ReindexSuffix extends Reindex {
@@ -17,7 +17,7 @@ public class ReindexSuffix extends Reindex {
     }
 
     @Override
-    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
+    public boolean indexFilter(IndexFiles index, QueueElement element) {
         for (FileLocation fl : index.getFilelocations()) {
             if (element.getClientQueueElement().suffix != null && !fl.getFilename().endsWith(element.getClientQueueElement().suffix)) {
                 continue;

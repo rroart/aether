@@ -5,9 +5,9 @@ import java.util.List;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
+import roart.common.queue.QueueElement;
 import roart.common.service.ServiceParam;
 import roart.dir.Traverse;
-import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 
 public class FilesystemLucenenew extends AbstractIndex {
@@ -22,7 +22,7 @@ public class FilesystemLucenenew extends AbstractIndex {
     }
 
     @Override
-    public boolean indexFilter(IndexFiles index, TraverseQueueElement element) {
+    public boolean indexFilter(IndexFiles index, QueueElement element) {
         return true;
     }
 

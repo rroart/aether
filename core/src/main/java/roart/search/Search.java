@@ -39,6 +39,7 @@ import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import roart.common.queue.QueueElement;
 
 public class Search {
     private static Logger log = LoggerFactory.getLogger(Search.class);
@@ -54,7 +55,7 @@ public class Search {
     }
 
     //public static int indexme(String type, String md5, InputStream inputStream) {
-    public void indexme(IndexQueueElement el) {
+    public void indexme(QueueElement el) {
         if (el == null) {
             log.error("empty queue");
             return;
@@ -63,16 +64,16 @@ public class Search {
         new Queues(nodeConf, controlService).incIndexs();
         long now = System.currentTimeMillis();
 
-        String md5 = el.md5;
+        String md5 = el.getMd5();
         //InputStream inputStream = el.inputStream;
-        IndexFiles dbindex = el.index;
-        FileObject filename = el.fileObject;
-        Map<String, String> metadata = el.metadata;
-        String lang = el.index.getLanguage();
-        InmemoryMessage message = el.message;
-        String classification = el.index.getClassification();
-        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
-        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        IndexFiles dbindex = el.getIndexFiles();
+        FileObject filename = el.getFileObject();
+        Map<String, String> metadata = el.getMetadata();
+        String lang = dbindex.getLanguage();
+        InmemoryMessage message = el.getMessage();
+        String classification = dbindex.getClassification();
+        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
 
         int retsize = 0;
 
@@ -92,8 +93,8 @@ public class Search {
 
         if (retsize < 0) {
             //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
-            FileLocation aFl = el.index.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(el.index, el.index.getLanguage(), controlService.nodename, aFl);
+            FileLocation aFl = dbindex.getaFilelocation();
+            ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             retlistnot.offer(ri);
         } else {
@@ -106,8 +107,8 @@ public class Search {
             dbindex.setTimeindex("" + time);
             log.info("timerStop filename " + time);
 
-            FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(el.index, nodeConf, controlService);
-            ResultItem ri = IndexFiles.getResultItem(el.index, lang, controlService.nodename, maybeFl);
+            FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(dbindex, nodeConf, controlService);
+            ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             retlist.offer(ri);
 
@@ -118,9 +119,9 @@ public class Search {
         new IndexFilesDao(nodeConf, controlService).add(dbindex);
         new Queues(nodeConf, controlService).decIndexs();
 
-        if (el.message != null) {
+        if (el.getMessage() != null) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            inmemory.delete(el.message);
+            inmemory.delete(el.getMessage());
         }
     }
 

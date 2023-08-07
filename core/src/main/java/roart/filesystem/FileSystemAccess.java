@@ -14,6 +14,7 @@ import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.OperationConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorParam;
@@ -210,14 +211,13 @@ public class FileSystemAccess {
         this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
-    public List<MyFile> listFilesFullQueue(QueueElement element, FileObject fileObject) {
+    public void listFilesFullQueue(QueueElement element, FileObject fileObject) {
         FileSystemFileObjectParam param = new FileSystemFileObjectParam();
         configureParam(param);
         param.fo = fileObject;
-        element.setOpid("listfilesfull");
+        element.setOpid(OperationConstants.LISTFILESFULL);
         element.setFileSystemFileObjectParam(param);
         queue.offer(element);
-        return null;
     }
 
 }

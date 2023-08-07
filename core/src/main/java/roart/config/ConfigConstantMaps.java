@@ -131,6 +131,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.SMALL, Boolean.class);
         map.put(ConfigConstants.BIG, Boolean.class);
         map.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, Boolean.class);
+        map.put(ConfigConstants.SYNCHRONIZATIONASYNC, Boolean.class);
         map.put(ConfigConstants.CONFIG, String.class);
         map.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, String.class);
         map.put(ConfigConstants.INMEMORYSERVER, String.class);
@@ -255,6 +256,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.SMALL, Boolean.FALSE);
         deflt.put(ConfigConstants.BIG, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, Boolean.FALSE);
+        deflt.put(ConfigConstants.SYNCHRONIZATIONASYNC, Boolean.FALSE);
         deflt.put(ConfigConstants.SYNCHRONIZATIONCOMMUNICATION, Boolean.FALSE);
         deflt.put(ConfigConstants.CONFIG, "");
         deflt.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, "/tmp");
@@ -385,6 +387,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.SMALL, "Small lock mode");
         text.put(ConfigConstants.BIG, "Big lock mode");
         text.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, "Distributed processing");
+        text.put(ConfigConstants.SYNCHRONIZATIONASYNC, "Distributed async processing");
         text.put(ConfigConstants.CONFIG, "");
         text.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, "Lucene path");
         text.put(ConfigConstants.INMEMORYSERVER, "In memory server");
@@ -509,6 +512,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.SMALL, new XMLType( Boolean.class, Boolean.FALSE, "Small lock mode"));
         mymap.put(ConfigConstants.BIG, new XMLType( Boolean.class, Boolean.FALSE, "Big lock mode"));
         mymap.put(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS, new XMLType( Boolean.class, Boolean.FALSE, "Distributed processing"));
+        mymap.put(ConfigConstants.SYNCHRONIZATIONASYNC, new XMLType( Boolean.class, Boolean.FALSE, "Distributed async processing"));
         mymap.put(ConfigConstants.CONFIG, new XMLType( String.class, "", ""));
         mymap.put(ConfigConstants.CONFIGFILE, new XMLType(null, null, null));
         mymap.put(ConfigConstants.SEARCHENGINELUCENELUCENEPATH, new XMLType( String.class, "/tmp", "Lucene path"));

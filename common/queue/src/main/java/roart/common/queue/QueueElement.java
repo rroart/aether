@@ -1,7 +1,11 @@
 package roart.common.queue;
 
 import roart.common.model.FileObject;
+import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
+
+import java.util.Map;
+
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorParam;
@@ -14,47 +18,128 @@ import roart.common.filesystem.FileSystemParam;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
+import roart.common.inmemory.model.InmemoryMessage;
 
 public class QueueElement {
     private String myid;
-    private FileObject fileObject;
-    private ServiceParam clientQueueElement;
+    
     private String opid;
+    
+    private String queue;
+
+    private ServiceParam clientQueueElement;
+    
+    private String md5;
+    
+    private FileObject fileObject;
+    
+    private IndexFiles indexFiles;
+    
+    private Map<String, String> metadata;
+    
+    private InmemoryMessage message;
+
     private FileSystemFileObjectParam fileSystemFileObjectParam;
+    
     private FileSystemMyFileResult fileSystemMyFileResult;
+
+    // for Jackson
+    public QueueElement() {
+        super();
+    }
+    
+    public QueueElement(String myid, FileObject fileObject, ServiceParam clientQueueElement, String queue) {
+        super();
+        this.myid = myid;
+        this.fileObject = fileObject;
+        this.clientQueueElement = clientQueueElement;
+        this.queue = queue;
+    }
+
     public String getMyid() {
         return myid;
     }
+
     public void setMyid(String myid) {
         this.myid = myid;
     }
-    public FileObject getFileObject() {
-        return fileObject;
-    }
-    public void setFileobject(FileObject fileObject) {
-        this.fileObject = fileObject;
-    }
-    public ServiceParam getClientQueueElement() {
-        return clientQueueElement;
-    }
-    public void setClientQueueElement(ServiceParam clientQueueElement) {
-        this.clientQueueElement = clientQueueElement;
-    }
+
     public String getOpid() {
         return opid;
     }
+
     public void setOpid(String opid) {
         this.opid = opid;
     }
+
+    public String getQueue() {
+        return queue;
+    }
+
+    public void setQueue(String queue) {
+        this.queue = queue;
+    }
+
+    public ServiceParam getClientQueueElement() {
+        return clientQueueElement;
+    }
+
+    public void setClientQueueElement(ServiceParam clientQueueElement) {
+        this.clientQueueElement = clientQueueElement;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+
+    public FileObject getFileObject() {
+        return fileObject;
+    }
+
+    public void setFileObject(FileObject fileObject) {
+        this.fileObject = fileObject;
+    }
+
+    public IndexFiles getIndexFiles() {
+        return indexFiles;
+    }
+
+    public void setIndexFiles(IndexFiles indexFiles) {
+        this.indexFiles = indexFiles;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    public InmemoryMessage getMessage() {
+        return message;
+    }
+
+    public void setMessage(InmemoryMessage message) {
+        this.message = message;
+    }
+
     public FileSystemFileObjectParam getFileSystemFileObjectParam() {
         return fileSystemFileObjectParam;
     }
+
     public void setFileSystemFileObjectParam(FileSystemFileObjectParam fileSystemFileObjectParam) {
         this.fileSystemFileObjectParam = fileSystemFileObjectParam;
     }
+
     public FileSystemMyFileResult getFileSystemMyFileResult() {
         return fileSystemMyFileResult;
     }
+
     public void setFileSystemMyFileResult(FileSystemMyFileResult fileSystemMyFileResult) {
         this.fileSystemMyFileResult = fileSystemMyFileResult;
     }

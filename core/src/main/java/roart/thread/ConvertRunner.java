@@ -28,6 +28,7 @@ import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.queue.ConvertQueueElement;
+import roart.common.queue.QueueElement;
 
 public class ConvertRunner implements Runnable {
 
@@ -193,8 +194,8 @@ public class ConvertRunner implements Runnable {
 
     public String doConvertTimeout(NodeConfig nodeConf) {
         class ConvertTimeout implements Runnable {
-            private ConvertQueueElement el;
-            ConvertTimeout(ConvertQueueElement el) {
+            private QueueElement el;
+            ConvertTimeout(QueueElement el) {
                 this.el = el;
             }
 
@@ -207,7 +208,7 @@ public class ConvertRunner implements Runnable {
             }
         }
 
-        ConvertQueueElement el = new Queues(nodeConf, controlService).getConvertQueue().poll(ConvertQueueElement.class);
+        QueueElement el = new Queues(nodeConf, controlService).getConvertQueue().poll(QueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;
@@ -236,8 +237,8 @@ public class ConvertRunner implements Runnable {
             }
         }
         convertWorker.stop(); // .interrupt();
-        el.index.setTimeoutreason("converttimeout" + timeout);
-        log.info("Convertworker timeout " + el.fileObject + " " + convertWorker + " " + convertRunnable);
+        el.getIndexFiles().setTimeoutreason("converttimeout" + timeout);
+        log.info("Convertworker timeout " + el.getFileObject() + " " + convertWorker + " " + convertRunnable);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -274,7 +275,7 @@ public class ConvertRunner implements Runnable {
 
         try {
             // ok, wait for n seconds max
-            result = (ConvertQueueElement) task.get(timeout, TimeUnit.SECONDS);
+            result = (QueueElement) task.get(timeout, TimeUnit.SECONDS);
             log.info("Finished with result: " + result);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);

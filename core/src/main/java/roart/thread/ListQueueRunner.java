@@ -1,6 +1,7 @@
 package roart.thread;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.OperationConstants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -37,7 +39,6 @@ import roart.dir.Traverse;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.hcutil.GetHazelcastInstance;
-import roart.queue.ListQueueElement;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
@@ -186,8 +187,8 @@ public class ListQueueRunner implements Runnable {
         if (limit < 1) {
             limit = LIMIT;
         }
-        MyQueue<ListQueueElement> queue = new Queues(nodeConf, controlService).getListingQueue();
-        ListQueueElement listing = queue.poll(ListQueueElement.class);
+        MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getListingQueue();
+        QueueElement listing = queue.poll(QueueElement.class);
         /*
         List<ListQueueElement> listingList = new ArrayList<>();
         for (int i = 0; i < limit; i++) {
@@ -241,23 +242,27 @@ public class ListQueueRunner implements Runnable {
         return (int) (time2 - time1); // 1000;
     }
 
-    private void handleList3(ThreadPoolExecutor pool, ListQueueElement listing) throws Exception {
+    private void handleList3(ThreadPoolExecutor pool, QueueElement listing) throws Exception {
         Runnable runnable = new MyRunnable3(listing);
         pool.execute(runnable);
     }
 
     class MyRunnable3 implements Runnable {
-        ListQueueElement listing;
+        QueueElement listing;
 
-        public MyRunnable3(ListQueueElement listing) {
+        public MyRunnable3(QueueElement listing2) {
             super();
-            this.listing = listing;
+            this.listing = listing2;
         }
 
         @Override
         public void run() {
             try {
-                doList(listing);
+                if (nodeConf.wantAsync()) {
+                    doListQueue(listing);
+                } else {
+                    doList(listing);
+                }
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -294,9 +299,9 @@ public class ListQueueRunner implements Runnable {
     // check gives fs for new with path, eventually also compute new md5
     // then index if new
 
-    public void doList(ListQueueElement element) throws Exception {
-        FileObject fileObject = element.getFileObject();
-        if (TraverseUtil.isMaxed(element.getMyid(), element.getElement(), nodeConf, controlService)) {
+    public void doList(QueueElement listing) throws Exception {
+        FileObject fileObject = listing.getFileObject();
+        if (TraverseUtil.isMaxed(listing.getMyid(), listing.getClientQueueElement(), nodeConf, controlService)) {
             return;
         }
 
@@ -319,7 +324,7 @@ public class ListQueueRunner implements Runnable {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(listing.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -334,18 +339,18 @@ public class ListQueueRunner implements Runnable {
             if (file.isDirectory) {
                 log.debug("isdir {}", filename);
                 FileObject dirObject = file.fileObject[0];
-                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getElement());
+                QueueElement listQueueElement = new QueueElement(listing.getMyid(), dirObject, listing.getClientQueueElement(), null);
                 new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
                 //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
             } else {
-                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getElement());
+                MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                QueueElement trav = new QueueElement(listing.getMyid(), fo, listing.getClientQueueElement(), null);
                 TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                 // save
                 queue.offer(trav);
-                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
-                filestodoset.offer(trav.getFileobject().toString());
+                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(listing.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                filestodoset.offer(trav.getFileObject().toString());
             }
         }
     }
@@ -361,59 +366,62 @@ public class ListQueueRunner implements Runnable {
     }
 
     public void doListQueue(QueueElement element) throws Exception {
-        FileObject fileObject = element.getFileObject();
-        if (TraverseUtil.isMaxed(element.getMyid(), element.getClientQueueElement(), nodeConf, controlService)) {
-            return;
-        }
+        if (element.getOpid().equals(OperationConstants.LISTFILESFULL)) {
+        //if (element.getFileSystemMyFileResult() == null) {
+            FileObject fileObject = element.getFileObject();
+            if (TraverseUtil.isMaxed(element.getMyid(), element.getClientQueueElement(), nodeConf, controlService)) {
+                return;
+            }
 
-        if (TraverseUtil.indirlist(fileObject, dirlistnot)) {
-            return;
-        }
-        //HashSet<String> md5set = new HashSet<String>();
-        long time0 = System.currentTimeMillis();
-        List<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFullQueue(element, fileObject);
-        long time1 = System.currentTimeMillis();
-        log.debug("Time0 {}", usedTime(time1, time0));
-        //log.info("dir " + dirname);
-        //log.info("listDir " + listDir.length);
-        if (listDir == null) {
-            return;
-        }
-        for (MyFile file : listDir) {
-            FileObject fo = file.fileObject[0];
-            long time2 = System.currentTimeMillis();
-            String filename = file.absolutePath;
-            // for encoding problems
-            if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
-                notfoundset.offer(filename);
-                continue;
-                //throw new FileNotFoundException("File does not exist " + filename);
+            if (TraverseUtil.indirlist(fileObject, dirlistnot)) {
+                return;
             }
-            long time3 = System.currentTimeMillis();
-            log.debug("Time2 {}", usedTime(time3, time2));
-            if (filename.length() > Traverse.MAXFILE) {
-                log.info("Too large filesize {}", filename);
-                continue;
+            //HashSet<String> md5set = new HashSet<String>();
+            new FileSystemDao(nodeConf, controlService).listFilesFullQueue(element, fileObject);
+        } else {
+            Collection<MyFile> listDir = element.getFileSystemMyFileResult().map.values();
+            element.setFileSystemMyFileResult(null);
+            //log.info("dir " + dirname);
+            //log.info("listDir " + listDir.length);
+            if (listDir == null) {
+                return;
             }
-            //log.info("file " + filename);
-            if (file.isDirectory) {
-                log.debug("isdir {}", filename);
-                FileObject dirObject = file.fileObject[0];
-                ListQueueElement listQueueElement = new ListQueueElement(dirObject, element.getMyid(), element.getClientQueueElement());
-                new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
-                //Queues.getListingQueueSize().incrementAndGet();
-                //retset.addAll(doList(fo));
-            } else {
-                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
-                TraverseQueueElement trav = new TraverseQueueElement(element.getMyid(), fo, element.getClientQueueElement());
-                TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
-                // save
-                queue.offer(trav);
-                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
-                filestodoset.offer(trav.getFileobject().toString());
+            for (MyFile file : listDir) {
+                FileObject fo = file.fileObject[0];
+                long time2 = System.currentTimeMillis();
+                String filename = file.absolutePath;
+                // for encoding problems
+                if (!file.exists) {
+                    MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                    notfoundset.offer(filename);
+                    continue;
+                    //throw new FileNotFoundException("File does not exist " + filename);
+                }
+                long time3 = System.currentTimeMillis();
+                log.debug("Time2 {}", usedTime(time3, time2));
+                if (filename.length() > Traverse.MAXFILE) {
+                    log.info("Too large filesize {}", filename);
+                    continue;
+                }
+                //log.info("file " + filename);
+                if (file.isDirectory) {
+                    log.debug("isdir {}", filename);
+                    FileObject dirObject = file.fileObject[0];
+                    String queueName = QueueUtil.getListingQueue();
+                    QueueElement listQueueElement = new QueueElement(element.getMyid(),dirObject,  element.getClientQueueElement(), queueName);
+                    new Queues(nodeConf, controlService).getListingQueue().offer(listQueueElement);
+                    //Queues.getListingQueueSize().incrementAndGet();
+                    //retset.addAll(doList(fo));
+                } else {
+                    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                    QueueElement trav = new QueueElement(element.getMyid(), fo, element.getClientQueueElement(), null);
+                    TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
+                    // save
+                    queue.offer(trav);
+                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                    filestodoset.offer(trav.getFileObject().toString());
+                }
             }
         }
     }
-
 }

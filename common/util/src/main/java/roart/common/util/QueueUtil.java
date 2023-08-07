@@ -40,6 +40,22 @@ public class QueueUtil {
         return prefix() + Constants.TRAVERSECOUNT + myid;
     }
 
+    public static String getListingQueue() {
+        return prefix() + Constants.LISTINGQUEUE;
+    }
+
+    public static String getTraverseQueue() {
+        return prefix() + Constants.TRAVERSEQUEUE;
+    }
+
+    public static String getConvertQueue() {
+        return prefix() + Constants.CONVERTQUEUE;
+    }
+
+    public static String getIndexQueue() {
+        return prefix() + Constants.INDEXQUEUE;
+    }
+
     /*
     public static String filesetnewQueue(String myid) {
         return prefix() + Constants.FILESETNEWID + myid;

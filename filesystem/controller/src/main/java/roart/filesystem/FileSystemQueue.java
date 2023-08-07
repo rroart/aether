@@ -11,6 +11,8 @@ import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.OperationConstants;
+import roart.common.constants.QueueConstants;
 import roart.common.filesystem.FileSystemFileObjectParam;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemParam;
@@ -31,13 +33,14 @@ public class FileSystemQueue {
         if (nodeConf.wantDistributedTraverse()) {
             hz = HazelcastClient.newHazelcastClient();
         }
+        HazelcastInstance ahz = hz;
         String ip = System.getProperty("IP");
         String fs = System.getProperty("FS");
         String path = System.getProperty("PATH");
         log.info("Using {} {} {}", ip, fs, path);
         String[] paths = path.split(",");
         for (String aPath : paths) {
-            final MyQueue<QueueElement> queue = new MyQueueFactory().create(name + "_" + aPath, nodeConf, curatorFramework, hz);
+            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorFramework, hz);
             Runnable run = () -> {
                 while (true) {
                     QueueElement element = queue.poll(QueueElement.class);
@@ -49,15 +52,21 @@ public class FileSystemQueue {
                             log.error(Constants.EXCEPTION, e); 
                         }                   
                     } else {
-                        if (element.getOpid().equals("listfilesfull")) {
+                        if (element.getOpid().equals(OperationConstants.LISTFILESFULL)) {
                             FileSystemFileObjectParam param = element.getFileSystemFileObjectParam();
+                            element.setFileSystemFileObjectParam(null);
                             FileSystemOperations operations = controller.getOperations(param);
                             try {
                                 FileSystemMyFileResult ret = operations.listFilesFull(param);
                                 element.setFileSystemMyFileResult(ret);
+                                String queueName = element.getQueue();
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorFramework, ahz);
+                                returnQueue.offer(element);
                             } catch (Exception e) {
                                 log.error(Constants.EXCEPTION, e); 
                             }  
+                        } else {
+                            log.error("Not found {}", element.getOpid());
                         }
                     }
                 }

@@ -15,4 +15,5 @@ module common.queue {
     requires common.constants;
     requires common.filesystem;
     requires org.slf4j;
+    requires common.inmemory.model;
 }

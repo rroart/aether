@@ -41,9 +41,8 @@ import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
 import roart.hcutil.GetHazelcastInstance;
-import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
+import roart.common.queue.QueueElement;
 import roart.search.SearchDao;
 import roart.service.ControlService;
 import roart.util.TraverseUtil;
@@ -69,20 +68,20 @@ public class TraverseFile {
         this.searchDao = searchDao;
     }
 
-    public void handleFo(TraverseQueueElement trav, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Queue<MyLock> locks, Queue<MySemaphore> semaphores)
+    public void handleFo(QueueElement trav, Map<FileObject, String> filenameMd5Map, Map<String, IndexFiles> ifMap, Map<FileObject, String> filenameNewMd5Map, Queue<MyLock> locks, Queue<MySemaphore> semaphores)
             throws Exception {
         // config with finegrained distrib
         if (TraverseUtil.isMaxed(trav.getMyid(), trav.getClientQueueElement(), nodeConf, controlService)) {
             TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
             return;
         }
-        FileObject filename = trav.getFileobject();
+        FileObject filename = trav.getFileObject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
         MySemaphore folock = MySemaphoreFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
         boolean flocked = folock.tryLock();
         if (!flocked) {
-            MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+            MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
             // save
             queue.offer(trav);
             //Queues.getTraverseQueueSize().incrementAndGet();
@@ -106,7 +105,7 @@ public class TraverseFile {
                 lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
                 boolean locked = lock.tryLock();
                 if (!locked) {
-                    MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     folock.unlock();
                     // save
                     queue.offer(trav);
@@ -120,7 +119,7 @@ public class TraverseFile {
                         MySemaphore oldLock = MySemaphoreFactory.create(oldMd5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
                         boolean oldLocked = oldLock.tryLock();
                         if (!oldLocked) {
-                            MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                            MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                             lock.unlock();
                             folock.unlock();
                             // save
@@ -203,7 +202,7 @@ public class TraverseFile {
             lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
             boolean locked = lock.tryLock();
             if (!locked) {
-                MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                 folock.unlock();
                 // save
                 queue.offer(trav);
@@ -259,7 +258,7 @@ public class TraverseFile {
 
     }
 
-    public boolean getDoIndex(TraverseQueueElement trav, IndexFiles files, AbstractFunction function) throws Exception {
+    public boolean getDoIndex(QueueElement trav, IndexFiles files, AbstractFunction function) throws Exception {
         boolean doindex = true;
         if (trav.getClientQueueElement().function == ServiceParam.Function.FILESYSTEM) {
             doindex = false;
@@ -279,7 +278,7 @@ public class TraverseFile {
      * @param index db representation
      */
 
-    public void indexsingle(TraverseQueueElement trav,
+    public void indexsingle(QueueElement trav,
             String md5, FileObject filename, IndexFiles index) {
         int maxfailed = nodeConf.getFailedLimit();
         if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
@@ -296,21 +295,23 @@ public class TraverseFile {
         index.setTimeoutreason("");
         index.setFailedreason("");
         index.setNoindexreason("");
+        trav.setMd5(md5);
+        trav.setIndexFiles(index);
         //TikaQueueElement e = new TikaQueueElement(filename, filename, md5, index, trav.getRetlistid(), trav.getRetnotlistid(), new Metadata(), fsData);
         //Queues.tikaQueue.add(e);
-        String content = null; //contentMap.get(filename);
-        ConvertQueueElement e2 = new ConvertQueueElement(trav.getMyid(), filename, md5, index, new HashMap<>(), null);
-        new Queues(nodeConf, controlService).getConvertQueue().offer(e2);
+        //String content = null; //contentMap.get(filename);
+        //QueueElement e2 = new QueueElement(trav.getMyid(), filename, md5, index, new HashMap<>(), null);
+        new Queues(nodeConf, controlService).getConvertQueue().offer(trav);
         //Queues.getConvertQueueSize().incrementAndGet();
         //size = doTika(filename, filename, md5, index, retlist);
     }
 
     // not used
     @Deprecated
-    public Map<FileObject, String> readFiles(List<TraverseQueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
+    public Map<FileObject, String> readFiles(List<QueueElement> traverseList, Map<FileObject, MyFile> fsMap) {
         Set<FileObject> filenames = new HashSet<>();
-        for (TraverseQueueElement trav : traverseList) {
-            FileObject filename = trav.getFileobject();
+        for (QueueElement trav : traverseList) {
+            FileObject filename = trav.getFileObject();
             try {
                 if (!fsMap.get(filename).exists) {
                     throw new FileNotFoundException("File does not exist " + filename);
@@ -318,11 +319,11 @@ public class TraverseFile {
                 filenames.add(filename);
             } catch (FileNotFoundException e) {
                 log.error(Constants.EXCEPTION, e);
-                log.debug("Count dec {}", trav.getFileobject());
+                log.debug("Count dec {}", trav.getFileObject());
             } catch (Exception e) {
                 log.info("Error: {}", e.getMessage());
                 log.error(Constants.EXCEPTION, e);
-                log.debug("Count dec {}", trav.getFileobject());
+                log.debug("Count dec {}", trav.getFileObject());
             }
         }
         Map<FileObject, String> contentMap = new HashMap<>();
@@ -341,10 +342,10 @@ public class TraverseFile {
         return contentMap;
     }
 
-    public Map<FileObject, String> getMd5(List<TraverseQueueElement> traverseList, Map<FileObject, String> filenameMd5Map) {
+    public Map<FileObject, String> getMd5(List<QueueElement> traverseList, Map<FileObject, String> filenameMd5Map) {
         Set<FileObject> filenames = new HashSet<>();
-        for (TraverseQueueElement trav : traverseList) {
-            FileObject filename = trav.getFileobject();
+        for (QueueElement trav : traverseList) {
+            FileObject filename = trav.getFileObject();
             String md5 = filenameMd5Map.get(filename);
             if (trav.getClientQueueElement().md5checknew == true || md5 == null) {
                 try {
@@ -352,7 +353,7 @@ public class TraverseFile {
                 } catch (Exception e) {
                     log.info("Error: {}", e.getMessage());
                     log.error(Constants.EXCEPTION, e);
-                    log.debug("Count dec {}", trav.getFileobject());
+                    log.debug("Count dec {}", trav.getFileObject());
                 }
             }
         }

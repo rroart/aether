@@ -26,6 +26,7 @@ import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.search.Search;
 import roart.service.ControlService;
+import roart.common.queue.QueueElement;
 
 public class IndexRunner implements Runnable {
 
@@ -165,8 +166,8 @@ public class IndexRunner implements Runnable {
 
     public String doIndexTimeout() {
         class IndexTimeout implements Runnable {
-            private IndexQueueElement el;
-            IndexTimeout(IndexQueueElement el) {
+            private QueueElement el;
+            IndexTimeout(QueueElement el) {
                 this.el = el;
             }
 
@@ -179,7 +180,7 @@ public class IndexRunner implements Runnable {
             }
         }
 
-        IndexQueueElement el = new Queues(nodeConf, controlService).getIndexQueue().poll(IndexQueueElement.class);
+        QueueElement el = new Queues(nodeConf, controlService).getIndexQueue().poll(QueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;
@@ -208,8 +209,8 @@ public class IndexRunner implements Runnable {
             }
         }
         indexWorker.stop(); // .interrupt();
-        el.index.setTimeoutreason("indextimeout" + timeout);
-        log.info("Indexworker timeout " + el.md5 + " " + indexWorker + " " + indexRunnable);
+        el.getIndexFiles().setTimeoutreason("indextimeout" + timeout);
+        log.info("Indexworker timeout " + el.getMd5() + " " + indexWorker + " " + indexRunnable);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

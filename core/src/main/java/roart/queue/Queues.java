@@ -20,8 +20,10 @@ import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyQueues;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.util.QueueUtil;
 import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
+import roart.common.queue.QueueElement;
 
 /**
  * @author roart
@@ -204,27 +206,27 @@ public class Queues {
         return ret;
     }
 
-    public MyQueue<ListQueueElement> getListingQueue() {
-        String queueid = prefix() + Constants.LISTINGQUEUE;
-        MyQueue<ListQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    public MyQueue<QueueElement> getListingQueue() {
+        String queueid = QueueUtil.getListingQueue();
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
-    public MyQueue<TraverseQueueElement> getTraverseQueue() {
-        String queueid = prefix() + Constants.TRAVERSEQUEUE;
-        MyQueue<TraverseQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    public MyQueue<QueueElement> getTraverseQueue() {
+        String queueid = QueueUtil.getTraverseQueue();
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
-    public MyQueue<ConvertQueueElement> getConvertQueue() {
-        String queueid = prefix() + Constants.CONVERTQUEUE;
-        MyQueue<ConvertQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    public MyQueue<QueueElement> getConvertQueue() {
+        String queueid = QueueUtil.getConvertQueue();
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
 
-    public MyQueue<IndexQueueElement> getIndexQueue() {
-        String queueid = prefix() + Constants.INDEXQUEUE;
-        MyQueue<IndexQueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    public MyQueue<QueueElement> getIndexQueue() {
+        String queueid = QueueUtil.getIndexQueue();
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
         return queue;
     }
     

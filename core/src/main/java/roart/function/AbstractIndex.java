@@ -11,6 +11,7 @@ import roart.dir.Traverse;
 import roart.hcutil.GetHazelcastInstance;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
+import roart.common.queue.QueueElement;
 
 public abstract class AbstractIndex extends AbstractFunction {
 
@@ -18,7 +19,7 @@ public abstract class AbstractIndex extends AbstractFunction {
         super(param, nodeConf, controlService);
     }
 
-    public boolean filterindex(IndexFiles index, TraverseQueueElement trav)
+    public boolean filterindex(IndexFiles index, QueueElement trav)
             throws Exception {
         if (index == null) {
             return false;

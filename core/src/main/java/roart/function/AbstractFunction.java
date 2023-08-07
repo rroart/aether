@@ -33,8 +33,8 @@ import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
+import roart.common.queue.QueueElement;
 
 public abstract class AbstractFunction {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -207,7 +207,7 @@ public abstract class AbstractFunction {
     protected void traverse(String filename, Traverse traverse) {
     }
 
-    public boolean indexFilter(IndexFiles index, TraverseQueueElement trav) {
+    public boolean indexFilter(IndexFiles index, QueueElement trav) {
         return true;
     }
 }

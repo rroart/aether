@@ -3,6 +3,7 @@ package roart.queue;
 import roart.common.model.FileObject;
 import roart.common.service.ServiceParam;
 
+@Deprecated
 public class TraverseQueueElement {
 
     private String myid;

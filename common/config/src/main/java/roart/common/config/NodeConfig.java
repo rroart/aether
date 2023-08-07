@@ -194,6 +194,10 @@ public class NodeConfig extends MyConfig {
         return (Boolean) getValueOrDefault(ConfigConstants.SYNCHRONIZATIONDISTRIBUTEDPROCESS);
     }
     
+    public Boolean wantAsync() {
+        return (Boolean) getNotEmptyValueOrDefault(ConfigConstants.SYNCHRONIZATIONASYNC);
+    }
+    
     @JsonIgnore
     public String[] getDirListNot() {
         String dirList = (String) getValueOrDefault(ConfigConstants.FSDIRLISTNOT);

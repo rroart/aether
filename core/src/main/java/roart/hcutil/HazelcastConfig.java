@@ -10,6 +10,7 @@ import roart.common.model.ResultItem;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.SerializerConfig;
+import roart.common.queue.QueueElement;
 
 public class HazelcastConfig {
 
@@ -32,6 +33,9 @@ public class HazelcastConfig {
         SerializerConfig sc7 = new SerializerConfig()
                 .setImplementation(new IndexQueueElementSerializer())
                 .setTypeClass(IndexQueueElement.class);
+        SerializerConfig sc8 = new SerializerConfig()
+                .setImplementation(new QueueElementSerializer())
+                .setTypeClass(QueueElement.class);
         Config config = new Config();
         config.getSerializationConfig().addSerializerConfig(sc);
         config.getSerializationConfig().addSerializerConfig(sc3);
@@ -39,6 +43,7 @@ public class HazelcastConfig {
         config.getSerializationConfig().addSerializerConfig(sc5);
         config.getSerializationConfig().addSerializerConfig(sc6);
         config.getSerializationConfig().addSerializerConfig(sc7);
+        config.getSerializationConfig().addSerializerConfig(sc8);
         return config;
     }
 }

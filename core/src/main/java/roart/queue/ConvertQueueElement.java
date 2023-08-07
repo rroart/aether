@@ -6,6 +6,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 
+@Deprecated
 public class ConvertQueueElement {
 
     public String myid;
