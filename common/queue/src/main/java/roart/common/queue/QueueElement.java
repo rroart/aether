@@ -19,6 +19,11 @@ import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.database.DatabaseFileLocationParam;
+import roart.common.database.DatabaseIndexFilesParam;
+import roart.common.database.DatabaseIndexFilesResult;
+import roart.common.database.DatabaseMd5Param;
+import roart.common.database.DatabaseMd5Result;
 
 public class QueueElement {
     private String myid;
@@ -42,7 +47,15 @@ public class QueueElement {
     private FileSystemFileObjectParam fileSystemFileObjectParam;
     
     private FileSystemMyFileResult fileSystemMyFileResult;
-
+    
+    private DatabaseMd5Param databaseMd5Param;
+    
+    private DatabaseFileLocationParam databaseFileLocationParam;
+    
+    private DatabaseMd5Result databaseMd5Result;
+    
+    private DatabaseIndexFilesResult databaseIndexFilesResult;
+    
     // for Jackson
     public QueueElement() {
         super();
@@ -142,6 +155,38 @@ public class QueueElement {
 
     public void setFileSystemMyFileResult(FileSystemMyFileResult fileSystemMyFileResult) {
         this.fileSystemMyFileResult = fileSystemMyFileResult;
+    }
+
+    public DatabaseMd5Param getDatabaseMd5Param() {
+        return databaseMd5Param;
+    }
+
+    public void setDatabaseMd5Param(DatabaseMd5Param databaseMd5Param) {
+        this.databaseMd5Param = databaseMd5Param;
+    }
+
+    public DatabaseFileLocationParam getDatabaseFileLocationParam() {
+        return databaseFileLocationParam;
+    }
+
+    public void setDatabaseFileLocationParam(DatabaseFileLocationParam databaseFileLocationParam) {
+        this.databaseFileLocationParam = databaseFileLocationParam;
+    }
+
+    public DatabaseMd5Result getDatabaseMd5Result() {
+        return databaseMd5Result;
+    }
+
+    public void setDatabaseMd5Result(DatabaseMd5Result databaseMd5Result) {
+        this.databaseMd5Result = databaseMd5Result;
+    }
+
+    public DatabaseIndexFilesResult getDatabaseIndexFilesResult() {
+        return databaseIndexFilesResult;
+    }
+
+    public void setDatabaseIndexFilesResult(DatabaseIndexFilesResult databaseIndexFilesResult) {
+        this.databaseIndexFilesResult = databaseIndexFilesResult;
     }
     
 }

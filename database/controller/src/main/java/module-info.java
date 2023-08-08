@@ -12,6 +12,7 @@ module database {
     requires common.constants;
     requires common.database;
     requires common.util;
+    requires common.queue;
     requires common.collections;
     requires common.inmemory.message;
     requires common.inmemory.model;

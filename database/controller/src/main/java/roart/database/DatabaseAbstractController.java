@@ -43,15 +43,16 @@ public abstract class DatabaseAbstractController {
     
     @Bean
     DatabaseQueue getQueue() {
+        // TODO
         String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
-        return new DatabaseQueue(getQueueName() + appid);
+        return new DatabaseQueue(getQueueName() + appid, this);
     }
 
     private static Map<String, DatabaseOperations> operationMap = new HashMap<>();
 
     protected abstract DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf);
 
-    private DatabaseOperations getOperation(DatabaseParam param) {
+    DatabaseOperations getOperation(DatabaseParam param) {
         DatabaseOperations operation = operationMap.get(param.getConfigid());
         if (operation == null) {
             NodeConfig nodeConf = null;

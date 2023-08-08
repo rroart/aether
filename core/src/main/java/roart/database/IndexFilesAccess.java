@@ -9,10 +9,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import roart.service.ControlService;
+import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.OperationConstants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.database.DatabaseFileLocationParam;
@@ -27,7 +30,9 @@ import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
+import roart.common.queue.QueueElement;
 import roart.eureka.util.EurekaUtil;
+import roart.hcutil.GetHazelcastInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +44,10 @@ public abstract class IndexFilesAccess {
     private NodeConfig nodeConf;
 
     protected ControlService controlService;
+
+    private String queueName;
+
+    private MyQueue<QueueElement> queue;
     
     public IndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
@@ -260,5 +269,28 @@ public abstract class IndexFilesAccess {
         }
     }
     
+    public void setQueue(String queueName) {
+        this.queueName = queueName;
+        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    }
+
+    public void getByMd5Queue(QueueElement element, Set<String> md5s) {
+        DatabaseMd5Param param = new DatabaseMd5Param();
+        configureParam(param);
+        param.setMd5s(md5s);
+        element.setOpid(OperationConstants.GETBYMD5);
+        element.setDatabaseMd5Param(param);
+        queue.offer(element);
+    }
+
+    public void getMd5ByFilelocationQueue(QueueElement element, Set<FileLocation> fls) throws Exception {
+        DatabaseFileLocationParam param = new DatabaseFileLocationParam();
+        configureParam(param);
+        param.setFileLocations(fls);
+        element.setOpid(OperationConstants.GETMD5BYFILELOCATION);
+        element.setDatabaseFileLocationParam(param);
+        queue.offer(element);
+    }
+
 }
 
