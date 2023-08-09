@@ -21,6 +21,7 @@ import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
+import roart.common.queue.QueueElement;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MySemaphore;
 import roart.service.ControlService;
@@ -400,4 +401,26 @@ public class IndexFilesDao {
         //MyQueue<T> queue = null;
         //queue.offer(indexFiles);
     }
+
+    public void getByMd5Queue(QueueElement element, Set<String> md5s, boolean create) throws Exception {
+        if (md5s == null) {
+            return;
+        }
+        synchronized(IndexFilesDao.class) {
+            indexFiles.getByMd5Queue(element, md5s);
+        }
+    }
+
+    // TODO
+    public void getMd5ByFilenameQueue(QueueElement element, Set<FileObject> filenames) throws Exception {
+        Set<FileLocation> fls = new HashSet<>();
+        for (FileObject filename : filenames) {
+            FileLocation fl = new FileLocation(filename.location.toString(), filename.object);
+            fls.add(fl);
+        }
+        synchronized(IndexFilesDao.class) {
+            indexFiles.getMd5ByFilelocationQueue(element, fls);
+        }
+    }
+
 }

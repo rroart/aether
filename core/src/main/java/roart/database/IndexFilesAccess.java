@@ -15,6 +15,7 @@ import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.FileSystemConstants;
 import roart.common.constants.OperationConstants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
@@ -28,6 +29,7 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
@@ -45,10 +47,6 @@ public abstract class IndexFilesAccess {
 
     protected ControlService controlService;
 
-    private String queueName;
-
-    private MyQueue<QueueElement> queue;
-    
     public IndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
@@ -270,8 +268,13 @@ public abstract class IndexFilesAccess {
     }
     
     public void setQueue(String queueName) {
-        this.queueName = queueName;
-        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<QueueElement> queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+    }
+
+    public MyQueue<QueueElement> getQueue(FileObject fileObject) {
+        String appId = queueWithAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
+        String queueName = getQueueName() + appId;
+        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
     }
 
     public void getByMd5Queue(QueueElement element, Set<String> md5s) {
@@ -280,7 +283,7 @@ public abstract class IndexFilesAccess {
         param.setMd5s(md5s);
         element.setOpid(OperationConstants.GETBYMD5);
         element.setDatabaseMd5Param(param);
-        queue.offer(element);
+        getQueue(element.getFileObject()).offer(element);
     }
 
     public void getMd5ByFilelocationQueue(QueueElement element, Set<FileLocation> fls) throws Exception {
@@ -289,7 +292,7 @@ public abstract class IndexFilesAccess {
         param.setFileLocations(fls);
         element.setOpid(OperationConstants.GETMD5BYFILELOCATION);
         element.setDatabaseFileLocationParam(param);
-        queue.offer(element);
+        getQueue(element.getFileObject()).offer(element);
     }
 
 }

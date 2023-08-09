@@ -44,7 +44,7 @@ public abstract class DatabaseAbstractController {
     @Bean
     DatabaseQueue getQueue() {
         // TODO
-        String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
+        String appid = useAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
         return new DatabaseQueue(getQueueName() + appid, this);
     }
 
