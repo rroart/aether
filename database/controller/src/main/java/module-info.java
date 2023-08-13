@@ -17,6 +17,7 @@ module database {
     requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
+    requires common.zookeeper;
     requires org.slf4j;
     requires spring.boot;
     requires spring.boot.autoconfigure;
@@ -24,4 +25,8 @@ module database {
     requires spring.web;
     requires com.hazelcast.core;
     requires spring.context;
+    requires common.model;
+    requires curator.client;
+    requires curator.framework;
+    requires spring.beans;
 }

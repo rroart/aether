@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
@@ -21,14 +20,11 @@ import roart.common.queue.QueueElement;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.client.HazelcastClient;
 
-@Component
 public class FileSystemQueue {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public FileSystemQueue(String name, FileSystemAbstractController controller) {
-        NodeConfig nodeConf = null;
-        CuratorFramework curatorFramework = null;
+    public FileSystemQueue(String name, FileSystemAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         HazelcastInstance hz = null;
         if (nodeConf.wantDistributedTraverse()) {
             hz = HazelcastClient.newHazelcastClient();
@@ -40,7 +36,7 @@ public class FileSystemQueue {
         log.info("Using {} {} {}", ip, fs, path);
         String[] paths = path.split(",");
         for (String aPath : paths) {
-            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorFramework, hz);
+            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorClient, hz);
             Runnable run = () -> {
                 while (true) {
                     QueueElement element = queue.poll(QueueElement.class);
@@ -60,7 +56,7 @@ public class FileSystemQueue {
                                 FileSystemMyFileResult ret = operations.listFilesFull(param);
                                 element.setFileSystemMyFileResult(ret);
                                 String queueName = element.getQueue();
-                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorFramework, ahz);
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
                                 returnQueue.offer(element);
                             } catch (Exception e) {
                                 log.error(Constants.EXCEPTION, e); 

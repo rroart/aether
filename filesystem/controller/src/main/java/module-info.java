@@ -13,6 +13,7 @@ module filesystem {
     requires common.filesystem;
     requires common.collections;
     requires common.queue;
+    requires common.zookeeper;
     requires curator.client;
     requires curator.framework;
     requires org.slf4j;

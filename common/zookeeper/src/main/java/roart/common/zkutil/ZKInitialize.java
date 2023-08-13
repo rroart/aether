@@ -16,22 +16,23 @@ public class ZKInitialize {
 
     public static volatile ZooKeeper zk = null;
 
-	public synchronized static void initZK(String zookeeper, Watcher watcher, String nodename) {
-	    if (zk != null) {
-		return;
-	    }
-	    try {
-		zk = new ZooKeeper(zookeeper, Integer.MAX_VALUE, watcher);
-		createIfNotExists(zk, "/" + Constants.AETHER);
-		createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.LOCK);
-		createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES);
-		createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + nodename);
-	    } catch (Exception e) {
-		log.error(Constants.EXCEPTION, e);
-	    }
-	}
-	
-	public static void createTempIfNotExists(ZooKeeper zk, String path) {
+    public synchronized static void initZK(String zookeeper, Watcher watcher, String nodename) {
+        if (zk != null) {
+            return;
+        }
+        try {
+            zk = new ZooKeeper(zookeeper, Integer.MAX_VALUE, watcher);
+            createIfNotExists(zk, "/" + Constants.AETHER);
+            createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.LOCK);
+            createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES);
+            createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.CONFIG);
+            createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + nodename);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+    }
+
+    public static void createTempIfNotExists(ZooKeeper zk, String path) {
         try {
             Stat s = zk.exists(path, false);
             if (s == null) {
@@ -40,17 +41,23 @@ public class ZKInitialize {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
-	}
-	
-        public static void createIfNotExists(ZooKeeper zk, String path) {
+    }
+
+    public static boolean createIfNotExists(ZooKeeper zk, String path) {
+        return createIfNotExists(zk, path, new byte[0]);
+    }
+
+    public static boolean createIfNotExists(ZooKeeper zk, String path, byte[] data) {
         try {
             Stat s = zk.exists(path, false);
             if (s == null) {
-                zk.create(path, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                zk.create(path, data, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             }
+            return s != null;
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
+            return false;
         }
-        }
-        
+    }
+
 }

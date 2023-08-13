@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
@@ -29,11 +30,13 @@ import roart.common.filesystem.FileSystemParam;
 import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
+import roart.common.model.ConfigParam;
 import roart.common.model.FileObject;
 import roart.common.util.FsUtil;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.util.InmemoryUtil;
+import roart.common.zk.thread.ConfigThread;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -60,43 +63,47 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Bean
-    FileSystemQueue getQueue() {
-        return new FileSystemQueue(getQueueName(), this);
-    }
-    
+    @Autowired
+    private ServletWebServerApplicationContext webServerAppCtxt;
+
     private static Map<String, FileSystemOperations> operationMap = new HashMap();
+
+    private static Map<String, FileSystemQueue> queueMap = new HashMap();
+
+    private CuratorFramework curatorClient;
 
     protected abstract FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf);
 
     FileSystemOperations getOperations(FileSystemParam param) {
-        FileSystemOperations operations = operationMap.get(param.configid);
-        if (operations == null) {
+        FileSystemOperations operation = operationMap.get(param.configid);
+        if (operation == null) {
             NodeConfig nodeConf = null;
-            if (param.conf == null) {
-                Inmemory inmemory = InmemoryFactory.get(param.iserver, param.configname, param.iconnection);
-                try (InputStream contentStream = inmemory.getInputStream(param.iconf)) {
-                    if (InmemoryUtil.validate(param.iconf.getMd5(), contentStream)) {
-                        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.iconf)));
-                        nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
-                    }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
-            } else {
+            if (param.conf != null) {
                 nodeConf = param.conf;
             }
-            operations = createOperations(param.configname, param.configid, nodeConf);
-            operationMap.put(param.configid, operations);
+            operation = createOperations(param.configname, param.configid, nodeConf);
+            operationMap.put(param.configid, operation);
         }
-        return operations;
+        return operation;
+    }
+
+    private FileSystemOperations getOperations(ConfigParam param) {
+        FileSystemOperations operation = operationMap.get(param.getConfigid());
+        if (operation == null) {
+            NodeConfig nodeConf = getNodeConf(param);
+            operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
+            operationMap.put(param.getConfigid(), operation);
+            FileSystemQueue queue = new FileSystemQueue(getQueueName(), this, curatorClient, nodeConf);
+            queueMap.put(param.getConfigid(),  queue);
+        }
+        return operation;
     }
 
     protected abstract String getFs();
     
     @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
             method = RequestMethod.POST)
-    public FileSystemConstructorResult processConstructor(@RequestBody FileSystemConstructorParam param)
+    public FileSystemConstructorResult processConstructor(@RequestBody ConfigParam param)
             throws Exception {
         String error = null;
         try {
@@ -240,100 +247,35 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         SpringApplication.run(FileSystemAbstractController.class, args);
     }
 
-    @Autowired(required=true)
-    MyListener aListener;
-
     @Override
     public void run(String... args) throws Exception {
-        /*
-	        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-                //context.scan("com.journaldev.spring");
-                context.refresh();
-
-                MyListener listener = (MyListener) context.getBean("listener");
-                context.close();
-         */
-        //Thread.sleep(10000);
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
 
         String zookeeperConnectionString = System.getProperty("ZOO");
-        CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        if (zookeeperConnectionString == null) {
+            zookeeperConnectionString = "localhost:2181";
+        }
+        curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
-        String nodename = System.getProperty("NODE");
-        String ip = System.getProperty("IP");
-        String fs = System.getProperty("FS");
-        String path = System.getProperty("PATH");
-        log.info("Using {} {} {}", ip, fs, path);
-        String[] paths = path.split(",");
-        //int port = new MyListener().getPort();
-        int port = aListener.getPort();
-        String address = InetAddress.getLocalHost().getHostAddress();
-        if (ip != null) {
-            address = ip;
-        }
-        if (fs == null) {
-            fs = getFs();
-        }
-        String whereami = address + ":" + port;
-        System.out.println("Whereami " + whereami);
-        log.info("Whereami {}", whereami);
-        byte[] bytes = whereami.getBytes();
-        for (String aPath : paths) {
-            FileObject fo = FsUtil.getFileObject(aPath);
-            if (fo.location.fs == null || fo.location.fs.isEmpty()) {
-                fo.location.fs = FileSystemConstants.LOCALTYPE;
-            }
-            String str = "/aether/fs" + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
-            if (str.endsWith("/")) {
-                str = str.substring(0, str.length() - 1);
-            }
-            boolean success = false;
-            while (!success) {
-                try {
-                    if (curatorClient.checkExists().forPath(str) != null) {
-                        curatorClient.delete().deletingChildrenIfNeeded().forPath(str);
-                    }
-                    curatorClient.create().creatingParentsIfNeeded().forPath(str, bytes);
-                    success = true;
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                    Thread.sleep(10000);
-                }
-            }
-        }
-        while (true) {
-            Thread.sleep(10000);
-            for (String aPath : paths) {
-                FileObject fo = FsUtil.getFileObject(aPath);
-                if (fo.location.fs == null || fo.location.fs.isEmpty()) {
-                    fo.location.fs = FileSystemConstants.LOCALTYPE;
-                }
-                String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
-                if (str.endsWith("/")) {
-                    str = str.substring(0, str.length() - 1);
-                }
-                boolean success = false;
-                while (!success) {
-                    try {
-                        curatorClient.setData().forPath(str, bytes);
-                        success = true;
-                    } catch (Exception e) {
-                        log.error(Constants.EXCEPTION, e);
-                        Thread.sleep(10000);
-                    }
-                }
-            }
-        }
-    }
-
-    private static String stringOrNull(String string) {
-        if (string == null || string.isEmpty()) {
-            return "";
-        } else {
-            return "/" + string;
-        }
+        int port = webServerAppCtxt.getWebServer().getPort();
+        new FileSystemThread(curatorClient, port, getFs()).run();
+        new ConfigThread(zookeeperConnectionString, port, operationMap).run();
     }
 
     public abstract String getQueueName();
     
+    private NodeConfig getNodeConf(ConfigParam param) {
+        NodeConfig nodeConf = null;
+        Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());
+        try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
+            if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
+                nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return nodeConf;
+    }
+
 }

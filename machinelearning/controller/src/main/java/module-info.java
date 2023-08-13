@@ -15,6 +15,8 @@ module classification {
     requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
+    requires common.queue;
+    requires common.zookeeper;
     requires org.slf4j;
     requires spring.beans;
     requires spring.boot.autoconfigure;
@@ -23,4 +25,8 @@ module classification {
     requires common.util;
     requires com.hazelcast.core;
     requires spring.context;
+    requires common.model;
+    requires curator.framework;
+    requires spring.boot;
+    requires curator.client;
 }

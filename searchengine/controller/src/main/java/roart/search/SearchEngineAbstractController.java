@@ -19,16 +19,25 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.util.InmemoryUtil;
+import roart.common.model.ConfigParam;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
+import roart.common.zk.thread.ConfigThread;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +45,18 @@ import org.slf4j.LoggerFactory;
 //@EnableAutoConfiguration
 @SpringBootApplication
 @EnableDiscoveryClient
-public abstract class SearchEngineAbstractController {
+public abstract class SearchEngineAbstractController implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private ServletWebServerApplicationContext webServerAppCtxt;
+
     private static Map<String, SearchEngineAbstractSearcher> searchMap = new HashMap();
+
+    private Map<String, SearchEngineQueue> queueMap = new HashMap<>();
+
+    private CuratorFramework curatorClient;
 
     protected abstract SearchEngineAbstractSearcher createSearcher(String configname, String configid, NodeConfig nodeConf);
 
@@ -48,17 +64,7 @@ public abstract class SearchEngineAbstractController {
         SearchEngineAbstractSearcher search = searchMap.get(param.configid);
         if (search == null) {
             NodeConfig nodeConf = null;
-            if (param.conf == null) {
-                Inmemory inmemory = InmemoryFactory.get(param.iserver, param.configname, param.iconnection);
-                try (InputStream contentStream = inmemory.getInputStream(param.iconf)) {
-                    if (InmemoryUtil.validate(param.iconf.getMd5(), contentStream)) {
-                        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.iconf)));
-                        nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
-                    }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
-            } else {
+            if (param.conf != null) {
                 nodeConf = param.conf;
             }
             search = createSearcher(param.configname, null, nodeConf);
@@ -67,9 +73,22 @@ public abstract class SearchEngineAbstractController {
         return search;
     }
 
-    @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
+    private SearchEngineAbstractSearcher getSearch(ConfigParam param) {
+        SearchEngineAbstractSearcher operation = searchMap.get(param.getConfigid());
+        if (operation == null) {
+            NodeConfig nodeConf = getNodeConf(param);
+            operation = createSearcher(param.getConfigname(), param.getConfigid(), nodeConf);
+            searchMap.put(param.getConfigid(), operation);
+            SearchEngineQueue queue = new SearchEngineQueue(getQueueName(), this, curatorClient, nodeConf);
+            queueMap.put(param.getConfigid(),  queue);
+            log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
+        }
+        return operation;
+    }
+
+  @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
             method = RequestMethod.POST)
-    public SearchEngineConstructorResult processConstructor(@RequestBody SearchEngineConstructorParam param)
+    public SearchEngineConstructorResult processConstructor(@RequestBody ConfigParam param)
             throws Exception {
         String error = null;
         try {
@@ -186,6 +205,34 @@ public abstract class SearchEngineAbstractController {
         SpringApplication.run(SearchEngineAbstractController.class, args);
     }
 
+    @Override
+    public void run(String... args) throws Exception {
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
+
+        String zookeeperConnectionString = System.getProperty("ZOO");
+        if (zookeeperConnectionString == null) {
+            zookeeperConnectionString = "localhost:2181";
+        }
+        curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        curatorClient.start();
+        int port = webServerAppCtxt.getWebServer().getPort();
+        new ConfigThread(zookeeperConnectionString, port, searchMap).run();
+    }
+
     public abstract String getQueueName();
     
+    private NodeConfig getNodeConf(ConfigParam param) {
+        NodeConfig nodeConf = null;
+        Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());
+        try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
+            if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
+                nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return nodeConf;
+    }
+
 }

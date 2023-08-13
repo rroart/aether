@@ -18,6 +18,7 @@ public static final String RECONFIG = "reconfig";
 public static final String QUEUE = "queue";
 public static final String DB = "db";
 public static final String FS = "fs";
+public static final String CONFIG = "config";
 
 public static final String ZKDELIMITER = "-";
 
@@ -45,6 +46,7 @@ public static final String FILESDONESETID = "filesdoneset";
 public static final String REDIS = "redis";
 public static final String HAZELCAST = "hazelcast";
 public static final String HZ = "hz";
+public static final String MAPNAME = "inmemory";
 
 public static final String APPID = "APPID";
 public static final String LOCALIP = "LOCALIP";

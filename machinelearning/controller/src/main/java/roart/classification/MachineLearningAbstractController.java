@@ -4,17 +4,21 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
 import roart.common.machinelearning.MachineLearningParam;
+import roart.common.model.ConfigParam;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
+import roart.common.zk.thread.ConfigThread;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
@@ -25,6 +29,10 @@ import roart.common.machinelearning.MachineLearningClassifyResult;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.slf4j.LoggerFactory;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,27 +40,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 //@EnableAutoConfiguration
 @SpringBootApplication
 @EnableDiscoveryClient
-public abstract class MachineLearningAbstractController {
+public abstract class MachineLearningAbstractController implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private ServletWebServerApplicationContext webServerAppCtxt;
+
     private static Map<String, MachineLearningAbstractClassifier> classifierMap = new HashMap();
+
+    private Map<String, MachineLearningQueue> queueMap = new HashMap<>();
+
+    private CuratorFramework curatorClient;
 
     private MachineLearningAbstractClassifier getClassifier(MachineLearningParam param) {
         MachineLearningAbstractClassifier classifier = classifierMap.get(param.configid);
         if (classifier == null) {
             NodeConfig nodeConf = null;
-            if (param.conf == null) {
-                Inmemory inmemory = InmemoryFactory.get(param.iserver, param.configname, param.iconnection);
-                try (InputStream contentStream = inmemory.getInputStream(param.iconf)) {
-                    if (InmemoryUtil.validate(param.iconf.getMd5(), contentStream)) {
-                        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.iconf)));
-                        nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
-                    }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
-            } else {
+            if (param.conf != null) {
                 nodeConf = param.conf;
             }
             classifier = createClassifier(param.configname, param.configid, nodeConf);
@@ -61,11 +66,24 @@ public abstract class MachineLearningAbstractController {
         return classifier;
     }
 
+    private MachineLearningAbstractClassifier getClassifier(ConfigParam param) {
+        MachineLearningAbstractClassifier operation = classifierMap.get(param.getConfigid());
+        if (operation == null) {
+            NodeConfig nodeConf = getNodeConf(param);
+            operation = createClassifier(param.getConfigname(), param.getConfigid(), nodeConf);
+            classifierMap.put(param.getConfigid(), operation);
+            MachineLearningQueue queue = new MachineLearningQueue(getQueueName(), this, curatorClient, nodeConf);
+            queueMap.put(param.getConfigid(),  queue);
+            log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
+        }
+        return operation;
+    }
+
     protected abstract MachineLearningAbstractClassifier createClassifier(String configname, String configid, NodeConfig nodeConf);
 
     @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
             method = RequestMethod.POST)
-    public MachineLearningConstructorResult processConstructor(@RequestBody MachineLearningConstructorParam param)
+    public MachineLearningConstructorResult processConstructor(@RequestBody ConfigParam param)
             throws Exception {
         String error = null;
         try {
@@ -109,6 +127,34 @@ public abstract class MachineLearningAbstractController {
         return ret;
     }
 
+    @Override
+    public void run(String... args) throws Exception {
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
+
+        String zookeeperConnectionString = System.getProperty("ZOO");
+        if (zookeeperConnectionString == null) {
+            zookeeperConnectionString = "localhost:2181";
+        }
+        curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        curatorClient.start();
+        int port = webServerAppCtxt.getWebServer().getPort();
+        new ConfigThread(zookeeperConnectionString, port, classifierMap).run();
+    }
+
     public abstract String getQueueName();
     
+    private NodeConfig getNodeConf(ConfigParam param) {
+        NodeConfig nodeConf = null;
+        Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());
+        try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
+            if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
+                nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return nodeConf;
+    }
+
 }

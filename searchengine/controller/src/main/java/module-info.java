@@ -15,6 +15,8 @@ module searchengine {
     requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
+    requires common.queue;
+    requires common.zookeeper;
     requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
@@ -22,4 +24,8 @@ module searchengine {
     requires spring.boot;
     requires common.util;
     requires com.hazelcast.core;
+    requires curator.framework;
+    requires common.model;
+    requires curator.client;
+    requires spring.beans;
 }

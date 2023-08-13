@@ -20,11 +20,16 @@ import roart.common.database.DatabaseResult;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.util.InmemoryUtil;
+import roart.common.model.ConfigParam;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
+import roart.common.zk.thread.ConfigThread;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,40 +38,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 
 @RestController
 @SpringBootApplication
 @EnableDiscoveryClient
-public abstract class DatabaseAbstractController {
+public abstract class DatabaseAbstractController implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
     
-    @Bean
-    DatabaseQueue getQueue() {
-        // TODO
-        String appid = useAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
-        return new DatabaseQueue(getQueueName() + appid, this);
-    }
+    @Autowired
+    private ServletWebServerApplicationContext webServerAppCtxt;
 
     private static Map<String, DatabaseOperations> operationMap = new HashMap<>();
+
+    private Map<String, DatabaseQueue> queueMap = new HashMap<>();
+
+    private CuratorFramework curatorClient;
 
     protected abstract DatabaseOperations createOperations(String configname, String configid, NodeConfig nodeConf);
 
     DatabaseOperations getOperation(DatabaseParam param) {
         DatabaseOperations operation = operationMap.get(param.getConfigid());
+        log.info("Keys {}", operationMap.keySet());
+        log.info("Get config for {} {}", param.getConfigname(), param.getConfigid());
         if (operation == null) {
             NodeConfig nodeConf = null;
-            if (param.getConf() == null) {
-                Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getConfigname(), param.getIconnection());
-                try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
-                    if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
-                        String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
-                        nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
-                    }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
-            } else {
+            if (param.getConf() != null) {
                 nodeConf = param.getConf();
             }
             operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
@@ -75,9 +76,23 @@ public abstract class DatabaseAbstractController {
         return operation;
     }
 
+    private DatabaseOperations getOperation(ConfigParam param) {
+        DatabaseOperations operation = operationMap.get(param.getConfigid());
+        if (operation == null) {
+            NodeConfig nodeConf = getNodeConf(param);
+            operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
+            operationMap.put(param.getConfigid(), operation);
+            String appid = useAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
+            DatabaseQueue queue = new DatabaseQueue(getQueueName() + appid, this, curatorClient, nodeConf);
+            queueMap.put(param.getConfigid(),  queue);
+            log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
+        }
+        return operation;
+    }
+
     @RequestMapping(value = "/" + EurekaConstants.CONSTRUCTOR,
             method = RequestMethod.POST)
-    public DatabaseConstructorResult processConstructor(@RequestBody DatabaseConstructorParam param)
+    public DatabaseConstructorResult processConstructor(@RequestBody ConfigParam param)
             throws Exception {
         String error = null;
         try {
@@ -236,9 +251,38 @@ public abstract class DatabaseAbstractController {
         SpringApplication.run(DatabaseAbstractController.class, args);
     }
     
+    @Override
+    public void run(String... args) throws Exception {
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
+
+        String zookeeperConnectionString = System.getProperty("ZOO");
+        if (zookeeperConnectionString == null) {
+            zookeeperConnectionString = "localhost:2181";
+        }
+        curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        curatorClient.start();
+        int port = webServerAppCtxt.getWebServer().getPort();
+        new ConfigThread(zookeeperConnectionString, port, operationMap).run();
+    }
+
     public abstract String getQueueName();
     
     public boolean useAppId( ) {
         return false;
     };
+    
+    private NodeConfig getNodeConf(ConfigParam param) {
+        NodeConfig nodeConf = null;
+        Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());
+        try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
+            if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
+                nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return nodeConf;
+    }
+
 }

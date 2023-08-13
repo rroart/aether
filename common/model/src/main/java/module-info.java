@@ -12,5 +12,6 @@ module common.model {
     requires common.config;
     requires common.constants;
     requires common.synchronization;
+    requires common.inmemory.model;
     requires org.slf4j;
 }
