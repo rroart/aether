@@ -78,7 +78,7 @@ public class TraverseFile {
         FileObject filename = trav.getFileObject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
-        MySemaphore folock = MySemaphoreFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+        MySemaphore folock = MySemaphoreFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         boolean flocked = folock.tryLock();
         if (!flocked) {
             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -102,7 +102,7 @@ public class TraverseFile {
                     log.error("Md5 null");
                     throw new Exception("Md5 null");
                 }
-                lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+                lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
                 boolean locked = lock.tryLock();
                 if (!locked) {
                     MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -116,7 +116,7 @@ public class TraverseFile {
                 if (trav.getClientQueueElement().md5checknew == true) {
                     if (oldMd5 != null && !md5.equals(oldMd5)) {
                         log.info("Changed md5 {} {} {}", filename, oldMd5, md5);
-                        MySemaphore oldLock = MySemaphoreFactory.create(oldMd5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+                        MySemaphore oldLock = MySemaphoreFactory.create(oldMd5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
                         boolean oldLocked = oldLock.tryLock();
                         if (!oldLocked) {
                             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -181,13 +181,13 @@ public class TraverseFile {
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
-                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
                     newset.offer(filename.toString());
                 }
             } catch (FileNotFoundException e) {
                 TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
                 log.error(Constants.EXCEPTION, e);
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
                 notfoundset.offer(filename.toString());
                 return;
             } catch (Exception e) {
@@ -199,7 +199,7 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+            lock = MySemaphoreFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             boolean locked = lock.tryLock();
             if (!locked) {
                 MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -247,7 +247,7 @@ public class TraverseFile {
             log.error(Constants.EXCEPTION, e);
         } finally {
             log.debug("hereend");
-            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
             filesdoneset.offer(filename.toString());
             TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
         }

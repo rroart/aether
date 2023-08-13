@@ -324,7 +324,7 @@ public class ListQueueRunner implements Runnable {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(listing.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(listing.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -349,7 +349,7 @@ public class ListQueueRunner implements Runnable {
                 TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                 // save
                 queue.offer(trav);
-                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(listing.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(listing.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
                 filestodoset.offer(trav.getFileObject().toString());
             }
         }
@@ -392,7 +392,7 @@ public class ListQueueRunner implements Runnable {
                 String filename = file.absolutePath;
                 // for encoding problems
                 if (!file.exists) {
-                    MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                    MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
                     notfoundset.offer(filename);
                     continue;
                     //throw new FileNotFoundException("File does not exist " + filename);
@@ -418,7 +418,7 @@ public class ListQueueRunner implements Runnable {
                     TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
                     // save
                     queue.offer(trav);
-                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+                    MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
                     filestodoset.offer(trav.getFileObject().toString());
                 }
             }

@@ -37,7 +37,7 @@ public class TraverseUtil {
     public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf, ControlService controlService) {
         int max = nodeConf.getReindexLimit();
         int maxindex = nodeConf.getIndexLimit();
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
             isMaxed = true;
@@ -230,9 +230,9 @@ public class TraverseUtil {
     }
 
     public static void doCounters(QueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
-        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         total.addAndGet(value);
-        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         count.addAndGet(value);
         log.debug("Count {} {}", value, trav.getFileObject());
     }

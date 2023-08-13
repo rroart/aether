@@ -23,7 +23,7 @@ public class MyHazelcastLockTest {
         for (int i = 0; i < numberOfThreads * 100; i++) {
             service.submit(() -> {
                 String id = MyLocalLockTestUtil.getId();
-                MyLock lock = new MyHazelcastLock(id, GetHazelcastInstance.instance());
+                MyLock lock = new MyHazelcastLock(id, GetHazelcastInstance.instance("localhost"));
                 try {
                     lock.lock();
                     lock.unlock();

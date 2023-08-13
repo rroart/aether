@@ -436,8 +436,8 @@ public class ControlService {
 
     private void configDistributed() {
         if (nodeConf.wantDistributedTraverse()) {
-            GetHazelcastInstance.instance();
-            MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance());
+            GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast());
+            MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         }
     }
 

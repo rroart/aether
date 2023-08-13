@@ -33,10 +33,10 @@ public class InmemoryHazelcast  extends Inmemory {
         return null;
     }
 
-    public InmemoryHazelcast(String mapname) {
-        super(mapname);
-        mapname = Constants.HZ;
-        HazelcastInstance hz = GetHazelcastInstance.instance();
+    public InmemoryHazelcast(String server) {
+        super(server);
+        String mapname = Constants.MAPNAME;
+        HazelcastInstance hz = GetHazelcastInstance.instance(server);
         map = hz.getMap(mapname);       
     }
 

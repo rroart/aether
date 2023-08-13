@@ -92,28 +92,28 @@ public abstract class AbstractFunction {
             Queues queues = new Queues(nodeConf, controlService);
             String myid = controlService.getMyId();
             String filesetnewid = QueueUtil.filesetnewQueue(myid);
-            MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             //MySets.put(filesetnewid, filesetnew);
 
             String notfoundsetid = QueueUtil.notfoundsetQueue(myid);
-            MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             //MySets.put(notfoundsetid, notfoundset);
 
             String retlistid = QueueUtil.retlistQueue(myid);
-            MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             //MyLists.put(retlistid, retlist);
 
             String retnotlistid = QueueUtil.retlistnotQueue(myid);
-            MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             //MyLists.put(retnotlistid, retnotlist);
 
             String traversecountid = QueueUtil.traversecount(myid);
-            MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
 
             String filestodosetid = QueueUtil.filestodoQueue(myid);
-            MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
-            MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+            MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             //MyLists.put(retnotlistid, retnotlist);
             queues.workQueues.add(filestodoSet);
 

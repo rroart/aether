@@ -43,7 +43,7 @@ public abstract class AbstractIndex extends AbstractFunction {
             return false;
         }
 
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance()); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
 
         boolean indexinc = indexFilter(index, trav);
         if (indexinc) {

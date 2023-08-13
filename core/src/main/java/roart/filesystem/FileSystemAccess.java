@@ -208,7 +208,7 @@ public class FileSystemAccess {
 
     public void setQueue(String queueName) {
         this.queueName = queueName;
-        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
     }
 
     public void listFilesFullQueue(QueueElement element, FileObject fileObject) {

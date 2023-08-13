@@ -87,11 +87,11 @@ public class ConsistentClean extends AbstractFunction {
 
         String myid = controlService.getMyId();
         String newsetid = "newsetid"+myid;
-        MyQueue<String> newset = MyQueues.get(newsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<String> newset = MyQueues.get(newsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         //MySets.put(newsetid, newset);
 
         String notfoundsetid = "notfoundsetid"+myid;
-        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance());
+        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         //MySets.put(notfoundsetid, notfoundset);
 
         //String md5sdoneid = "md5sdoneid"+myid;
@@ -152,7 +152,7 @@ public class ConsistentClean extends AbstractFunction {
                     String md5 = indexFilesDao.getMd5ByFilename(filename);
                     // common3?
                     if (md5 != null) {
-                        MyLock lock2 = MyLockFactory.create(null, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance());
+                        MyLock lock2 = MyLockFactory.create(null, nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
                         lock2.lock();
                         IndexFiles ifile = indexFilesDao.getByMd5(md5);
                         FileLocation fl = new FileLocation(filename.location.toString(), filename.object, null);
