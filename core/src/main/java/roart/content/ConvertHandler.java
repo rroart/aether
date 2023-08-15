@@ -130,7 +130,7 @@ public class ConvertHandler {
         
         // after convert
         
-        el.setMessage(null);
+        el.setMessage(str);
         log.info("Mimetype {}", mimetype);
         if (mimetype != null) {
             metadata.put(Constants.FILESCONTENTTYPE, mimetype);

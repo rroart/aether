@@ -4,6 +4,7 @@ import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import roart.common.filesystem.FileSystemBooleanResult;
@@ -67,6 +68,7 @@ public class QueueElement {
         this.fileObject = fileObject;
         this.clientQueueElement = clientQueueElement;
         this.queue = queue;
+        this.metadata = new HashMap<>();
     }
 
     public String getMyid() {
