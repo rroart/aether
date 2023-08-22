@@ -1,8 +1,10 @@
+/*
 export type mainType = {
   title: string,
   description: string,
   source: string,
 }
+*/
 
 class ServiceParam {
 // enum Function { INDEX, FILESYSTEM, OVERLAPPING, REINDEXSUFFIX, REINDEXDATE, MEMORYUSAGE, NOTINDEXED, FILESYSTEMLUCENENEW, DBINDEX, DBSEARCH, CONSISTENTCLEAN, SEARCH, SEARCHSIMILAR, REINDEXLANGUAGE, DELETEPATH }

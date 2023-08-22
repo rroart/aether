@@ -4,7 +4,7 @@ import { Client, ConvertToSelect } from '../util'
 import Select from 'react-select';
 import { DropdownButton, MenuItem, Button, ButtonToolbar, Nav, Navbar, NavItem, Form, FormControl } from 'react-bootstrap';
 import { ServiceParam } from '../../types/main'
-import DatePicker from 'react-16-bootstrap-date-picker';
+import DatePicker from 'react-datepicker';
 
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTable } from 'react-table';
@@ -172,7 +172,8 @@ function ControlPanel ({ props, callbackNewTab }) {
     setParam(param);
   }
 
-  const { main } = props;
+  //const { main } = props;
+  const main = props;
   useEffect(() => {
     if (param === undefined || param == null) {
       return;

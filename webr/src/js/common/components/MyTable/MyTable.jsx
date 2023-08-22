@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import React, { PureComponent } from 'react';
 import { useTable } from 'react-table'
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import { Client } from '../util'
 import { constants as mainConstants, actions as mainActions } from '../../../redux/modules/main';
 import { Table } from '../Table'
@@ -300,7 +300,7 @@ function getTable(resultitemtable, date, props) {
 
 function getTableNew(hcolumns, hdata) {
   return <div>
-    <ReactTooltip effect="solid" html="true"/>
+    <Tooltip effect="solid" html="true"/>
     <Table columns={hcolumns} data={hdata} />
   </div>;
 }

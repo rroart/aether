@@ -34,15 +34,14 @@ class MainView extends Component {
     this.props.getAwesomeCode();
     this.props.getAwesomeR3();
     this.props.getAwesomeR4();
-      this.props.getCount();
-          this.props.getLanguages();
-    this.props.getConfig();
+    this.props.getCount();
+    //this.props.getMenuTexts();
   }
 
   render() {
-    return (
+      return (
       <Fragment>
-        <LazyMain props={this.props} />
+        <LazyMain {...this.props} />
         <ErrorBoundary>
           <MainWithError {...this.props} />
         </ErrorBoundary>

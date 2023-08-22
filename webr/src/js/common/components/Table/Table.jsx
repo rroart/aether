@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import React, { memo, useEffect, useMemo } from 'react';
 import { useTable, usePagination } from 'react-table'
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import styled from 'styled-components'
 
 const Styles = styled.div`
@@ -64,7 +64,7 @@ function Table({ columns, data }) {
 	state: { pageIndex, pageSize },
     } = useTable({ columns: hcolumns, data: hdata,     initialState: { pageIndex: 0 }, }, usePagination );
     useEffect(() => {
-        ReactTooltip.rebuild()
+        Tooltip.rebuild()
     });
     //console.log("callme");
     return (

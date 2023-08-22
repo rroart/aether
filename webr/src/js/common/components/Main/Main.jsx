@@ -20,7 +20,7 @@ function newtab() {   console.log("bla3")
 //main.watchNewTabMainnn
 }
 
-function Main ({ props }) {
+function Main ({ main }) {
   const [ tabs, setTabs ] = useState([]);
 
   function newtab2() {
@@ -62,8 +62,9 @@ onIncrement2() { this.props.increment2() }
     //main.tabs = tabs;
   }
 
-  const { main } = props;
-
+  //const { main } = props;
+    const props = main;
+    
   var dolucene;
   var dosolr;
   var doelastic;
@@ -81,18 +82,17 @@ onIncrement2() { this.props.increment2() }
   var mytabs = tabs;
   var map = new Object();
   map['title']='tit';
-  var newtab = new Tab(map);
+  //var newtab = new Tab(map);
   console.log(tabs);
   var arrayLength = tabs.length;
   console.log("arr");
   console.log(tabs);
   console.log(arrayLength);
-  for (var i = 0; i < arrayLength; i++) {
-    //alert(myStringArray[i]);
-    //Do something
-  }
 
-  console.log("callt", tabs.length);
+    console.log("callt", tabs.length);
+    console.log(props);
+    console.log(main);
+    console.log(result + " " + result.size);
   if (result && result.size && result.size > 0) {
     console.log("callt", tabs.length);
     return (
@@ -151,7 +151,7 @@ onIncrement2() { this.props.increment2() }
           <p>If you see this screen, it means you are all setup \o/</p>
           <p>The following JSON are showing contents coming from Redux, Saga and Config.</p>
           <pre>
-            {JSON.stringify(result.toJS(), undefined, 2)}
+            {JSON.stringify(result/*.toJS()*/, undefined, 2)}
           </pre>
         </div>
       </Fragment>
