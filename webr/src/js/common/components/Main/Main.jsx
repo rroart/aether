@@ -13,6 +13,7 @@ import { Test } from '../test'
 //import Misc from '../util'
 //import Client from '../util/Client'
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { MyGet } from '../util'
 
 const tablist = [];
 
@@ -64,14 +65,19 @@ onIncrement2() { this.props.increment2() }
 
   //const { main } = props;
     const props = main;
-    
+
+  console.log(main);
+  console.log(main.config);
+   console.log(main.config.configValueMap);
+
   var dolucene;
   var dosolr;
   var doelastic;
   if (!!main.config) {
-    dolucene = main.config.get('configValueMap').get("searchengine.lucene[@enable]");
-    dosolr = main.config.get('configValueMap').get("searchengine.solr[@enable]");
-    doelastic = main.config.get('configValueMap').get("searchengine.elastic[@enable]");
+    const configValueMap = MyGet.myget(main.config, 'configValueMap');
+    dolucene = MyGet.myget(configValueMap, "searchengine.lucene[@enable]");
+    dosolr = MyGet.myget(configValueMap, "searchengine.solr[@enable]");
+    doelastic = MyGet.myget(configValueMap, "searchengine.elastic[@enable]");
   }
 
   const result = main && main.result2 ? main.result2 : null;
@@ -93,8 +99,9 @@ onIncrement2() { this.props.increment2() }
     console.log(props);
     console.log(main);
     console.log(result + " " + result.size);
-  if (result && result.size && result.size > 0) {
+  if (result /*&& result.size && result.size > 0*/) {
     console.log("callt", tabs.length);
+    console.log("cccc" + Object.keys({ ...props }));
     return (
       <Fragment>
         <h1>Aether search engine</h1>

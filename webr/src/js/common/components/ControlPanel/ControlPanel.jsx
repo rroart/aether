@@ -193,17 +193,16 @@ function ControlPanel ({ props, callbackNewTab }) {
   console.log(main);
   console.log(languages);
   console.log(Object.keys(main))
-  console.log(main.config);
+    console.log(main.config);
+    //if (true) return (<div/>);
   return (
     <div>
       <h2>Hei</h2>
       <Navbar>
-        <Navbar.Header>
           <Navbar.Brand>
             <a href="#home">Indexing new</a>
           </Navbar.Brand>
-        </Navbar.Header>
-        <Nav>
+         <Nav>
           <NavItem eventKey={1} href="#">
             <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(null, false, props) }>Index filesystem new items</Button>
           </NavItem>
@@ -226,11 +225,9 @@ function ControlPanel ({ props, callbackNewTab }) {
         </Nav>
       </Navbar>
       <Navbar>
-        <Navbar.Header>
-          <Navbar.Brand>
+           <Navbar.Brand>
             <a href="#home">Filesystem add new</a>
           </Navbar.Brand>
-        </Navbar.Header>
         <Nav>
           <NavItem eventKey={1} href="#">
             <Button bsStyle="primary" onClick={ (e) => traverse(null, props) }>Filesystem add new</Button>
@@ -246,12 +243,10 @@ function ControlPanel ({ props, callbackNewTab }) {
         </Nav>
       </Navbar>
       <Navbar>
-        <Navbar.Header>
-          <Navbar.Brand>
+           <Navbar.Brand>
             <a href="#home">Indexed non-indexed</a>
           </Navbar.Brand>
-        </Navbar.Header>
-        <Nav>
+         <Nav>
           <NavItem eventKey={1} href="#">
             <Button bsStyle="primary" onClick={ (e) => index(null, false, props) }>Index non-indexed items</Button>
           </NavItem>
@@ -330,12 +325,10 @@ function ControlPanel ({ props, callbackNewTab }) {
         </Nav>
       </Navbar>
       <Navbar>
-        <Navbar.Header>
           <Navbar.Brand>
             <a href="#home">Consistency</a>
           </Navbar.Brand>
-        </Navbar.Header>
-        <Nav>
+         <Nav>
           <NavItem eventKey={1} href="#">
               <Button bsStyle="primary" onClick={ (e) => consistentclean(false, cleanpath, props) }>Get consistency</Button>
           </NavItem>
@@ -350,23 +343,19 @@ function ControlPanel ({ props, callbackNewTab }) {
         </Nav>
       </Navbar>
       <Navbar>
-        <Navbar.Header>
-          <Navbar.Brand>
+           <Navbar.Brand>
             <a href="#home">Db check</a>
           </Navbar.Brand>
-        </Navbar.Header>
-        <Nav>
+         <Nav>
           <NavItem eventKey={1} href="#">
               <Button bsStyle="primary" onClick={ (e) => dbcheck(props) }>Db check</Button>
           </NavItem>
         </Nav>
       </Navbar>
       <Navbar>
-        <Navbar.Header>
-          <Navbar.Brand>
+         <Navbar.Brand>
             <a href="#home"></a>
           </Navbar.Brand>
-        </Navbar.Header>
         <Nav>
           <NavItem eventKey={1} href="#">
             <Button bsStyle="primary" onClick={ (e) => notindexed(props) }>Get not yet indexed</Button>

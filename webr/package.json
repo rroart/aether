@@ -6,7 +6,7 @@
     "[module-name]": false
   },
   "scripts": {
-    "dev": "./node_modules/.bin/cross-env NODE_ENV=production DASHBOARD_PORT=9901 webpack-dashboard -p 9901 -c red -t dashboard -- node bin/commands.js dev",
+    "dev": "./node_modules/.bin/cross-env NODE_ENV=production DASHBOARD_PORT=9903 webpack-dashboard -p 9903 -c red -t dashboard -- node bin/commands.js dev",
     "build": "./node_modules/.bin/cross-env NODE_ENV=production node bin/commands.js build",
     "build:stage": "cross-env NODE_ENV=stage node bin/commands.js build",
     "clean": "./node_modules/.bin/rimraf docroot",

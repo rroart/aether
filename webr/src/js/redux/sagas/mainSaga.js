@@ -3,7 +3,7 @@ import { constants as mainConstants, actions as mainActions } from '../modules/m
 import { Tabs, Tab } from 'react-bootstrap';
 import React, { PureComponent } from 'react';
 
-import { Client } from '../../common/components/util' 
+import { Client } from '../../common/components/util'
 import { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
 import { MyTable } from '../../common/components/MyTable'
 
@@ -52,8 +52,7 @@ export function* fetchConfig() {
     console.log("hereconfig2");
     console.log(config);
     const config2 = config;
-    console.log(config2);
-    yield put(mainActions.setconfig(config2.config));
+   yield put(mainActions.setconfig(config2.config));
 }
 
 export function* fetchLanguages() {

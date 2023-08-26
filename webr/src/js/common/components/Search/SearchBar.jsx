@@ -57,11 +57,9 @@ function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
   return (
     <div>
       <Navbar>
-        <Navbar.Header>
           <Navbar.Brand>
             <a href="#home">{text}</a>
           </Navbar.Brand>
-        </Navbar.Header>
         <Nav>
             <Form onSubmit={ (e) => setSearchnetstring(searchstring) }>
               <FormControl
