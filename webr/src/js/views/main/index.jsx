@@ -42,7 +42,7 @@ class MainView extends Component {
   render() {
       return (
       <Fragment>
-        <LazyMain {...this.props} />
+        <LazyMain props = { this.props } />
         <ErrorBoundary>
           <MainWithError {...this.props} />
         </ErrorBoundary>

@@ -13,7 +13,7 @@ import { Test } from '../test'
 //import Misc from '../util'
 //import Client from '../util/Client'
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { MyGet } from '../util'
+import { MyMap } from '../util'
 
 const tablist = [];
 
@@ -21,12 +21,12 @@ function newtab() {   console.log("bla3")
 //main.watchNewTabMainnn
 }
 
-function Main ({ main }) {
+function Main ({ props }) {
   const [ tabs, setTabs ] = useState([]);
 
   function newtab2() {
     console.log("bla4")
-    const { main } = this.props;
+    const { main } = props;
     main.watchNewTabMain()
   }
 
@@ -63,8 +63,7 @@ onIncrement2() { this.props.increment2() }
     //main.tabs = tabs;
   }
 
-  //const { main } = props;
-    const props = main;
+  const { main } = props;
 
   console.log(main);
   console.log(main.config);
@@ -74,10 +73,10 @@ onIncrement2() { this.props.increment2() }
   var dosolr;
   var doelastic;
   if (!!main.config) {
-    const configValueMap = MyGet.myget(main.config, 'configValueMap');
-    dolucene = MyGet.myget(configValueMap, "searchengine.lucene[@enable]");
-    dosolr = MyGet.myget(configValueMap, "searchengine.solr[@enable]");
-    doelastic = MyGet.myget(configValueMap, "searchengine.elastic[@enable]");
+    const configValueMap = MyMap.myget(main.config, 'configValueMap');
+    dolucene = MyMap.myget(configValueMap, "searchengine.lucene[@enable]");
+    dosolr = MyMap.myget(configValueMap, "searchengine.solr[@enable]");
+    doelastic = MyMap.myget(configValueMap, "searchengine.elastic[@enable]");
   }
 
   const result = main && main.result2 ? main.result2 : null;
@@ -118,7 +117,7 @@ onIncrement2() { this.props.increment2() }
           </Tab>
           <Tab eventKey={3} title="Configuration">
             <h2>Any content 3</h2>
-            <Configuration {...props}/>
+            <Configuration props = {props} config = {main.config} configname = "config" />
           </Tab>
           { mytabs.map((item, index) => getanewtab(item, 4 + index)) }
         </Tabs>

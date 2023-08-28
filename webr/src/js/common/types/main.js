@@ -39,7 +39,6 @@ class ResultItem {
 }
 
 class SearchEngineSearchParam {
-    nodename : string;
     conf: object;
  str: string;
     searchtype: string;

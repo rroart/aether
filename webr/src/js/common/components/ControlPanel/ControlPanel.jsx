@@ -172,8 +172,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     setParam(param);
   }
 
-  //const { main } = props;
-  const main = props;
+  const { main } = props;
   useEffect(() => {
     if (param === undefined || param == null) {
       return;

@@ -6,6 +6,7 @@ import { Client } from '../../common/components/util'
 import { MyTable } from '../../common/components/MyTable'
 
 import React, { useEffect } from "react";
+import { MyMap } from '../../common/components/util'
 
 const GET_MAIN = 'app/main/GET_MAIN';
 const GET_R3 = 'app/main/GET_R3';
@@ -149,7 +150,7 @@ export const reducers = {
 	})
 	//console.log('ppp')
 	//console.log(payload)
-	//const newArr = state.get('tabs').concat([payload])  
+	//const newArr = state.get('tabs').concat([payload])
         //const idPositions = newArr.map(el => el.id)
         //const newPayload = newArr.filter((item, pos, arr) => {
         //return idPositions.indexOf(item.id) == pos;
@@ -246,50 +247,50 @@ function gettabs3(state) {
 }
 
 function getConfigAfterSet(state, payload) {
-    //state.get('config').set(payload)                                          
+    //state.get('config').set(payload)
     var config = state.get('config');
-    //console.log(config);                                                      
-    //console.log(payload);                                                     
-    //var valueMap = config.get('configValueMap');                              
-    //console.log(valueMap);                                                    
-    //var valueMap2 = valueMap; //.set(payload);                                
-    //var k = Object.keys(payload)[0];                                          
-    //var v = Object.values(payload)[0];                                        
-    //valueMap2 = valueMap2.set(k, v);                                          
-    //valueMap2 = valueMap2.set({k: v});                                        
-    //console.log(k);                                                           
-    //console.log(v);                                                           
-    //console.log(valueMap2.get(payload));                                      
-    //console.log(valueMap2.get(k));                                            
-    //console.log(valueMap2.get("predictors[@enable]"));                        
-    //console.log(valueMap2.get("predictors.lstm.horizon"));                    
-    //console.log(valueMap);                                                    
-    //console.log(valueMap2);                                                   
-    return config.set(payload[0], payload[1]);
+    //console.log(config);
+    //console.log(payload);
+    //var valueMap = config.get('configValueMap');
+    //console.log(valueMap);
+    //var valueMap2 = valueMap; //.set(payload);
+    //var k = Object.keys(payload)[0];
+    //var v = Object.values(payload)[0];
+    //valueMap2 = valueMap2.set(k, v);
+    //valueMap2 = valueMap2.set({k: v});
+    //console.log(k);
+    //console.log(v);
+    //console.log(valueMap2.get(payload));
+    //console.log(valueMap2.get(k));
+    //console.log(valueMap2.get("predictors[@enable]"));
+    //console.log(valueMap2.get("predictors.lstm.horizon"));
+    //console.log(valueMap);
+    //console.log(valueMap2);
+    return MyMap.myset(config, payload[0], payload[1]);
 }
 
 function getConfigValueMapAfterSet(state, payload) {
-    //state.get('config').set(payload)                                          
-    var config = state.get('config');
-    //console.log(config);                                                      
-    //console.log(payload);                                                     
-    //var valueMap = config.get('configValueMap');                              
-    //console.log(valueMap);                                                    
-    //var valueMap2 = valueMap; //.set(payload);                                
-    //var k = Object.keys(payload)[0];                                          
-    //var v = Object.values(payload)[0];                                        
-    //valueMap2 = valueMap2.set(k, v);                                          
-    //valueMap2 = valueMap2.set({k: v});                                        
-    //console.log(k);                                                           
-    //console.log(v);                                                           
-    //console.log(valueMap2.get(payload));                                      
-    //console.log(valueMap2.get(k));                                            
-    //console.log(valueMap2.get("predictors[@enable]"));                        
-    //console.log(valueMap2.get("predictors.lstm.horizon"));                    
-    //console.log(valueMap);                                                    
-    //console.log(valueMap2);                                                   
-    const valueMap = config.get('configValueMap');
-    return config.set('configValueMap', valueMap.set(payload[0], payload[1]));
+    //state.get('config').set(payload)
+    var config = state.get(payload[0]);
+    //console.log(config);
+    //console.log(payload);
+    //var valueMap = config.get('configValueMap');
+    //console.log(valueMap);
+    //var valueMap2 = valueMap; //.set(payload);
+    //var k = Object.keys(payload)[0];
+    //var v = Object.values(payload)[0];
+    //valueMap2 = valueMap2.set(k, v);
+    //valueMap2 = valueMap2.set({k: v});
+    //console.log(k);
+    //console.log(v);
+    //console.log(valueMap2.get(payload));
+    //console.log(valueMap2.get(k));
+    //console.log(valueMap2.get("predictors[@enable]"));
+    //console.log(valueMap2.get("predictors.lstm.horizon"));
+    //console.log(valueMap);
+    //console.log(valueMap2);
+    const valueMap = MyMap.myget(config, 'configValueMap');
+    return MyMap.myset(config, 'configValueMap', MyMap.myset(valueMap, payload[1], payload[2]));
 }
 
 export const initialState = () =>

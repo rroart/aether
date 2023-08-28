@@ -27,7 +27,7 @@ function Search({dolucene, dosolr, doelastic, props, callbackNewTab}) {
     });
   }, [searchmlt]);
 
-  const main = props;
+  const { main } = props;
   let Searchbars=<h2>Waiting for config</h2>;
   console.log(main, dolucene, dosolr, doelastic);
   if (dolucene) {

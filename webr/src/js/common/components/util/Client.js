@@ -69,11 +69,12 @@ function parseJSON(response) {
 }
 
 export const geturl = (query) => {
-    return "http://" + getHost() + ":" + getPort() + query;
+    return "https://" + getHost() + ":" + getPort() + query;
 }
 
 const fetchApi = {
     search(query, serviceparam) {
+      console.log("uuuu" + ("http://" + getHost() + ":" + getPort() + query) + " " + JSON.stringify(serviceparam));
         console.log(query);
         console.log(JSON.stringify(serviceparam));
         return fetch("http://" + getHost() + ":" + getPort() + query, {
