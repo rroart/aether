@@ -69,7 +69,7 @@ function parseJSON(response) {
 }
 
 export const geturl = (query) => {
-    return "https://" + getHost() + ":" + getPort() + query;
+    return "http://" + getHost() + ":" + getPort() + query;
 }
 
 const fetchApi = {
