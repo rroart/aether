@@ -20,8 +20,8 @@ function TreeView( { props, config, map, configname } ) {
     props.setconfigvaluemap([ configname, key, event.target.value ]);
   }
 
-  function getview(value, key, date) {
-    const mykey = date + key;
+  function getview(value, key) {
+    const mykey = key + value;
     return(
       <li key={mykey}>
         <TreeView props = {props} config = {config} map={value} configname = { configname } />
@@ -43,11 +43,10 @@ function TreeView( { props, config, map, configname } ) {
     console.log("ccccc" + (map));
     return;
   }
-  const now = Date.now();
   const map2 = MyMap.mymap(confMap);
   const itemlist = [];
   for (let [key, value] of map2) {
-    itemlist.push(getview(value, key, now));
+    itemlist.push(getview(value, key));
   }
   const map3 = itemlist; // Array.from(itemlist);
   return(
