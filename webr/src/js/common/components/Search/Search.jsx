@@ -63,4 +63,6 @@ function Search({dolucene, dosolr, doelastic, props, callbackNewTab}) {
   );
 }
 
-export default memo(Search);
+export default
+
+memo(Search);

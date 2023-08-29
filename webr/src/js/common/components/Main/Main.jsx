@@ -56,12 +56,12 @@ onIncrement2() { this.props.increment2() }
     )
   }
 
-  function callbackNewTab(data) {
+  const callbackNewTab = useCallback( (data) => {
     tabs.push(data);
     setTabs([...tabs]);
     console.log("callb", tabs.length);
     //main.tabs = tabs;
-  }
+  }, [tabs]);
 
   const { main } = props;
 
