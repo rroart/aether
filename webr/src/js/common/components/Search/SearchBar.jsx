@@ -8,16 +8,18 @@ import { MyTable } from '../MyTable'
 import { memo, useEffect, useMemo, useState } from "react";
 
 function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
-  console.log("hhh" + type);
+  console.log("hhh" + type+ " " + Date.now());
   console.log(text);
   console.log(type);
   const [ searchstring, setSearchstring ] = useState("");
   const [ searchnetstring, setSearchnetstring ] = useState("");
   console.log("searchnetstring" + searchnetstring);
+
   useEffect(() => {
-    console.log("effect");
+    console.log("effect" + type  +searchnetstring + "n");
     console.log(searchnetstring);
     if (searchnetstring === "") {
+      console.log("effectnot");
       return;
     }
     console.log("effectin");
@@ -40,10 +42,10 @@ function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
 
     const fetchData = async(url, param) => {
       try {
-        console.log("uuuu" +url + " " + JSON.stringify(param));
+        console.log("uuuu" + url + " " + JSON.stringify(param));
         const response = await fetch(url, {
           method: "POST",
-          headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+          headers: {'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json',},
           body: JSON.stringify(param),
         });
         const result = await response.json();
@@ -55,40 +57,24 @@ function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
       }
     };
     console.log("effecteffect" + url);
-       const result = Client.fetchApi.search("/search", param);
-    result.then(function(result) {
-       console.log(result);
-       const tables = MyTable.getTabNew(result.list, Date.now(), callbackMLT);
-        callbackNewTab(tables);
-  });
-    //fetchData(url, param).catch(console.error);
+    fetchData(url, param).catch(console.error);
 
-    /*
-      fetch(url, {
-        method: "POST",
-        headers: {'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json',},
-        body: JSON.stringify(param),
-      })
-        .then(response => response.json())
-        .then(data => console.log("effectdddd"+data));
-
-     */
     console.log("effecteffect2");
   }, [searchnetstring]);
   console.log("effectend");
   return (
     <div>
       <Navbar>
-          <Navbar.Brand>
-            <a href="#home">{text}</a>
-          </Navbar.Brand>
+        <Navbar.Brand>
+          <a href="#home">{text}</a>
+        </Navbar.Brand>
         <Nav>
-            <Form onSubmit={ (e) => setSearchnetstring(searchstring) }>
-              <FormControl
-                placeholder="Enter text"
-                onChange={ (e) => setSearchstring(e.target.value) }
-                type="text"/>
-            </Form>
+          <Form onSubmit={ (e) => { e.preventDefault(); setSearchnetstring(searchstring) } }>
+            <FormControl
+              placeholder="Enter text"
+              onChange={ (e) => setSearchstring(e.target.value) }
+              type="text"/>
+          </Form>
         </Nav>
       </Navbar>
     </div>
