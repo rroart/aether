@@ -3,7 +3,13 @@ package roart.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -30,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 
+import roart.common.collections.MyMap;
+import roart.common.collections.MySet;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
@@ -47,11 +55,13 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.service.ServiceParam;
 import roart.common.service.ServiceResult;
 import roart.common.util.FsUtil;
+import roart.common.util.JsonUtil;
 import roart.config.MyXMLConfig;
 import roart.content.ClientHandler;
 import roart.database.IndexFilesDao;
 import roart.eureka.util.EurekaUtil;
 import roart.filesystem.FileSystemDao;
+import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.service.SearchService;
 
@@ -138,8 +148,16 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            if (param.add == null) {
-                result.list = clientHandler.doClient(param);
+            if (param.async) {
+                createUUID(param, result);
+                new Thread() {
+                    public void run() {
+                        MyMap<String, String> map = addToTaskMap(param, result);
+                        result.list = clientHandler.doClient(param);
+                        sendResult(param, result, map);
+                    }
+
+                }.start();
             } else {
                 result.list = clientHandler.doClient(param);
             }
@@ -184,7 +202,19 @@ public class ServiceController implements CommandLineRunner {
             throws Exception {
         ServiceResult result = new ServiceResult();
         try {
-            result.list = clientHandler.doClient(param);
+            if (param.async) {
+                createUUID(param, result);
+                new Thread() {
+                    public void run() {
+                        // todo publish, multi queue
+                        MyMap<String, String> map = addToTaskMap(param, result);
+                        result.list = clientHandler.doClient(param);
+                        sendResult(param, result, map);
+                    }
+                }.start();
+            } else {
+                result.list = clientHandler.doClient(param);
+            }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             result.error = e.getMessage();
@@ -555,6 +585,42 @@ public class ServiceController implements CommandLineRunner {
         return IOUtils.toByteArray(result);
     }
 
+    @RequestMapping(value = "/" + EurekaConstants.GETTASKS,
+            method = RequestMethod.POST)
+    public Collection<String> getTasks()
+            throws Exception {
+        try {
+            MyMap<String, String> map = new Queues(nodeConf, controlService).getTaskMap();
+            return map.getAll().values();
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return new HashSet<>();
+    }
+
+    @RequestMapping(value = "/" + EurekaConstants.TASK + "/@id",
+            method = RequestMethod.GET)
+    public ServiceResult getTask(@PathVariable String id)
+            throws Exception {
+        ServiceResult result = new ServiceResult();
+        try {
+            MyMap<String,InmemoryMessage> resultMap = new Queues(nodeConf, controlService).getResultMap();
+            if (resultMap.getAll().containsKey(id)) {
+                // todo find and remove return result;
+                Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                InmemoryMessage msg = resultMap.remove(id);
+                String string = inmemory.getInputStream(msg).toString();
+                inmemory.delete(msg);
+                resultMap.remove(id);
+                result = JsonUtil.convert(string, ServiceResult.class);
+                return result;
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return null;
+    }
+
     // TODO move this
     private void doConfig(String configFile) {
         getControlService().config();
@@ -607,4 +673,21 @@ public class ServiceController implements CommandLineRunner {
         return myConfigFile;
     }
 
+    private void createUUID(ServiceParam param, ServiceResult result) {
+        result.uuid = UUID.randomUUID().toString();
+        param.uuid = result.uuid;
+    }
+
+    private void sendResult(ServiceParam param, ServiceResult result, MyMap<String, String> map) {
+        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+        InmemoryMessage msg = inmemory.send(param.uuid, JsonUtil.convert(result));
+        map.remove(result.uuid);
+        MyMap<String,InmemoryMessage> resultMap = new Queues(nodeConf, controlService).getResultMap();
+        resultMap.put(result.uuid, msg);
+    }
+    private MyMap<String, String> addToTaskMap(ServiceParam param, ServiceResult result) {
+        MyMap<String, String> map = new Queues(nodeConf, controlService).getTaskMap();
+        map.put(result.uuid, "" + param.function + " " + LocalDate.now());
+        return map;
+    }
 }

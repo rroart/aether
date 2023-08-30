@@ -13,13 +13,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyMap;
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
+import roart.common.collections.impl.MyMaps;
 import roart.common.collections.impl.MyQueues;
+import roart.common.collections.impl.MySets;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.util.QueueUtil;
 import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
@@ -228,6 +232,16 @@ public class Queues {
         String queueid = QueueUtil.getIndexQueue();
         MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         return queue;
+    }
+    
+    public MyMap<String, String> getTaskMap() {
+        String mapid = QueueUtil.getTaskMap();
+        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+    }
+    
+    public MyMap<String, InmemoryMessage> getResultMap() {
+        String mapid = QueueUtil.getResultMap();
+        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
     }
     
     public MyAtomicLong getMyConverts() {

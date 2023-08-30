@@ -56,6 +56,14 @@ public class QueueUtil {
         return prefix() + Constants.INDEXQUEUE;
     }
 
+    public static String getTaskMap() {
+        return prefix() + Constants.TASKMAP;
+    }
+
+    public static String getResultMap() {
+        return prefix() + Constants.RESULTMAP;
+    }
+
     /*
     public static String filesetnewQueue(String myid) {
         return prefix() + Constants.FILESETNEWID + myid;

@@ -20,4 +20,6 @@ public NodeConfig config;
     public String dirname;
     public String lang;
     public String webpath;
+    public boolean async;
+    public String uuid;
 }

@@ -29,6 +29,8 @@ public static final String TRAVERSEQUEUE = "traversequeue";
 public static final String LISTINGQUEUE = "listqueue";
 public static final String CONVERTQUEUE = "convertqueue";
 public static final String INDEXQUEUE = "indexqueue";
+public static final String TASKMAP = "taskmap";
+public static final String RESULTMAP = "resultmap";
 
 public static final String TRAVERSECOUNT = "traversecount";
 public static final String FILESETNEWID = "filesetnewid";

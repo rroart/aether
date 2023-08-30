@@ -11,6 +11,7 @@ import { useTable } from 'react-table';
 import ReactTooltip from "react-tooltip";
 import { MyTable } from '../MyTable'
 import { Table } from '../Table'
+import TaskList from './TaskList';
 
 function ControlPanel ({ props, callbackNewTab }) {
   const [ indexnew, setIndexnew ] = useState('');
@@ -28,6 +29,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   const [ param, setParam ] = useState(null);
   const [ hcolumns, setHcolumns ] = useState(null);
   const [ hdata, setHdata ] = useState(null);
+  const [ uuids, setUuids ] = useState( new Set() );
 
   function filesystemlucenenew(path, md5checknew, props) {
     console.log(path);
@@ -47,6 +49,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     param.function = "FILESYSTEM";
     param.add = path;
     param.webpath = "traverse";
+    param.async = true;
     setParam(param);
   }
 
@@ -57,6 +60,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     param.add = add;
     param.reindex = reindex;
     param.webpath = "index";
+    param.async = true;
     setParam(param);
   }
 
@@ -130,7 +134,6 @@ function ControlPanel ({ props, callbackNewTab }) {
       param.clean = clean;
       param.path = path;
     param.webpath = "consistentclean";
-    Queues.clientQueue.add(param);
     setParam(param);
     return;
   }
@@ -140,7 +143,6 @@ function ControlPanel ({ props, callbackNewTab }) {
     param.config = props.config;
     param.function = "DBCHECK";
     param.webpath = "dbcheck";
-    Queues.clientQueue.add(param);
     setParam(param);
     return;
   }
@@ -183,10 +185,44 @@ function ControlPanel ({ props, callbackNewTab }) {
       console.log(result);
       console.log(list);
       const baseurl = Client.geturl("/");
-      const tables = MyTable.getTabNew(result.list, Date.now(), callbackNewTab, props);
-      callbackNewTab(tables);
+      if (param.async === true) {
+        callbackAsync(result.uuid);
+      } else {
+        const tables = MyTable.getTabNew(result.list, Date.now(), callbackNewTab, props);
+        callbackNewTab(tables);
+      }
     });
   }, [param]);
+
+  useEffect(() => {
+    const timer = setInterval(getTask, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const callbackAsync = useCallback( (uuid) => {
+    uuids.push(uuid);
+    setUuids([...uuids]);
+  }, [uuids]);
+
+  const getTask = async () => {
+    for (let id in uuids) {
+    const url = Client.geturl("/task/" + id);
+    const settings = {
+      method: 'GET',
+    };
+    const res = await fetch(url, settings);
+    const data = await res.json();
+    if (data != null) {
+      const tables = MyTable.getTabNew(data.list, Date.now(), callbackNewTab, props);
+      callbackNewTab(tables);
+      uuids.delete(id);
+    }
+    setUuids([...uuids]);
+
+    }
+  };
+
+
   const languages = main && main.languages ? main.languages : null;
   //this.bardvd = new SearchBar('dvd');
   console.log(main);
@@ -197,6 +233,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   return (
     <div>
       <h2>Hei</h2>
+      <TaskList/>
       <Navbar>
           <Navbar.Brand>
             <a href="#home">Indexing new</a>

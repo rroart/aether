@@ -25,6 +25,7 @@ class ServiceParam {
       dirname: string;
       lang: string;
       webpath: string;
+      async: boolean;
 }
 
 class ServiceResult {

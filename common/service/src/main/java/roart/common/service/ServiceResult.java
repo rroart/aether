@@ -10,5 +10,6 @@ public class ServiceResult {
 public NodeConfig config;
 public List<List<ResultItem>> list;
 public String error;
+public String uuid;
 }
 
