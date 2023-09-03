@@ -262,7 +262,7 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, operationMap).run();
+        new ConfigThread(zookeeperConnectionString, port).run();
     }
 
     public abstract String getQueueName();

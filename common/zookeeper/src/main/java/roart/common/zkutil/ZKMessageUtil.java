@@ -28,7 +28,7 @@ public class ZKMessageUtil {
 	}
 
 	public static void dorefresh(String nodename) {
-	if (ZKInitialize.zk == null) {
+	if (true || ZKInitialize.zk == null) {
 	    return;
 	}
 	log.info("sendMsgRefresh");

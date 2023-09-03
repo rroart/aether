@@ -23,7 +23,7 @@ public class MachineLearningQueue {
 
     public MachineLearningQueue(String name, MachineLearningAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         final HazelcastInstance hz;
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
             hz = HazelcastClient.newHazelcastClient();
         } else {
             hz = null;
@@ -35,7 +35,7 @@ public class MachineLearningQueue {
                 if (element == null) {
                     try {
                         TimeUnit.SECONDS.sleep(1);
-                        return;
+                        continue;
                     } catch (InterruptedException e) {
                         log.error(Constants.EXCEPTION, e); 
                     }                   

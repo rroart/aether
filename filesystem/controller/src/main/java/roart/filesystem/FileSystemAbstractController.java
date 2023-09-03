@@ -95,6 +95,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             operationMap.put(param.getConfigid(), operation);
             FileSystemQueue queue = new FileSystemQueue(getQueueName(), this, curatorClient, nodeConf);
             queueMap.put(param.getConfigid(),  queue);
+            log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
         }
         return operation;
     }
@@ -258,8 +259,8 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new FileSystemThread(curatorClient, port, getFs()).run();
-        new ConfigThread(zookeeperConnectionString, port, operationMap).run();
+        new Thread(new FileSystemThread(curatorClient, port, getFs())).start();
+        new ConfigThread(zookeeperConnectionString, port).run();
     }
 
     public abstract String getQueueName();

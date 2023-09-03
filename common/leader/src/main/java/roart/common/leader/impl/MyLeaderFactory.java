@@ -10,7 +10,7 @@ import roart.common.leader.MyLeader;
 
 public class MyLeaderFactory {
     public MyLeader create(String id, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
             if (nodeConf.getZookeeper() != null) {
                 return new MyCuratorLeader(id, curatorFramework, hz);
             } else {

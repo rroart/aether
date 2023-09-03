@@ -28,7 +28,7 @@ public class DatabaseQueue {
 
     public DatabaseQueue(String name, DatabaseAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         final HazelcastInstance hz;
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
             hz = HazelcastClient.newHazelcastClient();
         } else {
             hz = null;
@@ -40,7 +40,7 @@ public class DatabaseQueue {
                 if (element == null) {
                     try {
                         TimeUnit.SECONDS.sleep(1);
-                        return;
+                        continue;
                     } catch (InterruptedException e) {
                         log.error(Constants.EXCEPTION, e); 
                     }                   

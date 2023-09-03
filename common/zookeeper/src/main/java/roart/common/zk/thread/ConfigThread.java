@@ -2,7 +2,6 @@ package roart.common.zk.thread;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.zookeeper.WatchedEvent;
@@ -24,9 +23,7 @@ public class ConfigThread implements Runnable {
 
     private ZooKeeper zk;
 
-    private Map map;
-    
-    public ConfigThread(String zookeeper, int port, Map map) {
+    public ConfigThread(String zookeeper, int port) {
         try {
             data = InetAddress.getLocalHost().getHostName() + ":" + port;
         } catch (UnknownHostException e) {
@@ -34,7 +31,6 @@ public class ConfigThread implements Runnable {
         }
         ZKInitialize.initZK(zookeeper, new DummyWatcher(), "localhost");
         zk = ZKInitialize.zk;
-        this.map = map;
     }
 
     @Override

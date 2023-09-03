@@ -36,7 +36,7 @@ public class SearchEngineQueue {
                 if (element == null) {
                     try {
                         TimeUnit.SECONDS.sleep(1);
-                        return;
+                        continue;
                     } catch (InterruptedException e) {
                         log.error(Constants.EXCEPTION, e); 
                     }                   

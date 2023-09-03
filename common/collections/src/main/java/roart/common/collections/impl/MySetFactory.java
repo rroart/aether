@@ -16,8 +16,8 @@ import roart.common.config.NodeConfig;
 public class MySetFactory extends MyFactory {
     
     public MySet create(String setid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (nodeConf.wantDistributedTraverse()) {
-            if (nodeConf.getRedis() != null) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+            if (nodeConf.getRedis() != null && !nodeConf.getRedis().isEmpty()) {
                 return new MyRedisSet(nodeConf.getRedis(), setid);
             } else {
                 return new MyHazelcastSet(hz, setid);

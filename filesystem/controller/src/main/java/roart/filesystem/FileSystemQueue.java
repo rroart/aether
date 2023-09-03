@@ -26,7 +26,7 @@ public class FileSystemQueue {
 
     public FileSystemQueue(String name, FileSystemAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         HazelcastInstance hz = null;
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
             hz = HazelcastClient.newHazelcastClient();
         }
         HazelcastInstance ahz = hz;
@@ -36,6 +36,7 @@ public class FileSystemQueue {
         log.info("Using {} {} {}", ip, fs, path);
         String[] paths = path.split(",");
         for (String aPath : paths) {
+            log.info("Queue name {}", QueueConstants.FS + "_" + aPath);
             final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorClient, hz);
             Runnable run = () -> {
                 while (true) {
@@ -43,11 +44,12 @@ public class FileSystemQueue {
                     if (element == null) {
                         try {
                             TimeUnit.SECONDS.sleep(1);
-                            return;
+                            continue;
                         } catch (InterruptedException e) {
                             log.error(Constants.EXCEPTION, e); 
                         }                   
                     } else {
+                        log.info("Opid {} {}", element.getOpid(), element.getQueue());
                         if (element.getOpid().equals(OperationConstants.LISTFILESFULL)) {
                             FileSystemFileObjectParam param = element.getFileSystemFileObjectParam();
                             element.setFileSystemFileObjectParam(null);

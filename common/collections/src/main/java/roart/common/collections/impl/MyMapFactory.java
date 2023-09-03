@@ -16,8 +16,8 @@ import roart.common.config.NodeConfig;
 public class MyMapFactory extends MyFactory {
     
     public MyMap create(String mapid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (nodeConf.wantDistributedTraverse()) {
-            if (nodeConf.getRedis() != null) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+            if (nodeConf.getRedis() != null && !nodeConf.getRedis().isEmpty()) {
                 return new MyRedisMap(nodeConf.getRedis(), mapid);
             } else {
                 return new MyHazelcastMap(hz, mapid);

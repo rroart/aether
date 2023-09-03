@@ -31,6 +31,9 @@ public class JsonUtil {
     }
 
     public static <T> T convertnostrip(String text, Class<T> myclass) {
+        if (myclass == String.class) {
+            return (T) text;
+        }
         ObjectMapper mapper = new ObjectMapper();
         if (text != null) {
             try {

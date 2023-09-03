@@ -216,7 +216,7 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, searchMap).run();
+        new ConfigThread(zookeeperConnectionString, port).run();
     }
 
     public abstract String getQueueName();

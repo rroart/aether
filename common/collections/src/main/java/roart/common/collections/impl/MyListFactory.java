@@ -16,7 +16,7 @@ import roart.common.config.NodeConfig;
 public class MyListFactory extends MyFactory {
     
     public MyList create(String listid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
             return new MyHazelcastList(hz, listid);
         } else {
             return new MyJavaList();

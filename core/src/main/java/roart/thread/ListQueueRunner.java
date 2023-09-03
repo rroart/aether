@@ -366,7 +366,7 @@ public class ListQueueRunner implements Runnable {
     }
 
     public void doListQueue(QueueElement element) throws Exception {
-        if (element.getOpid().equals(OperationConstants.LISTFILESFULL)) {
+        if (!(element.getOpid() != null && element.getOpid().equals(OperationConstants.LISTFILESFULL))) {
         //if (element.getFileSystemMyFileResult() == null) {
             FileObject fileObject = element.getFileObject();
             if (TraverseUtil.isMaxed(element.getMyid(), element.getClientQueueElement(), nodeConf, controlService)) {
@@ -377,10 +377,12 @@ public class ListQueueRunner implements Runnable {
                 return;
             }
             //HashSet<String> md5set = new HashSet<String>();
+            // TODO no need? element.setOpid(null);
+            element.setQueue(QueueUtil.getListingQueue());
             new FileSystemDao(nodeConf, controlService).listFilesFullQueue(element, fileObject);
         } else {
             Collection<MyFile> listDir = element.getFileSystemMyFileResult().map.values();
-            element.setFileSystemMyFileResult(null);
+            // TODO not needing? element.setFileSystemMyFileResult(null);
             //log.info("dir " + dirname);
             //log.info("listDir " + listDir.length);
             if (listDir == null) {

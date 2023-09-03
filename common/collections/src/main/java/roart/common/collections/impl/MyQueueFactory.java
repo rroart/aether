@@ -16,11 +16,11 @@ import roart.common.config.NodeConfig;
 public class MyQueueFactory extends MyFactory {
     
     public MyQueue create(String listid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
             if (nodeConf.wantSynchronizationCommunication()) {
                 return new MyCommunicationQueue(listid, nodeConf, curatorFramework, hz);
             }
-            if (nodeConf.getRedis() != null) {
+            if (nodeConf.getRedis() != null && !nodeConf.getRedis().isEmpty()) {
                 return new MyRedisQueue(nodeConf.getRedis(), listid);
             } else {
                 return new MyHazelcastQueue(hz, listid);
