@@ -23,6 +23,7 @@ import roart.common.collections.impl.MyQueues;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.OperationConstants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -191,6 +192,9 @@ public class TraverseQueueRunner implements Runnable {
         if (limit < 1) {
             limit = LIMIT;
         }
+        if (nodeConf.wantAsync()) {
+            limit = 1;
+        }
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         List<QueueElement> traverseList = new ArrayList<>();
         // limit = 1;
@@ -221,7 +225,11 @@ public class TraverseQueueRunner implements Runnable {
         try {
             //handleList(pool, traverseList);
             //handleList2(traverseList);
-            handleList3(traverseList, locks, semaphores);
+            if (/*false &&*/ nodeConf.wantAsync()) {
+                handleListQueue3(traverseList.get(0), locks, semaphores);
+            } else {
+                handleList3(traverseList, locks, semaphores);
+            }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             for (QueueElement trav : traverseList) {
@@ -317,6 +325,10 @@ public class TraverseQueueRunner implements Runnable {
         }
         long time4 = System.currentTimeMillis();
         log.info("Times {} {} {} {}", usedTime(time1, time0), usedTime(time2, time1), usedTime(time3, time2), usedTime(time4, time3));
+    }
+
+    private void handleListQueue3(QueueElement traverseElement, Queue<MyLock> locks, Queue<MySemaphore> semaphores) throws Exception {
+        traverseFile.handleFoQueue(traverseElement, locks, semaphores);
     }
 
     private int usedTime(long time2, long time1) {

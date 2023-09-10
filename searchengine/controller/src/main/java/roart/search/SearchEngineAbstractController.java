@@ -60,7 +60,7 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
 
     protected abstract SearchEngineAbstractSearcher createSearcher(String configname, String configid, NodeConfig nodeConf);
 
-    private SearchEngineAbstractSearcher getSearch(SearchEngineParam param) {
+    SearchEngineAbstractSearcher getSearch(SearchEngineParam param) {
         SearchEngineAbstractSearcher search = searchMap.get(param.configid);
         if (search == null) {
             NodeConfig nodeConf = null;

@@ -9,6 +9,9 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.OperationConstants;
 import roart.common.queue.QueueElement;
+import roart.common.searchengine.SearchEngineIndexParam;
+import roart.common.searchengine.SearchEngineIndexResult;
+import roart.common.searchengine.SearchEngineParam;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.client.HazelcastClient;
@@ -16,6 +19,7 @@ import com.hazelcast.client.HazelcastClient;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
+
 import com.hazelcast.client.config.ClientConfig;
 
 public class SearchEngineQueue {
@@ -29,6 +33,7 @@ public class SearchEngineQueue {
         } else {
             hz = null;
         }
+        HazelcastInstance ahz = hz;
         final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
         Runnable run = () -> {
             while (true) {
@@ -41,6 +46,24 @@ public class SearchEngineQueue {
                         log.error(Constants.EXCEPTION, e); 
                     }                   
                 } else {
+                    log.info("Opid {} {}", element.getOpid(), element.getQueue());
+                    if (element.getOpid().equals(OperationConstants.INDEX)) {
+                        SearchEngineIndexParam param = element.getSearchEngineIndexParam();
+                        element.setFileSystemFileObjectParam(null);
+                        SearchEngineAbstractSearcher operations = controller.getSearch(param);
+                        try {
+                            long time = System.currentTimeMillis();
+                            SearchEngineIndexResult ret = operations.indexme(param);
+                            element.getIndexFiles().setTimeindex("" + (System.currentTimeMillis() - time));
+                            element.setSearchEngineIndexResult(ret);
+                            String queueName = element.getQueue();
+                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                            returnQueue.offer(element);
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e); 
+                        }
+                        continue;
+                    }
                     if (element.getOpid().equals("")) {
                        continue;
                     }

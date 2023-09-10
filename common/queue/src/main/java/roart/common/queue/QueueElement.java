@@ -2,10 +2,13 @@ package roart.common.queue;
 
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.searchengine.SearchEngineIndexParam;
+import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.service.ServiceParam;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
@@ -20,6 +23,10 @@ import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.machinelearning.MachineLearningClassifyParam;
+import roart.common.machinelearning.MachineLearningClassifyResult;
+import roart.common.convert.ConvertParam;
+import roart.common.convert.ConvertResult;
 import roart.common.database.DatabaseFileLocationParam;
 import roart.common.database.DatabaseIndexFilesParam;
 import roart.common.database.DatabaseIndexFilesResult;
@@ -27,6 +34,8 @@ import roart.common.database.DatabaseMd5Param;
 import roart.common.database.DatabaseMd5Result;
 
 public class QueueElement {
+    private String id;
+    
     private String myid;
     
     private String opid;
@@ -37,9 +46,13 @@ public class QueueElement {
     
     private String md5;
     
+    private String newMd5;
+    
     private FileObject fileObject;
     
     private IndexFiles indexFiles;
+    
+    private IndexFiles newIndexFiles;
     
     private Map<String, String> metadata;
     
@@ -49,6 +62,10 @@ public class QueueElement {
     
     private FileSystemMyFileResult fileSystemMyFileResult;
     
+    private FileSystemMessageResult fileSystemMessageResult;
+    
+    private FileSystemStringResult fileSystemStringResult;
+    
     private DatabaseMd5Param databaseMd5Param;
     
     private DatabaseFileLocationParam databaseFileLocationParam;
@@ -56,6 +73,18 @@ public class QueueElement {
     private DatabaseMd5Result databaseMd5Result;
     
     private DatabaseIndexFilesResult databaseIndexFilesResult;
+
+    private MachineLearningClassifyParam machineLearningClassifyParam;
+    
+    private MachineLearningClassifyResult machineLearningClassifyResult;
+    
+    private ConvertParam convertParam;
+    
+    private ConvertResult convertResult;
+    
+    private SearchEngineIndexParam searchEngineIndexParam;
+    
+    private SearchEngineIndexResult searchEngineIndexResult;
     
     // for Jackson
     public QueueElement() {
@@ -64,11 +93,20 @@ public class QueueElement {
     
     public QueueElement(String myid, FileObject fileObject, ServiceParam clientQueueElement, String queue) {
         super();
+        this.id = UUID.randomUUID().toString();
         this.myid = myid;
         this.fileObject = fileObject;
         this.clientQueueElement = clientQueueElement;
         this.queue = queue;
         this.metadata = new HashMap<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getMyid() {
@@ -111,6 +149,14 @@ public class QueueElement {
         this.md5 = md5;
     }
 
+    public String getNewMd5() {
+        return newMd5;
+    }
+
+    public void setNewMd5(String newMd5) {
+        this.newMd5 = newMd5;
+    }
+
     public FileObject getFileObject() {
         return fileObject;
     }
@@ -125,6 +171,14 @@ public class QueueElement {
 
     public void setIndexFiles(IndexFiles indexFiles) {
         this.indexFiles = indexFiles;
+    }
+
+    public IndexFiles getNewIndexFiles() {
+        return newIndexFiles;
+    }
+
+    public void setNewIndexFiles(IndexFiles newIndexFiles) {
+        this.newIndexFiles = newIndexFiles;
     }
 
     public Map<String, String> getMetadata() {
@@ -159,6 +213,14 @@ public class QueueElement {
         this.fileSystemMyFileResult = fileSystemMyFileResult;
     }
 
+    public FileSystemStringResult getFileSystemStringResult() {
+        return fileSystemStringResult;
+    }
+
+    public void setFileSystemStringResult(FileSystemStringResult fileSystemStringResult) {
+        this.fileSystemStringResult = fileSystemStringResult;
+    }
+    
     public DatabaseMd5Param getDatabaseMd5Param() {
         return databaseMd5Param;
     }
@@ -190,5 +252,61 @@ public class QueueElement {
     public void setDatabaseIndexFilesResult(DatabaseIndexFilesResult databaseIndexFilesResult) {
         this.databaseIndexFilesResult = databaseIndexFilesResult;
     }
-    
+
+    public MachineLearningClassifyParam getMachineLearningClassifyParam() {
+        return machineLearningClassifyParam;
+    }
+
+    public void setMachineLearningClassifyParam(MachineLearningClassifyParam machineLearningClassifyParam) {
+        this.machineLearningClassifyParam = machineLearningClassifyParam;
+    }
+
+    public MachineLearningClassifyResult getMachineLearningClassifyResult() {
+        return machineLearningClassifyResult;
+    }
+
+    public void setMachineLearningClassifyResult(MachineLearningClassifyResult machineLearningClassifyResult) {
+        this.machineLearningClassifyResult = machineLearningClassifyResult;
+    }
+
+    public ConvertParam getConvertParam() {
+        return convertParam;
+    }
+
+    public void setConvertParam(ConvertParam convertParam) {
+        this.convertParam = convertParam;
+    }
+
+    public ConvertResult getConvertResult() {
+        return convertResult;
+    }
+
+    public void setConvertResult(ConvertResult convertResult) {
+        this.convertResult = convertResult;
+    }
+
+    public SearchEngineIndexParam getSearchEngineIndexParam() {
+        return searchEngineIndexParam;
+    }
+
+    public void setSearchEngineIndexParam(SearchEngineIndexParam searchEngineIndexParam) {
+        this.searchEngineIndexParam = searchEngineIndexParam;
+    }
+
+    public FileSystemMessageResult getFileSystemMessageResult() {
+        return fileSystemMessageResult;
+    }
+
+    public void setFileSystemMessageResult(FileSystemMessageResult fileSystemMessageResult) {
+        this.fileSystemMessageResult = fileSystemMessageResult;
+    }
+
+    public SearchEngineIndexResult getSearchEngineIndexResult() {
+        return searchEngineIndexResult;
+    }
+
+    public void setSearchEngineIndexResult(SearchEngineIndexResult searchEngineIndexResult) {
+        this.searchEngineIndexResult = searchEngineIndexResult;
+    }
+
 }

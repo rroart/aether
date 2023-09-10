@@ -15,6 +15,9 @@ module common.queue {
     requires common.constants;
     requires common.database;
     requires common.filesystem;
+    requires common.machinelearning;
+    requires common.convert;
+    requires common.searchengine;
     requires org.slf4j;
     requires common.inmemory.model;
 }

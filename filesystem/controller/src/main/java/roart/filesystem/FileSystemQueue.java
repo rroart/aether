@@ -13,8 +13,10 @@ import roart.common.constants.Constants;
 import roart.common.constants.OperationConstants;
 import roart.common.constants.QueueConstants;
 import roart.common.filesystem.FileSystemFileObjectParam;
+import roart.common.filesystem.FileSystemMessageResult;
 import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemParam;
+import roart.common.filesystem.FileSystemStringResult;
 import roart.common.queue.QueueElement;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -62,10 +64,40 @@ public class FileSystemQueue {
                                 returnQueue.offer(element);
                             } catch (Exception e) {
                                 log.error(Constants.EXCEPTION, e); 
-                            }  
-                        } else {
-                            log.error("Not found {}", element.getOpid());
+                            }
+                            continue;
                         }
+                        if (element.getOpid().equals(OperationConstants.GETMD5)) {
+                            FileSystemFileObjectParam param = element.getFileSystemFileObjectParam();
+                            element.setFileSystemFileObjectParam(null);
+                            FileSystemOperations operations = controller.getOperations(param);
+                            try {
+                                FileSystemStringResult ret = operations.getMd5(param);
+                                element.setFileSystemStringResult(ret);
+                                String queueName = element.getQueue();
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                                returnQueue.offer(element);
+                            } catch (Exception e) {
+                                log.error(Constants.EXCEPTION, e); 
+                            }
+                            continue;
+                        }
+                        if (element.getOpid().equals(OperationConstants.READFILE)) {
+                            FileSystemFileObjectParam param = element.getFileSystemFileObjectParam();
+                            element.setFileSystemFileObjectParam(null);
+                            FileSystemOperations operations = controller.getOperations(param);
+                            try {
+                                FileSystemMessageResult ret = operations.readFile(param);
+                                element.setFileSystemMessageResult(ret);
+                                String queueName = element.getQueue();
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                                returnQueue.offer(element);
+                            } catch (Exception e) {
+                                log.error(Constants.EXCEPTION, e); 
+                            }
+                            continue;
+                        }
+                        log.error("Not found {}", element.getOpid());
                     }
                 }
             };

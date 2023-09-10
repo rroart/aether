@@ -53,7 +53,7 @@ public abstract class MachineLearningAbstractController implements CommandLineRu
 
     private CuratorFramework curatorClient;
 
-    private MachineLearningAbstractClassifier getClassifier(MachineLearningParam param) {
+    MachineLearningAbstractClassifier getClassifier(MachineLearningParam param) {
         MachineLearningAbstractClassifier classifier = classifierMap.get(param.configid);
         if (classifier == null) {
             NodeConfig nodeConf = null;

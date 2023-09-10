@@ -12,6 +12,7 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.queue.QueueElement;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class ClassifyDao {
     private static Logger log = LoggerFactory.getLogger(ClassifyDao.class);
 
-    private ClassifyAccess classify = null;
+    public ClassifyAccess classify = null;
 
     private NodeConfig nodeConf;
 
@@ -40,4 +41,11 @@ public class ClassifyDao {
         return classify.classify(message, language);
     }
 
+
+    public void classifyQueue(QueueElement element, InmemoryMessage message, String language) {
+        if (classify == null) {
+            return;
+        }
+        classify.classifyQueue(element, message, language);
+    }
 }

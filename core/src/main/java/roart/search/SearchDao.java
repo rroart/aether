@@ -15,6 +15,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
+import roart.common.queue.QueueElement;
 import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
@@ -78,6 +79,10 @@ public class SearchDao {
 
     public void drop() {
         search.drop();
+    }
+
+    public void indexmeQueue(QueueElement element, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
+        search.indexmeQueue(element, md5, dbfilename, metadata, lang, classification, index, message);
     }
 
 }

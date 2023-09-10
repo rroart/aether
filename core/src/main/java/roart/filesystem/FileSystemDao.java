@@ -232,4 +232,13 @@ public class FileSystemDao {
     public void listFilesFullQueue(QueueElement element, FileObject fileObject) {
         getFileSystemAccessQueue(fileObject).listFilesFullQueue(element, fileObject);
     }
+
+    public void getMd5Queue(QueueElement element, FileObject filename) {
+        getFileSystemAccessQueue(filename).getMd5Queue(element, filename);
+    }
+    
+    public void readFileQueue(QueueElement element, FileObject fileObject) {
+        getFileSystemAccess(fileObject).readFileQueue(element, fileObject);
+    }
+
 }

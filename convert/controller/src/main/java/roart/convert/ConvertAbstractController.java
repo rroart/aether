@@ -54,7 +54,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
 
     protected abstract ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf);
 
-    private ConvertAbstract getConvert(ConvertParam param) {
+    ConvertAbstract getConvert(ConvertParam param) {
         ConvertAbstract convert = convertMap.get(param.configid);
         if (convert == null) {
             NodeConfig nodeConf = null;

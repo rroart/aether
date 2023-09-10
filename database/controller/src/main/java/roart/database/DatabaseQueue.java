@@ -45,9 +45,10 @@ public class DatabaseQueue {
                         log.error(Constants.EXCEPTION, e); 
                     }                   
                 } else {
+                    log.info("Opid {} {}", element.getOpid(), element.getQueue());
                     if (element.getOpid().equals(OperationConstants.GETMD5BYFILELOCATION)) {
                         DatabaseFileLocationParam param = element.getDatabaseFileLocationParam();
-                        element.setFileSystemFileObjectParam(null);
+                        element.setDatabaseFileLocationParam(null);
                         DatabaseOperations operations = controller.getOperation(param);
                         try {
                             DatabaseMd5Result ret = operations.getMd5ByFilelocation(param);
@@ -62,7 +63,7 @@ public class DatabaseQueue {
                     }
                     if (element.getOpid().equals(OperationConstants.GETBYMD5)) {
                         DatabaseMd5Param param = element.getDatabaseMd5Param();
-                        element.setFileSystemFileObjectParam(null);
+                        element.setDatabaseMd5Param(null);
                         DatabaseOperations operations = controller.getOperation(param);
                         try {
                             DatabaseIndexFilesResult ret = operations.getByMd5(param);

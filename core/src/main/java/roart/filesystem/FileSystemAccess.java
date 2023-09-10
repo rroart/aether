@@ -220,4 +220,22 @@ public class FileSystemAccess {
         queue.offer(element);
     }
 
+    public void getMd5Queue(QueueElement element, FileObject fileObject) {
+        FileSystemFileObjectParam param = new FileSystemFileObjectParam();
+        configureParam(param);
+        param.fos = Set.of(fileObject);
+        element.setOpid(OperationConstants.GETMD5);
+        element.setFileSystemFileObjectParam(param);
+        queue.offer(element);
+    }
+
+    public void readFileQueue(QueueElement element, FileObject fileObject) {
+        FileSystemFileObjectParam param = new FileSystemFileObjectParam();
+        configureParam(param);
+        param.fos = Set.of(fileObject);
+        element.setOpid(OperationConstants.READFILE);
+        element.setFileSystemFileObjectParam(param);
+        queue.offer(element);
+    }
+
 }

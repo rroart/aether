@@ -201,7 +201,11 @@ public class ConvertRunner implements Runnable {
 
             public void run() {
                 try {
+                    if (nodeConf.wantAsync()) {
+                    new ConvertHandler(nodeConf, controlService).doConvertQueue(el, nodeConf);
+                    } else {
                     new ConvertHandler(nodeConf, controlService).doConvert(el, nodeConf);
+                    }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
                 }

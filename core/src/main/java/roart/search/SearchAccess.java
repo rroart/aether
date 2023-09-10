@@ -1,15 +1,19 @@
 package roart.search;
 
 import roart.service.ControlService;
+import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.constants.OperationConstants;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
+import roart.common.queue.QueueElement;
 import roart.common.searchengine.SearchEngineConstructorParam;
 import roart.common.searchengine.SearchEngineConstructorResult;
 import roart.common.searchengine.SearchEngineDeleteParam;
@@ -24,6 +28,7 @@ import roart.common.searchengine.SearchEngineResult;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.eureka.util.EurekaUtil;
+import roart.hcutil.GetHazelcastInstance;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,10 +56,13 @@ public abstract class SearchAccess {
 
     private ControlService controlService;
     
+    private MyQueue<QueueElement> queue;
+    
     public SearchAccess(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
+        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
     }
 
     public abstract String getAppName();
@@ -200,6 +208,28 @@ public abstract class SearchAccess {
     }
 
     public abstract String getQueueName();
+
+    public void indexmeQueue(QueueElement element, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
+        Map<String, String> md = metadata;
+        String[] str = new String[md.keySet().size()];
+        int i = 0;
+        for (String name : md.keySet()) {
+            String value = md.get(name);
+            str[i++] = name + "=" + value;
+        }
+        SearchEngineIndexParam param = new SearchEngineIndexParam();
+        configureParam(param);
+        param.md5 = md5;
+        param.dbfilename = dbfilename;
+        param.metadata = str;
+        param.lang = lang;
+        param.message = message;
+        param.classification = classification;
+
+        element.setOpid(OperationConstants.INDEX);
+        element.setSearchEngineIndexParam(param);
+        queue.offer(element);
+    }
 
 }
 
