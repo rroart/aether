@@ -25,22 +25,22 @@ public class MyCuratorLock extends MyLock {
 
     @Override
     public void lock() throws Exception {
-        log.debug("lock {}", path);
+        log.info("lock {}", path);
         lock.acquire();
-        log.debug("locka {}", path);
+        log.info("locka {}", path);
     }
 
     @Override
     public boolean tryLock() throws Exception {
-        log.debug("lock {}", path);
+        log.info("lock {}", path);
         boolean locked = lock.acquire(1, TimeUnit.SECONDS);
-        log.debug("locka {}", path);
+        log.info("locka {}", path);
         return locked;
     }
 
     @Override
     public void unlock() {
-        log.debug("unlock {}", path);
+        log.info("unlock {}", path);
         if (lock != null) {
             try {
                 lock.release();
@@ -48,7 +48,7 @@ public class MyCuratorLock extends MyLock {
                 log.error(Constants.EXCEPTION, e);
            }
         }
-        log.debug("unlocka {}", path);
+        log.info("unlocka {}", path);
     }
 
     @Override

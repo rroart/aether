@@ -14,6 +14,7 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MyObjectLock;
 import roart.common.synchronization.MySemaphore;
 
 import org.slf4j.Logger;
@@ -64,6 +65,10 @@ public class IndexFiles {
     private MySemaphore semaphorelock;
     @JsonIgnore
     private Object semaphorelockqueue;
+
+    private MyObjectLock objectflock;
+
+    private MyObjectLock objectlock;
 
     private IndexFiles() {
         filelocations = new HashSet<>();
@@ -418,6 +423,22 @@ public class IndexFiles {
 
     public void setSemaphorelockqueue(Object semaphorelockqueue) {
         this.semaphorelockqueue = semaphorelockqueue;
+    }
+
+    public MyObjectLock getObjectflock() {
+        return objectflock;
+    }
+
+    public void setObjectflock(MyObjectLock objectflock) {
+        this.objectflock = objectflock;
+    }
+
+    public MyObjectLock getObjectlock() {
+        return objectlock;
+    }
+
+    public void setObjectlock(MyObjectLock objectlock) {
+        this.objectlock = objectlock;
     }
 
     @JsonIgnore

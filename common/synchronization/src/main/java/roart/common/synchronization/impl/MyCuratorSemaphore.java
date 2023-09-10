@@ -25,23 +25,23 @@ public class MyCuratorSemaphore extends MySemaphore {
 
     @Override
     public void lock() throws Exception {
-        log.debug("lock {}", path);
+        log.info("lock {}", path);
         lock.acquire();
-        log.debug("locka {}", path);
+        log.info("locka {}", path);
     }
 
     @Override
     public boolean tryLock() throws Exception {
-        log.debug("lock {}", path);
+        log.info("lock {}", path);
         long time = System.currentTimeMillis();
         boolean locked = lock.acquire(1, TimeUnit.SECONDS);
-        log.debug("locka {} {} {}", path, locked, System.currentTimeMillis() - time);
+        log.info("locka {} {} {}", path, locked, System.currentTimeMillis() - time);
         return locked;
     }
 
     @Override
     public void unlock() {
-        log.debug("unlock {}", path);
+        log.info("unlock {}", path);
         if (lock != null) {
             try {
                 lock.release();
@@ -49,7 +49,7 @@ public class MyCuratorSemaphore extends MySemaphore {
                 log.error(Constants.EXCEPTION, e);
            }
         }
-        log.debug("unlocka {}", path);
+        log.info("unlocka {}", path);
     }
 
     @Override

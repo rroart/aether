@@ -15,4 +15,5 @@ module common.synchronization {
     requires com.hazelcast.core;
     //requires slf4j.api;
     requires org.slf4j;
+    requires curator.client;
 }
