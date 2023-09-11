@@ -271,6 +271,12 @@ public class IndexFilesDao {
            if (i.getSemaphoreflock() != null) {
                semaphoreQueue.offer(i.getSemaphoreflock());
            }
+           if (i.getObjectlock() != null) {
+                i.getObjectlock().unlock();
+           }
+           if (i.getObjectflock() != null) {
+               i.getObjectflock().unlock();
+           }
         }
         }
         // todo unlock
@@ -402,7 +408,7 @@ public class IndexFilesDao {
         //queue.offer(indexFiles);
     }
 
-    public void getByMd5Queue(QueueElement element, Set<String> md5s, boolean create) throws Exception {
+    public void getByMd5Queue(QueueElement element, Set<String> md5s) throws Exception {
         if (md5s == null) {
             return;
         }

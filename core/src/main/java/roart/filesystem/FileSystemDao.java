@@ -238,7 +238,7 @@ public class FileSystemDao {
     }
     
     public void readFileQueue(QueueElement element, FileObject fileObject) {
-        getFileSystemAccess(fileObject).readFileQueue(element, fileObject);
+        getFileSystemAccessQueue(fileObject).readFileQueue(element, fileObject);
     }
 
 }

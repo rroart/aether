@@ -411,7 +411,7 @@ public class TraverseFile {
             Map<String, String> filenameMd5Map = traverseElement.getFileSystemStringResult().map;
             traverseElement.setFileSystemStringResult(null);
             String md5 = filenameMd5Map.get(traverseElement.getFileObject().object);
-            if (traverseElement.getMd5() == null) {
+            if (false && traverseElement.getMd5() == null) {
                 traverseElement.setMd5(md5);
             } else {
                 traverseElement.setNewMd5(md5);
@@ -532,6 +532,7 @@ public class TraverseFile {
                     indexfiles = new IndexFiles(md5);
                     indexfiles.setCreated("" + System.currentTimeMillis());
                     created = true;
+                    traverseElement.setIndexFiles(indexfiles);
                 }
                 if (indexfiles == null /* && md5 != null*/) {
                     // not used
