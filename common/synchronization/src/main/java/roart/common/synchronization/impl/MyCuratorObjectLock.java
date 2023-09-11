@@ -19,6 +19,7 @@ public class MyCuratorObjectLock extends MyObjectLock {
     private DistributedAtomicValue lock;
     
     public MyCuratorObjectLock() {
+        super();
         // for json
     }
     
