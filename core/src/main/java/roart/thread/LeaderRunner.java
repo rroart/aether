@@ -96,6 +96,14 @@ public class LeaderRunner implements Runnable {
                         log.error(Constants.EXCEPTION, e);
                         break;
                     }
+                    try {
+                        String path = "/" + Constants.AETHER + "/" + Constants.DB;
+                        deleteOld(curatorClient, path);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                        break;
+                    }
+
                 }
             }
             log.info("Leader status: {}", leader.isLeader());
@@ -103,6 +111,29 @@ public class LeaderRunner implements Runnable {
                 TimeUnit.SECONDS.sleep(3600);
             } catch (InterruptedException e) {
                 log.error(Constants.EXCEPTION, e);
+            }
+        }
+    }
+
+    private void deleteOld(CuratorFramework curatorClient, String path) throws Exception {
+        Stat b = curatorClient.checkExists().forPath(path);
+        if (b == null) {
+            //continue;
+        }
+        List<String> children = curatorClient.getChildren().forPath(path);
+        log.debug("Children {}", children.size());
+        for (String child : children) {
+            Stat stat = curatorClient.checkExists().forPath(path + "/" + child);
+            log.debug("Time {} {}", System.currentTimeMillis(), stat.getMtime());;
+            long time = System.currentTimeMillis() - stat.getMtime();
+            log.debug("Time {}", time);
+            if (stat.getNumChildren() > 0) {
+                deleteOld(curatorClient, path + "/" + child);
+                continue;
+            }
+            if (time > 15 * 60 * 1000) {
+                curatorClient.delete().forPath(path + "/" + child);                                
+                log.info("Delete old lock {}", child);
             }
         }
     }
