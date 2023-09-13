@@ -19,16 +19,23 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyQueue;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.content.ConvertHandler;
+import roart.hcutil.GetHazelcastInstance;
 import roart.content.ConvertHandler;
 import roart.queue.ConvertQueueElement;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.queue.ConvertQueueElement;
 import roart.common.queue.QueueElement;
+import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MyObjectLock;
+import roart.common.synchronization.MySemaphore;
+import roart.common.synchronization.impl.MyObjectLockFactory;
+import roart.common.synchronization.impl.MySemaphoreFactory;
 
 public class ConvertRunner implements Runnable {
 
@@ -202,9 +209,9 @@ public class ConvertRunner implements Runnable {
             public void run() {
                 try {
                     if (nodeConf.wantAsync()) {
-                    new ConvertHandler(nodeConf, controlService).doConvertQueue(el, nodeConf);
+                        new ConvertHandler(nodeConf, controlService).doConvertQueue(el, nodeConf);
                     } else {
-                    new ConvertHandler(nodeConf, controlService).doConvert(el, nodeConf);
+                        new ConvertHandler(nodeConf, controlService).doConvert(el, nodeConf);
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
@@ -212,13 +219,37 @@ public class ConvertRunner implements Runnable {
             }
         }
 
-        QueueElement el = new Queues(nodeConf, controlService).getConvertQueue().poll(QueueElement.class);
-        if (el == null) {
+        MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getConvertQueue();
+        QueueElement element = queue.poll(QueueElement.class);
+        if (element == null) {
             log.error("empty queue");
             return null;
         }
+
+        try {
+        if (nodeConf.wantAsync()) {
+            MyObjectLock lock = MyObjectLockFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient);
+            boolean locked = lock.tryLock(element.getId());
+             if (locked) {
+                queue.offer(element);
+                return null;
+            }       
+             element.getIndexFiles().setObjectlock(lock);
+        } else {
+            MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+            boolean locked = lock.tryLock();
+            if (!locked) {
+                queue.offer(element);
+                return null;
+            }
+            element.getIndexFiles().setSemaphorelock(lock);
+        }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            queue.offer(element);
+        }
         //Queues.getConvertQueueSize().decrementAndGet();
-        ConvertTimeout convertRunnable = new ConvertTimeout(el);
+        ConvertTimeout convertRunnable = new ConvertTimeout(element);
         Thread convertWorker = new Thread(convertRunnable);
         convertWorker.setName("ConvertTimeout");
         convertWorker.start();
@@ -241,8 +272,8 @@ public class ConvertRunner implements Runnable {
             }
         }
         convertWorker.stop(); // .interrupt();
-        el.getIndexFiles().setTimeoutreason("converttimeout" + timeout);
-        log.info("Convertworker timeout " + el.getFileObject() + " " + convertWorker + " " + convertRunnable);
+        element.getIndexFiles().setTimeoutreason("converttimeout" + timeout);
+        log.info("Convertworker timeout " + element.getFileObject() + " " + convertWorker + " " + convertRunnable);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

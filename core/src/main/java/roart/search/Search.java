@@ -14,6 +14,8 @@ import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.searchengine.SearchResult;
+import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MyObjectLock;
 import roart.common.util.JsonUtil;
 import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
@@ -158,33 +160,34 @@ public class Search {
             return;
         }
         if (el.getOpid() == null) {
-        // vulnerable spot
-        new Queues(nodeConf, controlService).incIndexs();
+            // vulnerable spot
+            new Queues(nodeConf, controlService).incIndexs();
 
-        String md5 = el.getMd5();
-        //InputStream inputStream = el.inputStream;
-        IndexFiles dbindex = el.getIndexFiles();
-        FileObject filename = el.getFileObject();
-        Map<String, String> metadata = el.getMetadata();
-        String lang = dbindex.getLanguage();
-        InmemoryMessage message = el.getMessage();
-        String classification = dbindex.getClassification();
+            String md5 = el.getMd5();
+            //InputStream inputStream = el.inputStream;
+            IndexFiles dbindex = el.getIndexFiles();
+            FileObject filename = el.getFileObject();
+            Map<String, String> metadata = el.getMetadata();
+            String lang = dbindex.getLanguage();
+            InmemoryMessage message = el.getMessage();
+            String classification = dbindex.getClassification();
 
-        int retsize = 0;
+            int retsize = 0;
 
-        try {
-            new SearchDao(nodeConf, controlService).indexmeQueue(el, md5, filename, metadata, lang, classification, dbindex, message);
-        } catch (Exception e) {
-            log.error(roart.common.constants.Constants.EXCEPTION, e);
-            dbindex.setNoindexreason("index exception " + e.getClass().getName());
-            retsize = -1;
-        } catch (OutOfMemoryError e) {
-            System.gc();
-            log.error("Error " + Thread.currentThread().getId() + " " + filename);
-            log.error(roart.common.constants.Constants.ERROR, e);
-            dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
-            retsize = -1;
-        }
+            try {
+                new SearchDao(nodeConf, controlService).indexmeQueue(el, md5, filename, metadata, lang, classification, dbindex, message);
+                return;
+            } catch (Exception e) {
+                log.error(roart.common.constants.Constants.EXCEPTION, e);
+                dbindex.setNoindexreason("index exception " + e.getClass().getName());
+                retsize = -1;
+            } catch (OutOfMemoryError e) {
+                System.gc();
+                log.error("Error " + Thread.currentThread().getId() + " " + filename);
+                log.error(roart.common.constants.Constants.ERROR, e);
+                dbindex.setNoindexreason(dbindex.getNoindexreason() + "outofmemory " + e.getClass().getName() + " ");
+                retsize = -1;
+            }
         } else {
             MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
             MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
@@ -192,37 +195,49 @@ public class Search {
             IndexFiles dbindex = el.getIndexFiles();
             String md5 = el.getMd5();
             FileObject filename = el.getFileObject();
-        if (retsize < 0) {
-            //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
-            FileLocation aFl = dbindex.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            retlistnot.offer(ri);
-        } else {
+            if (retsize < 0) {
+                //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
+                FileLocation aFl = dbindex.getaFilelocation();
+                ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
+                ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                retlistnot.offer(ri);
+            } else {
 
-            log.info("size2 " + md5 + " " + retsize);
-            dbindex.setIndexed(Boolean.TRUE);
-            dbindex.setTimestamp("" + System.currentTimeMillis());
-            //dbindex.save();
-            log.info("timerStop filename {}", dbindex.getTimeindex());
-            String lang = dbindex.getLanguage();
+                log.info("size2 " + md5 + " " + retsize);
+                dbindex.setIndexed(Boolean.TRUE);
+                dbindex.setTimestamp("" + System.currentTimeMillis());
+                //dbindex.save();
+                log.info("timerStop filename {}", dbindex.getTimeindex());
+                String lang = dbindex.getLanguage();
 
-            FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(dbindex, nodeConf, controlService);
-            ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            retlist.offer(ri);
+                FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(dbindex, nodeConf, controlService);
+                ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
+                ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                retlist.offer(ri);
 
+            }
+            dbindex.setPriority(1);
+            // file unlock dbindex
+            // config with finegrained distrib
+            new IndexFilesDao(nodeConf, controlService).add(dbindex);
+            new Queues(nodeConf, controlService).decIndexs();
+
+            if (el.getMessage() != null) {
+                Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                inmemory.delete(el.getMessage());
+            }
+            
+            if (nodeConf.wantAsync()) {
+                MyObjectLock lock = dbindex.getObjectlock();
+                if (lock != null) {
+                    lock.unlock();
+            }
+         } else {
+                MyLock lock = dbindex.getLock();
+                if (lock != null) {
+                    lock.unlock();
+            }
+            }
         }
-        dbindex.setPriority(1);
-        // file unlock dbindex
-        // config with finegrained distrib
-        new IndexFilesDao(nodeConf, controlService).add(dbindex);
-        new Queues(nodeConf, controlService).decIndexs();
-
-        if (el.getMessage() != null) {
-            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-            inmemory.delete(el.getMessage());
-        }
-    }
     }
 }
