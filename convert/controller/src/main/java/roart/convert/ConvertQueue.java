@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
-import org.springframework.stereotype.Component;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
@@ -28,6 +27,8 @@ public class ConvertQueue {
     public ConvertQueue(String name, ConvertAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         final HazelcastInstance hz;
         if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+            // for tika
+            System.setProperty("hazelcast.ignoreXxeProtectionFailures", "true");
             hz = HazelcastClient.newHazelcastClient();
         } else {
             hz = null;
@@ -52,19 +53,20 @@ public class ConvertQueue {
                         ConvertAbstract operations = controller.getConvert(param);
                         try {
                             long time = System.currentTimeMillis();
+                            param.converter = param.converters.get(0);
                             ConvertResult ret = operations.convert(param);
                             if (ret.message != null) {
                                 element.getIndexFiles().setConverttime("" + (System.currentTimeMillis() - time));
                                 element.getIndexFiles().setConvertsw(name);
                             }
                             element.setConvertResult(ret);
+                            List<Converter> converters = element.getConvertParam().converters;
+                            element.getConvertParam().converters = converters.subList(1, converters.size());
                             String queueName;
                             if (ret.message != null || element.getConvertParam().converters.isEmpty()) {
                                 queueName = element.getQueue();
                             } else {
-                                List<Converter> converters = element.getConvertParam().converters;
                                 queueName = converters.get(0).getName();
-                                element.getConvertParam().converters = converters.subList(1, converters.size());
                             }
                             MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
                             element.setQueue(name);

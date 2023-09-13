@@ -238,7 +238,9 @@ public class ConvertHandler {
             //Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             //InmemoryMessage message = inmemory.send(el.md5, content);
             // may not exist
+            element.setQueue(QueueUtil.getConvertQueue());
             new FileSystemDao(nodeConf, controlService).readFileQueue(element, element.getFileObject());
+            return;
         }
         if (element.getOpid() != null && element.getOpid().equals(OperationConstants.READFILE)) {
             Map<String, InmemoryMessage> map = element.getFileSystemMessageResult().message;
@@ -286,6 +288,7 @@ public class ConvertHandler {
             }
             try {
                 new ConvertDAO(nodeConf, controlService).convertQueue(element, converterList, message, metadata, Paths.get(filename.object).getFileName().toString(), element.getIndexFiles());
+                return;
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -316,6 +319,7 @@ public class ConvertHandler {
                     if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                         if (classifyDao.classify != null) {
                             classifyDao.classifyQueue(element, str, lang);
+                            return;
                         }
                     }
                 } catch (Exception e) {
