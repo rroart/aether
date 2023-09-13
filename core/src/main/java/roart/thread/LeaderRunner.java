@@ -19,6 +19,8 @@ import roart.common.model.ConfigParam;
 import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
 import roart.common.leader.MyLeader;
+import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyQueues;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
@@ -98,7 +100,15 @@ public class LeaderRunner implements Runnable {
                     }
                     try {
                         String path = "/" + Constants.AETHER + "/" + Constants.DB;
-                        deleteOld(curatorClient, path);
+                        deleteOld(curatorClient, path, 15 * 60 * 1000, false);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                        break;
+                    }
+
+                    try {
+                        String path = "/" + Constants.AETHER + "/" + Constants.QUEUES;
+                        deleteOld(curatorClient, path, 20 * 60 * 1000, true);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
@@ -108,14 +118,14 @@ public class LeaderRunner implements Runnable {
             }
             log.info("Leader status: {}", leader.isLeader());
             try {
-                TimeUnit.SECONDS.sleep(3600);
+                TimeUnit.SECONDS.sleep(60 /* 3600 */);
             } catch (InterruptedException e) {
                 log.error(Constants.EXCEPTION, e);
             }
         }
     }
 
-    private void deleteOld(CuratorFramework curatorClient, String path) throws Exception {
+    private void deleteOld(CuratorFramework curatorClient, String path, int deleteTime, boolean deleteQueue) throws Exception {
         Stat b = curatorClient.checkExists().forPath(path);
         if (b == null) {
             //continue;
@@ -128,12 +138,16 @@ public class LeaderRunner implements Runnable {
             long time = System.currentTimeMillis() - stat.getMtime();
             log.debug("Time {}", time);
             if (stat.getNumChildren() > 0) {
-                deleteOld(curatorClient, path + "/" + child);
+                deleteOld(curatorClient, path + "/" + child, deleteTime, deleteQueue);
                 continue;
             }
-            if (time > 15 * 60 * 1000) {
+            if (time > deleteTime) {
                 curatorClient.delete().forPath(path + "/" + child);                                
                 log.info("Delete old lock {}", child);
+                if (deleteQueue) {
+                    MyQueue queue = MyQueues.get(child, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+                    queue.destroy();
+                }
             }
         }
     }

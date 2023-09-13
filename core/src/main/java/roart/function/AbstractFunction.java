@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import roart.dir.Traverse;
 import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
+import roart.thread.stat;
 import roart.common.queue.QueueElement;
 
 public abstract class AbstractFunction {
@@ -117,6 +119,17 @@ public abstract class AbstractFunction {
             //MyLists.put(retnotlistid, retnotlist);
             queues.workQueues.add(filestodoSet);
 
+            List<String> queueList = new ArrayList<>();
+            //queueList.add(filesdonesetid);
+            queueList.add(notfoundsetid);
+            queueList.add(retlistid);
+            queueList.add(retnotlistid);
+            queueList.add(traversecountid);
+            queueList.add(filestodosetid);
+            queueList.add(filesdonesetid);
+            //queueList.add();
+            //queueList.add();
+            
             Traverse traverse = new Traverse(myid, el, nodeConf.getDirListNot(), traversecountid, false, nodeConf, controlService);
 
             // filesystem
@@ -142,6 +155,15 @@ public abstract class AbstractFunction {
                 filestodoSet.removeAll(filesdoneSet);
                 fromQueueToList(newfileList, newfileQueue, String.class);
                 fromQueueToList(notfoundList, notfoundQueue, String.class);
+                for (String queue : queueList) {
+                    String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + queue;
+                    Stat stat = controlService.curatorClient.checkExists().forPath(path);
+                    if (stat == null) {
+                        controlService.curatorClient.create().creatingParentsIfNeeded().forPath(path, new byte[0]);
+                    } else {
+                        controlService.curatorClient.setData().forPath(path);
+                    }
+                }
             }
 
             for (String str : filestodoSet) {
