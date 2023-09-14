@@ -18,15 +18,22 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.collections.MyCollection;
+import roart.common.collections.MyQueue;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.dir.Traverse;
+import roart.hcutil.GetHazelcastInstance;
 import roart.queue.IndexQueueElement;
 import roart.queue.Queues;
 import roart.search.Search;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
+import roart.common.synchronization.MyObjectLock;
+import roart.common.synchronization.MySemaphore;
+import roart.common.synchronization.impl.MyObjectLockFactory;
+import roart.common.synchronization.impl.MySemaphoreFactory;
 
 public class IndexRunner implements Runnable {
 
@@ -184,10 +191,25 @@ public class IndexRunner implements Runnable {
             }
         }
 
-        QueueElement el = new Queues(nodeConf, controlService).getIndexQueue().poll(QueueElement.class);
+        MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getIndexQueue();
+        QueueElement el = queue.poll(QueueElement.class);
         if (el == null) {
             log.error("empty queue");
             return null;
+        }
+        try {
+            if (!nodeConf.wantAsync()) {
+                MySemaphore lock = MySemaphoreFactory.create(el.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+                boolean locked = lock.tryLock();
+                if (!locked) {
+                    queue.offer(el);
+                    return null;
+                }
+                el.getIndexFiles().setSemaphorelock(lock);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+            queue.offer(el);
         }
         //Queues.getIndexQueueSize().decrementAndGet();
         IndexTimeout indexRunnable = new IndexTimeout(el);

@@ -227,23 +227,23 @@ public class ConvertRunner implements Runnable {
         }
 
         try {
-        if (nodeConf.wantAsync()) {
-            MyObjectLock lock = MyObjectLockFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient);
-            boolean locked = lock.tryLock(element.getId());
-             if (locked) {
-                queue.offer(element);
-                return null;
-            }       
-             element.getIndexFiles().setObjectlock(lock);
-        } else {
-            MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
-            boolean locked = lock.tryLock();
-            if (!locked) {
-                queue.offer(element);
-                return null;
+            if (nodeConf.wantAsync()) {
+                MyObjectLock lock = MyObjectLockFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient);
+                boolean locked = lock.tryLock(element.getId());
+                if (locked) {
+                    queue.offer(element);
+                    return null;
+                }       
+                element.getIndexFiles().setObjectlock(lock);
+            } else {
+                MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+                boolean locked = lock.tryLock();
+                if (!locked) {
+                    queue.offer(element);
+                    return null;
+                }
+                element.getIndexFiles().setSemaphorelock(lock);
             }
-            element.getIndexFiles().setSemaphorelock(lock);
-        }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             queue.offer(element);

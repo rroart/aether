@@ -47,6 +47,7 @@ import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.util.ISBNUtil;
 import roart.common.queue.QueueElement;
+import roart.common.synchronization.MyLock;
 
 public class ConvertHandler {
     private Logger log = LoggerFactory.getLogger(ConvertHandler.class);
@@ -201,6 +202,10 @@ public class ConvertHandler {
             log.error("queue not having {}", filename);
         }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
+        MyLock lock = index.getLock();
+        if (lock != null) {
+            lock.unlock();
+        }
     }
 
     private String getMimetype(InputStream content, String filename) throws IOException {

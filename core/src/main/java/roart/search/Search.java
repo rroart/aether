@@ -125,6 +125,12 @@ public class Search {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             inmemory.delete(el.getMessage());
         }
+        MyLock lock = dbindex.getLock();
+        if (lock != null) {
+            lock.unlock();
+        } else {
+            log.error("Missing lock");
+        }
     }
 
     public ResultItem[] searchme(String str, String searchtype) {
@@ -226,17 +232,12 @@ public class Search {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 inmemory.delete(el.getMessage());
             }
-            
-            if (nodeConf.wantAsync()) {
-                MyObjectLock lock = dbindex.getObjectlock();
-                if (lock != null) {
-                    lock.unlock();
-            }
-         } else {
-                MyLock lock = dbindex.getLock();
-                if (lock != null) {
-                    lock.unlock();
-            }
+
+            MyObjectLock lock = dbindex.getObjectlock();
+            if (lock != null) {
+                lock.unlock();
+            } else {
+                log.error("Missing lock");
             }
         }
     }
