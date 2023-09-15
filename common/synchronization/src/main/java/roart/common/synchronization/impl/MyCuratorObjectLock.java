@@ -7,6 +7,8 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyObjectLock;
 
@@ -46,6 +48,7 @@ public class MyCuratorObjectLock extends MyObjectLock {
         }
     }
 
+    @JsonIgnore
     @Override
     public boolean isLocked() {
         try {
