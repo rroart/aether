@@ -64,7 +64,7 @@ function Table({ columns, data }) {
 	state: { pageIndex, pageSize },
     } = useTable({ columns: hcolumns, data: hdata,     initialState: { pageIndex: 0 }, }, usePagination );
     useEffect(() => {
-        Tooltip.rebuild()
+        //Tooltip.rebuild()
     });
     //console.log("callme");
     return (
@@ -108,8 +108,8 @@ function Table({ columns, data }) {
 			})}
 		    </tbody>
 		</table>
-		{/* 
-		    Pagination can be built however you'd like. 
+		{/*
+		    Pagination can be built however you'd like.
 		    This is just a very basic UI implementation:
 		 */}
 		<div className="pagination">

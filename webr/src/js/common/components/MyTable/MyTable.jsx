@@ -63,8 +63,12 @@ function getdata(resultitemtable) {
   }
   const result = [];
   const head = array[0];
+  console.log(head);
   const rest = array.slice(1);
   for(let j = 0; j < rest.length; j++) {
+    if (rest[j] == null) {
+      continue;
+    }
     const row = rest[j].items;
     console.log(row);
     const newrow = [];
