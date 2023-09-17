@@ -4,11 +4,13 @@ ARG distlib
 ARG distjar
 ARG lang=C.utf8
 ARG appid
+ARG zookeeper
 ARG jdk_java_options=
 ENV DISTLIB ${distlib}
 ENV DISTJAR ${distjar}
 ENV LANG ${lang}
 ENV APPID ${appid}
+ENV ZOO ${zookeeper}
 ENV JDK_JAVA_OPTIONS ${jdk_java_options}
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 WORKDIR /usr/local/bin

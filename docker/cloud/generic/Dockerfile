@@ -12,6 +12,7 @@ ARG mydebug
 ARG extras
 ARG lang=C.utf8
 ARG appid
+ARG zookeeper
 ARG jdk_java_options=
 ENV DISTLIB ${distlib}
 ENV DISTJAR ${distjar}
@@ -25,6 +26,7 @@ ENV MYDEBUG ${mydebug}
 ENV EXTRAS ${extras}
 ENV LANG ${lang}
 ENV APPID ${appid}
+ENV ZOO ${zookeeper}
 ENV JDK_JAVA_OPTIONS ${jdk_java_options}
 ADD $DISTLIB/$DISTJAR /usr/local/bin
 RUN mkdir /usr/local/conf

@@ -16,6 +16,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.nio=ALL-UNNAMED"
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-hibernatedata$APPID
     context: ../../../docker/cloud/hibernatedata
@@ -30,6 +31,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-cassandra$IMGID
     context: ../../..
@@ -42,6 +44,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-dynamodb$IMGID
     context: ../../..
@@ -55,6 +58,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-springdata$IMGID
     context: ../../..
@@ -72,6 +76,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:

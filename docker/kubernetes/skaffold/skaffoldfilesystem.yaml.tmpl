@@ -18,6 +18,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         lang: "en_US.ISO8859-1"
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         extras: '{{.HDFSPATH}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-s3$IMGID
@@ -32,6 +33,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         lang: "en_US.ISO8859-1"
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         extras: '{{.S3PATH}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-swift$IMGID
@@ -46,6 +48,7 @@ build:
         mydebug: '{{.MYDEBUG}}'
         lang: "en_US.ISO8859-1"
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         extras: '{{.SWIFTPATH}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:

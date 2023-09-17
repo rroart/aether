@@ -17,6 +17,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-elastic$IMGID
     context: ../../..
@@ -29,6 +30,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-solr$IMGID
     context: ../../..
@@ -41,6 +43,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         appid: '{{.APPID}}'
+        zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:
   kubectl:
