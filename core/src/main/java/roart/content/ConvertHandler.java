@@ -366,12 +366,14 @@ public class ConvertHandler {
             element.getIndexFiles().setClassification(classification);
         }
         
+        // TODO?
         boolean success = new Queues(nodeConf, controlService).convertTimeoutQueue.remove(filename.toString());
         if (!success) {
             log.error("queue not having {}", filename);
         }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
         
+        element.setOpid(null);
         new Queues(nodeConf, controlService).getIndexQueue().offer(element);
 
         

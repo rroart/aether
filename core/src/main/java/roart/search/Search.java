@@ -183,6 +183,7 @@ public class Search {
             int retsize = 0;
 
             try {
+                el.setQueue(QueueUtil.getIndexQueue());
                 new SearchDao(nodeConf, controlService).indexmeQueue(el, md5, filename, metadata, lang, classification, dbindex, message);
                 return;
             } catch (Exception e) {

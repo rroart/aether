@@ -58,6 +58,8 @@ public class QueueElement {
     
     private InmemoryMessage message;
 
+    private long timestamp;
+    
     private FileSystemFileObjectParam fileSystemFileObjectParam;
     
     private FileSystemMyFileResult fileSystemMyFileResult;
@@ -99,6 +101,7 @@ public class QueueElement {
         this.clientQueueElement = clientQueueElement;
         this.queue = queue;
         this.metadata = new HashMap<>();
+        this.timestamp = System.currentTimeMillis();
     }
 
     public String getId() {
@@ -195,6 +198,14 @@ public class QueueElement {
 
     public void setMessage(InmemoryMessage message) {
         this.message = message;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public FileSystemFileObjectParam getFileSystemFileObjectParam() {

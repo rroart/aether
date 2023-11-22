@@ -1,5 +1,9 @@
 package roart.common.util;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,5 +173,13 @@ public class FsUtil {
     public static FileLocation getFileLocation(String s) {
         FileObject fo = getFileObject(s);
         return new FileLocation(fo.location.toString(), fo.object);
+    }
+    
+    public static <T> Map<FileObject, T> getFileObjectMap(Map<String, T> map) {
+        Map<FileObject, T> retMap = new HashMap<>();
+        for (Entry<String, T> entry : map.entrySet()) {
+            retMap.put(getFileObject(entry.getKey()), entry.getValue());
+        }
+        return retMap;
     }
 }

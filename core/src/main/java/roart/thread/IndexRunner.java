@@ -181,9 +181,9 @@ public class IndexRunner implements Runnable {
             public void run() {
                 try {
                     if (nodeConf.wantAsync()) {
-                    new Search(nodeConf, controlService).indexme(el);
-                    } else {
                     new Search(nodeConf, controlService).indexmeQueue(el);
+                    } else {
+                    new Search(nodeConf, controlService).indexme(el);
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);

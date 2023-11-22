@@ -143,7 +143,8 @@ public abstract class AbstractFunction {
             TimeUnit.SECONDS.sleep(5);
 
             while ((traversecount.get() + queues.queueSize() + queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
-                log.info("My queues {} {} {} {} {} {} {}", traversecount.get(), queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+                log.info("My queues {} {} {} {} {} {}", traversecount.get(), queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getIndexQueueSize(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+		// queues.getConvertQueueSize()
                 TimeUnit.SECONDS.sleep(5);
                 queues.queueStat();
                 fromQueueToList(retList, retQueue, ResultItem.class);

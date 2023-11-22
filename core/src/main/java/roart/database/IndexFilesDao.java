@@ -273,9 +273,11 @@ public class IndexFilesDao {
            }
            if (i.getObjectlock() != null) {
                 i.getObjectlock().unlock();
+                i.setObjectlock(null);
            }
            if (i.getObjectflock() != null) {
                i.getObjectflock().unlock();
+               i.setObjectflock(null);
            }
         }
         }
