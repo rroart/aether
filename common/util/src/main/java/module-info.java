@@ -17,4 +17,5 @@ module common.util {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
     requires org.apache.commons.io;
+    requires common.synchronization;
 }

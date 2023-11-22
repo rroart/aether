@@ -17,6 +17,7 @@ import roart.common.searchengine.SearchResult;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
 import roart.common.util.JsonUtil;
+import roart.common.util.LockUtils;
 import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.hcutil.GetHazelcastInstance;
@@ -127,7 +128,7 @@ public class Search {
         }
         MyLock lock = dbindex.getLock();
         if (lock != null) {
-            lock.unlock();
+            //lock.unlock();
         } else {
             log.error("Missing lock");
         }
@@ -165,6 +166,7 @@ public class Search {
             log.error("empty queue");
             return;
         }
+        LockUtils.fix(el.getIndexFiles(), nodeConf.getLocker(), controlService.curatorClient);
         if (el.getOpid() == null) {
             // vulnerable spot
             new Queues(nodeConf, controlService).incIndexs();
@@ -235,7 +237,7 @@ public class Search {
 
             MyObjectLock lock = dbindex.getObjectlock();
             if (lock != null) {
-                lock.unlock();
+                //lock.unlock();
             } else {
                 log.error("Missing lock");
             }

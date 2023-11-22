@@ -16,8 +16,10 @@ public class MyCuratorObjectLock extends MyObjectLock {
 
     private String path;
     
+    @JsonIgnore
     private CuratorFramework curatorClient;
        
+    @JsonIgnore
     private DistributedAtomicValue lock;
     
     public MyCuratorObjectLock() {
@@ -60,6 +62,24 @@ public class MyCuratorObjectLock extends MyObjectLock {
             log.error(Constants.EXCEPTION, e);
         }
         return true;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    @JsonIgnore
+    public void setCuratorClient(CuratorFramework curatorClient) {
+        this.curatorClient = curatorClient;
+    }
+
+    @JsonIgnore
+    public void setLock(DistributedAtomicValue lock) {
+        this.lock = lock;
     }
 
 }
