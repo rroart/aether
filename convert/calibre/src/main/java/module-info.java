@@ -21,4 +21,6 @@ module calibre {
     requires spring.context;
     requires spring.web;
     requires org.apache.commons.codec;
+    requires curator.framework;
+    requires common.util;
 }

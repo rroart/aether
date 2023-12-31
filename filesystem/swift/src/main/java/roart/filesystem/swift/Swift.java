@@ -35,9 +35,11 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.util.JsonUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.curator.framework.CuratorFramework;
 import org.javaswift.joss.client.factory.AccountConfig;
 import org.javaswift.joss.client.factory.AccountFactory;
 import org.javaswift.joss.client.factory.AuthenticationMethod;
@@ -58,8 +60,8 @@ public class Swift extends FileSystemOperations {
 
     private static final Character DELIMITER = '/';
 
-    public Swift(String configname, String configid, NodeConfig nodeConf) {
-        super(configname, configid, nodeConf);
+    public Swift(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        super(configname, configid, nodeConf, curatorClient);
         try {
             conf = new SwiftConfig();
             String url = nodeConf.getSwiftUrl();
@@ -349,6 +351,7 @@ public class Swift extends FileSystemOperations {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
                 map.put(filename.object, msg);
+                curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;

@@ -24,4 +24,5 @@ module hdfs {
     requires spring.boot;
     requires org.apache.commons.codec;
     requires common.util;
+    requires curator.framework;
 }

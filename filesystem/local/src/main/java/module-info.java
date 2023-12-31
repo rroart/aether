@@ -25,4 +25,5 @@ module local {
     requires spring.web;
     requires org.apache.commons.codec;
     requires common.util;
+    requires curator.framework;
 }

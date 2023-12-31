@@ -24,4 +24,6 @@ module swift {
     requires spring.web;
     requires spring.boot;
     requires org.apache.commons.codec;
+    requires curator.framework;
+    requires common.util;
 }

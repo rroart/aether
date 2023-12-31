@@ -72,7 +72,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
 
     private CuratorFramework curatorClient;
 
-    protected abstract FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf);
+    protected abstract FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient);
 
     FileSystemOperations getOperations(FileSystemParam param) {
         FileSystemOperations operation = operationMap.get(param.configid);
@@ -81,7 +81,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
             if (param.conf != null) {
                 nodeConf = param.conf;
             }
-            operation = createOperations(param.configname, param.configid, nodeConf);
+            operation = createOperations(param.configname, param.configid, nodeConf, curatorClient);
             operationMap.put(param.configid, operation);
         }
         return operation;
@@ -91,7 +91,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         FileSystemOperations operation = operationMap.get(param.getConfigid());
         if (operation == null) {
             NodeConfig nodeConf = getNodeConf(param);
-            operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
+            operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf, curatorClient);
             operationMap.put(param.getConfigid(), operation);
             FileSystemQueue queue = new FileSystemQueue(getQueueName(), this, curatorClient, nodeConf);
             queueMap.put(param.getConfigid(),  queue);

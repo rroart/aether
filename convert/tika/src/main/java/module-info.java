@@ -26,5 +26,7 @@ module tika {
     requires spring.web;
     requires org.apache.commons.codec;
     requires java.xml;
+    requires curator.framework;
+    requires common.util;
 }
 

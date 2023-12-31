@@ -36,10 +36,12 @@ import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.util.IOUtil;
+import roart.common.util.JsonUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +49,8 @@ public class LocalFileSystem extends FileSystemOperations {
 
     private static final Logger log = LoggerFactory.getLogger(LocalFileSystem.class);
 
-    public LocalFileSystem(String configname, String configid, NodeConfig nodeConf) {
-        super(configname, configid, nodeConf);
+    public LocalFileSystem(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        super(configname, configid, nodeConf, curatorClient);
     }
 
     @Override
@@ -244,6 +246,7 @@ public class LocalFileSystem extends FileSystemOperations {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
                 map.put(filename.object, msg);
+                curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 continue;

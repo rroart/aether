@@ -136,6 +136,11 @@ public class ConvertHandler {
             }
         }
         inmemory.delete(message);
+        try {
+            controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + message.getId());
+        } catch (Exception e) {
+            log.info(Constants.EXCEPTION, e);
+        }
         
         // after convert
         
@@ -302,6 +307,11 @@ public class ConvertHandler {
         ClassifyDao classifyDao = new ClassifyDao(nodeConf, controlService);
         if (element.getOpid() != null && element.getOpid().equals(OperationConstants.CONVERT)) {
             inmemory.delete(element.getMessage());
+            try {
+                controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + element.getMessage().getId());
+            } catch (Exception e) {
+                log.info(Constants.EXCEPTION, e);
+            }
             element.setMessage(element.getConvertResult().message);
             element.setConvertResult(null);
             InmemoryMessage str = element.getMessage();

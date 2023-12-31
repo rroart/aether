@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
@@ -47,6 +48,7 @@ import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.util.InmemoryUtil;
+import roart.common.util.JsonUtil;
 
 import org.xml.sax.ContentHandler;
 
@@ -56,8 +58,8 @@ public class Tika extends ConvertAbstract {
 
     private static Logger log = LoggerFactory.getLogger(Tika.class);
 
-    public Tika(String configname, String configid, NodeConfig nodeConf) {
-        super(configname, configid, nodeConf);        
+    public Tika(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        super(configname, configid, nodeConf, curatorClient);        
     }
 
     @Override
@@ -127,6 +129,7 @@ public class Tika extends ConvertAbstract {
                 if (outputArray.length > 0) {
                     InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
                     result.message = msg;
+                    curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
                 } else {
                     result.error = "Tika empty";
                 }

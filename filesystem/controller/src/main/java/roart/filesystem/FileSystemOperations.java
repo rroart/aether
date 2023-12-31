@@ -1,5 +1,7 @@
 package roart.filesystem;
 
+import org.apache.curator.framework.CuratorFramework;
+
 import roart.common.config.NodeConfig;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
@@ -17,11 +19,13 @@ public abstract class FileSystemOperations {
     protected String configname;
     protected String configid;
     protected NodeConfig nodeConf;
-
-    public FileSystemOperations(String configname, String configid, NodeConfig nodeConf) {
+    protected CuratorFramework curatorClient;
+    
+    public FileSystemOperations(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
         this.configname = configname;
         this.configid = configid;
         this.nodeConf = nodeConf;
+        this.curatorClient = curatorClient;
     }
 
     public abstract FileSystemConstructorResult destroy() throws Exception;

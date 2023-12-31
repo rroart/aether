@@ -37,9 +37,11 @@ import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.util.IOUtil;
+import roart.common.util.JsonUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +60,8 @@ public class S3 extends FileSystemOperations {
 
     /*private*/ S3Config conf;
 
-    public S3(String configname, String configid, NodeConfig nodeConf) {
-        super(configname, configid, nodeConf);
+    public S3(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        super(configname, configid, nodeConf, curatorClient);
         try {
             
             AwsBasicCredentials credentials = AwsBasicCredentials.create(nodeConf.getS3AccessKey(), nodeConf.getS3SecretKey());
@@ -325,6 +327,7 @@ public class S3 extends FileSystemOperations {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
                 map.put(filename.object, msg);
+                curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;

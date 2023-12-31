@@ -52,7 +52,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
 
     private CuratorFramework curatorClient;
 
-    protected abstract ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf);
+    protected abstract ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient);
 
     ConvertAbstract getConvert(ConvertParam param) {
         ConvertAbstract convert = convertMap.get(param.configid);
@@ -61,7 +61,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
             if (param.conf != null) {
                 nodeConf = param.conf;
             }
-            convert = createConvert(param.configname, param.configid, nodeConf);
+            convert = createConvert(param.configname, param.configid, nodeConf, curatorClient);
             convertMap.put(param.configid, convert);
         }
         return convert;
@@ -71,7 +71,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
         ConvertAbstract operation = convertMap.get(param.getConfigid());
         if (operation == null) {
             NodeConfig nodeConf = getNodeConf(param);
-            operation = createConvert(param.getConfigname(), param.getConfigid(), nodeConf);
+            operation = createConvert(param.getConfigname(), param.getConfigid(), nodeConf, curatorClient);
             convertMap.put(param.getConfigid(), operation);
             ConvertQueue queue = new ConvertQueue(getQueueName(), this, curatorClient, nodeConf);
             queueMap.put(param.getConfigid(),  queue);

@@ -125,6 +125,11 @@ public class Search {
         if (el.getMessage() != null) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             inmemory.delete(el.getMessage());
+            try {
+                controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + el.getMessage().getId());
+            } catch (Exception e) {
+                log.info(Constants.EXCEPTION, e);
+            }
         }
         MyLock lock = dbindex.getLock();
         if (lock != null) {
@@ -234,7 +239,12 @@ public class Search {
             if (el.getMessage() != null) {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 inmemory.delete(el.getMessage());
-            }
+                try {
+                    controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + el.getMessage().getId());
+                } catch (Exception e) {
+                    log.info(Constants.EXCEPTION, e);
+                }
+        }
 
             MyObjectLock lock = dbindex.getObjectlock();
             if (lock != null) {

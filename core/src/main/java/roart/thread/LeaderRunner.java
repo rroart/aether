@@ -16,6 +16,7 @@ import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 import roart.common.leader.impl.MyLeaderFactory;
 import roart.common.model.ConfigParam;
+import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
 import roart.common.leader.MyLeader;
@@ -24,10 +25,14 @@ import roart.common.collections.impl.MyQueues;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.inmemory.common.Inmemory;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.model.InmemoryMessage;
+
 import java.util.HashSet;
 
 public class LeaderRunner implements Runnable {
-    static Logger log = LoggerFactory.getLogger(ClientQueueRunner.class);
+    static Logger log = LoggerFactory.getLogger(LeaderRunner.class);
 
     private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
 
@@ -100,7 +105,7 @@ public class LeaderRunner implements Runnable {
                     }
                     try {
                         String path = "/" + Constants.AETHER + "/" + Constants.DB;
-                        deleteOld(curatorClient, path, 15 * 60 * 1000, false);
+                        deleteOld(curatorClient, path, 15 * 60 * 1000, false, false);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
@@ -108,7 +113,15 @@ public class LeaderRunner implements Runnable {
 
                     try {
                         String path = "/" + Constants.AETHER + "/" + Constants.QUEUES;
-                        deleteOld(curatorClient, path, 20 * 60 * 1000, true);
+                        deleteOld(curatorClient, path, 20 * 60 * 1000, true, false);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                        break;
+                    }
+
+                    try {
+                        String path = "/" + Constants.AETHER + "/" + Constants.DATA;
+                        deleteOld(curatorClient, path, 20 * 60 * 1000, true, true);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
@@ -125,12 +138,15 @@ public class LeaderRunner implements Runnable {
         }
     }
 
-    private void deleteOld(CuratorFramework curatorClient, String path, int deleteTime, boolean deleteQueue) throws Exception {
+    private void deleteOld(CuratorFramework curatorClient, String path, int deleteTime, boolean deleteQueue, boolean deleteInmemory) throws Exception {
         Stat b = curatorClient.checkExists().forPath(path);
         if (b == null) {
-            //continue;
+            return;
         }
         List<String> children = curatorClient.getChildren().forPath(path);
+        if (!children.isEmpty()) {
+            //log.info("Children {} {}", children.size(), path);
+        }
         log.debug("Children {}", children.size());
         for (String child : children) {
             Stat stat = curatorClient.checkExists().forPath(path + "/" + child);
@@ -138,15 +154,22 @@ public class LeaderRunner implements Runnable {
             long time = System.currentTimeMillis() - stat.getMtime();
             log.debug("Time {}", time);
             if (stat.getNumChildren() > 0) {
-                deleteOld(curatorClient, path + "/" + child, deleteTime, deleteQueue);
+                deleteOld(curatorClient, path + "/" + child, deleteTime, deleteQueue, deleteInmemory);
                 continue;
             }
             if (time > deleteTime) {
+                byte[] data = curatorClient.getData().forPath(path + "/" + child);                                
                 curatorClient.delete().forPath(path + "/" + child);                                
-                log.info("Delete old lock {}", child);
+                log.info("Delete old lock or data {}", child);
                 if (deleteQueue) {
                     MyQueue queue = MyQueues.get(child, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
                     queue.destroy();
+                }
+                if (deleteInmemory && data != null && data.length > 0) {
+                    String str = new String(data);
+                    Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+                    InmemoryMessage msg = JsonUtil.convert(str, InmemoryMessage.class);
+                    inmemory.delete(msg);
                 }
             }
         }

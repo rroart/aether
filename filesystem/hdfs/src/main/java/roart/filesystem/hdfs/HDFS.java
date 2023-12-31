@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileContext;
 import org.apache.hadoop.fs.FileStatus;
@@ -41,6 +42,7 @@ import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.util.IOUtil;
+import roart.common.util.JsonUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.slf4j.Logger;
@@ -52,8 +54,8 @@ public class HDFS extends FileSystemOperations {
 
     private HDFSConfig conf;
 
-    public HDFS(String configname, String configid, NodeConfig nodeConf) {
-        super(configname, configid, nodeConf);
+    public HDFS(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        super(configname, configid, nodeConf, curatorClient);
         conf = new HDFSConfig();
         Configuration configuration = new Configuration();
         conf.configuration = configuration;
@@ -309,6 +311,7 @@ public class HDFS extends FileSystemOperations {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
                 map.put(filename.object, msg);
+                curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;

@@ -5,6 +5,7 @@ import roart.common.constants.QueueConstants;
 import roart.convert.ConvertAbstract;
 import roart.convert.ConvertAbstractController;
 
+import org.apache.curator.framework.CuratorFramework;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -20,8 +21,8 @@ public class WvtextController extends ConvertAbstractController {
     }
 
     @Override
-    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf) {
-        return new Wvtext(configname, null, nodeConf);
+    protected ConvertAbstract createConvert(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        return new Wvtext(configname, null, nodeConf, curatorClient);
     }
 
     @Override

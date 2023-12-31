@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
+import org.apache.curator.framework.CuratorFramework;
 import org.javaswift.joss.client.factory.AccountConfig;
 import org.javaswift.joss.client.factory.AccountFactory;
 import org.javaswift.joss.client.factory.AuthenticationMethod;
@@ -48,7 +49,8 @@ public class SwiftIT {
            config.setAuthenticationMethod(AuthenticationMethod.BASIC);
            Account account = new AccountFactory(config).createAccount();
            conf.account = account;
-           swift = new Swift(null, null, null);
+           CuratorFramework curatorClient = null;
+           swift = new Swift(null, null, null, curatorClient );
            swift.conf = conf;
            //log.info("here");
        }

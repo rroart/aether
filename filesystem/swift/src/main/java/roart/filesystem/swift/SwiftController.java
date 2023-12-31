@@ -6,6 +6,7 @@ import roart.common.constants.QueueConstants;
 import roart.filesystem.FileSystemAbstractController;
 import roart.filesystem.FileSystemOperations;
 
+import org.apache.curator.framework.CuratorFramework;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -21,8 +22,8 @@ public class SwiftController extends FileSystemAbstractController {
     }
 
     @Override
-    protected FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf) {
-        return new Swift(configname, configid, nodeConf);
+    protected FileSystemOperations createOperations(String configname, String configid, NodeConfig nodeConf, CuratorFramework curatorClient) {
+        return new Swift(configname, configid, nodeConf, curatorClient);
     }
 
     @Override
