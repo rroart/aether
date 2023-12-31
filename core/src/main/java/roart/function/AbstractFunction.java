@@ -167,7 +167,7 @@ public abstract class AbstractFunction {
             }
 
             for (String str : filestodoSet) {
-                System.out.println("todo " + str);
+                log.info("todo {}", str);
             }
 
             for (String ret : queues.convertTimeoutQueue) {

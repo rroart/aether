@@ -41,7 +41,7 @@ public class IndexFilesAccessFactory {
 
     private static String configDb(NodeConfig nodeConf) {
         String db = null;
-        System.out.println("type " + nodeConf);
+        log.debug("type " + nodeConf);
         if (nodeConf.wantHBase()) {
             db = ConfigConstants.DATABASEHBASE;
         } else if (nodeConf.wantCassandra()) {

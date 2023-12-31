@@ -126,7 +126,7 @@ public class ConsistentClean extends AbstractFunction {
                     filelock.unlock();
                     i.setLock(null);
                 } else {
-                    System.out.println("locknull");
+                    log.debug("locknull");
                 }
             }
 
