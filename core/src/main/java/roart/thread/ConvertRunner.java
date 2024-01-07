@@ -33,6 +33,7 @@ import roart.queue.ConvertQueueElement;
 import roart.common.queue.QueueElement;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
+import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.common.synchronization.impl.MySemaphoreFactory;
@@ -234,7 +235,7 @@ public class ConvertRunner implements Runnable {
                     queue.offer(element);
                     return null;
                 }       
-                element.getIndexFiles().setObjectlock(lock);
+                element.getIndexFiles().setObjectlock(new MyObjectLockData(element.getMd5()));
             } else {
                 MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
                 boolean locked = lock.tryLock();

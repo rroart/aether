@@ -11,10 +11,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyObjectLock;
+import roart.common.synchronization.MyObjectLockData;
 
 public class MyCuratorObjectLock extends MyObjectLock {
 
-    private String path;
+    private MyObjectLockData path;
     
     @JsonIgnore
     private CuratorFramework curatorClient;
@@ -29,7 +30,7 @@ public class MyCuratorObjectLock extends MyObjectLock {
     
     public MyCuratorObjectLock(String path, CuratorFramework curatorClient) {
         super();
-        this.path = path;
+        this.path = new MyObjectLockData(path);
         this.curatorClient = curatorClient;
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3); 
         this.lock = new DistributedAtomicValue(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path, retryPolicy);
@@ -65,11 +66,11 @@ public class MyCuratorObjectLock extends MyObjectLock {
     }
 
     public String getPath() {
-        return path;
+        return path.id;
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.path = new MyObjectLockData(path);
     }
 
     @JsonIgnore

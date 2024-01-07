@@ -23,7 +23,11 @@ import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
 import roart.common.synchronization.MyLock;
+import roart.common.synchronization.MyObjectLock;
+import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
+import roart.common.synchronization.impl.MyCuratorObjectLock;
+import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -272,11 +276,19 @@ public class IndexFilesDao {
                semaphoreQueue.offer(i.getSemaphoreflock());
            }
            if (i.getObjectlock() != null) {
-                i.getObjectlock().unlock();
-                i.setObjectlock(null);
+               MyObjectLockData lockdata = i.getObjectlock();
+               if (lockdata != null) {
+                   MyObjectLock lock = MyObjectLockFactory.create(lockdata.id, nodeConf.getLocker(), controlService.curatorClient);
+                   lock.unlock();
+               }
+               i.setObjectlock(null);
            }
            if (i.getObjectflock() != null) {
-               i.getObjectflock().unlock();
+               MyObjectLockData flockdata = i.getObjectflock();
+               if (flockdata != null) {
+                   MyObjectLock lock = MyObjectLockFactory.create(flockdata.id, nodeConf.getLocker(), controlService.curatorClient);
+                   lock.unlock();
+               }
                i.setObjectflock(null);
            }
         }

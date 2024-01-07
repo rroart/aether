@@ -8,7 +8,7 @@ import roart.common.synchronization.impl.MyCuratorObjectLock;
 import roart.common.synchronization.impl.MyObjectLockFactory;
 
 public class LockUtils {
-
+/*
     public static void fix(IndexFiles indexFiles, String locker, CuratorFramework curatorClient) {
         MyObjectLock lock = indexFiles.getObjectlock();
         if (lock != null && lock instanceof MyCuratorObjectLock) {
@@ -17,5 +17,5 @@ public class LockUtils {
             indexFiles.setObjectlock(lock);
         }
     }
-
+*/
 }
