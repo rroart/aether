@@ -36,6 +36,7 @@ import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
+import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.synchronization.impl.MyObjectLockFactory;
@@ -377,11 +378,38 @@ public class TraverseFile {
             return;
         }
 
-        /***********************/
+	// this does not change, so safe to put outside
+        FileObject filename = traverseElement.getFileObject();
+	// TODO if opid == null
+        /*
+        // TODO this is new lock
+        // TODO trylock, if false, all is invalid, but which
+        MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+        boolean flocked = folock.tryLock(traverseElement.getId());
+        if (!flocked) {
+            MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+            // save
+            traverseElement.setOpid(null);
+            queue.offer(traverseElement);
+            //Queues.getTraverseQueueSize().incrementAndGet();
+            log.info("Already locked: {}", filename.toString());
+            return;
+        }
+*/
 
+	/*
+	  Flow:
+	  GETMD5BYFILELOCATION
+	  GETMD5
+	  GETBYMD5
+	 */
+	
+
+	
         // Get Md5s by fileobject from database
         // TODO check if need full indexfiles?
         // TODO file may be gone after list
+	// code location independent
         if (traverseElement.getOpid() == null) {
             traverseElement.setQueue(QueueUtil.getTraverseQueue());
             indexFilesDao.getMd5ByFilenameQueue(traverseElement, Set.of(traverseElement.getFileObject()));
@@ -400,44 +428,114 @@ public class TraverseFile {
                     return;
                 }
             } else {
+		// lock
+		// TODO this is new lock
+		// TODO trylock, if false, all is invalid, but which
+		MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+		boolean flocked = folock.tryLock(traverseElement.getId());
+		if (!flocked) {
+		    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+		    // save
+		    traverseElement.setOpid(null);
+		    queue.offer(traverseElement);
+		    //Queues.getTraverseQueueSize().incrementAndGet();
+		    log.info("Already locked: {}", filename.toString());
+		    return;
+		}
+		//String md5 = traverseElement.getMd5();
+		MyObjectLock lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
+		boolean locked = lock.tryLock(traverseElement.getId());
+		if (!locked) {
+		    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+		    folock.unlock();
+		    // save
+		    traverseElement.setOpid(null);
+		    queue.offer(traverseElement);
+		    log.info("Already locked: {}", md5);
+		    return;
+		}
                 indexFilesDao.getByMd5Queue(traverseElement, Set.of(traverseElement.getMd5()));
                 return;
             }
         }
 
-        // todo lockers
-        
+	// when we get a new md5 from fs
+	// code location independent
         if (traverseElement.getOpid() != null && traverseElement.getOpid().equals(OperationConstants.GETMD5)) {
             Map<String, String> filenameMd5Map = traverseElement.getFileSystemStringResult().map;
             traverseElement.setFileSystemStringResult(null);
-            String md5 = filenameMd5Map.get(traverseElement.getFileObject().object);
-            if (false && traverseElement.getMd5() == null) {
-                traverseElement.setMd5(md5);
+            String newMd5 = filenameMd5Map.get(traverseElement.getFileObject().object);
+            if (newMd5 == null) {
+                log.error("Md5 null");
+                log.error("File not found : {}", filename.toString());
+                //throw new FileNotFoundException("Md5 null");                
+                TraverseUtil.doCounters(traverseElement, -1, nodeConf, controlService);
+                //log.error(Constants.EXCEPTION, e);
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
+                notfoundset.offer(filename.toString());
+                return;
+            }
+            if (false && traverseElement.getOldMd5() == null) {
+                traverseElement.setOldMd5(newMd5);
             } else {
-                traverseElement.setNewMd5(md5);
+                traverseElement.setOldMd5(traverseElement.getMd5());
+                traverseElement.setMd5(newMd5);
             }
             Set<String> md5Set = new HashSet<>();
+            if (traverseElement.getOldMd5() != null) {
+                md5Set.add(traverseElement.getOldMd5());
+            }
             if (traverseElement.getMd5() != null) {
                 md5Set.add(traverseElement.getMd5());
             }
-            if (traverseElement.getNewMd5() != null) {
-                md5Set.add(traverseElement.getNewMd5());
+	    // code duplicated
+	    // lock
+	    // TODO this is new lock
+	    // TODO trylock, if false, all is invalid, but which
+	    MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+	    boolean flocked = folock.tryLock(traverseElement.getId());
+	    if (!flocked) {
+		MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+		// save
+		traverseElement.setOpid(null);
+		queue.offer(traverseElement);
+		//Queues.getTraverseQueueSize().incrementAndGet();
+		log.info("Already locked: {}", filename.toString());
+		return;
+	    }
+	    String md5 = traverseElement.getMd5();
+            MyObjectLock lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
+            boolean locked = lock.tryLock(traverseElement.getId());
+            if (!locked) {
+                MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                folock.unlock();
+                // save
+                traverseElement.setOpid(null);
+                queue.offer(traverseElement);
+                log.info("Already locked: {}", md5);
+                return;
             }
             indexFilesDao.getByMd5Queue(traverseElement, md5Set);
             return;
         }
-        
+
+	// when we get indexfiles from md5 from the db
+	// code location independent
         if (traverseElement.getOpid() != null && traverseElement.getOpid().equals(OperationConstants.GETBYMD5)) {
             Map<String, IndexFiles> indexFilesMap = traverseElement.getDatabaseIndexFilesResult().getIndexFilesMap();
             traverseElement.setDatabaseIndexFilesResult(null);
+	    if (traverseElement.getOldMd5() != null) {
+		traverseElement.setOldIndexFiles(indexFilesMap.get(traverseElement.getOldMd5()));
+	    }
             traverseElement.setIndexFiles(indexFilesMap.get(traverseElement.getMd5()));
-            traverseElement.setNewIndexFiles(indexFilesMap.get(traverseElement.getNewMd5()));
         }
+
         // Get IndexFiles by Md5 from database
         // Do individual traverse, index etc
 
         /*************************/
 
+	/*
         FileObject filename = traverseElement.getFileObject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
@@ -452,20 +550,23 @@ public class TraverseFile {
             log.info("Already locked: {}", filename.toString());
             return;
         }
+	*/
         log.debug("timer");
-        String md5 = traverseElement.getMd5();
-        log.debug("info {} {}", traverseElement.getMd5(), filename);
+        String md5 = traverseElement.getOldMd5();
+        log.debug("info {} {}", traverseElement.getOldMd5(), filename);
         IndexFiles indexfiles = null;
-        MyObjectLock lock = null; 
+        // MyObjectLock lock = null; 
         boolean created = false;
+	// only run once/twice?
         if (traverseElement.getClientQueueElement().md5checknew == true || md5 == null) {
             try {
-                String oldMd5 = md5;
-                md5 = traverseElement.getNewMd5();
+                String oldMd5 = traverseElement.getOldMd5();
+                md5 = traverseElement.getMd5();
                 if (md5 == null) {
                     log.error("Md5 null");
                     throw new Exception("Md5 null");
                 }
+		/*
                 lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
                 boolean locked = lock.tryLock(traverseElement.getId());
                 if (!locked) {
@@ -477,7 +578,8 @@ public class TraverseFile {
                     log.info("Already locked: {}", md5);
                     return;
                 }
-
+		*/
+		
                 if (traverseElement.getClientQueueElement().md5checknew == true) {
                     if (oldMd5 != null && !md5.equals(oldMd5)) {
                         log.info("Changed md5 {} {} {}", filename, oldMd5, md5);
@@ -485,7 +587,9 @@ public class TraverseFile {
                         boolean oldLocked = oldLock.tryLock(traverseElement.getId());
                         if (!oldLocked) {
                             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
+                            MyObjectLock lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
                             lock.unlock();
+                            MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
                             folock.unlock();
                             // save
                             traverseElement.setOpid(null);
@@ -493,7 +597,8 @@ public class TraverseFile {
                             log.info("Already locked: {}", oldMd5);
                             return;
                         }
-                        IndexFiles oldindexfiles = traverseElement.getIndexFiles();
+                        IndexFiles oldindexfiles = traverseElement.getOldIndexFiles();
+			// not lock part anymore
                         // null check
                         if (oldindexfiles == null) {
                             int jj = 0;
@@ -502,7 +607,7 @@ public class TraverseFile {
                         if (!oldindexfiles.getFilelocations().isEmpty()) {
                             indexFilesDao.add(oldindexfiles);
                             //oldindexfiles.setFlock(folock);
-                            oldindexfiles.setObjectlock(oldLock);
+                            oldindexfiles.setObjectlock(new MyObjectLockData(oldMd5));
                             //oldindexfiles.setLockqueue(locks);
                             //oldindexfiles.setSemaphorelockqueue(semaphores);
                         } else {
@@ -566,7 +671,9 @@ public class TraverseFile {
         } else {
             log.debug("timer2");
             // get read file
-            lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
+            /*
+            MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+            MyObjectLock lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
             boolean locked = lock.tryLock(traverseElement.getId());
             if (!locked) {
                 MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -577,6 +684,7 @@ public class TraverseFile {
                 log.info("Already locked: {}", md5);
                 return;
             }
+            */
             indexfiles = traverseElement.getIndexFiles();
             // TODO implement other wise
             // error case for handling when the supporting filename indexed
@@ -589,9 +697,9 @@ public class TraverseFile {
             }
             log.debug("info {} {}", md5, indexfiles);
         }
-        if (indexfiles != null && lock != null) {
-            indexfiles.setObjectflock(folock);
-            indexfiles.setObjectlock(lock);
+        if (indexfiles != null && md5 != null) {
+            indexfiles.setObjectflock(new MyObjectLockData(filename.toString()));
+            indexfiles.setObjectlock(new MyObjectLockData(md5));
             //indexfiles.setLockqueue(locks);
             //indexfiles.setSemaphorelockqueue(semaphores);
         }

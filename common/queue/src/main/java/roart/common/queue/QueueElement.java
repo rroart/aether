@@ -46,13 +46,13 @@ public class QueueElement {
     
     private String md5;
     
-    private String newMd5;
+    private String oldMd5;
     
     private FileObject fileObject;
     
     private IndexFiles indexFiles;
     
-    private IndexFiles newIndexFiles;
+    private IndexFiles oldIndexFiles;
     
     private Map<String, String> metadata;
     
@@ -152,12 +152,12 @@ public class QueueElement {
         this.md5 = md5;
     }
 
-    public String getNewMd5() {
-        return newMd5;
+    public String getOldMd5() {
+        return oldMd5;
     }
 
-    public void setNewMd5(String newMd5) {
-        this.newMd5 = newMd5;
+    public void setOldMd5(String oldMd5) {
+        this.oldMd5 = oldMd5;
     }
 
     public FileObject getFileObject() {
@@ -176,12 +176,12 @@ public class QueueElement {
         this.indexFiles = indexFiles;
     }
 
-    public IndexFiles getNewIndexFiles() {
-        return newIndexFiles;
+    public IndexFiles getOldIndexFiles() {
+        return oldIndexFiles;
     }
 
-    public void setNewIndexFiles(IndexFiles newIndexFiles) {
-        this.newIndexFiles = newIndexFiles;
+    public void setOldIndexFiles(IndexFiles oldIndexFiles) {
+        this.oldIndexFiles = oldIndexFiles;
     }
 
     public Map<String, String> getMetadata() {
