@@ -150,16 +150,9 @@ public class AnotherIT {
         System.out.println(object);
         LocalFSUtil.rm("/tmp/ae/f1.txt");
         LocalFSUtil.write("/tmp/ae/f1.txt", TestFiles.file2content);
-        LocalFSUtil.write("/tmp/ae/f3.txt", TestFiles.file1content);
         // filesystemlucenenew
         object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", true);
         System.out.println(object);
-        object = new Util(new Sender()).consistentclean(true);
-        System.out.println(object);
-        object = new Util(new Sender()).dbcheck(null);
-        System.out.println(object);
-
-        LocalFSUtil.rm("/tmp/ae/d/f3.txt");
         object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
         object = new Util(new Sender()).dbcheck(null);
@@ -185,12 +178,6 @@ public class AnotherIT {
         LocalFSUtil.write("/tmp/ae/f2.txt", TestFiles.file1content);
         // filesystemlucenenew
         object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", true);
-        System.out.println(object);
-        object = new Util(new Sender()).dbcheck(null);
-        System.out.println(object);
-
-        LocalFSUtil.rm("/tmp/ae/d/f3.txt");
-        object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
         object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);

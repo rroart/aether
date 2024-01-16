@@ -334,6 +334,7 @@ public class IndexFilesDao {
         try {
             synchronized(IndexFilesDao.class) {
                 indexFiles.delete(index);
+                indexFiles.commit();
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
