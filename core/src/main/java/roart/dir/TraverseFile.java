@@ -2,6 +2,7 @@ package roart.dir;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -431,7 +432,7 @@ public class TraverseFile {
 		// lock
 		// TODO this is new lock
 		// TODO trylock, if false, all is invalid, but which
-		MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+		MyObjectLock folock = MyObjectLockFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
 		boolean flocked = folock.tryLock(traverseElement.getId());
 		if (!flocked) {
 		    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -492,7 +493,7 @@ public class TraverseFile {
 	    // lock
 	    // TODO this is new lock
 	    // TODO trylock, if false, all is invalid, but which
-	    MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+	    MyObjectLock folock = MyObjectLockFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
 	    boolean flocked = folock.tryLock(traverseElement.getId());
 	    if (!flocked) {
 		MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -589,7 +590,7 @@ public class TraverseFile {
                             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                             MyObjectLock lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
                             lock.unlock();
-                            MyObjectLock folock = MyObjectLockFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient);
+                            MyObjectLock folock = MyObjectLockFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
                             folock.unlock();
                             // save
                             traverseElement.setOpid(null);
@@ -735,4 +736,8 @@ public class TraverseFile {
 
     }
 
+    private String encode(String str) {
+        return Base64.getEncoder().encodeToString(str.getBytes());
+    }
+    
 }
