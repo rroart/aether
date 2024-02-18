@@ -86,7 +86,7 @@ public class TraverseFile {
         FileObject filename = trav.getFileObject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
-        MySemaphore folock = MySemaphoreFactory.create(filename.toString(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MySemaphore folock = MySemaphoreFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         boolean flocked = folock.tryLock();
         if (!flocked) {
             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
