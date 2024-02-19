@@ -333,6 +333,7 @@ public class ConvertHandler {
                     }
                     if (lang != null && languageDetect.isSupportedLanguage(lang)) {
                         if (classifyDao.classify != null) {
+                            element.setQueue(QueueUtil.getConvertQueue());
                             classifyDao.classifyQueue(element, str, lang);
                             return;
                         }
