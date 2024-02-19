@@ -699,7 +699,7 @@ public class TraverseFile {
             log.debug("info {} {}", md5, indexfiles);
         }
         if (indexfiles != null && md5 != null) {
-            indexfiles.setObjectflock(new MyObjectLockData(filename.toString()));
+            indexfiles.setObjectflock(new MyObjectLockData(encode(filename.toString())));
             indexfiles.setObjectlock(new MyObjectLockData(md5));
             //indexfiles.setLockqueue(locks);
             //indexfiles.setSemaphorelockqueue(semaphores);
