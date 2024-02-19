@@ -35,6 +35,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.util.FsUtil;
 import roart.common.util.JsonUtil;
 import roart.filesystem.FileSystemOperations;
 
@@ -349,7 +350,7 @@ public class Swift extends FileSystemOperations {
             String md5 = getMd5(filename);
             try (InputStream inputStream = getInputStreamInner(filename)) {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-                InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + filename.toString(), inputStream, md5);
+                InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + FsUtil.encode(filename.toString()), inputStream, md5);
                 map.put(filename.object, msg);
                 curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {

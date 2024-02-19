@@ -2,7 +2,6 @@ package roart.dir;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -86,7 +85,7 @@ public class TraverseFile {
         FileObject filename = trav.getFileObject();
         // TODO this is new lock
         // TODO trylock, if false, all is invalid, but which
-        MySemaphore folock = MySemaphoreFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MySemaphore folock = MySemaphoreFactory.create(FsUtil.encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
         boolean flocked = folock.tryLock();
         if (!flocked) {
             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -432,7 +431,7 @@ public class TraverseFile {
 		// lock
 		// TODO this is new lock
 		// TODO trylock, if false, all is invalid, but which
-		MyObjectLock folock = MyObjectLockFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
+		MyObjectLock folock = MyObjectLockFactory.create(FsUtil.encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
 		boolean flocked = folock.tryLock(traverseElement.getId());
 		if (!flocked) {
 		    MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -493,7 +492,7 @@ public class TraverseFile {
 	    // lock
 	    // TODO this is new lock
 	    // TODO trylock, if false, all is invalid, but which
-	    MyObjectLock folock = MyObjectLockFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
+	    MyObjectLock folock = MyObjectLockFactory.create(FsUtil.encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
 	    boolean flocked = folock.tryLock(traverseElement.getId());
 	    if (!flocked) {
 		MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -590,7 +589,7 @@ public class TraverseFile {
                             MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                             MyObjectLock lock = MyObjectLockFactory.create(md5, nodeConf.getLocker(), controlService.curatorClient);
                             lock.unlock();
-                            MyObjectLock folock = MyObjectLockFactory.create(encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
+                            MyObjectLock folock = MyObjectLockFactory.create(FsUtil.encode(filename.toString()), nodeConf.getLocker(), controlService.curatorClient);
                             folock.unlock();
                             // save
                             traverseElement.setOpid(null);
@@ -699,7 +698,7 @@ public class TraverseFile {
             log.debug("info {} {}", md5, indexfiles);
         }
         if (indexfiles != null && md5 != null) {
-            indexfiles.setObjectflock(new MyObjectLockData(encode(filename.toString())));
+            indexfiles.setObjectflock(new MyObjectLockData(FsUtil.encode(filename.toString())));
             indexfiles.setObjectlock(new MyObjectLockData(md5));
             //indexfiles.setLockqueue(locks);
             //indexfiles.setSemaphorelockqueue(semaphores);
@@ -734,10 +733,6 @@ public class TraverseFile {
         // TODO not unlock here
         //folock.unlock();
 
-    }
-
-    private String encode(String str) {
-        return Base64.getEncoder().encodeToString(str.getBytes());
     }
     
 }

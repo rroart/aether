@@ -1,5 +1,6 @@
 package roart.common.util;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -181,5 +182,9 @@ public class FsUtil {
             retMap.put(getFileObject(entry.getKey()), entry.getValue());
         }
         return retMap;
+    }
+
+    public static String encode(String str) {
+        return Base64.getEncoder().encodeToString(str.getBytes());
     }
 }
