@@ -74,7 +74,7 @@ public class HibernateUtil {
     }
     
     public static void commit() throws /*MappingException,*/ HibernateException, Exception {
-	log.info("Doing hibernate commit");
+        session.flush();
 	if (transaction != null) {
 	transaction.commit();
 	transaction = null;
