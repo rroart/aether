@@ -45,5 +45,9 @@ public class Converter {
         this.suffixes = suffixes;
     }
     
+    @Override
+    public String toString() {
+        return name;
+    }
     
 }

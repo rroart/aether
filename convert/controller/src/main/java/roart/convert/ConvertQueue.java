@@ -61,15 +61,15 @@ public class ConvertQueue {
                             }
                             element.setConvertResult(ret);
                             List<Converter> converters = element.getConvertParam().converters;
-                            element.getConvertParam().converters = converters.subList(1, converters.size());
+                            converters = converters.subList(1, converters.size());
+                            element.getConvertParam().converters = converters;
                             String queueName;
-                            if (ret.message != null || element.getConvertParam().converters.isEmpty()) {
+                            if (ret.message != null || converters.isEmpty()) {
                                 queueName = element.getQueue();
                             } else {
                                 queueName = converters.get(0).getName();
                             }
                             MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
-                            element.setQueue(name);
                             returnQueue.offer(element);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 
