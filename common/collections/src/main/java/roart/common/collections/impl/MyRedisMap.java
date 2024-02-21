@@ -8,6 +8,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import roart.common.collections.MyMap;
 import roart.common.util.JsonUtil;
+import roart.common.collections.util.JedisPools;
 import roart.common.collections.util.RedisUtil;
 
 public class MyRedisMap<K, V> extends MyMap<K, V>  {
@@ -18,7 +19,7 @@ public class MyRedisMap<K, V> extends MyMap<K, V>  {
 
     public MyRedisMap(String server, String mapname) {
         this.mapname = mapname;
-        pool = new JedisPool(server);
+        pool = JedisPools.get(server);
         //jedis.configSet("stop-writes-on-bgsave-error", "no");
     }
 

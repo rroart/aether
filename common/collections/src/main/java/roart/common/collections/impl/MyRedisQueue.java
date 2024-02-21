@@ -6,6 +6,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import roart.common.collections.MyQueue;
 import roart.common.util.JsonUtil;
+import roart.common.collections.util.JedisPools;
 import roart.common.collections.util.RedisUtil;
 
 public class MyRedisQueue<T> extends MyQueue<T> {
@@ -16,7 +17,7 @@ public class MyRedisQueue<T> extends MyQueue<T> {
 
     public MyRedisQueue(String server, String queuename) {
         this.queuename = queuename;
-        pool = new JedisPool(server);
+        pool = JedisPools.get(server);
         //jedis.configSet("stop-writes-on-bgsave-error", "no");
     }
 

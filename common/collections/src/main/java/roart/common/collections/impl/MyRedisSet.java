@@ -8,6 +8,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import roart.common.collections.MySet;
 import roart.common.util.JsonUtil;
+import roart.common.collections.util.JedisPools;
 import roart.common.collections.util.RedisUtil;
 
 public class MyRedisSet<T> extends MySet<T> {
@@ -18,7 +19,7 @@ public class MyRedisSet<T> extends MySet<T> {
     
     public MyRedisSet(String server, String setname) {
         this.setname = setname;
-        pool = new JedisPool(server);
+        pool = JedisPools.get(server);
         //jedis.configSet("stop-writes-on-bgsave-error", "no");
     }
 
