@@ -150,6 +150,10 @@ public class LeaderRunner implements Runnable {
         log.debug("Children {}", children.size());
         for (String child : children) {
             Stat stat = curatorClient.checkExists().forPath(path + "/" + child);
+            if (stat == null) {
+                log.info("Gone already {}", path + "/" + child);
+                continue;
+            }
             log.debug("Time {} {}", System.currentTimeMillis(), stat.getMtime());;
             long time = System.currentTimeMillis() - stat.getMtime();
             log.debug("Time {}", time);
