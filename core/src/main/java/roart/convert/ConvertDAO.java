@@ -24,6 +24,7 @@ import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
+import roart.content.ConvertHandler;
 import roart.eureka.util.EurekaUtil;
 import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
@@ -40,27 +41,13 @@ public class ConvertDAO {
         this.controlService = controlService;
     }
 
-    public InmemoryMessage convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
+    public ConvertResult convert(Converter converter, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {
         ConvertParam param = new ConvertParam();
         configureParam(param);
         param.message = message;
         param.converter = converter;
         param.filename = filename;
-        ConvertResult result = EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT, nodeConf);
-        if (result == null) {
-            return null;
-        }
-        // get md from Tika and use it, even if Tika fails
-        if (result.metadata != null) {
-            metadata.putAll(result.metadata);
-        }
-        if (result.error != null) {
-            index.setFailedreason(result.error);
-        }
-        if (result.message == null) {
-            return null;
-        }
-        return result.message;
+        return EurekaUtil.sendMe(ConvertResult.class, param, converter.getName().toUpperCase(), EurekaConstants.CONVERT, nodeConf);
         //Inmemory inmemory = InmemoryFactory.get(Constants.HAZELCAST, null, null);
         //String newparam = inmemory.read(result.message);
         ////inmemory.delete(message);

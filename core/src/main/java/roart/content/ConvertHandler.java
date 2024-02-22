@@ -24,6 +24,7 @@ import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.OperationConstants;
+import roart.common.convert.ConvertResult;
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
@@ -123,7 +124,9 @@ public class ConvertHandler {
             // TODO error
 	    long now = System.currentTimeMillis();
             try {
-                str = new ConvertDAO(nodeConf, controlService).convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), element.getIndexFiles());
+                ConvertResult result = new ConvertDAO(nodeConf, controlService).convert(converter, message, metadata, Paths.get(filename.object).getFileName().toString(), element.getIndexFiles());
+                str = handleConvertResult(metadata, index, result);
+
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }
@@ -312,7 +315,9 @@ public class ConvertHandler {
             } catch (Exception e) {
                 log.info(Constants.EXCEPTION, e);
             }
-            element.setMessage(element.getConvertResult().message);
+            ConvertResult result = element.getConvertResult();
+            InmemoryMessage msg = handleConvertResult(element.getMetadata(), index, result);
+            element.setMessage(msg);
             element.setConvertResult(null);
             InmemoryMessage str = element.getMessage();
             if (str != null) {
@@ -388,6 +393,23 @@ public class ConvertHandler {
         new Queues(nodeConf, controlService).getIndexQueue().offer(element);
 
         
+    }
+
+    private InmemoryMessage handleConvertResult(Map<String, String> metadata, IndexFiles index, ConvertResult result) {
+        if (result == null) {
+            return null;
+        }
+        // get md from Tika and use it, even if Tika fails
+        if (result.metadata != null) {
+            metadata.putAll(result.metadata);
+        }
+        if (result.error != null) {
+            index.setFailedreason(result.error);
+        }
+        if (result.message == null) {
+            return null;
+        }
+        return result.message;
     }
 
 }
