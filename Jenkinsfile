@@ -6,7 +6,7 @@ node {
       buildImage.inside {
         mattermostSend "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} ${env.MYBRANCH}"
         env.npm_config_cache='/tmp/.npm'
-        sh 'mvn install -Dmaven.test.skip=true -DskipTests'
+        sh 'mvn clean install -pl !webr -Dmaven.test.skip=true -DskipTests'
         mattermostSend "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} ${env.MYBRANCH}"
         if (env.MYBRANCH == 'develop') {
           env.OTHERBRANCH = 'master'
@@ -17,7 +17,7 @@ node {
 	sh 'git pull'
         sh 'git merge origin/$MYBRANCH || (git merge --abort && exit 1)'
         mattermostSend "Merged ${env.MYBRANCH} to ${env.OTHERBRANCH}"
-        sh 'mvn install -Dmaven.test.skip=true -DskipTests'
+        sh 'mvn clean install -pl !webr -Dmaven.test.skip=true -DskipTests'
         mattermostSend "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} ${env.OTHERBRANCH}"
         env.MYPUSH = sh(script: 'git config remote.origin.url | cut -c9-', returnStdout: true)
         withCredentials([usernameColonPassword(credentialsId: 'githubtoken', variable: 'TOKEN')]) {
@@ -55,7 +55,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'mvn -Dmaven.test.failure.ignore=true install' 
+                sh 'mvn -pl !webr -Dmaven.test.failure.ignore=true clean install' 
             }
         }
     }
