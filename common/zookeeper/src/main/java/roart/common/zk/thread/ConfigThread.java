@@ -25,7 +25,8 @@ public class ConfigThread implements Runnable {
 
     public ConfigThread(String zookeeper, int port) {
         try {
-            data = InetAddress.getLocalHost().getHostName() + ":" + port;
+            //data = InetAddress.getLocalHost().getHostName() + ":" + port;
+            data = InetAddress.getLocalHost().getHostAddress() + ":" + port;
         } catch (UnknownHostException e) {
             log.error(Constants.EXCEPTION, e);
         }
