@@ -103,7 +103,7 @@ public class EurekaUtil {
         Map<String, Connector> connectMap = Arrays.asList(connectors).stream().collect(Collectors.toMap(Connector::getName, Function.identity()));
         Connector connector = connectMap.get(appName.toLowerCase());
         if (connector != null && !connector.isEureka()) {
-            String url = connector.getConnection() + "/";
+            String url = "http://" + connector.getConnection() + "/";
             return WebFluxUtil.sendMe(myclass, url, param, path);            
         }
         
