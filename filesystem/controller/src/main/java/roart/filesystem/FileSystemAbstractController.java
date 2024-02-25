@@ -254,6 +254,9 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
 
         String zookeeperConnectionString = System.getProperty("ZOO");
         if (zookeeperConnectionString == null) {
+            zookeeperConnectionString = System.getenv("ZOO");
+        }
+        if (zookeeperConnectionString == null) {
             zookeeperConnectionString = "localhost:2181";
         }
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);

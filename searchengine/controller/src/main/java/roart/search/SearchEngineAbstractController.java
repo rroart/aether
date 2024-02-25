@@ -211,6 +211,9 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
 
         String zookeeperConnectionString = System.getProperty("ZOO");
         if (zookeeperConnectionString == null) {
+            zookeeperConnectionString = System.getenv("ZOO");
+        }
+        if (zookeeperConnectionString == null) {
             zookeeperConnectionString = "localhost:2181";
         }
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
