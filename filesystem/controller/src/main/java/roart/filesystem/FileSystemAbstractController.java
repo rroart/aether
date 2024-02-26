@@ -263,7 +263,7 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
         new Thread(new FileSystemThread(curatorClient, port, getFs())).start();
-        new ConfigThread(zookeeperConnectionString, port).run();
+        new ConfigThread(zookeeperConnectionString, port, true).run();
     }
 
     public abstract String getQueueName();

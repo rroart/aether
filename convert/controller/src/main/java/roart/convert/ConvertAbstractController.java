@@ -123,7 +123,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port).run();
+        new ConfigThread(zookeeperConnectionString, port, false).run();
     }
 
     public abstract String getQueueName();

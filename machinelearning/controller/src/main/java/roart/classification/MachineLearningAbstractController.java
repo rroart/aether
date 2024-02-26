@@ -141,7 +141,7 @@ public abstract class MachineLearningAbstractController implements CommandLineRu
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port).run();
+        new ConfigThread(zookeeperConnectionString, port, true).run();
     }
 
     public abstract String getQueueName();

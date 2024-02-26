@@ -23,10 +23,13 @@ public class ConfigThread implements Runnable {
 
     private ZooKeeper zk;
 
-    public ConfigThread(String zookeeper, int port) {
+    public ConfigThread(String zookeeper, int port, boolean useHostName) {
         try {
-            //data = InetAddress.getLocalHost().getHostName() + ":" + port;
-            data = InetAddress.getLocalHost().getHostAddress() + ":" + port;
+            if (useHostName) {
+                data = InetAddress.getLocalHost().getHostName() + ":" + port;
+            } else {
+                data = InetAddress.getLocalHost().getHostAddress() + ":" + port;
+            }
         } catch (UnknownHostException e) {
             log.error(Constants.EXCEPTION, e);
         }
