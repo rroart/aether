@@ -8,12 +8,20 @@ import roart.common.constants.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 
 public class GetHazelcastInstance {
     protected static Logger log = LoggerFactory.getLogger(GetHazelcastInstance.class);
     static HazelcastInstance hz = null;
     public static synchronized HazelcastInstance instance(String server) {
+        if (hz == null) {
+            ClientConfig config = new ClientConfig();
+            config.getNetworkConfig().addAddress(server);
+            hz = HazelcastClient.newHazelcastClient(config);
+        }
+        if (true) return hz;
         if (hz == null) {
             Config config = HazelcastConfig.getHazelcastConfig();
             config.getJetConfig().setEnabled(true);
