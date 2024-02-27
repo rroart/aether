@@ -193,7 +193,7 @@ public class ConvertHandler {
             FileLocation aFl = element.getIndexFiles().getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
+            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
             retlistnot.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
@@ -360,7 +360,7 @@ public class ConvertHandler {
                 FileLocation aFl = element.getIndexFiles().getaFilelocation();
                 ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
                 ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-                MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
+                MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
                 retlistnot.offer(ri);
                 Boolean isIndexed = index.getIndexed();
                 if (isIndexed == null || isIndexed.booleanValue() == false) {

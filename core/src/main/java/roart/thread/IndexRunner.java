@@ -199,7 +199,7 @@ public class IndexRunner implements Runnable {
         }
         try {
             if (!nodeConf.wantAsync()) {
-                MySemaphore lock = MySemaphoreFactory.create(el.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+                MySemaphore lock = MySemaphoreFactory.create(el.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
                 boolean locked = lock.tryLock();
                 if (!locked) {
                     queue.offer(el);

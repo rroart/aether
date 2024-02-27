@@ -38,6 +38,9 @@ import roart.service.ControlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.core.HazelcastInstance;
+
 public class FileSystemAccess {
 
     private String url;
@@ -208,7 +211,7 @@ public class FileSystemAccess {
 
     public void setQueue(String queueName) {
         this.queueName = queueName;
-        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public void listFilesFullQueue(QueueElement element, FileObject fileObject) {

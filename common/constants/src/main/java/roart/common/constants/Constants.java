@@ -65,4 +65,8 @@ public static final String CONVERTQUEUESIZE = "convertqueuesize";
 public static final String INDEXQUEUESIZE = "indexqueuesize";
 public static final String TRAVERSEQUEUESIZE = "traversequeuesize";
 public static final String LISTINGQUEUESIZE = "listingqueuesize";
+
+public static final String USEHOSTNAME = "USEHOSTNAME";
+public static final String TRUE = "true";
+public static final String ZOO = "ZOO";
 }

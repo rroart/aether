@@ -26,7 +26,7 @@ public class ConvertQueue {
 
     public ConvertQueue(String name, ConvertAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         final HazelcastInstance hz;
-        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+        if (nodeConf.isInmemoryServerHazelcast()) {
             // for tika
             System.setProperty("hazelcast.ignoreXxeProtectionFailures", "true");
             hz = HazelcastClient.newHazelcastClient();

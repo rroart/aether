@@ -28,7 +28,7 @@ public class SearchEngineQueue {
 
     public SearchEngineQueue(String name, SearchEngineAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         final HazelcastInstance hz;
-        if (nodeConf.wantDistributedTraverse()) {
+        if (nodeConf.isInmemoryServerHazelcast()) {
             hz = HazelcastClient.newHazelcastClient();
         } else {
             hz = null;

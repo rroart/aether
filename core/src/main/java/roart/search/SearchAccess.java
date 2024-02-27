@@ -62,7 +62,7 @@ public abstract class SearchAccess {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
-        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public abstract String getAppName();

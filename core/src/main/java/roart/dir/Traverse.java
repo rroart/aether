@@ -156,7 +156,7 @@ public class Traverse {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast())); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);

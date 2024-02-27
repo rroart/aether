@@ -198,7 +198,7 @@ public class Queues {
     }
 
     public long total() {
-        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         return total.get();
     }     
 
@@ -212,56 +212,56 @@ public class Queues {
 
     public MyQueue<QueueElement> getListingQueue() {
         String queueid = QueueUtil.getListingQueue();
-        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         return queue;
     }
 
     public MyQueue<QueueElement> getTraverseQueue() {
         String queueid = QueueUtil.getTraverseQueue();
-        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         return queue;
     }
 
     public MyQueue<QueueElement> getConvertQueue() {
         String queueid = QueueUtil.getConvertQueue();
-        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         return queue;
     }
 
     public MyQueue<QueueElement> getIndexQueue() {
         String queueid = QueueUtil.getIndexQueue();
-        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyQueue<QueueElement> queue = MyQueues.get(queueid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         return queue;
     }
     
     public MyMap<String, String> getTaskMap() {
         String mapid = QueueUtil.getTaskMap();
-        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
     
     public MyMap<String, InmemoryMessage> getResultMap() {
         String mapid = QueueUtil.getResultMap();
-        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
     
     public MyAtomicLong getMyConverts() {
-        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public MyAtomicLong getMyIndexs() {
-        return MyAtomicLongs.get(prefix() + Constants.INDEXS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyAtomicLongs.get(prefix() + Constants.INDEXS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public MyAtomicLong getMyTraverses() {
-        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public MyAtomicLong getMyListings() {
-        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public MyAtomicLong getMyClients() {
-        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public int getListingQueueSize() {

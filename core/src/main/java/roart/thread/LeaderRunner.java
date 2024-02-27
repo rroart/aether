@@ -52,7 +52,7 @@ public class LeaderRunner implements Runnable {
 
     @SuppressWarnings("squid:S2189")
     public void run() {
-        MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         while (true) {
             boolean leading = leader.await(1, TimeUnit.SECONDS);
             if (!leading) {
@@ -166,7 +166,7 @@ public class LeaderRunner implements Runnable {
                 curatorClient.delete().forPath(path + "/" + child);                                
                 log.info("Delete old lock or data {}", child);
                 if (deleteQueue) {
-                    MyQueue queue = MyQueues.get(child, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+                    MyQueue queue = MyQueues.get(child, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
                     queue.destroy();
                 }
                 if (deleteInmemory && data != null && data.length > 0) {

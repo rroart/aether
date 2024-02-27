@@ -268,13 +268,13 @@ public abstract class IndexFilesAccess {
     }
     
     public void setQueue(String queueName) {
-        MyQueue<QueueElement> queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyQueue<QueueElement> queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public MyQueue<QueueElement> getQueue(FileObject fileObject) {
         String appId = queueWithAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
         String queueName = getQueueName() + appId;
-        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
 
     public void getByMd5Queue(QueueElement element, Set<String> md5s) {

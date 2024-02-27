@@ -541,6 +541,11 @@ public class NodeConfig extends MyConfig {
     }
 
     @JsonIgnore
+    public boolean isInmemoryServerHazelcast() {
+        return Constants.HAZELCAST.equals(getInmemoryServer());
+    }
+
+    @JsonIgnore
     public String getInmemoryHazelcast() {
         return (String) getNotEmptyValueOrDefault(ConfigConstants.INMEMORYHAZELCAST);
     }

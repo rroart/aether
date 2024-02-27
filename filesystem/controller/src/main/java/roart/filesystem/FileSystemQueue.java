@@ -28,7 +28,7 @@ public class FileSystemQueue {
 
     public FileSystemQueue(String name, FileSystemAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
         HazelcastInstance hz = null;
-        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+        if (nodeConf.isInmemoryServerHazelcast()) {
             hz = HazelcastClient.newHazelcastClient();
         }
         HazelcastInstance ahz = hz;

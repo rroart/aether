@@ -76,8 +76,8 @@ public class Search {
         String lang = dbindex.getLanguage();
         InmemoryMessage message = el.getMessage();
         String classification = dbindex.getClassification();
-        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
-        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
 
         int retsize = 0;
 
@@ -204,8 +204,8 @@ public class Search {
                 retsize = -1;
             }
         } else {
-            MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
-            MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+            MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
             int retsize = el.getSearchEngineIndexResult().size;
             IndexFiles dbindex = el.getIndexFiles();
             String md5 = el.getMd5();

@@ -17,8 +17,8 @@ public class MySetFactory extends MyFactory {
     
     public MySet create(String setid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
         if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-            if (nodeConf.getRedis() != null && !nodeConf.getRedis().isEmpty()) {
-                return new MyRedisSet(nodeConf.getRedis(), setid);
+            if (nodeConf.getInmemoryRedis() != null && !nodeConf.getInmemoryRedis().isEmpty()) {
+                return new MyRedisSet(nodeConf.getInmemoryRedis(), setid);
             } else {
                 return new MyHazelcastSet(hz, setid);
             }

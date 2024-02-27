@@ -83,8 +83,10 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
             operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
             operationMap.put(param.getConfigid(), operation);
             String appid = useAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
-            DatabaseQueue queue = new DatabaseQueue(getQueueName() + appid, this, curatorClient, nodeConf);
-            queueMap.put(param.getConfigid(),  queue);
+            if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+                DatabaseQueue queue = new DatabaseQueue(getQueueName() + appid, this, curatorClient, nodeConf);
+                queueMap.put(param.getConfigid(),  queue);
+            }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
         }
         return operation;
@@ -255,6 +257,8 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
     public void run(String... args) throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
 
+        boolean useHostName = Constants.TRUE.equals(System.getenv(Constants.USEHOSTNAME));
+
         String zookeeperConnectionString = System.getProperty("ZOO");
         if (zookeeperConnectionString == null) {
             zookeeperConnectionString = System.getenv("ZOO");
@@ -265,7 +269,7 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, false).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
     }
 
     public abstract String getQueueName();

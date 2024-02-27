@@ -73,8 +73,10 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
             NodeConfig nodeConf = getNodeConf(param);
             operation = createConvert(param.getConfigname(), param.getConfigid(), nodeConf, curatorClient);
             convertMap.put(param.getConfigid(), operation);
-            ConvertQueue queue = new ConvertQueue(getQueueName(), this, curatorClient, nodeConf);
-            queueMap.put(param.getConfigid(),  queue);
+            if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+                ConvertQueue queue = new ConvertQueue(getQueueName(), this, curatorClient, nodeConf);
+                queueMap.put(param.getConfigid(), queue);
+            }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
         }
         return operation;
@@ -113,6 +115,8 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
     public void run(String... args) throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
 
+        boolean useHostName = Constants.TRUE.equals(System.getenv(Constants.USEHOSTNAME));
+
         String zookeeperConnectionString = System.getProperty("ZOO");
         if (zookeeperConnectionString == null) {
             zookeeperConnectionString = System.getenv("ZOO");
@@ -123,7 +127,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, false).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
     }
 
     public abstract String getQueueName();

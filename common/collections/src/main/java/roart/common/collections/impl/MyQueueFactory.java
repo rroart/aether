@@ -20,8 +20,8 @@ public class MyQueueFactory extends MyFactory {
             if (nodeConf.wantSynchronizationCommunication()) {
                 return new MyCommunicationQueue(listid, nodeConf, curatorFramework, hz);
             }
-            if (nodeConf.getRedis() != null && !nodeConf.getRedis().isEmpty()) {
-                return new MyRedisQueue(nodeConf.getRedis(), listid);
+            if (nodeConf.getInmemoryRedis() != null && !nodeConf.getInmemoryRedis().isEmpty()) {
+                return new MyRedisQueue(nodeConf.getInmemoryRedis(), listid);
             } else {
                 return new MyHazelcastQueue(hz, listid);
             }

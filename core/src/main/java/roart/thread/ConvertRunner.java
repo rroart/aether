@@ -237,7 +237,7 @@ public class ConvertRunner implements Runnable {
                 }       
                 element.getIndexFiles().setObjectlock(new MyObjectLockData(element.getMd5()));
             } else {
-                MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast()));
+                MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
                 boolean locked = lock.tryLock();
                 if (!locked) {
                     queue.offer(element);

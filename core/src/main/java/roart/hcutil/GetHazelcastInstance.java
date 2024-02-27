@@ -3,6 +3,7 @@ package roart.hcutil;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 
 import org.slf4j.Logger;
@@ -34,6 +35,15 @@ public class GetHazelcastInstance {
             //config.getCPSubsystemConfig().setCPMemberCount(3);
             hz = Hazelcast.newHazelcastInstance(config);
             log.info("Creating Hazelcast instance");
+        }
+        return hz;
+    }
+    public static HazelcastInstance instance(NodeConfig nodeConf) {
+        final HazelcastInstance hz;
+        if (nodeConf.isInmemoryServerHazelcast()) {
+            hz = GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast());
+        } else {
+            hz = null;
         }
         return hz;
     }

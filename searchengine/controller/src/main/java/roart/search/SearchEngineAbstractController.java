@@ -79,8 +79,10 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
             NodeConfig nodeConf = getNodeConf(param);
             operation = createSearcher(param.getConfigname(), param.getConfigid(), nodeConf);
             searchMap.put(param.getConfigid(), operation);
-            SearchEngineQueue queue = new SearchEngineQueue(getQueueName(), this, curatorClient, nodeConf);
-            queueMap.put(param.getConfigid(),  queue);
+            if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
+                SearchEngineQueue queue = new SearchEngineQueue(getQueueName(), this, curatorClient, nodeConf);
+                queueMap.put(param.getConfigid(),  queue);
+            }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
         }
         return operation;
@@ -209,6 +211,8 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
     public void run(String... args) throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);     
 
+        boolean useHostName = Constants.TRUE.equals(System.getenv(Constants.USEHOSTNAME));
+
         String zookeeperConnectionString = System.getProperty("ZOO");
         if (zookeeperConnectionString == null) {
             zookeeperConnectionString = System.getenv("ZOO");
@@ -219,7 +223,7 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, false).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
     }
 
     public abstract String getQueueName();
