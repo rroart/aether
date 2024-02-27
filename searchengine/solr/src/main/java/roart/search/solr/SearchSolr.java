@@ -264,7 +264,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
             String lang = (String) d.getFieldValue(SearchConstants.LANG);
             List<String> metadata = (List<String>) d.getFieldValue(SearchConstants.METADATA);
             String[] highlights = null;
-            if (dohighlight && param.conf.getHighlightmlt()) {
+            if (dohighlight && nodeConf.getHighlightmlt()) {
                 Map<String,Map<String,List<String>>> map = rsp.getHighlighting();
                 Map<String,List<String>> map2 = map.get(md5);
                 List<String> list = map2.get(SearchConstants.CONTENT);
