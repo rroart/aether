@@ -212,6 +212,18 @@ public class Traverse {
             if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                 break;
             }
+            if (add != null) {
+                boolean contains = false;
+                for (FileLocation fl : index.getFilelocations()) {
+                    if (fl.toString().contains(add)) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if (!contains) {
+                    continue;
+                }
+            }
             String md5 = index.getMd5();
             //String name = getExistingLocalFile(index);
             FileLocation fl = index.getaFilelocation();
