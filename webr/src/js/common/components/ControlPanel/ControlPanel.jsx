@@ -243,7 +243,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(null, false, props) }>Index filesystem new items</Button>
           </NavItem>
           <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => filesystemlucenenew(indexnew, false, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); filesystemlucenenew(indexnew, false, props)}>
               Index filesystem new items
               <FormControl
                 onChange = { (e) => setIndexnew(e.target.value) }
@@ -251,7 +251,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             </Form>
           </NavItem>
           <NavItem eventKey={3} href="#">
-            <Form onSubmit={ (e) => filesystemlucenenew(indexmd5, false, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); filesystemlucenenew(indexmd5, false, props)}>
               Filesystem index on changed md5 path
               <FormControl
                 onChange = { (e) => setIndexmd5(e.target.value) }
@@ -269,7 +269,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             <Button bsStyle="primary" onClick={ (e) => traverse(null, props) }>Filesystem add new</Button>
           </NavItem>
           <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => traverse(fsnew, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); traverse(fsnew, props)}>
               Filesystem add new
               <FormControl
                 onChange = { (e) => setFsnew(e.target.value) }
@@ -287,7 +287,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             <Button bsStyle="primary" onClick={ (e) => index(null, false, props) }>Index non-indexed items</Button>
           </NavItem>
           <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => index(nonindex, false, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); index(nonindex, false, props)}>
               Index non-indexed items
               <FormControl
                 onChange = { (e) => setNonindex(e.target.value) }
@@ -299,7 +299,7 @@ function ControlPanel ({ props, callbackNewTab }) {
       <Navbar>
         <Nav>
           <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => indexsuffix(suffixindex, false, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); indexsuffix(suffixindex, false, props)}>
               Index on suffix
               <FormControl
                 onChange = { (e) => setSuffixindex(e.target.value) }
@@ -307,7 +307,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             </Form>
           </NavItem>
           <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => indexsuffix(suffixindex, true, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); indexsuffix(suffixindex, true, props)}>
               Reindex on suffix
               <FormControl
                 onChange = { (e) => setSuffixindex(e.target.value) }
@@ -331,7 +331,7 @@ function ControlPanel ({ props, callbackNewTab }) {
       <Navbar>
         <Nav>
           <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => index(reindex, true, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); index(reindex, true, props)}>
               Reindex
               <FormControl
                 onChange = { (e) => setReindex(e.target.value) }
@@ -351,7 +351,7 @@ function ControlPanel ({ props, callbackNewTab }) {
       <Navbar>
         <Nav>
           <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => deletepathdb(deletepath, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); deletepathdb(deletepath, props)}>
               Delete path from db
               <FormControl
                 onChange = { (e) => setDeletepath(e.target.value) }
@@ -408,7 +408,7 @@ function ControlPanel ({ props, callbackNewTab }) {
       <Navbar>
         <Nav>
           <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => dbindex(databasemd5, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); dbindex(databasemd5, props)}>
               Database md5 id
               <FormControl
                 onChange = { (e) => setDatabasemd5(e.target.value) }
@@ -416,7 +416,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             </Form>
           </NavItem>
           <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => dbsesearch(databasesearch, true, props)}>
+            <Form onSubmit={ (e) => e.preventDefault(); dbsesearch(databasesearch, true, props)}>
               Database search
               <FormControl
                 onChange = { (e) => setDatabasesearch(e.target.value) }
