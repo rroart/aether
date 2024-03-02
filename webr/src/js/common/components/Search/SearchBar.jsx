@@ -66,7 +66,7 @@ function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
     <div>
       <Navbar>
         <Navbar.Brand>
-          <a href="#home">{text}</a>
+          {text}
         </Navbar.Brand>
         <Nav>
           <Form onSubmit={ (e) => { e.preventDefault(); setSearchnetstring(searchstring) } }>

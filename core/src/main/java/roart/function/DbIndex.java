@@ -25,7 +25,7 @@ public class DbIndex extends AbstractFunction {
         IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         try {
             ServiceParam.Function function = param.function;
-            String md5 = param.file;
+            String md5 = param.search;
             log.info("function " + function + " " + md5);
 
             List<List> retlistlist = new ArrayList<>();

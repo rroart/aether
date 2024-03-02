@@ -24,9 +24,9 @@ public class AnotherIT {
         Object object;
         object = new Util(new Sender()).dbclear(null);
         System.out.println(object);
-        object = new Util(new Sender()).traverse("/tmp/ae");
+        object = new Util(new Sender()).traverse("/tmp/ae", null);
         System.out.println(object);
-        object = new Util(new Sender()).index("/tmp/ae", false);
+        object = new Util(new Sender()).index("/tmp/ae", false, null, null, null, null);
         System.out.println(object);
         LocalFSUtil.rm("/tmp/ae/f1.txt");
         object = new Util(new Sender()).consistentclean(true);
@@ -53,9 +53,9 @@ public class AnotherIT {
         Object object;
         object = new Util(new Sender()).dbclear(null);
         System.out.println(object);
-        object = new Util(new Sender()).traverse(":hdfs::/htmp/ae");
+        object = new Util(new Sender()).traverse(":hdfs::/htmp/ae", null);
         System.out.println(object);
-        object = new Util(new Sender()).index(":hdfs::/htmp/ae", false);
+        object = new Util(new Sender()).index(":hdfs::/htmp/ae", false, null, null, null, null);
         System.out.println(object);
         HDFSUtil.rm("/htmp/ae/f1.txt");
         object = new Util(new Sender()).consistentclean(true);
@@ -81,10 +81,10 @@ public class AnotherIT {
         Object object;
         object = new Util(new Sender()).dbclear(null);
         System.out.println(object);
-        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", false);
+        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", false, null);
         System.out.println(object);
         LocalFSUtil.write("/tmp/ae/d/f4.txt", TestFiles.file3content);
-        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", false);
+        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", false, null);
         System.out.println(object);
         object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);
@@ -116,9 +116,9 @@ public class AnotherIT {
         Object object;
         object = new Util(new Sender()).dbclear(null);
         System.out.println(object);
-        object = new Util(new Sender()).traverse("/tmp/ae");
+        object = new Util(new Sender()).traverse("/tmp/ae", null);
         System.out.println(object);
-        object = new Util(new Sender()).index("/tmp/ae", false);
+        object = new Util(new Sender()).index("/tmp/ae", false, null, null, null, null);
         System.out.println(object);
         LocalFSUtil.rm("/tmp/ae/f1.txt");
         object = new Util(new Sender()).consistentclean(true);
@@ -144,14 +144,14 @@ public class AnotherIT {
         Object object;
         object = new Util(new Sender()).dbclear(null);
         System.out.println(object);
-        object = new Util(new Sender()).traverse("/tmp/ae");
+        object = new Util(new Sender()).traverse("/tmp/ae", null);
         System.out.println(object);
-        object = new Util(new Sender()).index("/tmp/ae", false);
+        object = new Util(new Sender()).index("/tmp/ae", false, null, null, null, null);
         System.out.println(object);
         LocalFSUtil.rm("/tmp/ae/f1.txt");
         LocalFSUtil.write("/tmp/ae/f1.txt", TestFiles.file2content);
         // filesystemlucenenew
-        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", true);
+        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", true, null);
         System.out.println(object);
         object = new Util(new Sender()).consistentclean(true);
         System.out.println(object);
@@ -170,14 +170,14 @@ public class AnotherIT {
         Object object;
         object = new Util(new Sender()).dbclear(null);
         System.out.println(object);
-        object = new Util(new Sender()).traverse("/tmp/ae");
+        object = new Util(new Sender()).traverse("/tmp/ae", null);
         System.out.println(object);
-        object = new Util(new Sender()).index("/tmp/ae", false);
+        object = new Util(new Sender()).index("/tmp/ae", false, null, null, null, null);
         System.out.println(object);
         LocalFSUtil.rm("/tmp/ae/f2.txt");
         LocalFSUtil.write("/tmp/ae/f2.txt", TestFiles.file1content);
         // filesystemlucenenew
-        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", true);
+        object = new Util(new Sender()).filesystemlucenenew("/tmp/ae", true, null);
         System.out.println(object);
         object = new Util(new Sender()).dbcheck(null);
         System.out.println(object);
@@ -198,14 +198,14 @@ public class AnotherIT {
         for (int i = 0; i < 3; i++) {
             service.submit(() -> {
                 try {
-                    Object object2 = new Util(new Sender()).traverse("/tmp/ae");
+                    Object object2 = new Util(new Sender()).traverse("/tmp/ae", null);
                     System.out.println(object2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
         }
-        object = new Util(new Sender()).index("/tmp/ae", false);
+        object = new Util(new Sender()).index("/tmp/ae", false, null, null, null, null);
         System.out.println(object);
         LocalFSUtil.rm("/tmp/ae/f1.txt");
         object = new Util(new Sender()).consistentclean(true);

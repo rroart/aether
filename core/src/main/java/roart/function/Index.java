@@ -8,6 +8,7 @@ import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
 import roart.common.service.ServiceParam;
 import roart.service.ControlService;
+import roart.util.FilterUtil;
 
 public class Index extends AbstractIndex {
 
@@ -22,9 +23,8 @@ public class Index extends AbstractIndex {
 
     @Override
     public boolean indexFilter(IndexFiles index, QueueElement element) {
-        boolean reindex = element.getClientQueueElement().reindex;
-        boolean indexed = index.getIndexed() != null && index.getIndexed();
-        return reindex == indexed;
+        return FilterUtil.indexFilterIndex(index, element.getClientQueueElement())
+                && FilterUtil.indexFilter(index, element.getClientQueueElement());
     }
 
 }

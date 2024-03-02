@@ -37,18 +37,7 @@ public class EurekaConstants {
     // web
     public static final String TRAVERSE = "traverse";
     //public static final String INDEX = "index";
-    public static final String INDEXSUFFIX = "indexsuffix";
-    public static final String REINDEXDATELOWER = "reindexdatelower";
-    public static final String REINDEXDATEHIGHER = "reindexdatehigher";
-    public static final String REINDEXLANGUAGE = "reindexlanguage";
     public static final String CLEANUPFS = "cleanupfs";
-    public static final String MEMORYUSAGE = "memoryusage";
-    public static final String NOTINDEXED = "notindexed";
-    public static final String FILESYSTEMLUCENENEW = "filesystemlucenenew";
-    public static final String DBINDEX = "dbindex";
-    public static final String DBSEARCH = "dbsearch";
-    public static final String CONSISTENTCLEAN = "consistentclean";
-    public static final String DELETEPATHDB = "deletepathdb"; 
     public static final String SEARCHENGINE = "searchengine";
     public static final String MACHINELEARNING = "machinelearning";
     public static final String OVERLAPPING = "overlapping";

@@ -42,14 +42,14 @@ public class AnPrIT {
     @Order(1)
     public void my2Test() throws Exception {
         //Object o = new Util(new Sender()).traverse("/home/roart/usr/books/chess/10 Chess Books");
-        new Util(new Sender()).traverse("/home/roart/usr/books/computer");
+        new Util(new Sender()).traverse("/home/roart/usr/books/computer", null);
         //new Util(new Sender()).index("/home/roart/src/aethermicro/books", false);
     }
     
     @Test
     @Order(2)
     public void my3Test() throws Exception {
-        Object o = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true);
+        Object o = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true, null, null, null, null);
         System.out.println(o);
     }
     
@@ -65,4 +65,47 @@ public class AnPrIT {
     public void my5Test() throws Exception {
         System.out.println("Ok");
     }
+    
+    @Test
+    @Order(5)
+    public void my6Test() throws Exception {
+        Object object;
+        object = new Util(new Sender()).dbclear(null);
+        Object o; // = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true);
+        o = new Util(new Sender()).filesystemlucenenew("/home/roart/usr/books/chess", false, null);
+        System.out.println(o);
+    }
+        
+    @Test
+    @Order(5)
+    public void my7Test() throws Exception {
+        Object object;
+        object = new Util(new Sender()).dbclear(null);
+        Object o; // = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true);
+        o = new Util(new Sender()).filesystemlucenenew("/home/roart/usr/books/chess/10 Chess Books", false, null);
+        System.out.println(o);
+    }
+    
+    @Test
+    @Order(5)
+    public void my8Test() throws Exception {
+        Object object;
+        object = new Util(new Sender()).dbclear(null);
+        Object o; // = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true);
+        o = new Util(new Sender()).filesystemlucenenew("/home/roart/usr/books/chess/xiangqi", false, null);
+        System.out.println(o);
+    }
+
+    
+    @Test
+    @Order(5)
+    public void my9Test() throws Exception {
+        Object object;
+        //object = new Util(new Sender()).dbclear(null);
+        Object o; // = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true);
+        //o = new Util(new Sender()).filesystemlucenenew("/home/roart/usr/books/chess/xiangqi", false);
+        o = new Util(new Sender()).index("/home/roart/usr/books/chess/xiangqi", true, null, null, null, null);
+        System.out.println(o);
+    }
+
 }

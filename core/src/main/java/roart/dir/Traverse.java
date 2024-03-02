@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.HashMap;
 
+import roart.util.FilterUtil;
 import roart.util.TraverseUtil;
 import roart.common.queue.QueueElement;
 
@@ -212,17 +213,8 @@ public class Traverse {
             if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                 break;
             }
-            if (add != null) {
-                boolean contains = false;
-                for (FileLocation fl : index.getFilelocations()) {
-                    if (fl.toString().contains(add)) {
-                        contains = true;
-                        break;
-                    }
-                }
-                if (!contains) {
-                    continue;
-                }
+            if (!FilterUtil.indexFilter(index, element)) {
+                continue;
             }
             String md5 = index.getMd5();
             //String name = getExistingLocalFile(index);

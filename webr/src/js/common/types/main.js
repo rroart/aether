@@ -9,20 +9,16 @@ export type mainType = {
 class ServiceParam {
 // enum Function { INDEX, FILESYSTEM, OVERLAPPING, REINDEXSUFFIX, REINDEXDATE, MEMORYUSAGE, NOTINDEXED, FILESYSTEMLUCENENEW, DBINDEX, DBSEARCH, CONSISTENTCLEAN, SEARCH, SEARCHSIMILAR, REINDEXLANGUAGE, DELETEPATH }
       config: object;
-      functionn: string;
+      function: string;
       name: string;
-      add: string;
+      path: string;
       file: string;
       suffix: string;
       lowerdate: string;
       higherdate: string;
       reindex: boolean;
-      md5change: boolean;
       clean: boolean;
-      path: string;
-      md5: string;
       md5checknew: boolean;
-      dirname: string;
       lang: string;
       webpath: string;
       async: boolean;

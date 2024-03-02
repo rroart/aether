@@ -98,7 +98,7 @@ public class ConsistentClean extends AbstractFunction {
         //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
 
         //Traverse traverse = new Traverse(myid, param, null, null, newsetid, nodeConf.getDirListNot(), notfoundsetid, null, null, true);
-        String path = param.file;
+        String path = param.path;
 
         List<IndexFiles> indexes;
         try {

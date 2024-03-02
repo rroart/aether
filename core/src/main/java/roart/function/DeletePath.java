@@ -43,7 +43,7 @@ public class DeletePath extends AbstractFunction {
             List<ResultItem> delList = new ArrayList<>();
             delList.add(new ResultItem("Deleted"));
             Set<IndexFiles> ifs = new HashSet<>();
-            String path = param.file;
+            String path = param.path;
             if (path.isEmpty()) {
                 log.info("skipping empty path");
                 retlistlist.add(delList);

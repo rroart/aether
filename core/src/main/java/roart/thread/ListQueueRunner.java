@@ -42,6 +42,7 @@ import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
+import roart.util.FilterUtil;
 import roart.util.TraverseUtil;
 import roart.common.queue.QueueElement;
 
@@ -344,6 +345,9 @@ public class ListQueueRunner implements Runnable {
                 //Queues.getListingQueueSize().incrementAndGet();
                 //retset.addAll(doList(fo));
             } else {
+                if (!FilterUtil.filterSuffix(fo, listing.getClientQueueElement())) {
+                    continue;
+                }
                 MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                 QueueElement trav = new QueueElement(listing.getMyid(), fo, listing.getClientQueueElement(), null);
                 TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
@@ -415,6 +419,9 @@ public class ListQueueRunner implements Runnable {
                     //Queues.getListingQueueSize().incrementAndGet();
                     //retset.addAll(doList(fo));
                 } else {
+                    if (!FilterUtil.filterSuffix(fo, element.getClientQueueElement())) {
+                        continue;
+                    }
                     MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     QueueElement trav = new QueueElement(element.getMyid(), fo, element.getClientQueueElement(), null);
                     TraverseUtil.doCounters(trav, 1, nodeConf, controlService);

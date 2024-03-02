@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { DropdownButton, MenuItem, Button, ButtonToolbar, Nav, Navbar, NavItem, Form, FormControl } from 'react-bootstrap';
 import { ServiceParam } from '../../types/main'
 import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTable } from 'react-table';
@@ -14,100 +15,53 @@ import { Table } from '../Table'
 import TaskList from './TaskList';
 
 function ControlPanel ({ props, callbackNewTab }) {
-  const [ indexnew, setIndexnew ] = useState('');
-  const [ indexmd5, setIndexmd5 ] = useState('');
-  const [ fsnew, setFsnew ] = useState('');
-  const [ nonindex, setNonindex ] = useState('');
-  const [ suffixindex, setSuffixindex ] = useState('');
-  const [ startdate, setStartdate ] = useState('');
-  const [ enddate, setEnddate ] = useState('');
-  const [ reindex, setReindex ] = useState('');
-  const [ cleanpath, setCleanpath ] = useState('');
-  const [ deletepath, setDeletepath ] = useState('');
-  const [ databasemd5, setDatabasemd5 ] = useState('');
-  const [ databasesearch, setDatabasesearch ] = useState('');
+  const [ startdate, setStartdate ] = useState(null);
+  const [ enddate, setEnddate ] = useState(null);
   const [ param, setParam ] = useState(null);
   const [ hcolumns, setHcolumns ] = useState(null);
   const [ hdata, setHdata ] = useState(null);
   const [ uuids, setUuids ] = useState( new Set() );
+  const [ suffix, setSuffix ] = useState( null );
+  const [ path, setPath ] = useState( null );
+  const [ language, setLanguage ] = useState( null );
+  const [ search, setSearch ] = useState( null );
 
-  function filesystemlucenenew(path, md5checknew, props) {
+  function filesystemlucenenew(md5checknew, props) {
     console.log(path);
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "FILESYSTEMLUCENENEW";
-    param.add = path;
+    param.path = path;
     param.md5checknew = md5checknew;
-    param.webpath = "filesystemlucenenew";
+    param.suffix = suffix;
+    param.webpath = "task";
     setParam(param);
   }
 
-  function traverse(path, props) {
+  function traverse(props) {
     console.log(path);
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "FILESYSTEM";
-    param.add = path;
-    param.webpath = "traverse";
+    param.path = path;
+    param.suffix = suffix;
+    param.webpath = "task";
     param.async = true;
     setParam(param);
   }
 
-  function index(add, reindex, props) {
+  function index(props, reindex) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "INDEX";
-    param.add = add;
-    param.reindex = reindex;
-    param.webpath = "index";
-    param.async = true;
-    setParam(param);
-  }
-
-  function indexsuffix(suffix, reindex, props) {
-    var param = new ServiceParam();
-    param.config = props.config
-    param.function = "REINDEXSUFFIX";
+    param.path = path;
     param.suffix = suffix;
+    param.lang = language;
     param.reindex = reindex;
-    param.webpath = "indexsuffix";
-    setParam(param);
-  }
-
-  function reindexdatelower(date, reindex, props) {
-    var param = new ServiceParam();
-    param.config = props.config;
-    param.function = "REINDEXDATE";
-    param.lowerdate = date;
-    param.reindex = reindex;
-    param.webpath = "reindexdatelower";
-    setParam(param);
-  }
-
-  function reindexdatehigher(date,  reindex, props) {
-    var param = new ServiceParam();
-    param.config = props.config;
-    param.function = "REINDEXDATE";
-    param.higherdate = date;
-    param.reindex = reindex;
-    param.webpath = "reindexdatehigher";
-    setParam(param);
-  }
-  function reindexlanguage(lang, props) {
-    var param = new ServiceParam();
-    param.config = props.config;
-    param.function = "REINDEXLANGUAGE";
-    param.lang = lang;
-    param.webpath = "reindexlanguage";
-    setParam(param);
-  }
-
-  function cleanupfs(dirname, props) {
-    var param = new ServiceParam();
-    param.config = props.config;
-    param.function = "CONSISTENTCLEAN";
-    param.dirname = dirname;
-    param.webpath = "consistentclean";
+    param.lowerdate = startdate;
+    param.higherdate = enddate;
+    param.webpath = "task";
+    param.async = true;
     setParam(param);
   }
 
@@ -115,7 +69,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "MEMORYUSAGE";
-    param.webpath = "memoryusage";
+    param.webpath = "task";
     setParam(param);
   }
 
@@ -123,17 +77,17 @@ function ControlPanel ({ props, callbackNewTab }) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "NOTINDEXED";
-    param.webpath = "notindexed";
+    param.webpath = "task";
     setParam(param);
   }
 
-    function consistentclean( clean, path, props) {
+    function consistentclean(clean, props) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "CONSISTENTCLEAN";
       param.clean = clean;
       param.path = path;
-    param.webpath = "consistentclean";
+    param.webpath = "task";
     setParam(param);
     return;
   }
@@ -142,35 +96,41 @@ function ControlPanel ({ props, callbackNewTab }) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "DBCHECK";
-    param.webpath = "dbcheck";
+    param.webpath = "task";
     setParam(param);
     return;
   }
 
-  function deletepathdb( path, props) {
+  function deletepathdb(props) {
     var param = new ServiceParam();
     param.config = props.config;
     //param.function = Function.DELETEPATHDB;
+    param.function = "DELETEPATH";
     param.path = path;
-    param.webpath = "deletepathdb";
+    param.webpath = "task";
     setParam(param);
   }
 
-  function dbindex( md5, props) {
+  function dbindex( props) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "DBINDEX";
-    param.md5 = md5;
-    param.webpath = "dbindex";
+    param.search = search;
+    param.webpath = "task";
     setParam(param);
   }
 
-  function dbsearch( md5, props) {
+  function dbsearch( props) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "DBSEARCH";
-    param.md5 = md5;
-    param.webpath = "dbsearch";
+    param.path = path;
+    param.suffix = suffix;
+    param.lang = language;
+    param.lowerdate = startdate;
+    param.higherdate = enddate;
+    param.search = search;
+    param.webpath = "task";
     setParam(param);
   }
 
@@ -200,7 +160,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   }, []);
 
   const callbackAsync = useCallback( (uuid) => {
-    uuids.push(uuid);
+    uuids.add(uuid);
     setUuids([...uuids]);
   }, [uuids]);
 
@@ -229,200 +189,126 @@ function ControlPanel ({ props, callbackNewTab }) {
   console.log(languages);
   console.log(Object.keys(main))
     console.log(main.config);
+    var useStartdate = new Date();
+    var useEnddate = new Date();
+    if (startdate != null) {
+	useStartdate = startdate;
+    }
+    if (enddate != null) {
+	useEnddate = enddate;
+    }
     //if (true) return (<div/>);
   return (
     <div>
       <h2>Hei</h2>
       <TaskList/>
       <Navbar>
+        <Nav>
+          Before date
+            <DatePicker id="startdatepicker" selected={useStartdate} onChange={e => setStartdate(e)}/>
+          After date
+            <DatePicker id="enddatepicker" selected={useEnddate} onChange={e => setEnddate(e)}/>
+        </Nav>
+      </Navbar>
+      <Nav>
+        <Form>
+          Path
+          <FormControl
+            onChange = { (e) => setPath(e.target.value) }
+            type="text"/>
+        </Form>
+      </Nav>
+      <Nav>
+        <Form>
+           Suffix
+          <FormControl
+            onChange = { (e) => setSuffix(e.target.value) }
+            type="text"/>
+        </Form>
+      </Nav>
+      <Nav>
+        <Form>
+          Search
+          <FormControl
+            onChange = { (e) => setSearch(e.target.value) }
+            type="text"/>
+        </Form>
+      </Nav>
+      <Nav>
+        <Select options="[{size:'5'}]"
+                onChange={e => setLanguage(e)}
+                options={languages}
+        />
+      </Nav>
+        <Navbar>
           <Navbar.Brand>
-            <a href="#home">Indexing new</a>
+            Indexing new
           </Navbar.Brand>
          <Nav>
-          <NavItem eventKey={1} href="#">
-            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(null, false, props) }>Index filesystem new items</Button>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); filesystemlucenenew(indexnew, false, props)}>
-              Index filesystem new items
-              <FormControl
-                onChange = { (e) => setIndexnew(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
-          <NavItem eventKey={3} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); filesystemlucenenew(indexmd5, false, props)}>
-              Filesystem index on changed md5 path
-              <FormControl
-                onChange = { (e) => setIndexmd5(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
+            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(false, props) }>Index filesystem new items</Button>
         </Nav>
       </Navbar>
       <Navbar>
            <Navbar.Brand>
-            <a href="#home">Filesystem add new</a>
+            Filesystem add new
           </Navbar.Brand>
         <Nav>
-          <NavItem eventKey={1} href="#">
-            <Button bsStyle="primary" onClick={ (e) => traverse(null, props) }>Filesystem add new</Button>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); traverse(fsnew, props)}>
-              Filesystem add new
-              <FormControl
-                onChange = { (e) => setFsnew(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
-        </Nav>
+            <Button bsStyle="primary" onClick={ (e) => traverse(props) }>Filesystem add new</Button>
+         </Nav>
       </Navbar>
       <Navbar>
            <Navbar.Brand>
-            <a href="#home">Indexed non-indexed</a>
+            Indexed non-indexed
           </Navbar.Brand>
          <Nav>
-          <NavItem eventKey={1} href="#">
-            <Button bsStyle="primary" onClick={ (e) => index(null, false, props) }>Index non-indexed items</Button>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); index(nonindex, false, props)}>
-              Index non-indexed items
-              <FormControl
-                onChange = { (e) => setNonindex(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
+            <Button bsStyle="primary" onClick={ (e) => index(false, props) }>Index non-indexed items</Button>
         </Nav>
       </Navbar>
-      <Navbar>
+       <Navbar>
         <Nav>
-          <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); indexsuffix(suffixindex, false, props)}>
-              Index on suffix
-              <FormControl
-                onChange = { (e) => setSuffixindex(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); indexsuffix(suffixindex, true, props)}>
-              Reindex on suffix
-              <FormControl
-                onChange = { (e) => setSuffixindex(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
+          <Button bsStyle="primary" onClick={ (e) => index(props, false) }>Index</Button>
+          <Button bsStyle="primary" onClick={ (e) => index(props, true) }>Reindex</Button>
         </Nav>
       </Navbar>
-      <Navbar>
+       <Navbar>
         <Nav>
-          <NavItem eventKey={2} href="#">
-            Reindex on before date
-            <DatePicker id="startdatepicker" onChange={e => reindexdatelower(e, null, props)}/>
-          </NavItem>
-          <NavItem eventKey={3} href="#">
-            Reindex on after date
-            <DatePicker id="enddatepicker" onChange={e => reindexdatehigher(e, null, props)}/>
-          </NavItem>
+          <Button bsStyle="primary" onClick={ (e) => deletepathdb(props) }>Get consistency</Button>
         </Nav>
-      </Navbar>
-      <Navbar>
-        <Nav>
-          <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); index(reindex, true, props)}>
-              Reindex
-              <FormControl
-                onChange = { (e) => setReindex(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-            Reindex language
-            <Select options="[{size:'5'}]"
-                    onChange={e => reindexlanguage(e, props)}
-                    options={languages}
-            />
-
-          </NavItem>
-        </Nav>
-      </Navbar>
-      <Navbar>
-        <Nav>
-          <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); deletepathdb(deletepath, props)}>
-              Delete path from db
-              <FormControl
-                onChange = { (e) => setDeletepath(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
-        </Nav>
-      </Navbar>
+         </Navbar>
       <Navbar>
           <Navbar.Brand>
-            <a href="#home">Consistency</a>
+            Consistency
           </Navbar.Brand>
          <Nav>
-          <NavItem eventKey={1} href="#">
-              <Button bsStyle="primary" onClick={ (e) => consistentclean(false, cleanpath, props) }>Get consistency</Button>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-              <Button bsStyle="primary" onClick={ (e) => consistentclean(true, cleanpath, props) }>Get consistency and clean</Button>
-          </NavItem>
-	    <Form>
-              <FormControl
-                onChange = { (e) => setCleanpath(e.target.value) }
-                type="text"/>
-            </Form>
+              <Button bsStyle="primary" onClick={ (e) => consistentclean(false, props) }>Get consistency</Button>
+              <Button bsStyle="primary" onClick={ (e) => consistentclean(true, props) }>Get consistency and clean</Button>
         </Nav>
       </Navbar>
       <Navbar>
            <Navbar.Brand>
-            <a href="#home">Db check</a>
+            Db check
           </Navbar.Brand>
          <Nav>
-          <NavItem eventKey={1} href="#">
               <Button bsStyle="primary" onClick={ (e) => dbcheck(props) }>Db check</Button>
-          </NavItem>
         </Nav>
       </Navbar>
       <Navbar>
          <Navbar.Brand>
-            <a href="#home"></a>
+            Get not yet indexed
           </Navbar.Brand>
         <Nav>
-          <NavItem eventKey={1} href="#">
             <Button bsStyle="primary" onClick={ (e) => notindexed(props) }>Get not yet indexed</Button>
-          </NavItem>
         </Nav>
       </Navbar>
       <Navbar>
         <Nav>
-          <NavItem eventKey={1} href="#">
             <Button bsStyle="primary" onClick={ (e) => memoryusage(props) }>Memory usage</Button>
-          </NavItem>
         </Nav>
       </Navbar>
       <Navbar>
         <Nav>
-          <NavItem eventKey={1} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); dbindex(databasemd5, props)}>
-              Database md5 id
-              <FormControl
-                onChange = { (e) => setDatabasemd5(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
-          <NavItem eventKey={2} href="#">
-            <Form onSubmit={ (e) => e.preventDefault(); dbsesearch(databasesearch, true, props)}>
-              Database search
-              <FormControl
-                onChange = { (e) => setDatabasesearch(e.target.value) }
-                type="text"/>
-            </Form>
-          </NavItem>
+          <Button bsStyle="primary" onClick={ (e) => dbindex(props) }>Database search index</Button>
+          <Button bsStyle="primary" onClick={ (e) => dbsearch(props) }>Database search</Button>
         </Nav>
       </Navbar>
     </div>

@@ -66,7 +66,7 @@ public abstract class AbstractFunction {
                 }
              */
             ServiceParam.Function function = el.function;
-            String filename = el.add;
+            String filename = el.path;
             //boolean reindex = el.reindex;
             //boolean newmd5 = el.md5change;
             log.info("function " + function + " " + filename + " " + el.reindex);

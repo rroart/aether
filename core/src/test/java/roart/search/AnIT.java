@@ -31,36 +31,36 @@ public class AnIT {
     @Order(1)
     public void myDbTest() throws Exception {
         new Util(new Sender()).dbclear(null);
-        Object o = new Util(new Sender()).traverse(null);
+        Object o = new Util(new Sender()).traverse(null, null);
         System.out.println(o);
     }
     
     @Test
     @Order(1)
     public void my1Test() throws Exception {
-        Object o = new Util(new Sender()).traverse(null);
+        Object o = new Util(new Sender()).traverse(null, null);
         System.out.println(o);
-        new Util(new Sender()).index(null, false);
+        new Util(new Sender()).index(null, false, null, null, null, null);
     }
     
     @Test
     @Order(2)
     public void my2Test() throws Exception {
-        Object o = new Util(new Sender()).traverse("/home/roart/src/aethermicro/books");
+        Object o = new Util(new Sender()).traverse("/home/roart/src/aethermicro/books", null);
         System.out.println(o);
-        new Util(new Sender()).index("/home/roart/src/aethermicro/books", false);
+        new Util(new Sender()).index("/home/roart/src/aethermicro/books", false, null, null, null, null);
     }
     
     @Test
     @Order(3)
     public void my3Test() throws Exception {
-        new Util(new Sender()).index("/home/roart/src/aethermicro/books", true);
+        new Util(new Sender()).index("/home/roart/src/aethermicro/books", true, null, null, null, null);
     }
     
     @Test
     @Order(3)
     public void my33Test() throws Exception {
-        new Util(new Sender()).index(null, true);
+        new Util(new Sender()).index(null, true, null, null, null, null);
     }
     
     @Test
@@ -90,7 +90,7 @@ public class AnIT {
     @Test
     @Order(6)
     public void my6Test() throws Exception {
-        new Util(new Sender()).index("/home/roart/src/aethermicro/books", true);
+        new Util(new Sender()).index("/home/roart/src/aethermicro/books", true, null, null, null, null);
     }
     
     @Test

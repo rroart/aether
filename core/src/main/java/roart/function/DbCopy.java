@@ -31,7 +31,7 @@ public class DbCopy extends AbstractFunction {
         //List<Files> list2 = new IndexFilesDao().getAllFiles();
         IndexFilesDao out = new IndexFilesDao(nodeConf, controlService);
         String src = param.name;
-        String dst = param.add;
+        String dst = param.path;
         IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src, nodeConf, controlService);
         IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst, nodeConf, controlService);
         try {

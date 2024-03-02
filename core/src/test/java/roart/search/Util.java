@@ -40,32 +40,39 @@ public class Util {
         return sender.send(param, "searchmlt");
     }
 
-    public Object filesystemlucenenew(String add, boolean md5checknew) throws Exception {
+    public Object filesystemlucenenew(String add, boolean md5checknew, String suffix) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.FILESYSTEMLUCENENEW;
-        param.add = add;
+        param.path = add;
         param.md5checknew = md5checknew;
-        param.webpath = EurekaConstants.FILESYSTEMLUCENENEW;
+        param.suffix = suffix;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
-    public Object index(String add, boolean reindex) throws Exception {
+    public Object index(String add, boolean reindex, String suffix, String language, String lowerdate, String higherdate) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.INDEX;
-        param.add = add;
+        param.path = add;
         param.reindex = reindex;
-        param.webpath = EurekaConstants.INDEX;
+        param.suffix = suffix;
+        param.lang = language;
+        param.reindex = reindex;
+        param.lowerdate = lowerdate;
+        param.higherdate = higherdate;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
-    public Object traverse(String add) throws Exception {
+    public Object traverse(String add, String suffix) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.FILESYSTEM;
-        param.add = add;
-        param.webpath = EurekaConstants.TRAVERSE;
+        param.path = add;
+        param.suffix = suffix;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -78,62 +85,13 @@ public class Util {
         return sender.send(param, param.webpath);
     }
 
-    // called from ui
-    // returns list: indexed file list
-    // returns list: tika timeout
-    // returns list: not indexed
-    // returns list: deleted
-    public Object indexsuffix(String suffix, boolean reindex) throws Exception {
-        ServiceParam param = new ServiceParam();
-        param.config = getConfig();
-        param.function = Function.REINDEXSUFFIX;
-        param.suffix = suffix;
-        param.reindex = reindex;
-        param.webpath = EurekaConstants.INDEXSUFFIX;
-        return sender.send(param, param.webpath);
-    }
-
-    public Object reindexdatelower(String date, boolean reindex) throws Exception {
-        ServiceParam param = new ServiceParam();
-        param.config = getConfig();
-        param.function = Function.REINDEXDATE;
-        param.lowerdate = date;
-        param.reindex = reindex;
-        param.webpath = EurekaConstants.REINDEXDATELOWER;
-        return sender.send(param, param.webpath);
-    }
-
-    public Object reindexdatehigher(String date, boolean reindex) throws Exception {
-        ServiceParam param = new ServiceParam();
-        param.config = getConfig();
-        param.function = Function.REINDEXDATE;
-        param.higherdate = date;
-        param.reindex = reindex;
-        param.webpath = EurekaConstants.REINDEXDATEHIGHER;
-        return sender.send(param, param.webpath);
-    }
-
-    // called from ui
-    // returns list: indexed file list
-    // returns list: tika timeout
-    // returns list: file does not exist
-    // returns list: not indexed
-    public Object reindexlanguage(String lang) throws Exception {
-        ServiceParam param = new ServiceParam();
-        param.config = getConfig();
-        param.function = Function.REINDEXLANGUAGE;
-        param.lang = lang;
-        param.webpath = EurekaConstants.REINDEXLANGUAGE;
-        return sender.send(param, param.webpath);
-    }
-
     // old, probably oudated by overlapping?
     public Object cleanupfs(String dirname) {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.CONSISTENTCLEAN;
-        param.dirname = dirname;
-        param.webpath = EurekaConstants.CLEANUPFS;
+        param.path = dirname;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -142,7 +100,7 @@ public class Util {
         param.name = db;
         param.config = getConfig();
         param.function = Function.DBCHECK;
-        param.webpath = EurekaConstants.DBCHECK;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -151,7 +109,7 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.MEMORYUSAGE;
-        param.webpath = EurekaConstants.MEMORYUSAGE;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -162,24 +120,24 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.NOTINDEXED;
-        param.webpath = EurekaConstants.NOTINDEXED;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
-    public Object dbindex(String md5) throws Exception {
+    public Object dbindex(String search) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.DBINDEX;
-        param.md5 = md5;
-        param.webpath = EurekaConstants.DBINDEX;
+        param.search = search;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
-    public Object dbsearch(String md5) throws Exception {
+    public Object dbsearch(String search) throws Exception {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.DBSEARCH;
-        param.md5 = md5;
-        param.webpath = EurekaConstants.DBSEARCH;
+        param.search = search;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -189,7 +147,7 @@ public class Util {
         param.config = getConfig();
         param.function = Function.CONSISTENTCLEAN;
         param.clean = clean;
-        param.webpath = EurekaConstants.CONSISTENTCLEAN;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -197,8 +155,8 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         //param.function = Function.DELETEPATHDB;
-        param.file = path;
-        param.webpath = EurekaConstants.DELETEPATHDB;
+        param.path = path;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
@@ -207,7 +165,7 @@ public class Util {
         param.name = db;
         param.config = getConfig();
         param.function = Function.DBCLEAR;
-        param.webpath = EurekaConstants.DBCLEAR;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
     
@@ -216,7 +174,7 @@ public class Util {
         param.name = db;
         param.config = getConfig();
         param.function = Function.DBDROP;
-        param.webpath = EurekaConstants.DBDROP;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
     
@@ -224,9 +182,9 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.DBCOPY;
-        param.webpath = EurekaConstants.DBCOPY;
+        param.webpath = EurekaConstants.TASK;
         param.name = in;
-        param.add = out;
+        param.path = out;
         return sender.send(param, param.webpath);
     }
     
@@ -234,7 +192,7 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.INDEXCLEAN;
-        param.webpath = EurekaConstants.INDEXCLEAN;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
     

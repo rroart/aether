@@ -9,15 +9,15 @@ public class FunctionFactory {
     public static AbstractFunction factory(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
         switch (param.function) {
         case INDEX:
-            return new Index(param, nodeConf, controlService);
+            if (param.reindex) {
+                return new Reindex(param, nodeConf, controlService);
+            } else {
+                return new Index(param, nodeConf, controlService);
+            }
         case FILESYSTEM:
             return new Filesystem(param, nodeConf, controlService);
         case OVERLAPPING:
             return new Overlapping(param, nodeConf, controlService);
-        case REINDEXSUFFIX:
-            return new ReindexSuffix(param, nodeConf, controlService);
-        case REINDEXDATE:
-            return new ReindexDate(param, nodeConf, controlService);
         case MEMORYUSAGE:
             return new MemoryUsage(param, nodeConf, controlService);
         case NOTINDEXED:
@@ -36,8 +36,6 @@ public class FunctionFactory {
             return new Search(param, nodeConf, controlService);
         case SEARCHSIMILAR:
             return new SearchSimilar(param, nodeConf, controlService);
-        case REINDEXLANGUAGE:
-            return new ReindexLanguage(param, nodeConf, controlService);
         case DELETEPATH:
             return new DeletePath(param, nodeConf, controlService);
         case DBCLEAR:

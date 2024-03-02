@@ -70,7 +70,7 @@ function getdata(resultitemtable) {
       continue;
     }
     const row = rest[j].items;
-    console.log(row);
+    //console.log(row);
     const newrow = [];
     for(let i = 0; i < head.items.length; i++) {
       newrow[head.items[i]] = row[i];

@@ -11,6 +11,7 @@ import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
+import roart.util.FilterUtil;
 
 public class DbSearch extends AbstractFunction {
 
@@ -23,7 +24,10 @@ public class DbSearch extends AbstractFunction {
         IndexFilesDao indexFilesDao = new IndexFilesDao(nodeConf, controlService);
         try {
             ServiceParam.Function function = param.function;
-            String searchexpr = param.file;
+            String searchexpr = param.search;
+            if (searchexpr == null) {
+                searchexpr = ":";
+            }
             int i = searchexpr.indexOf(":");
             log.info("function " + function + " " + searchexpr);
 
@@ -38,8 +42,14 @@ public class DbSearch extends AbstractFunction {
 
             List<IndexFiles> indexes = indexFilesDao.getAll();
             for (IndexFiles index : indexes) {
+                if (!FilterUtil.indexFilter(index, param)) {
+                    continue;
+                }
                 boolean match = false;
 
+                if (field.equals("")) {
+                    match = true;
+                }
                 if (field.equals("indexed")) {
                     Boolean indexedB = index.getIndexed();
                     boolean ind = indexedB != null && indexedB.booleanValue();
