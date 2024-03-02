@@ -3,6 +3,7 @@ package roart.search.solr;
 import java.io.*;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
@@ -135,7 +136,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
             }
             doc.addField(SearchConstants.CONTENT, content);
             if (metadata != null) {
-                log.info("with md " + metadata);
+                log.debug("with md {}", Arrays.asList(metadata));
                 //doc.addField(Constants.METADATA, metadata);
                 String[] md = metadata;
                 for (String name : md) {
