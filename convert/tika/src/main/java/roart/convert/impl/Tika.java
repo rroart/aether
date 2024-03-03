@@ -137,6 +137,7 @@ public class Tika extends ConvertAbstract {
             } else {
                 log.error("Tika with no output for {}", inmd5);
                 result.error = ret[0];
+                param2[1] = result;
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
