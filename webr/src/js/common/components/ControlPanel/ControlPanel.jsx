@@ -26,7 +26,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   const [ language, setLanguage ] = useState( null );
   const [ search, setSearch ] = useState( null );
 
-  function filesystemlucenenew(md5checknew, props) {
+    function filesystemlucenenew(props, md5checknew) {
     console.log(path);
     var param = new ServiceParam();
     param.config = props.config;
@@ -81,11 +81,21 @@ function ControlPanel ({ props, callbackNewTab }) {
     setParam(param);
   }
 
-    function consistentclean(clean, props) {
+    function consistentclean(props, clean) {
     var param = new ServiceParam();
     param.config = props.config;
     param.function = "CONSISTENTCLEAN";
       param.clean = clean;
+      param.path = path;
+    param.webpath = "task";
+    setParam(param);
+    return;
+  }
+
+    function overlapping(props) {
+    var param = new ServiceParam();
+    param.config = props.config;
+    param.function = "OVERLAPPING";
       param.path = path;
     param.webpath = "task";
     setParam(param);
@@ -214,7 +224,7 @@ function ControlPanel ({ props, callbackNewTab }) {
         <Form>
           Path
           <FormControl
-            onChange = { (e) => setPath(e.target.value) }
+              onChange = { (e) => { e.preventDefault(); setPath(e.target.value) } }
             type="text"/>
         </Form>
       </Nav>
@@ -222,7 +232,7 @@ function ControlPanel ({ props, callbackNewTab }) {
         <Form>
            Suffix
           <FormControl
-            onChange = { (e) => setSuffix(e.target.value) }
+              onChange = { (e) => { e.preventDefault(); setSuffix(e.target.value) } }
             type="text"/>
         </Form>
       </Nav>
@@ -230,7 +240,7 @@ function ControlPanel ({ props, callbackNewTab }) {
         <Form>
           Search
           <FormControl
-            onChange = { (e) => setSearch(e.target.value) }
+              onChange = { (e) => { e.preventDefault(); setSearch(e.target.value) } }
             type="text"/>
         </Form>
       </Nav>
@@ -240,14 +250,6 @@ function ControlPanel ({ props, callbackNewTab }) {
                 options={languages}
         />
       </Nav>
-        <Navbar>
-          <Navbar.Brand>
-            Indexing new
-          </Navbar.Brand>
-         <Nav>
-            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(false, props) }>Index filesystem new items</Button>
-        </Nav>
-      </Navbar>
       <Navbar>
            <Navbar.Brand>
             Filesystem add new
@@ -256,59 +258,54 @@ function ControlPanel ({ props, callbackNewTab }) {
             <Button bsStyle="primary" onClick={ (e) => traverse(props) }>Filesystem add new</Button>
          </Nav>
       </Navbar>
-      <Navbar>
-           <Navbar.Brand>
-            Indexed non-indexed
+        <Navbar>
+          <Navbar.Brand>
+            Filesystem add and index
           </Navbar.Brand>
          <Nav>
-            <Button bsStyle="primary" onClick={ (e) => index(false, props) }>Index non-indexed items</Button>
+            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(false, props) }>Index filesystem new items</Button>
+        </Nav>
+         <Nav>
+            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(true, props) }>Index filesystem changed items</Button>
         </Nav>
       </Navbar>
-       <Navbar>
-        <Nav>
-          <Button bsStyle="primary" onClick={ (e) => index(props, false) }>Index</Button>
+      <Navbar>
+           <Navbar.Brand>
+            Index
+           </Navbar.Brand>
+	  <Nav>
+            <Button bsStyle="primary" onClick={ (e) => index(props, false) }>Index</Button>
           <Button bsStyle="primary" onClick={ (e) => index(props, true) }>Reindex</Button>
         </Nav>
       </Navbar>
-       <Navbar>
-        <Nav>
-          <Button bsStyle="primary" onClick={ (e) => deletepathdb(props) }>Get consistency</Button>
-        </Nav>
-         </Navbar>
       <Navbar>
           <Navbar.Brand>
-            Consistency
+            File system consistency
           </Navbar.Brand>
          <Nav>
-              <Button bsStyle="primary" onClick={ (e) => consistentclean(false, props) }>Get consistency</Button>
-              <Button bsStyle="primary" onClick={ (e) => consistentclean(true, props) }>Get consistency and clean</Button>
+             <Button bsStyle="primary" onClick={ (e) => consistentclean(props, false) }>Get consistency</Button>
+             <Button bsStyle="primary" onClick={ (e) => consistentclean(props, true) }>Get consistency and clean</Button>
+              <Button bsStyle="primary" onClick={ (e) => overlapping(props) }>Get duplicates</Button>
         </Nav>
       </Navbar>
       <Navbar>
            <Navbar.Brand>
-            Db check
+            Database
           </Navbar.Brand>
          <Nav>
               <Button bsStyle="primary" onClick={ (e) => dbcheck(props) }>Db check</Button>
-        </Nav>
-      </Navbar>
-      <Navbar>
-         <Navbar.Brand>
-            Get not yet indexed
-          </Navbar.Brand>
-        <Nav>
+          <Button bsStyle="primary" onClick={ (e) => dbindex(props) }>Database search index</Button>
+          <Button bsStyle="primary" onClick={ (e) => dbsearch(props) }>Database search</Button>
+          <Button bsStyle="primary" onClick={ (e) => deletepathdb(props) }>Delete path</Button>
             <Button bsStyle="primary" onClick={ (e) => notindexed(props) }>Get not yet indexed</Button>
         </Nav>
       </Navbar>
       <Navbar>
+         <Navbar.Brand>
+            Diagnostics
+          </Navbar.Brand>
         <Nav>
             <Button bsStyle="primary" onClick={ (e) => memoryusage(props) }>Memory usage</Button>
-        </Nav>
-      </Navbar>
-      <Navbar>
-        <Nav>
-          <Button bsStyle="primary" onClick={ (e) => dbindex(props) }>Database search index</Button>
-          <Button bsStyle="primary" onClick={ (e) => dbsearch(props) }>Database search</Button>
         </Nav>
       </Navbar>
     </div>

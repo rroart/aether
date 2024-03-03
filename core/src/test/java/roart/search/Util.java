@@ -81,7 +81,7 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.OVERLAPPING;
-        param.webpath = EurekaConstants.OVERLAPPING;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
 
