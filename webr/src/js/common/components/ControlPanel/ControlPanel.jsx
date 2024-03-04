@@ -35,6 +35,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     param.md5checknew = md5checknew;
     param.suffix = suffix;
     param.webpath = "task";
+    param.async = true;
     setParam(param);
   }
 
@@ -171,7 +172,7 @@ function ControlPanel ({ props, callbackNewTab }) {
 
   const callbackAsync = useCallback( (uuid) => {
     uuids.add(uuid);
-    setUuids([...uuids]);
+      setUuids(new Set([...uuids]));
   }, [uuids]);
 
   const getTask = async () => {
@@ -263,10 +264,10 @@ function ControlPanel ({ props, callbackNewTab }) {
             Filesystem add and index
           </Navbar.Brand>
          <Nav>
-            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(false, props) }>Index filesystem new items</Button>
+             <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(props, false) }>Index filesystem new items</Button>
         </Nav>
          <Nav>
-            <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(true, props) }>Index filesystem changed items</Button>
+             <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(props, true) }>Index filesystem changed items</Button>
         </Nav>
       </Navbar>
       <Navbar>
