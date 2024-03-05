@@ -22,4 +22,5 @@ module common.collections {
     requires com.fasterxml.jackson.databind;
     requires org.slf4j;
     requires common.communication.model;
+    requires redisson;
 }

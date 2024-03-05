@@ -177,6 +177,7 @@
     <springintegration.version>6.1.0</springintegration.version>
     <springrabbit.version>3.0.4</springrabbit.version>
     <redisclient.version>4.4.3</redisclient.version>
+    <redisson.version>3.27.1</redisson.version>
     <chill.version>0.10.0</chill.version>
     <jersey.version>2.36</jersey.version>
   </properties>
