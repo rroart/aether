@@ -32,7 +32,7 @@ public class MyRedisQueue<T> extends MyQueue<T> {
     @Override
     public T poll() {
         try (Jedis jedis = pool.getResource()) {
-            String polled = jedis.rpop(queuename);
+            String polled = jedis.lpop(queuename);
             if ("nil".equals(polled)) {
                 polled = null;
             }
