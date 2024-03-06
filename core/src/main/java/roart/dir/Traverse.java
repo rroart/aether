@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.HashMap;
 
@@ -210,6 +211,14 @@ public class Traverse {
         indexFilesDao.getAllFiles();
         List<IndexFiles> indexes = indexFilesDao.getAll();
         for (IndexFiles index : indexes) {
+            while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
+                log.info("Convert queue heavy loaded, sleeping");
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
             if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                 break;
             }
