@@ -168,6 +168,7 @@ public class ServiceController implements CommandLineRunner {
         return result;
     }
 
+    @Deprecated
     @RequestMapping(value = "/" + EurekaConstants.CLEANUPFS,
             method = RequestMethod.POST)
     public ServiceResult getCleanupFS(@RequestBody ServiceParam param)

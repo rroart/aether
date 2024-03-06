@@ -90,8 +90,8 @@ def traverseP(add):
         #param.conf = getConfig();
         #param.str = traverse;
         #param.traversetype = type;
-        param = { "function" : "FILESYSTEM", "add" : add }
-        response = request.request1(param, "traverse")
+        param = { "function" : "FILESYSTEM", "path" : add }
+        response = request.request1(param, "task")
         print(response)
         print(response.json())
         print(response.json()['list'])
@@ -122,8 +122,8 @@ def indexP(add, reindex):
         #param.conf = getConfig();
         #param.str = index;
         #param.indextype = type;
-        param = { "function" : "INDEX", "add" : add, "reindex" : reindex }
-        response = request.request1(param, "index")
+        param = { "function" : "INDEX", "path" : add, "reindex" : reindex }
+        response = request.request1(param, "task")
         print(response)
         print(response.json())
         print(response.json()['list'])
@@ -146,56 +146,63 @@ def indexP(add, reindex):
         plt.show()
 
 def filesystemlucenenew(add, md5checknew):
-        param = { "function" : "FILESYSTEMLUCENENEW", "add" : add, "md5checknew" : md5checknew }
-        response = request.request1(param, "filesystemlucenenew")
+        param = { "function" : "FILESYSTEMLUCENENEW", "path" : add, "md5checknew" : md5checknew }
+        response = request.request1(param, "task")
 
 def consistentclean(clean):
         param = { "function" : "CONSISTENTCLEAN", "clean" : clean }
-        response = request.request1(param, "consistentclean")
+        response = request.request1(param, "task")
         pltshow(response)
 
 def dbcheck(db):
         param = { "function" : "DBCHECK", "name" : db }
-        response = request.request1(param, "dbcheck")
+        response = request.request1(param, "task")
         pltshow(response)
 
 def deletepathdb(path):
         param = { "function" : "DELETEPATH", "file" : path }
-        response = request.request1(param, "deletepathdb")
+        response = request.request1(param, "task")
 
 def overlapping():
-         response = request.request1({ "function" : "OVERLAPPING" }, "overlapping" )
+         response = request.request1({ "function" : "OVERLAPPING" }, "task" )
          
 def indexclean():
-        response = request.request1({ "function" : "INDEXCLEAN" }, "indexclean")
+        response = request.request1({ "function" : "INDEXCLEAN" }, "task")
 
 def indexdelete():
-        response = request.request1({ "function" : "INDEXDELETE" }, "indexdelete")
+        response = request.request1({ "function" : "INDEXDELETE" }, "task")
 
 def dbclear(db):
-        response = request.request1({ "function" : "DBCLEAR", "name" : db }, "dbclear")
+        response = request.request1({ "function" : "DBCLEAR", "name" : db }, "task")
 
 def dbdrop(db):
-        response = request.request1({ "function" : "DBDROP", "name" : db }, "dbdrop")
+        response = request.request1({ "function" : "DBDROP", "name" : db }, "task")
         
 def dbcopy(src, dst):
-        response = request.request1({ "function" : "DBCOPY", "name" : src, "add" : dst }, "dbcopy")
+        response = request.request1({ "function" : "DBCOPY", "name" : src, "add" : dst }, "task")
         
 def dbsearch(string = None):
-        response = request.request1({ "function" : "DBSEARCH", "file" : string }, "dbsearch")
+        response = request.request1({ "function" : "DBSEARCH", "file" : string }, "task")
         print(response)
         print(response.json())
         
 def dbindex(string = None):
-        response = request.request1({ "function" : "DBINDEX", "file" : string }, "dbindex")
+        response = request.request1({ "function" : "DBINDEX", "file" : string }, "task")
         print(response)
         print(response.json())
         
 def notindexed():
-        response = request.request1({ "function" : "NOTINDEXED" }, "notindexed")
+        response = request.request1({ "function" : "NOTINDEXED" }, "task")
         print(response)
         print(response.json())
 
+def gettasks():
+    response = request.request1({}, "gettasks")
+    resp = response.json()
+    print("Tasks", len(resp));
+    for e in resp:
+        print(e)
+        
 def pltshow(response):
         l = response.json()['list']
         val1 = l[0][0]['items']

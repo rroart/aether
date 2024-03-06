@@ -200,7 +200,7 @@ public class Util {
         ServiceParam param = new ServiceParam();
         param.config = getConfig();
         param.function = Function.INDEXDELETE;
-        param.webpath = EurekaConstants.INDEXDELETE;
+        param.webpath = EurekaConstants.TASK;
         return sender.send(param, param.webpath);
     }
     

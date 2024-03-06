@@ -18,6 +18,7 @@ public class AnotherIT {
         LocalFSUtil.rmdir("/tmp/ae");
         LocalFSUtil.mkdir("/tmp/ae");
         LocalFSUtil.mkdir("/tmp/ae/d");
+        LocalFSUtil.write("/tmp/ae/f0.pdf", "");
         LocalFSUtil.write("/tmp/ae/f1.txt", TestFiles.file1content);
         LocalFSUtil.write("/tmp/ae/f2.txt", TestFiles.file2content);
         LocalFSUtil.write("/tmp/ae/d/f3.txt", TestFiles.file1content);

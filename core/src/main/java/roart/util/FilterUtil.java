@@ -100,15 +100,17 @@ public class FilterUtil {
         }
 
         String timestamp = index.getTimestamp();
-        if (timestamp != null) {
-            if (tslow != null && new Long(timestamp).compareTo(tslow) >= 0) {
+        if (tslow != null || tshigh != null) {
+            if (timestamp != null) {
+                if (tslow != null && new Long(timestamp).compareTo(tslow) >= 0) {
+                    return false;
+                }
+                if (tshigh != null && new Long(timestamp).compareTo(tshigh) <= 0) {
+                    return false;
+                }
+            } else {
                 return false;
             }
-            if (tshigh != null && new Long(timestamp).compareTo(tshigh) <= 0) {
-                return false;
-            }
-        } else {
-            return false;
         }
         return true;
     }
