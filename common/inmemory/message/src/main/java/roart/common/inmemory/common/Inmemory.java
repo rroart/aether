@@ -63,6 +63,10 @@ public abstract class Inmemory {
             }
             if (count == 0) {
                 count = 1;
+                InmemoryMessage messageKey = new InmemoryMessage(getServer(), id, count, md5);
+                String messageKeyString = JsonUtil.convert(messageKey);
+                String value = InmemoryUtil.convertWithCharset("".getBytes());
+                set(messageKeyString, value);               
             }
             inputStream.close();
             InmemoryMessage message = new InmemoryMessage(getServer(), id, count, md5);
