@@ -56,8 +56,13 @@ public abstract class Inmemory {
                     String value = InmemoryUtil.convertWithCharset(bytes);
                     set(messageKeyString, value);               
                 }
-                doRead = bytes.length == limit || bytes.length == 0;
-                count++;
+                doRead = bytes.length == limit;
+                if (bytes.length > 0) {
+                    count++;
+                }
+            }
+            if (count == 0) {
+                count = 1;
             }
             inputStream.close();
             InmemoryMessage message = new InmemoryMessage(getServer(), id, count, md5);
@@ -102,6 +107,13 @@ public abstract class Inmemory {
             InmemoryMessage messkageKey = new InmemoryMessage(m.getServer(), m.getId(), i, m.getMd5());
             String messageKeyString = JsonUtil.convert(messkageKey);
             String string = get(messageKeyString);
+            if (string == null) {
+                log.error("NULL {}", m.getId());
+                log.error("NULL {}", m.getMd5());
+                log.error("NULL {}", m.getCount());
+                log.error("NULL {}", i);                
+                log.error("NULL {}", messageKeyString);
+            }
             InputStream anInputStream = new ByteArrayInputStream(InmemoryUtil.convertWithCharset(string));
             if (i == 0) {
                 inputStream = anInputStream;
