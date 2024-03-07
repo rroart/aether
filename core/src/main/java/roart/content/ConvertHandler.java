@@ -2,7 +2,6 @@ package roart.content;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,17 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.classification.ClassifyDao;
-import roart.common.collections.MyList;
 import roart.common.collections.MyQueue;
-import roart.common.collections.impl.MyLists;
 import roart.common.collections.impl.MyQueues;
 import roart.common.config.Converter;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.OperationConstants;
 import roart.common.convert.ConvertResult;
-import roart.common.filesystem.MyFile;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
@@ -34,12 +29,13 @@ import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
+import roart.common.queue.QueueElement;
+import roart.common.synchronization.MyLock;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
 import roart.common.util.QueueUtil;
 import roart.convert.ConvertDAO;
 import roart.database.IndexFilesDao;
-import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
 import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
@@ -47,8 +43,6 @@ import roart.lang.LanguageDetectFactory;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.util.ISBNUtil;
-import roart.common.queue.QueueElement;
-import roart.common.synchronization.MyLock;
 
 public class ConvertHandler {
     private Logger log = LoggerFactory.getLogger(ConvertHandler.class);
@@ -66,7 +60,6 @@ public class ConvertHandler {
     public void doConvert(QueueElement element, NodeConfig nodeConf) {
         FileObject filename = element.getFileObject();
         String md5 = element.getMd5();
-        // TODO trylock
         IndexFiles index = element.getIndexFiles();
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
@@ -235,7 +228,6 @@ public class ConvertHandler {
     public void doConvertQueue(QueueElement element, NodeConfig nodeConf) {
         FileObject filename = element.getFileObject();
         String md5 = element.getMd5();
-        // TODO trylock
         IndexFiles index = element.getIndexFiles();
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
