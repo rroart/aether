@@ -65,7 +65,6 @@ public class ConvertHandler {
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = element.getMetadata();
         log.info("incTikas {}", filename);
-        new Queues(nodeConf, controlService).convertTimeoutQueue.add(filename.toString());
         int size = 0;
 
         //String content = new TikaHandler().getString(el.fsData.getInputStream());
@@ -180,6 +179,7 @@ public class ConvertHandler {
             //elem.setMessage(str);
             new Queues(nodeConf, controlService).getIndexQueue().offer(element);
             //Queues.getIndexQueueSize().incrementAndGet();
+            new IndexFilesDao(nodeConf, controlService).add(index);
 
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);
@@ -197,10 +197,6 @@ public class ConvertHandler {
             // file unlock dbindex
             // config with finegrained distrib
             new IndexFilesDao(nodeConf, controlService).add(index);
-        }
-        boolean success = new Queues(nodeConf, controlService).convertTimeoutQueue.remove(filename.toString());
-        if (!success) {
-            log.error("queue not having {}", filename);
         }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
         MyLock lock = index.getLock();
@@ -232,8 +228,6 @@ public class ConvertHandler {
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = element.getMetadata();
-        log.info("incTikas {}", filename);
-        new Queues(nodeConf, controlService).convertTimeoutQueue.add(filename.toString());
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         int size = 0;
 
@@ -374,17 +368,9 @@ public class ConvertHandler {
             element.getIndexFiles().setClassification(classification);
         }
         
-        // TODO?
-        boolean success = new Queues(nodeConf, controlService).convertTimeoutQueue.remove(filename.toString());
-        if (!success) {
-            log.error("queue not having {}", filename);
-        }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
         
         element.setOpid(null);
-        new Queues(nodeConf, controlService).getIndexQueue().offer(element);
-
-        
     }
 
     private InmemoryMessage handleConvertResult(Map<String, String> metadata, IndexFiles index, ConvertResult result) {

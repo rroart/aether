@@ -58,8 +58,6 @@ public class Queues {
     
     public Set<Set> workQueues = new HashSet();
 
-    public volatile Queue<String> convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
-
     /*
     private volatile AtomicInteger converts = new AtomicInteger(0);
     private volatile AtomicInteger indexs = new AtomicInteger(0);
@@ -190,11 +188,7 @@ public class Queues {
     }
 
     public long runSize() {
-        return getMyConverts().get() + getMyIndexs().get();
-    }
-
-    public void resetConvertTimeoutQueue() {
-        convertTimeoutQueue = new ConcurrentLinkedQueue<String>();
+        return getMyListings().get() + getMyTraverses().get() + getMyConverts().get() + getMyIndexs().get();
     }
 
     public long total() {

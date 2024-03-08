@@ -65,6 +65,15 @@ public class ListQueueRunner implements Runnable {
             Runnable run = () -> {
                 try {
                     while (true) {
+                        if (new Queues(nodeConf, controlService).getListingQueueSize() == 0) {
+                            log.debug("Listing queue empty, sleeping");
+                            try {
+                                TimeUnit.SECONDS.sleep(10);
+                            } catch (InterruptedException e) {
+                                log.error(Constants.EXCEPTION, e);
+                            }
+                            continue;
+                        }
                         if (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
                             log.info("List queue heavy loaded, sleeping");
                             try {
@@ -75,7 +84,7 @@ public class ListQueueRunner implements Runnable {
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
-                            log.info("Traverse queue heavy loaded, sleeping");
+                            log.debug("Traverse queue heavy loaded, sleeping");
                             try {
                                 TimeUnit.SECONDS.sleep(1);
                             } catch (InterruptedException e) {
@@ -83,7 +92,9 @@ public class ListQueueRunner implements Runnable {
                             }
                             continue;
                         }
+                        new Queues(nodeConf, controlService).incListings();
                         doListingTimeout();
+                        new Queues(nodeConf, controlService).decListings();
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
@@ -98,6 +109,12 @@ public class ListQueueRunner implements Runnable {
             };      
             new Thread(run).start();
         }
+        try {
+            TimeUnit.DAYS.sleep(1000);
+            return;
+        } catch (InterruptedException e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
     }
  
     private void doListingTimeout() {

@@ -72,8 +72,18 @@ public class TraverseQueueRunner implements Runnable {
                     Queue<MyLock> locks = new ConcurrentLinkedQueue<>();
                     Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
                     while (true) {
+                        try {
+                            unlock(locks);
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e); 
+                        }                   
+                        try {
+                            unlockSemaphores(semaphores);
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e); 
+                        }                   
                         if (new Queues(nodeConf, controlService).getTraverseQueueSize() == 0) {
-                            log.info("Traverse queue empty, sleeping");
+                            log.debug("Traverse queue empty, sleeping");
                             try {
                                 TimeUnit.SECONDS.sleep(10);
                             } catch (InterruptedException e) {
@@ -90,7 +100,9 @@ public class TraverseQueueRunner implements Runnable {
                             }
                             continue;
                         }
+                        new Queues(nodeConf, controlService).incTraverses();
                         doTraverseTimeout(locks, semaphores);
+                        new Queues(nodeConf, controlService).decTraverses();
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
@@ -106,6 +118,12 @@ public class TraverseQueueRunner implements Runnable {
             };      
             new Thread(run).start();
         }
+        try {
+            TimeUnit.DAYS.sleep(1000);
+            return;
+        } catch (InterruptedException e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
     }
 
     private void doTraverseTimeout(Queue<MyLock> locks, Queue<MySemaphore> semaphores) {
@@ -164,16 +182,6 @@ public class TraverseQueueRunner implements Runnable {
         finally {
             log.debug("myend");            
         }
-        try {
-            unlock(locks);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e); 
-        }                   
-        try {
-            unlockSemaphores(semaphores);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e); 
-        }                   
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {

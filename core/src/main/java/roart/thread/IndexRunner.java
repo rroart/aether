@@ -45,8 +45,13 @@ public class IndexRunner implements Runnable {
                 try {
                     Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
                     while (true) {
+                        try {
+                            unlockSemaphores(semaphores);
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e); 
+                        }                   
                         if (new Queues(nodeConf, controlService).getIndexQueueSize() == 0) {
-                            log.info("Index queue empty, sleeping");
+                            log.debug("Index queue empty, sleeping");
                             try {
                                 TimeUnit.SECONDS.sleep(10);
                             } catch (InterruptedException e) {
@@ -54,7 +59,9 @@ public class IndexRunner implements Runnable {
                             }
                             continue;
                         }
+                        new Queues(nodeConf, controlService).incIndexs();
                         doIndexTimeout(semaphores);
+                        new Queues(nodeConf, controlService).decIndexs();
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
@@ -70,6 +77,12 @@ public class IndexRunner implements Runnable {
             };      
             new Thread(run).start();
         }
+        try {
+            TimeUnit.DAYS.sleep(1000);
+            return;
+        } catch (InterruptedException e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
     }
 
     public String doIndexTimeout(Queue<MySemaphore> semaphores) {
@@ -112,16 +125,12 @@ public class IndexRunner implements Runnable {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             queue.offer(el);
+            return null;
         }
         IndexTimeout indexRunnable = new IndexTimeout(el);
         Thread indexWorker = new Thread(indexRunnable);
         indexWorker.setName("IndexTimeout");
-        indexWorker.start();
-        try {
-            unlockSemaphores(semaphores);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e); 
-        }                   
+        indexWorker.run();
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {

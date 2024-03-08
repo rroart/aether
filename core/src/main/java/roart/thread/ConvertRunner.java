@@ -65,8 +65,13 @@ public class ConvertRunner implements Runnable {
                 try {
                     Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
                     while (true) {
+                        try {
+                            unlockSemaphores(semaphores);
+                        } catch (Exception e) {
+                            log.error(Constants.EXCEPTION, e); 
+                        }                   
                         if (new Queues(nodeConf, controlService).getConvertQueueSize() == 0) {
-                            log.info("Convert queue empty, sleeping");
+                            log.debug("Convert queue empty, sleeping");
                             try {
                                 TimeUnit.SECONDS.sleep(10);
                             } catch (InterruptedException e) {
@@ -83,7 +88,9 @@ public class ConvertRunner implements Runnable {
                             }
                             continue;
                         }
+                        new Queues(nodeConf, controlService).incConverts();
                         doConvertTimeout(nodeConf, semaphores);
+                        new Queues(nodeConf, controlService).decConverts();
                     }
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
@@ -99,6 +106,12 @@ public class ConvertRunner implements Runnable {
             };      
             new Thread(run).start();
         }
+        try {
+            TimeUnit.DAYS.sleep(1000);
+            return;
+        } catch (InterruptedException e) {
+            log.error(Constants.EXCEPTION, e); 
+        }                   
     }
 
     public String doConvertTimeout(NodeConfig nodeConf, Queue<MySemaphore> semaphores) {
@@ -150,16 +163,12 @@ public class ConvertRunner implements Runnable {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             queue.offer(element);
+            return null;
         }
         ConvertTimeout convertRunnable = new ConvertTimeout(element);
         Thread convertWorker = new Thread(convertRunnable);
         convertWorker.setName("ConvertTimeout");
-        convertWorker.start();
-        try {
-            unlockSemaphores(semaphores);
-        } catch (Exception e) {
-            log.error(Constants.EXCEPTION, e); 
-        }                   
+        convertWorker.run();
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {

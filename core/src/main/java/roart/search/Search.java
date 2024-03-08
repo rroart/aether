@@ -65,7 +65,7 @@ public class Search {
             return;
         }
         // vulnerable spot
-        new Queues(nodeConf, controlService).incIndexs();
+        //new Queues(nodeConf, controlService).incIndexs();
         long now = System.currentTimeMillis();
 
         String md5 = el.getMd5();
@@ -121,7 +121,6 @@ public class Search {
         // file unlock dbindex
         // config with finegrained distrib
         new IndexFilesDao(nodeConf, controlService).add(dbindex);
-        new Queues(nodeConf, controlService).decIndexs();
 
         if (el.getMessage() != null) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
@@ -175,7 +174,7 @@ public class Search {
         //LockUtils.fix(el.getIndexFiles(), nodeConf.getLocker(), controlService.curatorClient);
         if (el.getOpid() == null) {
             // vulnerable spot
-            new Queues(nodeConf, controlService).incIndexs();
+            //new Queues(nodeConf, controlService).incIndexs();
 
             String md5 = el.getMd5();
             //InputStream inputStream = el.inputStream;
@@ -235,7 +234,6 @@ public class Search {
             // file unlock dbindex
             // config with finegrained distrib
             new IndexFilesDao(nodeConf, controlService).add(dbindex);
-            new Queues(nodeConf, controlService).decIndexs();
 
             if (el.getMessage() != null) {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());

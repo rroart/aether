@@ -234,7 +234,7 @@ public class IndexFilesDao {
                     log.error("lockqueue null for {}", i.getMd5());
                 }
             } else {
-                log.error("lock null for {}", i.getMd5());
+                //log.error("lock null for {}", i.getMd5());
             }
             //dbi.remove(key);
             dbitemp.remove(key);

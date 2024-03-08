@@ -142,8 +142,10 @@ public abstract class AbstractFunction {
 
             TimeUnit.SECONDS.sleep(5);
 
-            while ((traversecount.get() + queues.queueSize() + queues.runSize()) > 0 /* || filestodoset.size() > 0 */) {
-                log.info("My queues {} {} {} {} {} {}", traversecount.get(), queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getIndexQueueSize(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+            while (traversecount.get() > 0 /* || filestodoset.size() > 0 */) {
+                log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
+                log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+                log.info("My queues {} {} {}", traversecount.get(), queues.work(), queues.total());
 		// queues.getConvertQueueSize()
                 TimeUnit.SECONDS.sleep(5);
                 queues.queueStat();
@@ -165,16 +167,14 @@ public abstract class AbstractFunction {
                     }
                 }
             }
+            log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
+            log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+            log.info("My queues {} {} {}", traversecount.get(), queues.work(), queues.total());
 
             for (String str : filestodoSet) {
                 log.info("todo {}", str);
             }
 
-            for (String ret : queues.convertTimeoutQueue) {
-                retConvertTimeoutList.add(new ResultItem(ret));
-            }
-
-            queues.resetConvertTimeoutQueue();
             //IndexFilesDao.commit();
             while (indexFilesDao.dirty() > 0) {
                 TimeUnit.SECONDS.sleep(60);

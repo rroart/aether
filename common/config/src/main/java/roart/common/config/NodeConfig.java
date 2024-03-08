@@ -171,7 +171,7 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public String getLocker() {
-        if (wantDistributedTraverse()) {
+        if (wantDistributedTraverse() && Constants.HAZELCAST.equals(getInmemoryServer())) {
             return roart.common.constants.Constants.HAZELCAST;
         }
         if (getZookeeper() != null && !isLocalhost()) {
