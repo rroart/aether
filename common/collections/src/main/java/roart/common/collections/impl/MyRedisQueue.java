@@ -42,7 +42,6 @@ public class MyRedisQueue<T> extends MyQueue<T> {
 
     @Override
     public int size() {
-        // TODO not working
         try (Jedis jedis = pool.getResource()) {
             return (int) jedis.llen(queuename);
         }
