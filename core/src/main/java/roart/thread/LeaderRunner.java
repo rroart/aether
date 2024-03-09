@@ -20,6 +20,7 @@ import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
 import roart.common.leader.MyLeader;
+import roart.common.collections.MyCollections;
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueues;
 import roart.common.config.NodeConfig;
@@ -166,8 +167,11 @@ public class LeaderRunner implements Runnable {
                 curatorClient.delete().forPath(path + "/" + child);                                
                 log.info("Delete old lock or data {}", child);
                 if (deleteQueue) {
-                    MyQueue queue = MyQueues.get(child, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
-                    queue.destroy();
+                    // TODO MyAtomicLong
+                    // TODO distr
+                    MyCollections.remove(child);
+                    //MyQueue queue =  MyCollections.get(child, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                    //queue.destroy();
                 }
                 if (deleteInmemory && data != null && data.length > 0) {
                     String str = new String(data);

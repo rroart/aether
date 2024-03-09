@@ -27,6 +27,7 @@ import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyHazelcastRemover;
 import roart.common.collections.impl.MyLists;
+import roart.common.collections.impl.MyRedisRemover;
 import roart.common.collections.impl.MySets;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
@@ -435,10 +436,13 @@ public class ControlService {
     }
 
     private void configDistributed() {
-        if ((nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) && nodeConf.isInmemoryServerHazelcast()) {
-            GetHazelcastInstance.instance(nodeConf);
-            MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance(nodeConf));
+        if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync())  {
+            if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+                MyCollections.remover = new MyRedisRemover(nodeConf.getInmemoryRedis());
+            }
+            if (Constants.HAZELCAST.equals(nodeConf.getInmemoryServer())) {
+                MyCollections.remover = new MyHazelcastRemover(GetHazelcastInstance.instance(nodeConf));
+            }
         }
     }
-
 }
