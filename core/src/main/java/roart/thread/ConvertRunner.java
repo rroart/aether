@@ -27,6 +27,7 @@ import roart.content.ConvertHandler;
 import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
+import roart.util.TraverseUtil;
 
 public class ConvertRunner implements Runnable {
 
@@ -123,11 +124,13 @@ public class ConvertRunner implements Runnable {
 
             public void run() {
                 try {
+                    TraverseUtil.doCounters(el, 1, nodeConf, controlService);
                     if (nodeConf.wantAsync()) {
                         new ConvertHandler(nodeConf, controlService).doConvertQueue(el, nodeConf);
                     } else {
                         new ConvertHandler(nodeConf, controlService).doConvert(el, nodeConf);
                     }
+                    TraverseUtil.doCounters(el, -1, nodeConf, controlService);
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
                 }

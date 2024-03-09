@@ -17,6 +17,7 @@ import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.search.Search;
 import roart.service.ControlService;
+import roart.util.TraverseUtil;
 
 public class IndexRunner implements Runnable {
 
@@ -94,11 +95,13 @@ public class IndexRunner implements Runnable {
 
             public void run() {
                 try {
+                    TraverseUtil.doCounters(el, 1, nodeConf, controlService);
                     if (nodeConf.wantAsync()) {
                         new Search(nodeConf, controlService).indexmeQueue(el);
                     } else {
                         new Search(nodeConf, controlService).indexme(el);
                     }
+                    TraverseUtil.doCounters(el, -1, nodeConf, controlService);
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
                 }

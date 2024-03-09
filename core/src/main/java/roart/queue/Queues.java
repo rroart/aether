@@ -56,7 +56,7 @@ public class Queues {
     public volatile Queue<ListQueueElement> listQueue = new ConcurrentLinkedQueue<>();
 */
     
-    public Set<Set> workQueues = new HashSet();
+    //public Set<Set> workQueues = new HashSet();
 
     /*
     private volatile AtomicInteger converts = new AtomicInteger(0);
@@ -172,11 +172,11 @@ public class Queues {
     }
 
     public String webstat() {
-        return "q " + total() + " l " + getListings() + " \nf " + getTraverses() + " " + work() + "\nc " + getConvertQueueSize() + " " + getConverts() + "\ni " + getIndexQueueSize() + " " + getIndexs();
+        return "q " + total() + " l " + getListingQueueSize() + " " + getListings() + " \nf " + getTraverseQueueSize() + " " + getTraverses() + " " + "\nc " + getConvertQueueSize() + " " + getConverts() + "\ni " + getIndexQueueSize() + " " + getIndexs();
     }
 
     public String stat() {
-        return "q " + total() + " l " + getListings() + " f " + getTraverses() + " " + work() + " c " + getConvertQueueSize() + " " + getConverts() + " i " + getIndexQueueSize() + " " + getIndexs();
+        return "q " + total() + " l " + getListingQueueSize() + " " + getListings() + " f " + getTraverseQueueSize() + " " + getTraverses() + " " + " c " + getConvertQueueSize() + " " + getConverts() + " i " + getIndexQueueSize() + " " + getIndexs();
     }
 
     public void queueStat() {
@@ -196,6 +196,7 @@ public class Queues {
         return total.get();
     }     
 
+    /*
     public int work() {
         int ret = 0;
         for (Set set : workQueues) {
@@ -203,6 +204,7 @@ public class Queues {
         }
         return ret;
     }
+    */
 
     public MyQueue<QueueElement> getListingQueue() {
         String queueid = QueueUtil.getListingQueue();

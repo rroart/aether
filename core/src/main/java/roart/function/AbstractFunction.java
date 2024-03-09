@@ -116,14 +116,14 @@ public abstract class AbstractFunction {
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
             MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
             //MyLists.put(retnotlistid, retnotlist);
-            queues.workQueues.add(filestodoSet);
+            //queues.workQueues.add(filestodoSet);
 
             List<String> queueList = new ArrayList<>();
             //queueList.add(filesdonesetid);
             queueList.add(notfoundsetid);
             queueList.add(retlistid);
             queueList.add(retnotlistid);
-            queueList.add(traversecountid);
+            queueList.add(traversecountid); // TODO not a queue, rename
             queueList.add(filestodosetid);
             queueList.add(filesdonesetid);
             //queueList.add();
@@ -140,12 +140,12 @@ public abstract class AbstractFunction {
             traverse(filename, traverse);
             //traverse.traverse(filename, this);
 
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(15);
 
             while (traversecount.get() > 0 /* || filestodoset.size() > 0 */) {
                 log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
                 log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
-                log.info("My queues {} {} {}", traversecount.get(), queues.work(), queues.total());
+                log.info("My queues {} {}", traversecount.get(), queues.total());
 		// queues.getConvertQueueSize()
                 TimeUnit.SECONDS.sleep(5);
                 queues.queueStat();
@@ -169,7 +169,7 @@ public abstract class AbstractFunction {
             }
             log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
             log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
-            log.info("My queues {} {} {}", traversecount.get(), queues.work(), queues.total());
+            log.info("My queues {} {}", traversecount.get(), queues.total());
 
             for (String str : filestodoSet) {
                 log.info("todo {}", str);
@@ -195,8 +195,9 @@ public abstract class AbstractFunction {
             MyCollections.remove(notfoundsetid);
             MyCollections.remove(filesetnewid);
             MyCollections.remove(filestodosetid);
+            MyCollections.remove(filesdonesetid);
             MyCollections.remove(traversecountid);
-            queues.workQueues.remove(filestodoSet);
+            //queues.workQueues.remove(filestodoSet);
 
             retlistlist.add(retList);
             retlistlist.add(retNotList);
