@@ -1,6 +1,7 @@
 package roart.common.collections.impl;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,6 +49,13 @@ public class MyRedisMap<K, V> extends MyMap<K, V>  {
     public Map<K, V> getAll() {
         try (Jedis jedis = pool.getResource()) {
             return (Map<K, V>) jedis.hgetAll(mapname);
+        }
+    }
+
+    @Override
+    public Set<K> keySet() {
+        try (Jedis jedis = pool.getResource()) {
+            return (Set<K>) jedis.hkeys(mapname);
         }
     }
 

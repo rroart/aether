@@ -1,6 +1,7 @@
 package roart.common.collections;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ public abstract class MyMap<K, V> {
     public abstract V put(K k, V v);
     public abstract V remove(K k);
     public abstract Map<K, V> getAll();
+    public abstract Set<K> keySet();
     public abstract int size();
     public abstract void clear();
     public abstract void destroy();

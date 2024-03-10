@@ -1,6 +1,7 @@
 package roart.common.collections.impl;
 
 import java.util.Map;
+import java.util.Set;
 
 import roart.common.collections.MyMap;
 import roart.common.constants.Constants;
@@ -41,6 +42,11 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     @Override
     public Map<K, V> getAll() {
         return map;
+    }
+    
+    @Override
+    public Set<K> keySet() {
+        return map.keySet();
     }
     
     @Override

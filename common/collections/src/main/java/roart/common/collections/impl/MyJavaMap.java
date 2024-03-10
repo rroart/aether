@@ -2,6 +2,7 @@ package roart.common.collections.impl;
 
 import java.util.HashMap;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -27,6 +28,11 @@ public class MyJavaMap<K, V> extends MyMap<K, V> {
     @Override
     public Map<K, V> getAll() {
         return map;
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return map.keySet();
     }
 
     @Override
