@@ -2,6 +2,7 @@ package roart.thread;
 
 import java.util.Set;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.hcutil.GetHazelcastInstance;
+import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.common.leader.impl.MyLeaderFactory;
 import roart.common.model.ConfigParam;
@@ -21,6 +23,7 @@ import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
 import roart.common.leader.MyLeader;
 import roart.common.collections.MyCollections;
+import roart.common.collections.MyMap;
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueues;
 import roart.common.config.NodeConfig;
@@ -30,6 +33,7 @@ import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class LeaderRunner implements Runnable {
@@ -53,6 +57,8 @@ public class LeaderRunner implements Runnable {
 
     @SuppressWarnings("squid:S2189")
     public void run() {
+        MyMap<String,InmemoryMessage> resultMap = new Queues(nodeConf, controlService).getResultMap();
+        Map<String, Long> keyMap = new HashMap<>();
         MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         while (true) {
             boolean leading = leader.await(1, TimeUnit.SECONDS);
@@ -127,7 +133,7 @@ public class LeaderRunner implements Runnable {
                         log.error(Constants.EXCEPTION, e);
                         break;
                     }
-
+                    deleteOldResults(resultMap, keyMap);
                 }
             }
             log.info("Leader status: {}", leader.isLeader());
@@ -136,6 +142,25 @@ public class LeaderRunner implements Runnable {
             } catch (InterruptedException e) {
                 log.error(Constants.EXCEPTION, e);
             }
+        }
+    }
+
+    private void deleteOldResults(MyMap<String, InmemoryMessage> resultMap, Map<String, Long> keyMap) {
+        Set<String> removes = new HashSet<>();
+        for (String key : resultMap.keySet()) {
+            Long time = System.currentTimeMillis();
+            Long timestamp = keyMap.get(key);
+            if (timestamp == null) {
+                keyMap.put(key, time);
+            } else {
+                if ((timestamp - time) / 1000 > 120) {
+                    removes.add(key);
+                }
+            }
+        }
+        for (String remove : removes) {
+            resultMap.remove(remove);
+            log.info("Removed old result {}", remove);
         }
     }
 
