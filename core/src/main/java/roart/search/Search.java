@@ -120,6 +120,7 @@ public class Search {
         dbindex.setPriority(1);
         // file unlock dbindex
         // config with finegrained distrib
+        dbindex.setChecked("" + System.currentTimeMillis());             
         new IndexFilesDao(nodeConf, controlService).add(dbindex);
 
         if (el.getMessage() != null) {
@@ -233,6 +234,7 @@ public class Search {
             dbindex.setPriority(1);
             // file unlock dbindex
             // config with finegrained distrib
+            dbindex.setChecked("" + System.currentTimeMillis());             
             new IndexFilesDao(nodeConf, controlService).add(dbindex);
 
             if (el.getMessage() != null) {

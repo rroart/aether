@@ -204,6 +204,7 @@ public class ConvertHandler {
             index.setPriority(1);
             // file unlock dbindex
             // config with finegrained distrib
+            index.setChecked("" + System.currentTimeMillis());             
             new IndexFilesDao(nodeConf, controlService).add(index);
         }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
@@ -372,6 +373,7 @@ public class ConvertHandler {
                 index.setPriority(1);
                 // file unlock dbindex
                 // config with finegrained distrib
+                index.setChecked("" + System.currentTimeMillis());             
                 new IndexFilesDao(nodeConf, controlService).add(index);
                 return; // TODO
             }

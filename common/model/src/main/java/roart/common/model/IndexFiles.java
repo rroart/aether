@@ -237,22 +237,24 @@ public class IndexFiles {
         this.filelocations = filelocations;
     }
 
-    public void addFile(FileLocation filelocation) {
-        changed |= true;
+    public boolean addFile(FileLocation filelocation) {
         boolean added = filelocations.add(filelocation);
         if (!added) {
             log.error("Already added {} {}", md5, filelocation);
+        } else {
+            changed |= true;
         }
         log.debug("fls {}", filelocations);
         if (filelocation.toString().length() > 500) {
             log.error("filename {}", filelocation.toString().length());                
         }
+        return !added;
         //IndexFilesDao.ensureExistence(filelocation);
     }
 
-    public void addFile(String nodename, String filename) {
+    public boolean addFile(String nodename, String filename) {
         FileLocation fl = new FileLocation(nodename, filename);
-        addFile(fl);
+        return addFile(fl);
     }
 
     public boolean removeFile(String nodename, String filename) {

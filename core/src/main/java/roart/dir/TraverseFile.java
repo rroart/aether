@@ -141,6 +141,7 @@ public class TraverseFile {
                         }
                         oldindexfiles.removeFile(filename.location.toString(), filename.object);
                         if (!oldindexfiles.getFilelocations().isEmpty()) {
+                            oldindexfiles.setChecked("" + System.currentTimeMillis());                    
                             indexFilesDao.add(oldindexfiles);
                             //oldindexfiles.setFlock(folock);
                             oldindexfiles.setSemaphorelock(oldLock);
@@ -174,16 +175,18 @@ public class TraverseFile {
                     indexfiles.setCreated("" + System.currentTimeMillis());
                     created = true;
                 }
-                if (indexfiles == null /* && md5 != null*/) {
+                if (false && indexfiles == null /* && md5 != null*/) {
                     // not used
                     indexfiles = new IndexFiles(md5);
                     indexfiles.setCreated("" + System.currentTimeMillis());             
                 }
                 log.debug("Files {}", indexfiles);
-                indexfiles.setChecked("" + System.currentTimeMillis());
                 // modify write file
                 // todo duplicate add
-                indexfiles.addFile(filename.location.toString(), filename.object);
+                boolean added = indexfiles.addFile(filename.location.toString(), filename.object);
+                if (added) {
+                    indexfiles.setChecked("" + System.currentTimeMillis());                    
+                }
                 //indexFilesDao.addTemp(indexfiles);
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
@@ -223,7 +226,10 @@ public class TraverseFile {
             // table, and the files here just got created
             if (indexfiles.getFilelocations().isEmpty()) {
                 log.error("existing file only");
-                indexfiles.addFile(filename.location.toString(), filename.object);
+                boolean added = indexfiles.addFile(filename.location.toString(), filename.object);
+                if (added) {
+                    indexfiles.setChecked("" + System.currentTimeMillis());                    
+                }
                 //indexFilesDao.addTemp(indexfiles);
             }
             log.debug("info {} {}", md5, indexfiles);
@@ -246,7 +252,7 @@ public class TraverseFile {
                 indexFilesDao.add(indexfiles);                
                 indexsingle(trav, md5, filename, indexfiles);
             } else {
-                indexFilesDao.add(indexfiles);                
+                indexFilesDao.add(indexfiles);
             }
             log.info("Added {}", indexfiles);
         } catch (Exception e) {
@@ -605,6 +611,7 @@ public class TraverseFile {
                         }
                         oldindexfiles.removeFile(filename.location.toString(), filename.object);
                         if (!oldindexfiles.getFilelocations().isEmpty()) {
+                            oldindexfiles.setChecked("" + System.currentTimeMillis());                    
                             indexFilesDao.add(oldindexfiles);
                             //oldindexfiles.setFlock(folock);
                             oldindexfiles.setObjectlock(new MyObjectLockData(oldMd5));
@@ -639,16 +646,18 @@ public class TraverseFile {
                     created = true;
                     traverseElement.setIndexFiles(indexfiles);
                 }
-                if (indexfiles == null /* && md5 != null*/) {
+                if (false && indexfiles == null /* && md5 != null*/) {
                     // not used
                     indexfiles = new IndexFiles(md5);
                     indexfiles.setCreated("" + System.currentTimeMillis());             
                 }
                 log.debug("Files {}", indexfiles);
-                indexfiles.setChecked("" + System.currentTimeMillis());
                 // modify write file
                 // todo duplicate add
-                indexfiles.addFile(filename.location.toString(), filename.object);
+                boolean added = indexfiles.addFile(filename.location.toString(), filename.object);
+                if (added) {
+                    indexfiles.setChecked("" + System.currentTimeMillis());                    
+                }
                 //indexFilesDao.addTemp(indexfiles);
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
@@ -692,7 +701,10 @@ public class TraverseFile {
             // table, and the files here just got created
             if (indexfiles.getFilelocations().isEmpty()) {
                 log.error("existing file only");
-                indexfiles.addFile(filename.location.toString(), filename.object);
+                boolean added = indexfiles.addFile(filename.location.toString(), filename.object);
+                if (added) {
+                    indexfiles.setChecked("" + System.currentTimeMillis());                    
+                }
                 //indexFilesDao.addTemp(indexfiles);
             }
             log.debug("info {} {}", md5, indexfiles);
@@ -716,8 +728,8 @@ public class TraverseFile {
                 traverseElement.setOpid(null);
                 indexsingle(traverseElement, md5, filename, indexfiles);
             } else {
-                indexFilesDao.add(indexfiles);                
-            }
+                indexFilesDao.add(indexfiles);
+           }
             log.info("Added {}", indexfiles);
         } catch (Exception e) {
             log.info("Error: {}", e.getMessage());
