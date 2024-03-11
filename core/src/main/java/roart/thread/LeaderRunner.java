@@ -158,9 +158,13 @@ public class LeaderRunner implements Runnable {
                 }
             }
         }
-        for (String remove : removes) {
-            resultMap.remove(remove);
-            log.info("Removed old result {}", remove);
+        for (String id : removes) {
+            // duplicated
+            Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+            InmemoryMessage msg = resultMap.remove(id, InmemoryMessage.class);
+            inmemory.delete(msg);
+            resultMap.remove(id);
+            log.info("Removed old result {}", id);
         }
     }
 
