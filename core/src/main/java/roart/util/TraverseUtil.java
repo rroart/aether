@@ -27,6 +27,7 @@ import roart.dir.Traverse;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.hcutil.GetHazelcastInstance;
+import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
@@ -230,7 +231,7 @@ public class TraverseUtil {
     }
 
     public static void doCounters(QueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
-        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyAtomicLong total = MyAtomicLongs.get(new Queues(null, null).prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         total.addAndGet(value);
         MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         count.addAndGet(value);
