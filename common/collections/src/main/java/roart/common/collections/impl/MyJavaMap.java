@@ -21,6 +21,11 @@ public class MyJavaMap<K, V> extends MyMap<K, V> {
         return map.remove(k);
     }
     
+    @Override
+    public V remove(K k, Class<V> clazz) {
+        return map.remove(k);
+    }
+    
     public MyJavaMap() {
         map = new HashMap<K, V>();
     }

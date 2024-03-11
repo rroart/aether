@@ -40,6 +40,16 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     }
 
     @Override
+    public V remove(K k, Class<V> clazz) {
+        try {
+            return map.remove(k);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return null;
+    }
+
+    @Override
     public Map<K, V> getAll() {
         return map;
     }

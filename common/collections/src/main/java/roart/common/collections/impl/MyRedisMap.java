@@ -46,6 +46,11 @@ public class MyRedisMap<K, V> extends MyMap<K, V>  {
     }
 
     @Override
+    public V remove(K k, Class<V> clazz) {
+        return JsonUtil.convertnostrip((String) remove(k), clazz);
+    }
+
+    @Override
     public Map<K, V> getAll() {
         try (Jedis jedis = pool.getResource()) {
             return (Map<K, V>) jedis.hgetAll(mapname);
