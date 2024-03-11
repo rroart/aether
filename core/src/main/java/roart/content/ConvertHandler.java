@@ -72,6 +72,14 @@ public class ConvertHandler {
         //InmemoryMessage message = inmemory.send(el.md5, content);
         // may not exist
         InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(element.getFileObject());
+        if (message == null) {
+            MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            notfoundset.offer(filename.toString());            
+            index.setPriority(1);
+            new IndexFilesDao(nodeConf, controlService).add(index);
+            log.error("File not found {}", filename.toString());
+            return;
+        }
         element.setMessage(message);
         element.getIndexFiles().setFailedreason(null);
 
@@ -245,6 +253,14 @@ public class ConvertHandler {
             Map<String, InmemoryMessage> map = element.getFileSystemMessageResult().message;
             element.setFileSystemMessageResult(null);
             InmemoryMessage message = map.get(element.getFileObject().object);
+            if (message == null) {
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                notfoundset.offer(filename.toString());            
+                index.setPriority(1);
+                new IndexFilesDao(nodeConf, controlService).add(index);
+                log.error("File not found {}", filename.toString());
+                return;
+            }
             element.setMessage(message);
 
             element.getIndexFiles().setFailedreason(null);
