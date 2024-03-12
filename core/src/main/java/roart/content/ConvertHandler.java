@@ -64,6 +64,8 @@ public class ConvertHandler {
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = element.getMetadata();
+        MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+        filestodoset.offer(element.getFileObject().toString());
         log.info("incTikas {}", filename);
         int size = 0;
 
@@ -242,6 +244,8 @@ public class ConvertHandler {
         int size = 0;
 
         if (element.getOpid() == null) {
+            MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            filestodoset.offer(element.getFileObject().toString());
 
             //String content = new TikaHandler().getString(el.fsData.getInputStream());
             //Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());

@@ -138,6 +138,8 @@ public class Search {
         } else {
             log.error("Missing lock");
         }
+        MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+        filesdoneset.offer(filename.toString());
     }
 
     public ResultItem[] searchme(String str, String searchtype) {
@@ -245,7 +247,10 @@ public class Search {
                 } catch (Exception e) {
                     log.info(Constants.EXCEPTION, e);
                 }
-        }
+            }
+
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            filesdoneset.offer(filename.toString());
 
             MyObjectLockData lockdata = dbindex.getObjectlock();
             if (lockdata != null) {
