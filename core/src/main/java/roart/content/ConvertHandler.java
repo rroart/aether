@@ -205,6 +205,7 @@ public class ConvertHandler {
             // file unlock dbindex
             // config with finegrained distrib
             index.setChecked("" + System.currentTimeMillis());             
+            
             new IndexFilesDao(nodeConf, controlService).add(index);
         }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
@@ -389,6 +390,8 @@ public class ConvertHandler {
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
         
         element.setOpid(null);
+        new Queues(nodeConf, controlService).getIndexQueue().offer(element);
+
     }
 
     private InmemoryMessage handleConvertResult(Map<String, String> metadata, IndexFiles index, ConvertResult result) {
