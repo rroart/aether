@@ -172,11 +172,11 @@ public class Queues {
     }
 
     public String webstat() {
-        return "q " + total() + " l " + getListingQueueSize() + " " + getListings() + " \nf " + getTraverseQueueSize() + " " + getTraverses() + " " + "\nc " + getConvertQueueSize() + " " + getConverts() + "\ni " + getIndexQueueSize() + " " + getIndexs();
+        return "q " + total() + " l " + getListingQueueSize() + " " + getListings() + " \nf " + getTraverseQueueSize() + " " + getTraverses() + "  \nc " + getConvertQueueSize() + " " + getConverts() + " \ni " + getIndexQueueSize() + " " + getIndexs();
     }
 
     public String stat() {
-        return "q " + total() + " l " + getListingQueueSize() + " " + getListings() + " f " + getTraverseQueueSize() + " " + getTraverses() + " " + " c " + getConvertQueueSize() + " " + getConverts() + " i " + getIndexQueueSize() + " " + getIndexs();
+        return "q " + total() + " l " + getListingQueueSize() + " " + getListings() + " f " + getTraverseQueueSize() + " " + getTraverses() + " c " + getConvertQueueSize() + " " + getConverts() + " i " + getIndexQueueSize() + " " + getIndexs();
     }
 
     public void queueStat() {
