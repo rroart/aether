@@ -47,6 +47,7 @@ import roart.common.database.DatabaseLanguagesResult;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
@@ -55,6 +56,7 @@ import roart.common.searchengine.SearchEngineSearchResult;
 import roart.common.service.ServiceParam;
 import roart.common.service.ServiceResult;
 import roart.common.util.FsUtil;
+import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
 import roart.config.MyXMLConfig;
 import roart.content.ClientHandler;
@@ -309,7 +311,7 @@ public class ServiceController implements CommandLineRunner {
         return new HashSet<>();
     }
 
-    @RequestMapping(value = "/" + EurekaConstants.TASK + "/@id",
+    @RequestMapping(value = "/" + EurekaConstants.TASK + "/{id}",
             method = RequestMethod.GET)
     public ServiceResult getTask(@PathVariable String id)
             throws Exception {
@@ -317,19 +319,20 @@ public class ServiceController implements CommandLineRunner {
         try {
             MyMap<String,InmemoryMessage> resultMap = new Queues(nodeConf, controlService).getResultMap();
             if (resultMap.getAll().containsKey(id)) {
-                // todo find and remove return result;
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-                InmemoryMessage msg = resultMap.remove(id);
-                String string = inmemory.getInputStream(msg).toString();
+                InmemoryMessage msg = resultMap.remove(id, InmemoryMessage.class);
+                InputStream is = inmemory.getInputStream(msg);
                 inmemory.delete(msg);
                 resultMap.remove(id);
-                result = JsonUtil.convert(string, ServiceResult.class);
+                String string = InmemoryUtil.convertWithCharset(is.readAllBytes());
+
+                        result = JsonUtil.convert(string, ServiceResult.class);
                 return result;
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
-        return null;
+        return result;
     }
 
     // TODO move this

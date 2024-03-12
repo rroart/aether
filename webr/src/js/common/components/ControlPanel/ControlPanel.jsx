@@ -159,6 +159,7 @@ function ControlPanel ({ props, callbackNewTab }) {
       if (param.async === true) {
         callbackAsync(result.uuid);
       } else {
+        console.log("resultlist" + result.list);
         const tables = MyTable.getTabNew(result.list, Date.now(), callbackNewTab, props);
         callbackNewTab(tables);
       }
@@ -171,25 +172,29 @@ function ControlPanel ({ props, callbackNewTab }) {
   }, []);
 
   const callbackAsync = useCallback( (uuid) => {
+    console.log("typeof" + (typeof uuids));
     uuids.add(uuid);
       setUuids(new Set([...uuids]));
   }, [uuids]);
 
   const getTask = async () => {
-    for (let id in uuids) {
-    const url = Client.geturl("/task/" + id);
-    const settings = {
-      method: 'GET',
-    };
-    const res = await fetch(url, settings);
-    const data = await res.json();
-    if (data != null) {
-      const tables = MyTable.getTabNew(data.list, Date.now(), callbackNewTab, props);
-      callbackNewTab(tables);
-      uuids.delete(id);
-    }
-    setUuids([...uuids]);
-
+    for (const id of uuids) {
+      const url = Client.geturl("/task/" + id);
+      console.log("uuids"+ url);
+      const settings = {
+        method: 'GET',
+      };
+      const res = await fetch(url, settings);
+      const data = await res.json();
+      console.log(data);
+      if (data.list != null) {
+        console.log(data);
+        console.log(JSON.stringify(data));
+        const tables = MyTable.getTabNew(data.list, Date.now(), callbackNewTab, props);
+        callbackNewTab(tables);
+        uuids.delete(id);
+      }
+      setUuids(new Set([...uuids]));
     }
   };
 
