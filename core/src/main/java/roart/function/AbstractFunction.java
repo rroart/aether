@@ -13,11 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MyCollections;
 import roart.common.collections.MyList;
+import roart.common.collections.MyMap;
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyLists;
+import roart.common.collections.impl.MyMaps;
 import roart.common.collections.impl.MyQueues;
 import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
@@ -111,6 +113,9 @@ public abstract class AbstractFunction {
             String traversecountid = QueueUtil.traversecount(myid);
             MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
 
+            MyMap<String, Long> mymaps = queues.getTraverseCountMap();
+            mymaps.put(traversecountid, System.currentTimeMillis());
+            
             String filestodosetid = QueueUtil.filestodoQueue(myid);
             MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
@@ -166,6 +171,7 @@ public abstract class AbstractFunction {
                         controlService.curatorClient.setData().forPath(path);
                     }
                 }
+                mymaps.put(traversecountid, System.currentTimeMillis());
             }
             log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
             log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
@@ -198,7 +204,8 @@ public abstract class AbstractFunction {
             MyCollections.remove(filesdonesetid);
             MyCollections.remove(traversecountid);
             //queues.workQueues.remove(filestodoSet);
-
+            mymaps.remove(traversecountid);
+            
             retlistlist.add(retList);
             retlistlist.add(retNotList);
             retlistlist.add(retNewFilesList);

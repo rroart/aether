@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -192,8 +193,14 @@ public class Queues {
     }
 
     public long total() {
-        MyAtomicLong total = MyAtomicLongs.get(prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
-        return total.get();
+        MyMap<String, Long> mymaps = getTraverseCountMap();
+        Set<String> keys = mymaps.keySet();
+        long total = 0;
+        for (String key : keys) {
+            MyAtomicLong traversecount = MyAtomicLongs.get(key, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            total += traversecount.get();
+        }
+        return total;
     }     
 
     /*
@@ -237,6 +244,11 @@ public class Queues {
     
     public MyMap<String, InmemoryMessage> getResultMap() {
         String mapid = QueueUtil.getResultMap();
+        return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+    }
+    
+    public MyMap<String, Long> getTraverseCountMap() {
+        String mapid = QueueUtil.getTraverseCountMap();
         return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
     

@@ -64,6 +64,10 @@ public class QueueUtil {
         return prefix() + Constants.RESULTMAP;
     }
 
+    public static String getTraverseCountMap() {
+        return prefix() + Constants.TRAVERSECOUNTMAP;
+    }
+
     /*
     public static String filesetnewQueue(String myid) {
         return prefix() + Constants.FILESETNEWID + myid;
