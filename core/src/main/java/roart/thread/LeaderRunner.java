@@ -135,7 +135,11 @@ public class LeaderRunner implements Runnable {
                         break;
                     }
                     deleteOldResults(resultMap, keyMap);
-                    deleteOldTraverseCounts(traverseCountMap);
+                    try {
+                        deleteOldTraverseCounts(traverseCountMap, curatorClient);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
                 }
             }
             log.info("Leader status: {}", leader.isLeader());
@@ -170,12 +174,12 @@ public class LeaderRunner implements Runnable {
         }
     }
 
-    private void deleteOldTraverseCounts(MyMap<String,Long> traverseCountMap) {
+    private void deleteOldTraverseCounts(MyMap<String,Long> traverseCountMap, CuratorFramework curatorClient) throws Exception {
         Map<String, Long> map = traverseCountMap.getAll();
         Set<String> removes = new HashSet<>();
         for (String key : traverseCountMap.keySet()) {
             Long time = System.currentTimeMillis();
-            Long timestamp = map.get(key);
+            Long timestamp = Long.valueOf(map.get(key));
             if ((timestamp - time) / 1000 > 120) {
                 removes.add(key);
             }
@@ -184,6 +188,12 @@ public class LeaderRunner implements Runnable {
             // duplicated
             traverseCountMap.remove(id);
             log.info("Removed old traverse {}", id);
+            String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + id;
+            Stat b = curatorClient.checkExists().forPath(path);
+            if (b == null) {
+                continue;
+            }
+            curatorClient.delete().forPath(path );                                            
         }
     }
 
