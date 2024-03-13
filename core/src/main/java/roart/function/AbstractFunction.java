@@ -78,8 +78,6 @@ public abstract class AbstractFunction {
             List<List> retlistlist = new ArrayList<>();
             List<ResultItem> retList = new ArrayList<>();
             retList.add(IndexFiles.getHeader());
-            List<ResultItem> retTikaTimeoutList = new ArrayList<>();
-            retTikaTimeoutList.add(new ResultItem("Tika timeout"));
             List<ResultItem> retConvertTimeoutList = new ArrayList<>();
             retConvertTimeoutList.add(new ResultItem("Convert timeout"));
             List<ResultItem> retNotList = new ArrayList<>();
@@ -90,6 +88,10 @@ public abstract class AbstractFunction {
             retDeletedList.add(new ResultItem("Deleted"));
             List<ResultItem> retNotExistList = new ArrayList<>();
             retNotExistList.add(new ResultItem("File does not exist"));
+            List<ResultItem> retNotConvertedList = new ArrayList<>();
+            retNotConvertedList.add(new ResultItem("File not converted"));
+            List<String> retChangedList = new ArrayList<>();
+            retChangedList.add("File changed");
             List<String> notfoundList = new ArrayList<>();
             List<String> newfileList = new ArrayList<>();
             Queues queues = new Queues(nodeConf, controlService);
@@ -113,13 +115,23 @@ public abstract class AbstractFunction {
             String traversecountid = QueueUtil.traversecount(myid);
             MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
 
-            MyMap<String, Long> mymaps = queues.getTraverseCountMap();
-            mymaps.put(traversecountid, System.currentTimeMillis());
+            MyMap<String, String> mymaps = queues.getTraverseCountMap();
+            mymaps.put(traversecountid, "" + System.currentTimeMillis());
             
             String filestodosetid = QueueUtil.filestodoQueue(myid);
             MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
             MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+
+            String deletedsetid = QueueUtil.deletedQueue(myid);
+            MyQueue<ResultItem> deletedQueue = MyQueues.get(deletedsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+
+            String changedsetid = QueueUtil.changedQueue(myid);
+            MyQueue<String> changedQueue = MyQueues.get(changedsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+
+            String notconvertedsetid = QueueUtil.notconvertedQueue(myid);
+            MyQueue<ResultItem> notconvertedQueue = MyQueues.get(notconvertedsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+
             //MyLists.put(retnotlistid, retnotlist);
             //queues.workQueues.add(filestodoSet);
 
@@ -131,8 +143,9 @@ public abstract class AbstractFunction {
             queueList.add(traversecountid); // TODO not a queue, rename
             queueList.add(filestodosetid);
             queueList.add(filesdonesetid);
-            //queueList.add();
-            //queueList.add();
+            queueList.add(deletedsetid);
+            queueList.add(changedsetid);
+            queueList.add(notconvertedsetid);
             
             Traverse traverse = new Traverse(myid, el, nodeConf.getDirListNot(), traversecountid, false, nodeConf, controlService);
 
@@ -147,21 +160,14 @@ public abstract class AbstractFunction {
 
             TimeUnit.SECONDS.sleep(15);
 
-            while (traversecount.get() > 0 /* || filestodoset.size() > 0 */) {
-                log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
-                log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
-                log.info("My queues {} {}", traversecount.get(), queues.total());
+            boolean doLoop = true;
+            
+            while (doLoop /* || filestodoset.size() > 0 */) {
+                mylogs(queues, traversecount);
 		// queues.getConvertQueueSize()
                 TimeUnit.SECONDS.sleep(5);
-                queues.queueStat();
-                fromQueueToList(retList, retQueue, ResultItem.class);
-                fromQueueToList(retNotList, retnotQueue, ResultItem.class);
-                fromQueueToList(filestodoSet, filestodoQueue, String.class);
-                Set<String> filesdoneSet = new HashSet<>();
-                fromQueueToList(filesdoneSet, filesdoneQueue, String.class);
-                filestodoSet.removeAll(filesdoneSet);
-                fromQueueToList(newfileList, newfileQueue, String.class);
-                fromQueueToList(notfoundList, notfoundQueue, String.class);
+                fetchFromQueues(filestodoSet, retList, retNotList, notfoundList, newfileList, retDeletedList, retChangedList, retNotConvertedList, newfileQueue,
+                        notfoundQueue, retQueue, retnotQueue, filestodoQueue, filesdoneQueue, deletedQueue, changedQueue, notconvertedQueue);
                 for (String queue : queueList) {
                     String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + queue;
                     Stat stat = controlService.curatorClient.checkExists().forPath(path);
@@ -171,11 +177,15 @@ public abstract class AbstractFunction {
                         controlService.curatorClient.setData().forPath(path);
                     }
                 }
-                mymaps.put(traversecountid, System.currentTimeMillis());
+                mymaps.put(traversecountid, "" + System.currentTimeMillis());
+                doLoop = traversecount.get() > 0;
             }
-            log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
-            log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
-            log.info("My queues {} {}", traversecount.get(), queues.total());
+            
+            TimeUnit.SECONDS.sleep(15);
+
+            mylogs(queues, traversecount);
+            fetchFromQueues(filestodoSet, retList, retNotList, notfoundList, newfileList,retDeletedList, retChangedList, retNotConvertedList, newfileQueue,
+                    notfoundQueue, retQueue, retnotQueue, filestodoQueue, filesdoneQueue, deletedQueue, changedQueue, notconvertedQueue);
 
             for (String str : filestodoSet) {
                 log.info("todo {}", str);
@@ -203,15 +213,45 @@ public abstract class AbstractFunction {
             MyCollections.remove(filestodosetid);
             MyCollections.remove(filesdonesetid);
             MyCollections.remove(traversecountid);
+            MyCollections.remove(deletedsetid);
+            MyCollections.remove(changedsetid);
+            MyCollections.remove(notconvertedsetid);
             //queues.workQueues.remove(filestodoSet);
             mymaps.remove(traversecountid);
+
+            // indexed and not indexed
+            if (retList.size() > 1) {
+                retlistlist.add(retList);
+            }
+            if (retNotList.size() > 1) {            
+                retlistlist.add(retNotList);
+            }
             
-            retlistlist.add(retList);
-            retlistlist.add(retNotList);
-            retlistlist.add(retNewFilesList);
-            retlistlist.add(retDeletedList);
-            retlistlist.add(retTikaTimeoutList);
-            retlistlist.add(retNotExistList);
+            // not used
+            if (retNewFilesList.size() > 1) {            
+                retlistlist.add(retNewFilesList);
+            }
+            
+            // del?
+            if (retDeletedList.size() > 1) {            
+                retlistlist.add(retDeletedList);
+            }
+            
+            // not exist
+            if (retNotExistList.size() > 1) {            
+                retlistlist.add(retNotExistList);
+            }
+            
+            // unconverted
+            if (retNotConvertedList.size() > 1) {            
+                retlistlist.add(retNotConvertedList);
+            }
+            
+            // changed file
+            if (retChangedList.size() > 1) {            
+                retlistlist.add(retChangedList);
+            }
+            
             if (nodeConf.getZookeeper() != null && !nodeConf.wantZookeeperSmall()) {
                 ZKMessageUtil.dorefresh(controlService.nodename);
                 //lock.unlock();
@@ -222,6 +262,30 @@ public abstract class AbstractFunction {
             log.error(Constants.EXCEPTION, e);
         }
         return null;        
+    }
+
+    private void fetchFromQueues(Set<String> filestodoSet, List<ResultItem> retList, List<ResultItem> retNotList,
+            List<String> notfoundList, List<String> newfileList, List<ResultItem> retDeletedList, List<String> retChangedList, List<ResultItem> retNotConvertedList, MyQueue<String> newfileQueue,
+            MyQueue<String> notfoundQueue, MyQueue retQueue, MyQueue<ResultItem> retnotQueue,
+            MyQueue<String> filestodoQueue, MyQueue<String> filesdoneQueue, MyQueue<ResultItem> deletedQueue, MyQueue<String> changedQueue, MyQueue<ResultItem> notconvertedQueue) {
+        fromQueueToList(retList, retQueue, ResultItem.class);
+        fromQueueToList(retNotList, retnotQueue, ResultItem.class);
+        fromQueueToList(filestodoSet, filestodoQueue, String.class);
+        Set<String> filesdoneSet = new HashSet<>();
+        fromQueueToList(filesdoneSet, filesdoneQueue, String.class);
+        filestodoSet.removeAll(filesdoneSet);
+        fromQueueToList(newfileList, newfileQueue, String.class);
+        fromQueueToList(notfoundList, notfoundQueue, String.class);
+        fromQueueToList(retDeletedList, deletedQueue, ResultItem.class);
+        fromQueueToList(retChangedList, changedQueue, String.class);
+        fromQueueToList(retNotConvertedList, notconvertedQueue, ResultItem.class);
+    }
+
+    private void mylogs(Queues queues, MyAtomicLong traversecount) {
+        log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
+        log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+        log.info("My queues {} {}", traversecount.get(), queues.total());
+        queues.queueStat();
     }
 
     private <T> void fromQueueToList(Collection<T> resultList, MyQueue<T> resultQueue, Class<T> clazz) {

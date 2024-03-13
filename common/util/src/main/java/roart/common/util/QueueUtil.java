@@ -13,27 +13,39 @@ public class QueueUtil {
     }
 
     public static String filesetnewQueue(String myid) {
-        return prefix() + Constants.FILESETNEWID + myid;
+        return prefix() + Constants.FILESETNEWQUEUE + myid;
     }
 
     public static String notfoundsetQueue(String myid) {
-        return prefix() + Constants.NOTFOUNDSETID + myid;
+        return prefix() + Constants.NOTFOUNDSETQUEUE + myid;
     }
 
     public static String retlistQueue(String myid) {
-        return prefix() + Constants.RETLISTID + myid;
+        return prefix() + Constants.RETLISTQUEUE + myid;
     }
 
     public static String retlistnotQueue(String myid) {
-        return prefix() + Constants.RETNOTLISTID + myid;
+        return prefix() + Constants.RETNOTLISTQUEUE + myid;
     }
 
     public static String filestodoQueue(String myid) {
-        return prefix() + Constants.FILESTODOSETID + myid;
+        return prefix() + Constants.FILESTODOSETQUEUE + myid;
     }
 
     public static String filesdoneQueue(String myid) {
-        return prefix() + Constants.FILESDONESETID + myid;
+        return prefix() + Constants.FILESDONESETQUEUE + myid;
+    }
+
+    public static String deletedQueue(String myid) {
+        return prefix() + Constants.DELETEDQUEUE + myid;
+    }
+
+    public static String changedQueue(String myid) {
+        return prefix() + Constants.CHANGEDQUEUE + myid;
+    }
+
+    public static String notconvertedQueue(String myid) {
+        return prefix() + Constants.UNCONVERTEDQUEUE + myid;
     }
 
     public static String traversecount(String myid) {

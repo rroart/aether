@@ -36,17 +36,20 @@ public static final String RESULTMAP = "resultmap";
 public static final String TRAVERSECOUNTMAP = "traversecountmap";
 
 public static final String TRAVERSECOUNT = "traversecount";
-public static final String FILESETNEWID = "filesetnewid";
-public static final String NOTFOUNDSETID = "notfoundsetid";
-public static final String RETLISTID = "retlistid";
-public static final String RETNOTLISTID = "retnotlistid";
+public static final String FILESETNEWQUEUE = "filesetnewqueue";
+public static final String NOTFOUNDSETQUEUE = "notfoundsetqueue";
+public static final String RETLISTQUEUE = "retlistqueue";
+public static final String RETNOTLISTQUEUE = "retnotlistqueue";
 public static final String ZOOKEEPER = "zookeeper";
 public static final String CURATOR = "curator";
 public static final String LOCAL = "local";
 public static final String GLOBALLOCK = "globallock";
 public static final String LUCENELOCK = "lucenelock";
-public static final String FILESTODOSETID = "filestodoset";
-public static final String FILESDONESETID = "filesdoneset";
+public static final String FILESTODOSETQUEUE = "filestodoqueue";
+public static final String FILESDONESETQUEUE = "filesdonequeue";
+public static final String DELETEDQUEUE = "deletedqueue";
+public static final String CHANGEDQUEUE = "changedqueue";
+public static final String UNCONVERTEDQUEUE = "unconvertedqueue";
 
 public static final String REDIS = "redis";
 public static final String HAZELCAST = "hazelcast";

@@ -193,7 +193,7 @@ public class Queues {
     }
 
     public long total() {
-        MyMap<String, Long> mymaps = getTraverseCountMap();
+        MyMap<String, String> mymaps = getTraverseCountMap();
         Set<String> keys = mymaps.keySet();
         long total = 0;
         for (String key : keys) {
@@ -247,7 +247,7 @@ public class Queues {
         return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }
     
-    public MyMap<String, Long> getTraverseCountMap() {
+    public MyMap<String, String> getTraverseCountMap() {
         String mapid = QueueUtil.getTraverseCountMap();
         return MyMaps.get(mapid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
     }

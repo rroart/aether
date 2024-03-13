@@ -58,7 +58,7 @@ public class LeaderRunner implements Runnable {
     @SuppressWarnings("squid:S2189")
     public void run() {
         MyMap<String,InmemoryMessage> resultMap = new Queues(nodeConf, controlService).getResultMap();
-        MyMap<String, Long> traverseCountMap = new Queues(nodeConf, controlService).getTraverseCountMap();
+        MyMap<String, String> traverseCountMap = new Queues(nodeConf, controlService).getTraverseCountMap();
         Map<String, Long> keyMap = new HashMap<>();
         MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         while (true) {
@@ -174,8 +174,8 @@ public class LeaderRunner implements Runnable {
         }
     }
 
-    private void deleteOldTraverseCounts(MyMap<String,Long> traverseCountMap, CuratorFramework curatorClient) throws Exception {
-        Map<String, Long> map = traverseCountMap.getAll();
+    private void deleteOldTraverseCounts(MyMap<String, String> traverseCountMap, CuratorFramework curatorClient) throws Exception {
+        Map<String, String> map = traverseCountMap.getAll();
         Set<String> removes = new HashSet<>();
         for (String key : traverseCountMap.keySet()) {
             Long time = System.currentTimeMillis();

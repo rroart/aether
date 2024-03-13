@@ -64,8 +64,6 @@ public class ConvertHandler {
         //List<ResultItem> retlist = el.retlistid;
         //List<ResultItem> retlistnot = el.retlistnotid;
         Map<String, String> metadata = element.getMetadata();
-        MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
-        filestodoset.offer(element.getFileObject().toString());
         log.info("incTikas {}", filename);
         int size = 0;
 
@@ -196,8 +194,8 @@ public class ConvertHandler {
             FileLocation aFl = element.getIndexFiles().getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
-            retlistnot.offer(ri);
+            MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            unconverted.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
                 index.incrFailed();
@@ -244,9 +242,6 @@ public class ConvertHandler {
         int size = 0;
 
         if (element.getOpid() == null) {
-            MyQueue<String> filestodoset = (MyQueue<String>) MyQueues.get(QueueUtil.filestodoQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
-            filestodoset.offer(element.getFileObject().toString());
-
             //String content = new TikaHandler().getString(el.fsData.getInputStream());
             //Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             //InmemoryMessage message = inmemory.send(el.md5, content);
@@ -368,8 +363,8 @@ public class ConvertHandler {
                 FileLocation aFl = element.getIndexFiles().getaFilelocation();
                 ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
                 ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-                MyQueue<ResultItem> retlistnot = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.retlistnotQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
-                retlistnot.offer(ri);
+                MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                unconverted.offer(ri);
                 Boolean isIndexed = index.getIndexed();
                 if (isIndexed == null || isIndexed.booleanValue() == false) {
                     index.incrFailed();

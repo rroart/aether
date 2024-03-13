@@ -31,8 +31,10 @@ import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.util.InmemoryUtil;
+import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
@@ -148,10 +150,16 @@ public class TraverseFile {
                             oldindexfiles.setLockqueue(locks);
                             oldindexfiles.setSemaphorelockqueue(semaphores);
                         } else {
+                            MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                            ResultItem ri = IndexFiles.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
+                            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                            retdeletedlist.offer(ri);
                             indexFilesDao.delete(oldindexfiles);
                             searchDao.deleteme(oldindexfiles.getMd5());
                             oldLock.unlock();
                         }
+                        MyQueue<String> changedlist = MyQueues.get(QueueUtil.changedQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                        changedlist.offer(filename.toString());
                     } else {
                         // TODO break
                         //MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -618,10 +626,16 @@ public class TraverseFile {
                             //oldindexfiles.setLockqueue(locks);
                             //oldindexfiles.setSemaphorelockqueue(semaphores);
                         } else {
+                            MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                            ResultItem ri = IndexFiles.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
+                            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                            retdeletedlist.offer(ri);
                             indexFilesDao.delete(oldindexfiles);
                             searchDao.deleteme(oldindexfiles.getMd5());
                             oldLock.unlock();
                         }
+                        MyQueue<String> changedlist = MyQueues.get(QueueUtil.changedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                        changedlist.offer(filename.toString());
                     } else {
                         // TODO break
                         //MyQueue<TraverseQueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
