@@ -339,6 +339,16 @@ public class ListQueueRunner implements Runnable {
                     if (!FilterUtil.filterSuffix(fo, element.getClientQueueElement())) {
                         continue;
                     }
+                    
+                    while (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
+                        log.debug("Traverse queue heavy loaded, sleeping");
+                        try {
+                            TimeUnit.SECONDS.sleep(1);
+                        } catch (InterruptedException e) {
+                            log.error(Constants.EXCEPTION, e);
+                        }
+                    }
+                    
                     MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                     QueueElement trav = new QueueElement(element.getMyid(), fo, element.getClientQueueElement(), null);
                     TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
