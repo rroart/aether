@@ -96,12 +96,17 @@ def traverseP(add):
         print(response.json())
         print(response.json()['list'])
         l = response.json()['list']
+        if len(l) == 0:
+                return
+        if len(l[0]) == 0:
+                return
         val1 = l[0][0]['items']
         val2 = [ 1 + i for i in range(len(l[0]) - 1 ) ]
         #for i in l:
         #    for j in i:
         #        print(j['items'])
         val3 = [ l[0][i]['items'] for i in range(1, len(l[0])) ]
+        #print("vals", val1, val2, val3)
         fig, ax = plt.subplots() 
         ax.set_axis_off()
         table = ax.table( 
@@ -128,6 +133,10 @@ def indexP(add, reindex):
         print(response.json())
         print(response.json()['list'])
         l = response.json()['list']
+        if len(l) == 0:
+                return
+        if len(l[0]) == 0:
+                return
         val1 = l[0][0]['items']
         val2 = [ 1 + i for i in range(len(l[0]) - 1 ) ]
         #for i in l:
