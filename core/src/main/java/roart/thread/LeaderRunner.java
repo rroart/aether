@@ -25,6 +25,7 @@ import roart.common.leader.MyLeader;
 import roart.common.collections.MyCollections;
 import roart.common.collections.MyMap;
 import roart.common.collections.MyQueue;
+import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyQueues;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -57,10 +58,12 @@ public class LeaderRunner implements Runnable {
 
     @SuppressWarnings("squid:S2189")
     public void run() {
+        Queues queues = new Queues(nodeConf, controlService);
         MyMap<String,InmemoryMessage> resultMap = new Queues(nodeConf, controlService).getResultMap();
         MyMap<String, String> traverseCountMap = new Queues(nodeConf, controlService).getTraverseCountMap();
         Map<String, Long> keyMap = new HashMap<>();
         MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        long qtime = 0;
         while (true) {
             boolean leading = leader.await(1, TimeUnit.SECONDS);
             if (!leading) {
@@ -137,6 +140,15 @@ public class LeaderRunner implements Runnable {
                     deleteOldResults(resultMap, keyMap);
                     try {
                         deleteOldTraverseCounts(traverseCountMap, curatorClient);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
+                    long newTime = System.currentTimeMillis();
+                    try {
+                        if ((newTime - qtime) > 60 * 1000) {
+                            qtime = newTime;
+                            mylogs(queues, curatorClient);
+                        }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                     }
@@ -241,4 +253,43 @@ public class LeaderRunner implements Runnable {
         }
     }
 
+    private void mylogs(Queues queues, CuratorFramework curatorClient) throws Exception {
+        log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
+        log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+        queues.queueStat();
+        String path = "/" + Constants.AETHER + "/" + Constants.QUEUES;
+        Stat b = curatorClient.checkExists().forPath(path);
+        if (b == null) {
+            return;
+        }
+        List<String> children = curatorClient.getChildren().forPath(path);
+        if (!children.isEmpty()) {
+            //log.info("Children {} {}", children.size(), path);
+        }
+        log.debug("Children {}", children.size());
+        for (String child : children) {
+            Stat stat = curatorClient.checkExists().forPath(path + "/" + child);
+            if (stat == null) {
+                log.info("Gone already {}", path + "/" + child);
+                continue;
+            }
+            log.debug("Time {} {}", System.currentTimeMillis(), stat.getMtime());;
+            long time = System.currentTimeMillis() - stat.getMtime();
+            log.debug("Time {}", time);
+            /*
+            if (stat.getNumChildren() > 0) {
+                deleteOld(curatorClient, path + "/" + child, deleteTime, deleteQueue, deleteInmemory);
+                continue;
+            }
+            */
+            if ((stat.getMtime() - System.currentTimeMillis()) < 20 * 60 * 1000) {
+                byte[] data = curatorClient.getData().forPath(path + "/" + child);                                
+                //curatorClient.delete().forPath(path + "/" + child);                                
+                //log.info("Delete old lock or data {}", child);
+                MyQueue queue = MyQueues.get(new String(data), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                log.info("Queue size {} {}", child, queue.size());
+            }
+        }
+        
+    }
 }

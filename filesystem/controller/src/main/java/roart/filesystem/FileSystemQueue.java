@@ -18,6 +18,7 @@ import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemParam;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.queue.QueueElement;
+import org.apache.zookeeper.data.Stat;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.client.HazelcastClient;
@@ -34,14 +35,31 @@ public class FileSystemQueue {
         HazelcastInstance ahz = hz;
         String ip = System.getProperty("IP");
         String fs = System.getProperty("FS");
-        String path = System.getProperty("PATH");
-        log.info("Using {} {} {}", ip, fs, path);
-        String[] paths = path.split(",");
+        String mypath = System.getProperty("PATH");
+        log.info("Using {} {} {}", ip, fs, mypath);
+        String[] paths = mypath.split(",");
         for (String aPath : paths) {
             log.info("Queue name {}", QueueConstants.FS + "_" + aPath);
+            final String aName = QueueConstants.FS + "_" + aPath;
             final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorClient, hz);
             Runnable run = () -> {
+                long zkTime = 0;
                 while (true) {
+                    String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + aName;
+                    try {
+                        long newTime = System.currentTimeMillis();
+                        if ((newTime - zkTime) > 60 * 1000) {
+                            zkTime = newTime;
+                            Stat stat = curatorClient.checkExists().forPath(path);
+                            if (stat == null) {
+                                curatorClient.create().creatingParentsIfNeeded().forPath(path, name.getBytes());
+                            } else {
+                                curatorClient.setData().forPath(path, name.getBytes());
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e); 
+                    }
                     QueueElement element = queue.poll(QueueElement.class);
                     if (element == null) {
                         try {

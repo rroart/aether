@@ -21,6 +21,7 @@ import roart.common.database.DatabaseMd5Result;
 
 import org.springframework.stereotype.Component;
 import roart.common.queue.QueueElement;
+import org.apache.zookeeper.data.Stat;
 
 public class DatabaseQueue {
 
@@ -35,7 +36,23 @@ public class DatabaseQueue {
         }
         final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
         Runnable run = () -> {
+            long zkTime = 0;
             while (true) {
+                String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + name;
+                try {
+                    long newTime = System.currentTimeMillis();
+                    if ((newTime - zkTime) > 60 * 1000) {
+                        zkTime = newTime;
+                        Stat stat = curatorClient.checkExists().forPath(path);
+                        if (stat == null) {
+                            curatorClient.create().creatingParentsIfNeeded().forPath(path, name.getBytes());
+                        } else {
+                            curatorClient.setData().forPath(path, name.getBytes());
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e); 
+                }
                 QueueElement element = queue.poll(QueueElement.class);
                 if (element == null) {
                     try {

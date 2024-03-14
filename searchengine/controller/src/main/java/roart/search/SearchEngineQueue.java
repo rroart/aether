@@ -12,6 +12,7 @@ import roart.common.queue.QueueElement;
 import roart.common.searchengine.SearchEngineIndexParam;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineParam;
+import org.apache.zookeeper.data.Stat;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.client.HazelcastClient;
@@ -36,7 +37,23 @@ public class SearchEngineQueue {
         HazelcastInstance ahz = hz;
         final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
         Runnable run = () -> {
+            long zkTime = 0;
             while (true) {
+                String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + name;
+                try {
+                    long newTime = System.currentTimeMillis();
+                    if ((newTime - zkTime) > 60 * 1000) {
+                        zkTime = newTime;
+                        Stat stat = curatorClient.checkExists().forPath(path);
+                        if (stat == null) {
+                            curatorClient.create().creatingParentsIfNeeded().forPath(path, name.getBytes());
+                        } else {
+                            curatorClient.setData().forPath(path, name.getBytes());
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e); 
+                }
                 QueueElement element = queue.poll(QueueElement.class);
                 if (element == null) {
                     try {
