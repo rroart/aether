@@ -155,9 +155,11 @@ public abstract class AbstractFunction {
             // reindexdate
             // filesystemlucenenew
 
-            traverse(filename, traverse);
+            Runnable runnable = () -> { traverse(filename, traverse); };
+            new Thread(runnable).start();
             //traverse.traverse(filename, this);
 
+            // something other, from traverse
             TimeUnit.SECONDS.sleep(15);
 
             boolean doLoop = true;

@@ -207,9 +207,12 @@ public class Traverse {
     }
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
+        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        count.addAndGet(1);
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         indexFilesDao.getAllFiles();
         List<IndexFiles> indexes = indexFilesDao.getAll();
+        count.addAndGet(-1);
         for (IndexFiles index : indexes) {
             while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
                 log.info("Convert queue heavy loaded, sleeping");
