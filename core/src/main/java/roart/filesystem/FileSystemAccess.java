@@ -32,7 +32,6 @@ import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.FileObject;
 import roart.common.queue.QueueElement;
 import roart.common.webflux.WebFluxUtil;
-import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -211,7 +210,7 @@ public class FileSystemAccess {
 
     public void setQueue(String queueName) {
         this.queueName = queueName;
-        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        this.queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
     }
 
     public void listFilesFullQueue(QueueElement element, FileObject fileObject) {

@@ -28,7 +28,6 @@ import roart.common.searchengine.SearchEngineResult;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.eureka.util.EurekaUtil;
-import roart.hcutil.GetHazelcastInstance;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +61,7 @@ public abstract class SearchAccess {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
-        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient);
     }
 
     public abstract String getAppName();

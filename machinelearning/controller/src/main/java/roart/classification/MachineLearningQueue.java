@@ -6,9 +6,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.core.HazelcastInstance;
-
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.NodeConfig;
@@ -19,21 +16,12 @@ import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.queue.QueueElement;
 import org.apache.zookeeper.data.Stat;
 
-import org.springframework.stereotype.Component;
-
 public class MachineLearningQueue {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public MachineLearningQueue(String name, MachineLearningAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
-        final HazelcastInstance hz;
-        if (nodeConf.isInmemoryServerHazelcast()) {
-            hz = HazelcastClient.newHazelcastClient();
-        } else {
-            hz = null;
-        }
-        HazelcastInstance ahz = hz;
-        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
+        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient);
         Runnable run = () -> {
             long zkTime = 0;
             while (true) {
@@ -74,7 +62,7 @@ public class MachineLearningQueue {
                             log.info("classtime {} {}", element.getFileObject(), diff);
                             element.setMachineLearningClassifyResult(ret);
                             String queueName = element.getQueue();
-                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 

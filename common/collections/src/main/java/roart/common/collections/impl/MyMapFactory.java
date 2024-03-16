@@ -6,8 +6,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.curator.framework.CuratorFramework;
 
-import com.hazelcast.core.HazelcastInstance;
-
 import roart.common.collections.MyFactory;
 import roart.common.collections.MyMap;
 import roart.common.config.MyConfig;
@@ -15,12 +13,12 @@ import roart.common.config.NodeConfig;
 
 public class MyMapFactory extends MyFactory {
     
-    public MyMap create(String mapid, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
+    public MyMap create(String mapid, NodeConfig nodeConf, CuratorFramework curatorFramework) {
         if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-            if (nodeConf.getInmemoryRedis() != null && !nodeConf.getInmemoryRedis().isEmpty()) {
+            if (nodeConf.isInmemoryServerRedis()) {
                 return new MyRedisMap(nodeConf.getInmemoryRedis(), mapid);
             } else {
-                return new MyHazelcastMap(hz, mapid);
+                return new MyHazelcastMap(nodeConf.getInmemoryHazelcast(), mapid);
             }
         } else {
             return new MyJavaMap();

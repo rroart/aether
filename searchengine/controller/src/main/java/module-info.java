@@ -23,7 +23,6 @@ module searchengine {
     requires spring.web;
     requires spring.boot;
     requires common.util;
-    requires com.hazelcast.core;
     requires curator.framework;
     requires common.model;
     requires curator.client;

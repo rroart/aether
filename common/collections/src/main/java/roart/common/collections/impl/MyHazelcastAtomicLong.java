@@ -4,6 +4,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.CPSubsystem;
 import com.hazelcast.cp.IAtomicLong;
 
+import roart.common.inmemory.hazelcast.GetHazelcastInstance;
+
 /**
  * 
  * @author roart
@@ -21,7 +23,8 @@ public class MyHazelcastAtomicLong extends MyAtomicLong {
      * @param id Id
      */
     
-    public MyHazelcastAtomicLong(HazelcastInstance hz, String id) {
+    public MyHazelcastAtomicLong(String server, String id) {
+        HazelcastInstance hz = GetHazelcastInstance.instance(server);
         CPSubsystem cpSubsystem = hz.getCPSubsystem();
         mylong =  cpSubsystem.getAtomicLong(id);     
     }

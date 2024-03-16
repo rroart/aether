@@ -33,7 +33,6 @@ import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
-import roart.hcutil.GetHazelcastInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +157,7 @@ public class Traverse {
             String filename = file.absolutePath;
             // for encoding problems
             if (!file.exists) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(myid), nodeConf, controlService.curatorClient); 
                 notfoundset.offer(filename);
                 continue;
                 //throw new FileNotFoundException("File does not exist " + filename);
@@ -207,7 +206,7 @@ public class Traverse {
     }
 
     public Set<String> traversedb(AbstractFunction function, String add) throws Exception {
-        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(myid), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(myid), nodeConf, controlService.curatorClient);
         count.addAndGet(1);
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         indexFilesDao.getAllFiles();

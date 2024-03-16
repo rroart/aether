@@ -21,7 +21,6 @@ import roart.common.util.JsonUtil;
 import roart.common.util.LockUtils;
 import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
-import roart.hcutil.GetHazelcastInstance;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.collections.MyList;
 import roart.common.collections.MyQueue;
@@ -76,8 +75,8 @@ public class Search {
         String lang = dbindex.getLanguage();
         InmemoryMessage message = el.getMessage();
         String classification = dbindex.getClassification();
-        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
-        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient);
+        MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient);
 
         int retsize = 0;
 
@@ -138,7 +137,7 @@ public class Search {
         } else {
             log.error("Missing lock");
         }
-        MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+        MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient); 
         filesdoneset.offer(filename.toString());
     }
 
@@ -206,8 +205,8 @@ public class Search {
                 retsize = -1;
             }
         } else {
-            MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
-            MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient);
+            MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient);
             int retsize = el.getSearchEngineIndexResult().size;
             IndexFiles dbindex = el.getIndexFiles();
             String md5 = el.getMd5();
@@ -249,7 +248,7 @@ public class Search {
                 }
             }
 
-            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient); 
             filesdoneset.offer(filename.toString());
 
             MyObjectLockData lockdata = dbindex.getObjectlock();

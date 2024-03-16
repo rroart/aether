@@ -13,7 +13,6 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.common.leader.impl.MyLeaderFactory;
@@ -21,6 +20,7 @@ import roart.common.model.ConfigParam;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
+import roart.hcutil.GetHazelcastInstance;
 import roart.common.leader.MyLeader;
 import roart.common.collections.MyCollections;
 import roart.common.collections.MyMap;
@@ -286,7 +286,7 @@ public class LeaderRunner implements Runnable {
                 byte[] data = curatorClient.getData().forPath(path + "/" + child);                                
                 //curatorClient.delete().forPath(path + "/" + child);                                
                 //log.info("Delete old lock or data {}", child);
-                MyQueue queue = MyQueues.get(new String(data), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                MyQueue queue = MyQueues.get(new String(data), nodeConf, controlService.curatorClient);
                 log.info("Queue size {} {}", child, queue.size());
             }
         }

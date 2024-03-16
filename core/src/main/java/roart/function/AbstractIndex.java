@@ -8,7 +8,6 @@ import roart.common.constants.Constants;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
 import roart.dir.Traverse;
-import roart.hcutil.GetHazelcastInstance;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
@@ -43,7 +42,7 @@ public abstract class AbstractIndex extends AbstractFunction {
             return false;
         }
 
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient); 
 
         boolean indexinc = indexFilter(index, trav);
         if (indexinc) {

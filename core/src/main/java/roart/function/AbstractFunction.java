@@ -34,7 +34,6 @@ import roart.common.util.QueueUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
-import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
@@ -97,40 +96,40 @@ public abstract class AbstractFunction {
             Queues queues = new Queues(nodeConf, controlService);
             String myid = controlService.getMyId();
             String filesetnewid = QueueUtil.filesetnewQueue(myid);
-            MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<String> newfileQueue = MyQueues.get(filesetnewid, nodeConf, controlService.curatorClient);
             //MySets.put(filesetnewid, filesetnew);
 
             String notfoundsetid = QueueUtil.notfoundsetQueue(myid);
-            MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<String> notfoundQueue = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient);
             //MySets.put(notfoundsetid, notfoundset);
 
             String retlistid = QueueUtil.retlistQueue(myid);
-            MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue retQueue = MyQueues.get(retlistid, nodeConf, controlService.curatorClient);
             //MyLists.put(retlistid, retlist);
 
             String retnotlistid = QueueUtil.retlistnotQueue(myid);
-            MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<ResultItem> retnotQueue = MyQueues.get(retnotlistid, nodeConf, controlService.curatorClient);
             //MyLists.put(retnotlistid, retnotlist);
 
             String traversecountid = QueueUtil.traversecount(myid);
-            MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyAtomicLong traversecount = MyAtomicLongs.get(traversecountid, nodeConf, controlService.curatorClient);
 
             MyMap<String, String> mymaps = queues.getTraverseCountMap();
             mymaps.put(traversecountid, "" + System.currentTimeMillis());
             
             String filestodosetid = QueueUtil.filestodoQueue(myid);
-            MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient);
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
-            MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient);
 
             String deletedsetid = QueueUtil.deletedQueue(myid);
-            MyQueue<ResultItem> deletedQueue = MyQueues.get(deletedsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<ResultItem> deletedQueue = MyQueues.get(deletedsetid, nodeConf, controlService.curatorClient);
 
             String changedsetid = QueueUtil.changedQueue(myid);
-            MyQueue<String> changedQueue = MyQueues.get(changedsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<String> changedQueue = MyQueues.get(changedsetid, nodeConf, controlService.curatorClient);
 
             String notconvertedsetid = QueueUtil.notconvertedQueue(myid);
-            MyQueue<ResultItem> notconvertedQueue = MyQueues.get(notconvertedsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+            MyQueue<ResultItem> notconvertedQueue = MyQueues.get(notconvertedsetid, nodeConf, controlService.curatorClient);
 
             //MyLists.put(retnotlistid, retnotlist);
             //queues.workQueues.add(filestodoSet);

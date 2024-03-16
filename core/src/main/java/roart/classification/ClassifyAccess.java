@@ -17,7 +17,6 @@ import roart.common.machinelearning.MachineLearningResult;
 import roart.common.queue.QueueElement;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.eureka.util.EurekaUtil;
-import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public abstract class ClassifyAccess {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
-        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient);
     }
 
     public abstract String getAppName();

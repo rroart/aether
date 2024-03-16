@@ -14,28 +14,16 @@ import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.searchengine.SearchEngineParam;
 import org.apache.zookeeper.data.Stat;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.client.HazelcastClient;
-
 import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
-
-import com.hazelcast.client.config.ClientConfig;
 
 public class SearchEngineQueue {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public SearchEngineQueue(String name, SearchEngineAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
-        final HazelcastInstance hz;
-        if (nodeConf.isInmemoryServerHazelcast()) {
-            hz = HazelcastClient.newHazelcastClient();
-        } else {
-            hz = null;
-        }
-        HazelcastInstance ahz = hz;
-        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
+        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient);
         Runnable run = () -> {
             long zkTime = 0;
             while (true) {
@@ -74,7 +62,7 @@ public class SearchEngineQueue {
                             element.getIndexFiles().setTimeindex("" + (System.currentTimeMillis() - time));
                             element.setSearchEngineIndexResult(ret);
                             String queueName = element.getQueue();
-                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 

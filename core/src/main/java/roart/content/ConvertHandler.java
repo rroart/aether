@@ -37,7 +37,6 @@ import roart.common.util.QueueUtil;
 import roart.convert.ConvertDAO;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
-import roart.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
 import roart.lang.LanguageDetectFactory;
 import roart.queue.Queues;
@@ -73,7 +72,7 @@ public class ConvertHandler {
         // may not exist
         InmemoryMessage message = new FileSystemDao(nodeConf, controlService).readFile(element.getFileObject());
         if (message == null) {
-            MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
             notfoundset.offer(filename.toString());            
             index.setPriority(1);
             new IndexFilesDao(nodeConf, controlService).add(index);
@@ -194,7 +193,7 @@ public class ConvertHandler {
             FileLocation aFl = element.getIndexFiles().getaFilelocation();
             ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-            MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
             unconverted.offer(ri);
             Boolean isIndexed = index.getIndexed();
             if (isIndexed == null || isIndexed.booleanValue() == false) {
@@ -255,7 +254,7 @@ public class ConvertHandler {
             element.setFileSystemMessageResult(null);
             InmemoryMessage message = map.get(element.getFileObject().object);
             if (message == null) {
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
                 notfoundset.offer(filename.toString());            
                 index.setPriority(1);
                 new IndexFilesDao(nodeConf, controlService).add(index);
@@ -363,7 +362,7 @@ public class ConvertHandler {
                 FileLocation aFl = element.getIndexFiles().getaFilelocation();
                 ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
                 ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
-                MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
                 unconverted.offer(ri);
                 Boolean isIndexed = index.getIndexed();
                 if (isIndexed == null || isIndexed.booleanValue() == false) {

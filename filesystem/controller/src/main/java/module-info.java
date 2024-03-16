@@ -30,5 +30,4 @@ module filesystem {
     requires common.inmemory.model;
     requires common.inmemory.factory;
     //requires common.zookeeper;
-    requires com.hazelcast.core;
 }

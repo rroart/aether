@@ -34,7 +34,6 @@ import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
 import roart.eureka.util.EurekaUtil;
-import roart.hcutil.GetHazelcastInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,13 +267,13 @@ public abstract class IndexFilesAccess {
     }
     
     public void setQueue(String queueName) {
-        MyQueue<QueueElement> queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyQueue<QueueElement> queue =  new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
     }
 
     public MyQueue<QueueElement> getQueue(FileObject fileObject) {
         String appId = queueWithAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
         String queueName = getQueueName() + appId;
-        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
     }
 
     public void getByMd5Queue(QueueElement element, Set<String> md5s) {

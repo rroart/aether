@@ -10,6 +10,7 @@ module common.collections {
     exports roart.common.collections.impl;
     
     requires common.communication.factory;
+    requires common.inmemory.hazelcast;
     requires common.config;
     requires common.constants;
     requires common.util;

@@ -6,9 +6,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.core.HazelcastInstance;
-
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.NodeConfig;
@@ -28,13 +25,7 @@ public class DatabaseQueue {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public DatabaseQueue(String name, DatabaseAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
-        final HazelcastInstance hz;
-        if (nodeConf.isInmemoryServerHazelcast()) {
-            hz = HazelcastClient.newHazelcastClient();
-        } else {
-            hz = null;
-        }
-        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
+        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient);
         Runnable run = () -> {
             long zkTime = 0;
             while (true) {
@@ -71,7 +62,7 @@ public class DatabaseQueue {
                             DatabaseMd5Result ret = operations.getMd5ByFilelocation(param);
                             element.setDatabaseMd5Result(ret);
                             String queueName = element.getQueue();
-                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, hz);
+                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 
@@ -86,7 +77,7 @@ public class DatabaseQueue {
                             DatabaseIndexFilesResult ret = operations.getByMd5(param);
                             element.setDatabaseIndexFilesResult(ret);
                             String queueName = element.getQueue();
-                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, hz);
+                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 

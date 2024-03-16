@@ -150,7 +150,7 @@ public class TraverseFile {
                             oldindexfiles.setLockqueue(locks);
                             oldindexfiles.setSemaphorelockqueue(semaphores);
                         } else {
-                            MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                            MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(trav.getMyid()), nodeConf, controlService.curatorClient);
                             ResultItem ri = IndexFiles.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
                             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
                             retdeletedlist.offer(ri);
@@ -158,7 +158,7 @@ public class TraverseFile {
                             searchDao.deleteme(oldindexfiles.getMd5());
                             oldLock.unlock();
                         }
-                        MyQueue<String> changedlist = MyQueues.get(QueueUtil.changedQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                        MyQueue<String> changedlist = MyQueues.get(QueueUtil.changedQueue(trav.getMyid()), nodeConf, controlService.curatorClient);
                         changedlist.offer(filename.toString());
                     } else {
                         // TODO break
@@ -199,13 +199,13 @@ public class TraverseFile {
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (trav.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
-                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(trav.getMyid()), nodeConf, controlService.curatorClient); 
                     newset.offer(filename.toString());
                 }
             } catch (FileNotFoundException e) {
                 TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
                 log.error(Constants.EXCEPTION, e);
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(trav.getMyid()), nodeConf, controlService.curatorClient); 
                 notfoundset.offer(filename.toString());
                 return;
             } catch (Exception e) {
@@ -268,7 +268,7 @@ public class TraverseFile {
             log.error(Constants.EXCEPTION, e);
         } finally {
             log.debug("hereend");
-            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(trav.getMyid()), nodeConf, controlService.curatorClient); 
             filesdoneset.offer(filename.toString());
             TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
         }
@@ -485,7 +485,7 @@ public class TraverseFile {
                 //throw new FileNotFoundException("Md5 null");                
                 TraverseUtil.doCounters(traverseElement, -1, nodeConf, controlService);
                 //log.error(Constants.EXCEPTION, e);
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient); 
                 notfoundset.offer(filename.toString());
                 return;
             }
@@ -626,7 +626,7 @@ public class TraverseFile {
                             //oldindexfiles.setLockqueue(locks);
                             //oldindexfiles.setSemaphorelockqueue(semaphores);
                         } else {
-                            MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                            MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient);
                             ResultItem ri = IndexFiles.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
                             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
                             retdeletedlist.offer(ri);
@@ -634,7 +634,7 @@ public class TraverseFile {
                             searchDao.deleteme(oldindexfiles.getMd5());
                             oldLock.unlock();
                         }
-                        MyQueue<String> changedlist = MyQueues.get(QueueUtil.changedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+                        MyQueue<String> changedlist = MyQueues.get(QueueUtil.changedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient);
                         changedlist.offer(filename.toString());
                     } else {
                         // TODO break
@@ -676,13 +676,13 @@ public class TraverseFile {
                 log.info("adding md5 file {}", filename);
                 // calculatenewmd5 and nodbchange are never both true
                 if (md5 == null || (traverseElement.getClientQueueElement().md5checknew == true && !md5.equals(md5))) {
-                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                    MyQueue<String> newset = (MyQueue<String>) MyQueues.get(QueueUtil.filesetnewQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient); 
                     newset.offer(filename.toString());
                 }
             } catch (FileNotFoundException e) {
                 TraverseUtil.doCounters(traverseElement, -1, nodeConf, controlService);
                 log.error(Constants.EXCEPTION, e);
-                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+                MyQueue<String> notfoundset = (MyQueue<String>) MyQueues.get(QueueUtil.notfoundsetQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient); 
                 notfoundset.offer(filename.toString());
                 return;
             } catch (Exception e) {
@@ -750,7 +750,7 @@ public class TraverseFile {
             log.error(Constants.EXCEPTION, e);
         } finally {
             log.debug("hereend");
-            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+            MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient); 
             filesdoneset.offer(filename.toString());
             TraverseUtil.doCounters(traverseElement, -1, nodeConf, controlService);
         }

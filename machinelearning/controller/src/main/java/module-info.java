@@ -23,7 +23,6 @@ module classification {
     requires spring.cloud.commons;
     requires spring.web;
     requires common.util;
-    requires com.hazelcast.core;
     requires spring.context;
     requires common.model;
     requires curator.framework;

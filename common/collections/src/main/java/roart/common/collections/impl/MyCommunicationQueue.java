@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.curator.framework.CuratorFramework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hazelcast.core.HazelcastInstance;
 
 import roart.common.collections.MyQueue;
 import roart.common.communication.factory.CommunicationFactory;
@@ -21,10 +20,10 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
     private MyAtomicLong size;
     private Communication comm;
     
-    public MyCommunicationQueue(String queuename, NodeConfig nodeConf, CuratorFramework curatorFramework, HazelcastInstance hz) {
+    public MyCommunicationQueue(String queuename, NodeConfig nodeConf, CuratorFramework curatorFramework) {
         String name = nodeConf.getSynchronizationCommunicationName();
         String connection = nodeConf.getSynchronizationCommunicationConnection();
-        size = MyAtomicLongs.get(queuename + "size", nodeConf, curatorFramework, hz);
+        size = MyAtomicLongs.get(queuename + "size", nodeConf, curatorFramework);
         comm = CommunicationFactory.get(name, String.class, queuename, new ObjectMapper(), true, true, false, connection, false);
     }
     

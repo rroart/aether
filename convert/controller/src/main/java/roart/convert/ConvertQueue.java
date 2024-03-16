@@ -8,9 +8,6 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.core.HazelcastInstance;
-
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
 import roart.common.config.Converter;
@@ -26,16 +23,7 @@ public class ConvertQueue {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ConvertQueue(String name, ConvertAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
-        final HazelcastInstance hz;
-        if (nodeConf.isInmemoryServerHazelcast()) {
-            // for tika
-            System.setProperty("hazelcast.ignoreXxeProtectionFailures", "true");
-            hz = HazelcastClient.newHazelcastClient();
-        } else {
-            hz = null;
-        }
-        HazelcastInstance ahz = hz;
-        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient, hz);
+        final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient);
         Runnable run = () -> {
             long zkTime = 0;
             while (true) { 
@@ -86,7 +74,7 @@ public class ConvertQueue {
                             } else {
                                 queueName = converters.get(0).getName();
                             }
-                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                            MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 

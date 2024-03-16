@@ -23,7 +23,6 @@ module database {
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
     requires spring.web;
-    requires com.hazelcast.core;
     requires spring.context;
     requires common.model;
     requires curator.client;

@@ -20,19 +20,11 @@ import roart.common.filesystem.FileSystemStringResult;
 import roart.common.queue.QueueElement;
 import org.apache.zookeeper.data.Stat;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.client.HazelcastClient;
-
 public class FileSystemQueue {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public FileSystemQueue(String name, FileSystemAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
-        HazelcastInstance hz = null;
-        if (nodeConf.isInmemoryServerHazelcast()) {
-            hz = HazelcastClient.newHazelcastClient();
-        }
-        HazelcastInstance ahz = hz;
         String ip = System.getProperty("IP");
         String fs = System.getProperty("FS");
         String mypath = System.getProperty("PATH");
@@ -41,7 +33,7 @@ public class FileSystemQueue {
         for (String aPath : paths) {
             log.info("Queue name {}", QueueConstants.FS + "_" + aPath);
             final String aName = QueueConstants.FS + "_" + aPath;
-            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorClient, hz);
+            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorClient);
             Runnable run = () -> {
                 long zkTime = 0;
                 while (true) {
@@ -78,7 +70,7 @@ public class FileSystemQueue {
                                 FileSystemMyFileResult ret = operations.listFilesFull(param);
                                 element.setFileSystemMyFileResult(ret);
                                 String queueName = element.getQueue();
-                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                                 returnQueue.offer(element);
                             } catch (Exception e) {
                                 log.error(Constants.EXCEPTION, e); 
@@ -93,7 +85,7 @@ public class FileSystemQueue {
                                 FileSystemStringResult ret = operations.getMd5(param);
                                 element.setFileSystemStringResult(ret);
                                 String queueName = element.getQueue();
-                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                                 returnQueue.offer(element);
                             } catch (Exception e) {
                                 log.error(Constants.EXCEPTION, e); 
@@ -108,7 +100,7 @@ public class FileSystemQueue {
                                 FileSystemMessageResult ret = operations.readFile(param);
                                 element.setFileSystemMessageResult(ret);
                                 String queueName = element.getQueue();
-                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient, ahz);
+                                MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                                 returnQueue.offer(element);
                             } catch (Exception e) {
                                 log.error(Constants.EXCEPTION, e); 

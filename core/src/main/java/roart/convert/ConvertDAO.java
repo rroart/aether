@@ -26,7 +26,6 @@ import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 import roart.content.ConvertHandler;
 import roart.eureka.util.EurekaUtil;
-import roart.hcutil.GetHazelcastInstance;
 import roart.service.ControlService;
 
 public class ConvertDAO {
@@ -65,7 +64,7 @@ public class ConvertDAO {
     }
 
     public MyQueue getQueue(String queueName) {
-        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
     }
 
     public void convertQueue(QueueElement element, List<Converter> converters, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {

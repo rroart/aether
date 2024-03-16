@@ -19,7 +19,7 @@ public class GetHazelcastInstance {
     public static synchronized HazelcastInstance instance(String server) {
         if (hz == null) {
             ClientConfig config = new ClientConfig();
-            config.getNetworkConfig().addAddress(server);
+            config.getNetworkConfig().addAddress(server).setSmartRouting(false);;
             hz = HazelcastClient.newHazelcastClient(config);
         }
         if (true) return hz;

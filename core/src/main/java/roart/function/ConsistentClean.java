@@ -87,11 +87,11 @@ public class ConsistentClean extends AbstractFunction {
 
         String myid = controlService.getMyId();
         String newsetid = "newsetid"+myid;
-        MyQueue<String> newset = MyQueues.get(newsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyQueue<String> newset = MyQueues.get(newsetid, nodeConf, controlService.curatorClient);
         //MySets.put(newsetid, newset);
 
         String notfoundsetid = "notfoundsetid"+myid;
-        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyQueue<String> notfoundset = MyQueues.get(notfoundsetid, nodeConf, controlService.curatorClient);
         //MySets.put(notfoundsetid, notfoundset);
 
         //String md5sdoneid = "md5sdoneid"+myid;

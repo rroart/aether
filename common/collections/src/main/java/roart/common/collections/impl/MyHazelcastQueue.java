@@ -4,6 +4,7 @@ import java.util.Queue;
 
 import roart.common.collections.MyQueue;
 import roart.common.constants.Constants;
+import roart.common.inmemory.hazelcast.GetHazelcastInstance;
 
 import com.hazelcast.collection.IQueue;
 import com.hazelcast.core.HazelcastInstance;
@@ -13,9 +14,9 @@ public class MyHazelcastQueue<T> extends MyQueue<T> {
     
     Queue<T> queue = null;
     
-    public MyHazelcastQueue(HazelcastInstance hz, String queuename) {
-        this.hz = hz;
-        queue = hz.getQueue("queue");       
+    public MyHazelcastQueue(String server, String queuename) {
+        this.hz = GetHazelcastInstance.instance(server);
+        queue = hz.getQueue(queuename);       
     }
 
     @Override

@@ -546,6 +546,11 @@ public class NodeConfig extends MyConfig {
     }
 
     @JsonIgnore
+    public boolean isInmemoryServerRedis() {
+        return Constants.REDIS.equals(getInmemoryServer());
+    }
+
+    @JsonIgnore
     public String getInmemoryHazelcast() {
         return (String) getNotEmptyValueOrDefault(ConfigConstants.INMEMORYHAZELCAST);
     }

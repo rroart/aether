@@ -3,6 +3,7 @@ package roart.common.collections.impl;
 import java.util.List;
 
 import roart.common.collections.MyList;
+import roart.common.inmemory.hazelcast.GetHazelcastInstance;
 
 import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
@@ -27,8 +28,8 @@ public class MyHazelcastList<T> extends MyList<T> {
      * @param listname
      */
     
-    public MyHazelcastList(HazelcastInstance hz, String listname) {
-        this.hz = hz;
+    public MyHazelcastList(String server, String listname) {
+        this.hz = GetHazelcastInstance.instance(server);
         list = hz.getList(listname);       
     }
 

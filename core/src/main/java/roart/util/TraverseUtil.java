@@ -26,7 +26,6 @@ import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
-import roart.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
@@ -38,7 +37,7 @@ public class TraverseUtil {
     public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf, ControlService controlService) {
         int max = nodeConf.getReindexLimit();
         int maxindex = nodeConf.getIndexLimit();
-        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf)); 
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
             isMaxed = true;
@@ -231,9 +230,9 @@ public class TraverseUtil {
     }
 
     public static void doCounters(QueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
-        MyAtomicLong total = MyAtomicLongs.get(new Queues(null, null).prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyAtomicLong total = MyAtomicLongs.get(new Queues(null, null).prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient);
         total.addAndGet(value);
-        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
+        MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient);
         count.addAndGet(value);
         log.debug("Count {} {}", value, trav.getFileObject());
     }

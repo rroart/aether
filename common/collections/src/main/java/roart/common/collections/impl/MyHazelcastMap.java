@@ -5,6 +5,7 @@ import java.util.Set;
 
 import roart.common.collections.MyMap;
 import roart.common.constants.Constants;
+import roart.common.inmemory.hazelcast.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
@@ -14,8 +15,8 @@ public class MyHazelcastMap<K, V> extends MyMap<K, V> {
     
     Map<K, V> map = null;
     
-    public MyHazelcastMap(HazelcastInstance hz, String mapname) {
-        this.hz = hz;
+    public MyHazelcastMap(String server, String mapname) {
+        this.hz = GetHazelcastInstance.instance(server);
         map = hz.getMap(mapname);       
     }
 

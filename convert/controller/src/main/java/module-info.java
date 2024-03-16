@@ -24,7 +24,6 @@ module convert {
     requires spring.cloud.commons;
     requires spring.context;
     requires spring.web;
-    requires com.hazelcast.core;
     requires curator.framework;
     requires common.model;
     requires curator.client;

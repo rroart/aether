@@ -4,6 +4,7 @@ import java.util.Set;
 
 import roart.common.collections.MySet;
 import roart.common.constants.Constants;
+import roart.common.inmemory.hazelcast.GetHazelcastInstance;
 
 import com.hazelcast.collection.ISet;
 import com.hazelcast.core.HazelcastInstance;
@@ -13,8 +14,8 @@ public class MyHazelcastSet<T> extends MySet<T> {
     
     Set<T> set = null;
 
-    public MyHazelcastSet(HazelcastInstance hz, String setname) {
-        this.hz = hz;
+    public MyHazelcastSet(String server, String setname) {
+        this.hz = GetHazelcastInstance.instance(server);
         set = hz.getSet(setname);       
     }
     
