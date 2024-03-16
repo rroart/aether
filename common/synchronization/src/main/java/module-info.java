@@ -17,4 +17,5 @@ module common.synchronization {
     requires org.slf4j;
     requires curator.client;
     requires com.fasterxml.jackson.annotation;
+    requires redisson;
 }

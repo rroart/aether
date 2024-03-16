@@ -44,6 +44,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson</artifactId>
+      <version>${redisson.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson.version}</version>
