@@ -49,7 +49,7 @@ import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.common.queue.QueueElement;
 import roart.search.SearchDao;

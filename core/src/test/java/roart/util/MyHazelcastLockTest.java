@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.impl.MyHazelcastLock;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 
 public class MyHazelcastLockTest {
    

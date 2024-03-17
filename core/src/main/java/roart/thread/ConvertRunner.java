@@ -24,7 +24,7 @@ import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.common.synchronization.impl.MySemaphoreFactory;
 import roart.content.ConvertHandler;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.util.TraverseUtil;

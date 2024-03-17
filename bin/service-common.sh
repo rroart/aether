@@ -33,6 +33,10 @@ if [ $service -eq 1 ]; then
 fi
 if [ $core -eq 1 ]; then
     $COMMAND "java $HAZELCAST $COREDEBUG -Dconfig=$CONF -jar aether-core-0.10-SNAPSHOT.jar" &
+    if [ -n $hz ]; then
+	$COMMAND "java -Dserver.port=23498 $HAZELCAST -Dconfig=$CONF -jar aether-core-0.10-SNAPSHOT.jar" &
+	$COMMAND "java -Dserver.port=23499 $HAZELCAST -Dconfig=$CONF -jar aether-core-0.10-SNAPSHOT.jar" &
+    fi
 fi
 if [ $web -eq 1 ]; then
     $COMMAND "java $WEBDEBUG -jar aether-web-0.10-SNAPSHOT.jar" &

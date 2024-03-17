@@ -46,7 +46,7 @@ import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.util.JsonUtil;
 import roart.common.zkutil.ZKMessageUtil;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.lang.LanguageDetect;
 import roart.service.ControlService;
 import roart.thread.EurekaThread;

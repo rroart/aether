@@ -1,24 +1,24 @@
-package roart.hcutil;
+package roart.common.hcutil;
 
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.StreamSerializer;
 
+import roart.common.config.NodeConfig;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
 
-import roart.queue.TraverseQueueElement;
-
-public class TraverseQueueElementSerializer implements StreamSerializer<TraverseQueueElement> {
+public class NodeConfigSerializer implements StreamSerializer<NodeConfig> {
 
   @Override
       public int getTypeId() {
-      return 1;
+      return 3;
   }
 
   @Override
-      public void write( ObjectDataOutput out, TraverseQueueElement object ) throws IOException {
+      public void write( ObjectDataOutput out, NodeConfig object ) throws IOException {
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       XMLEncoder encoder = new XMLEncoder( bos );
       encoder.writeObject( object );
@@ -28,10 +28,10 @@ public class TraverseQueueElementSerializer implements StreamSerializer<Traverse
   }
 
   @Override
-      public TraverseQueueElement read( ObjectDataInput in ) throws IOException {
+      public NodeConfig read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
       try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
-        return (TraverseQueueElement) decoder.readObject();
+        return (NodeConfig) decoder.readObject();
     }
   }
 

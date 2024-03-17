@@ -49,7 +49,7 @@ import roart.common.zkutil.ZKMessageUtil;
 import roart.content.ClientHandler;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.search.SearchDao;
 import roart.thread.CamelRunner;
@@ -171,11 +171,6 @@ public class ControlService {
 
     public CuratorFramework curatorClient = null;
     public void startThreads() {
-        if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
-            Runnable confMe = new EurekaThread(nodeConf);
-            confMe.run();
-        }
-
         if (convertRunnable == null) {
             startConvertWorker();
         }

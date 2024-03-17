@@ -20,7 +20,7 @@ import roart.common.model.ConfigParam;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
 import roart.eureka.util.EurekaUtil;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.common.leader.MyLeader;
 import roart.common.collections.MyCollections;
 import roart.common.collections.MyMap;
@@ -70,6 +70,12 @@ public class LeaderRunner implements Runnable {
                 log.info("I am not leader");
             } else {
                 log.info("I am leader");
+
+                if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
+                    Runnable confMe = new EurekaThread(nodeConf);
+                    confMe.run(); // return when finished, don't start new
+                }
+
                 String zPath = "/" + Constants.AETHER + "/" + Constants.CONFIG;
                 CuratorFramework curatorClient = controlService.curatorClient;
                 while (true) {

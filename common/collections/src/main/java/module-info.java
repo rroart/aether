@@ -14,6 +14,7 @@ module common.collections {
     requires common.config;
     requires common.constants;
     requires common.util;
+    requires common.hcutil;
     requires curator.client;
     requires curator.framework;
     requires curator.recipes;

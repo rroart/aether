@@ -1,4 +1,4 @@
-package roart.hcutil;
+package roart.common.hcutil;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;

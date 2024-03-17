@@ -29,6 +29,7 @@ module core {
     requires common.service;
     requires common.synchronization;
     requires common.util;
+    requires common.hcutil;
     requires common.zookeeper;
     requires common.leader;
     requires common.communication.factory;

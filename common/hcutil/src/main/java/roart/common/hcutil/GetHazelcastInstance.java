@@ -1,4 +1,4 @@
-package roart.hcutil;
+package roart.common.hcutil;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -44,6 +44,22 @@ public class GetHazelcastInstance {
             hz = GetHazelcastInstance.instance(nodeConf.getInmemoryHazelcast());
         } else {
             hz = null;
+        }
+        return hz;
+    }
+    public static synchronized HazelcastInstance serverInstance() {
+        if (true) {
+            Config config = HazelcastConfig.getHazelcastConfig();
+            config.getJetConfig().setEnabled(true);
+            // check
+            String appid = System.getenv(Constants.APPID);
+            if (appid != null) {
+                //config.setClusterName(appid);
+            }
+
+            config.getCPSubsystemConfig().setCPMemberCount(3);
+            hz = Hazelcast.newHazelcastInstance(config);
+            log.info("Creating Hazelcast server instance");
         }
         return hz;
     }

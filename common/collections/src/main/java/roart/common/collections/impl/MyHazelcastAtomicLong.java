@@ -4,7 +4,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.CPSubsystem;
 import com.hazelcast.cp.IAtomicLong;
 
-import roart.common.inmemory.hazelcast.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 
 /**
  * 

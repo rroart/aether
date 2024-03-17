@@ -13,4 +13,5 @@ module common.inmemory.hazelcast {
     requires java.desktop;
     requires common.inmemory.model;
     requires common.constants;
+    requires common.hcutil;
 }

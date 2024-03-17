@@ -5,7 +5,7 @@ import java.util.Set;
 
 import roart.common.collections.MyMap;
 import roart.common.constants.Constants;
-import roart.common.inmemory.hazelcast.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;

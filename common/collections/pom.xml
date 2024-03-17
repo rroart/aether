@@ -24,6 +24,11 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
+      <artifactId>aether-common-hcutil</artifactId>
+      <version>${aether.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>roart</groupId>
       <artifactId>aether-common-communication-factory</artifactId>
       <version>${aether.version}</version>
     </dependency>

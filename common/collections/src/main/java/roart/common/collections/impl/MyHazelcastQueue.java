@@ -4,7 +4,7 @@ import java.util.Queue;
 
 import roart.common.collections.MyQueue;
 import roart.common.constants.Constants;
-import roart.common.inmemory.hazelcast.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.collection.IQueue;
 import com.hazelcast.core.HazelcastInstance;

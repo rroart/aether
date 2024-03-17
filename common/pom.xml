@@ -31,6 +31,7 @@
     <module>service</module>
     <module>synchronization</module>
     <module>util</module>
+    <module>hcutil</module>
     <module>webflux</module>
     <module>zookeeper</module>
   </modules>

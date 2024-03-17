@@ -3,7 +3,7 @@ package roart.common.collections.impl;
 import java.util.List;
 
 import roart.common.collections.MyList;
-import roart.common.inmemory.hazelcast.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 
 import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;

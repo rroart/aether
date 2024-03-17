@@ -13,7 +13,7 @@ import roart.common.constants.Constants;
 import roart.common.queue.QueueElement;
 import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MySemaphoreFactory;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.search.Search;
 import roart.service.ControlService;

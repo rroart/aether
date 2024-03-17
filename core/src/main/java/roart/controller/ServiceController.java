@@ -63,6 +63,7 @@ import roart.content.ClientHandler;
 import roart.database.IndexFilesDao;
 import roart.eureka.util.EurekaUtil;
 import roart.filesystem.FileSystemDao;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
 import roart.service.SearchService;
@@ -352,6 +353,9 @@ public class ServiceController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws InterruptedException {
+        if (System.getenv(Constants.HZ) != null) {
+            GetHazelcastInstance.serverInstance();
+        }
         controlService = new ControlService(nodeConf);
         try {
             // md5 myconfigfile 

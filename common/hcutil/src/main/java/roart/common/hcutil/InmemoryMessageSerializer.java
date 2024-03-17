@@ -1,4 +1,4 @@
-package roart.common.inmemory.hazelcast;
+package roart.common.hcutil;
 
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
@@ -14,7 +14,7 @@ public class InmemoryMessageSerializer implements StreamSerializer<InmemoryMessa
 
   @Override
       public int getTypeId() {
-      return 3;
+      return 9;
   }
 
   @Override

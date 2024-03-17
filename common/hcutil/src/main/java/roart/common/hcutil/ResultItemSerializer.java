@@ -1,25 +1,24 @@
-package roart.hcutil;
+package roart.common.hcutil;
 
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.StreamSerializer;
 
+import roart.common.model.ResultItem;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
 
-import roart.queue.ListQueueElement;
-import roart.queue.TraverseQueueElement;
-
-public class ListingQueueElementSerializer implements StreamSerializer<ListQueueElement> {
+public class ResultItemSerializer implements StreamSerializer<ResultItem> {
 
   @Override
       public int getTypeId() {
-      return 5;
+      return 4;
   }
 
   @Override
-      public void write( ObjectDataOutput out, ListQueueElement object ) throws IOException {
+      public void write( ObjectDataOutput out, ResultItem object ) throws IOException {
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       XMLEncoder encoder = new XMLEncoder( bos );
       encoder.writeObject( object );
@@ -29,10 +28,10 @@ public class ListingQueueElementSerializer implements StreamSerializer<ListQueue
   }
 
   @Override
-      public ListQueueElement read( ObjectDataInput in ) throws IOException {
+      public ResultItem read( ObjectDataInput in ) throws IOException {
       InputStream inputStream = (InputStream) in;
       try (XMLDecoder decoder = new XMLDecoder( inputStream )) {
-        return (ListQueueElement) decoder.readObject();
+        return (ResultItem) decoder.readObject();
     }
   }
 

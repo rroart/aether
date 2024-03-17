@@ -26,7 +26,7 @@ import roart.common.zkutil.ZKMessageUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
-import roart.hcutil.GetHazelcastInstance;
+import roart.common.hcutil.GetHazelcastInstance;
 import roart.search.SearchDao;
 import roart.service.ControlService;
 
