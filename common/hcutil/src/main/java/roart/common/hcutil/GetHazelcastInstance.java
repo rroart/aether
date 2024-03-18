@@ -19,25 +19,13 @@ public class GetHazelcastInstance {
     public static synchronized HazelcastInstance instance(String server) {
         if (hz == null) {
             ClientConfig config = new ClientConfig();
+            HazelcastConfig.getHazelcastSerializationConfig(config.getSerializationConfig());
             config.getNetworkConfig().addAddress(server).setSmartRouting(false);;
             hz = HazelcastClient.newHazelcastClient(config);
         }
-        if (true) return hz;
-        if (hz == null) {
-            Config config = HazelcastConfig.getHazelcastConfig();
-            config.getJetConfig().setEnabled(true);
-            // check
-            String appid = System.getenv(Constants.APPID);
-            if (appid != null) {
-                //config.setClusterName(appid);
-            }
-
-            //config.getCPSubsystemConfig().setCPMemberCount(3);
-            hz = Hazelcast.newHazelcastInstance(config);
-            log.info("Creating Hazelcast instance");
-        }
         return hz;
     }
+    
     public static HazelcastInstance instance(NodeConfig nodeConf) {
         final HazelcastInstance hz;
         if (nodeConf.isInmemoryServerHazelcast()) {
@@ -49,7 +37,8 @@ public class GetHazelcastInstance {
     }
     public static synchronized HazelcastInstance serverInstance() {
         if (true) {
-            Config config = HazelcastConfig.getHazelcastConfig();
+            Config config = new Config();
+            HazelcastConfig.getHazelcastSerializationConfig(config.getSerializationConfig());
             config.getJetConfig().setEnabled(true);
             // check
             String appid = System.getenv(Constants.APPID);

@@ -11,6 +11,7 @@ module common.hcutil {
     requires common.constants;
     requires common.model;
     requires common.queue;
+    requires common.util;
     requires java.desktop;
     requires java.xml;
     requires org.slf4j;
