@@ -203,6 +203,10 @@
 	</exclusion>
 	<exclusion>
 	  <groupId>org.apache.spark</groupId>
+	  <artifactId>spark-sql-api_2.13</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>org.apache.spark</groupId>
 	  <artifactId>spark-core_2.13</artifactId>
 	</exclusion>
 	<exclusion>
