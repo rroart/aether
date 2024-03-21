@@ -103,17 +103,16 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     }) 
                     .build();
 
-            // Create the transport with a Jackson mapper
-            RestClientTransport transport = new RestClientTransport(
-                    restclient, new JacksonJsonpMapper());
-
             // Hairy way to set the buffer limit
             HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory factory = new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(BUFFER_LIMIT);
-            RestClientOptions restClientOptions = (RestClientOptions) transport.options();
-            RestClientOptions.Builder builder = restClientOptions.toBuilder();
-            builder.restClientRequestOptionsBuilder().setHttpAsyncResponseConsumerFactory(factory);
-            restClientOptions = builder.build();
-            transport = transport.withRequestOptions(restClientOptions);
+            RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder();
+            builder.setHttpAsyncResponseConsumerFactory(factory);
+            RequestOptions requestOptions = builder.build();
+            RestClientOptions restClientOptions = new RestClientOptions(requestOptions);
+            
+            // Create the transport with a Jackson mapper
+            RestClientTransport transport = new RestClientTransport(
+                    restclient, new JacksonJsonpMapper(), restClientOptions);
 
             // And create the API client
             conf.client = new ElasticsearchClient(transport);
