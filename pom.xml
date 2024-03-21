@@ -134,7 +134,7 @@
     <hazelcast.version>5.3.1</hazelcast.version>
     <hazelcastclient.version>3.12.13</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
-    <jackson.version>2.14.2</jackson.version>
+    <jackson.version>2.15.4</jackson.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>6.1.5.Final</hibernate.version>
