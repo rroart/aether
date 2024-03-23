@@ -126,10 +126,10 @@ public class ListQueueRunner implements Runnable {
         if (listing == null) {
             try {
                 TimeUnit.SECONDS.sleep(1);
-                return;
             } catch (InterruptedException e) {
                 log.error(Constants.EXCEPTION, e); 
             }                   
+            return;
         }
         //Queues.getListingQueueSize().decrementAndGet();
         //log.debug("Listing list size {}", listingList.size());

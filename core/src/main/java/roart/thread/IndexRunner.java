@@ -112,6 +112,11 @@ public class IndexRunner implements Runnable {
         QueueElement el = queue.poll(QueueElement.class);
         if (el == null) {
             log.error("empty queue");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                log.error(Constants.EXCEPTION, e);
+            }
             return null;
         }
         try {

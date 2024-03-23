@@ -141,6 +141,11 @@ public class ConvertRunner implements Runnable {
         QueueElement element = queue.poll(QueueElement.class);
         if (element == null) {
             log.error("empty queue");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                log.error(Constants.EXCEPTION, e);
+            }
             return null;
         }
 
