@@ -20,11 +20,14 @@ import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyMaps;
+import roart.common.collections.impl.MyQueueFactory;
 import roart.common.collections.impl.MyQueues;
 import roart.common.collections.impl.MySets;
+import roart.common.config.Converter;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.util.JsonUtil;
 import roart.common.util.QueueUtil;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
@@ -156,7 +159,24 @@ public class Queues {
     }
 
     public boolean convertQueueHeavyLoaded() {
-        return getConvertQueueSize() >= limit;
+        if (getConvertQueueSize() >= limit) {
+            return true;
+        }
+        return convertQueuesHeavyLoaded();
+    }
+
+    public boolean convertQueuesHeavyLoaded() {
+        String converterString = nodeConf.getConverters();
+        Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
+        int size = 0;
+        for (Converter converter : converters) {
+            MyQueue queue = new MyQueueFactory().create(converter.getName(), nodeConf, controlService.curatorClient);
+            size += queue.size();
+            if (size >= limit) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean indexQueueHeavyLoaded() {
@@ -282,8 +302,19 @@ public class Queues {
     }
 
     public int getConvertQueueSize() {
-        return getConvertQueue().size();
+        return getConvertQueue().size() + getConvertQueuesSize();
         //return MyAtomicLongs.get(Constants.CONVERTQUEUESIZE);
+    }
+
+    public int getConvertQueuesSize() {
+        String converterString = nodeConf.getConverters();
+        Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
+        int size = 0;
+        for (Converter converter : converters) {
+            MyQueue queue = new MyQueueFactory().create(converter.getName(), nodeConf, controlService.curatorClient);
+            size += queue.size();
+        }
+        return size;
     }
 
     public int getIndexQueueSize() {
