@@ -30,7 +30,7 @@ diff -ru ../../configsets/_default/conf/solrconfig.xml ./solrconfig.xml
  
      <!-- Solr Internal Query Caches
           Starting with Solr 9.0 the default cache implementation used is CaffeineCache.
-@@ -744,13 +744,14 @@
+@@ -660,13 +660,14 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
