@@ -35,7 +35,7 @@ public class MySerializer<T> implements StreamSerializer<T>  {
     @Override
     public T read( ObjectDataInput in ) throws IOException {
         InputStream inputStream = (InputStream) in;
-        return (T) JsonUtil.convert(new String(inputStream.readAllBytes()), clazz);
+        return (T) JsonUtil.convertnostrip(new String(inputStream.readAllBytes()), clazz);
     }
 
     @Override
