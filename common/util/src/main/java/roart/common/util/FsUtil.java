@@ -122,6 +122,9 @@ public class FsUtil {
         String extra = null;
         if (len > 3) {
             extra = list[2];
+            if (extra != null && extra.isEmpty()) {
+                extra = null;
+            }
         }
         if (len > 2) {
             fs = list[1];
@@ -142,6 +145,9 @@ public class FsUtil {
         String extra = null;
         if (len >= 3) {
             extra = list[2];
+            if (extra != null && extra.isEmpty()) {
+                extra = null;
+            }
         }
         if (len >= 2) {
             fs = list[1];
