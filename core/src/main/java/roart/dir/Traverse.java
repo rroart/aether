@@ -221,6 +221,14 @@ public class Traverse {
                     log.error(Constants.EXCEPTION, e);
                 }
             }
+            while (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
+                log.info("Index queue heavy loaded, sleeping");
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    log.error(Constants.EXCEPTION, e);
+                }
+            }
             if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                 break;
             }

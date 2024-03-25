@@ -100,6 +100,15 @@ public class TraverseQueueRunner implements Runnable {
                             }
                             continue;
                         }
+                        if (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
+                            log.info("Index queue heavy loaded, sleeping");
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            } catch (InterruptedException e) {
+                                log.error(Constants.EXCEPTION, e);
+                            }
+                            continue;
+                        }
                         new Queues(nodeConf, controlService).incTraverses();
                         doTraverseTimeout(locks, semaphores);
                         new Queues(nodeConf, controlService).decTraverses();

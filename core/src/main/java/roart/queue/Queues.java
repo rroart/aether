@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -26,6 +27,7 @@ import roart.common.collections.impl.MySets;
 import roart.common.config.Converter;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.constants.QueueConstants;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.util.JsonUtil;
 import roart.common.util.QueueUtil;
@@ -180,7 +182,7 @@ public class Queues {
     }
 
     public boolean indexQueueHeavyLoaded() {
-        return getIndexQueueSize() >= limit;
+        return getIndexQueueSize() >= limit || getIndexQueuesSize() >= limit;
     }
 
     public boolean traverseQueueHeavyLoaded() {
@@ -318,8 +320,18 @@ public class Queues {
     }
 
     public int getIndexQueueSize() {
-        return getIndexQueue().size();
+        return getIndexQueue().size() + getIndexQueuesSize();
         //return MyAtomicLongs.get(Constants.INDEXQUEUESIZE);
+    }
+
+    public int getIndexQueuesSize() {
+        int size = 0;
+        List<String> queues = List.of(QueueConstants.SOLR, QueueConstants.ELASTIC, QueueConstants.LUCENE);
+        for (String queuename : queues) {
+            MyQueue queue = new MyQueueFactory().create(queuename, nodeConf, controlService.curatorClient);
+            size += queue.size();
+        }
+        return size;
     }
 
     public String prefix() {
