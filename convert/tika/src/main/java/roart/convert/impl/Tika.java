@@ -4,19 +4,13 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -24,7 +18,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
-import org.apache.tika.io.IOUtils;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -35,10 +28,8 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
 
-import roart.convert.ConvertAbstract;
-import roart.convert.ConvertUtil;
-import roart.common.config.Converter;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
@@ -49,8 +40,7 @@ import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.util.JsonUtil;
-
-import org.xml.sax.ContentHandler;
+import roart.convert.ConvertAbstract;
 
 //import roart.queue.TikaQueueElement;
 
@@ -98,10 +88,11 @@ public class Tika extends ConvertAbstract {
                 return (ConvertResult) param2[1]; // "end"
             }
         }
+        // note ThreadDeath still in use, still works as of Java 17
         otherWorker.stop(); // .interrupt();
         log.error("Otherworker killed {} {}", otherWorker, otherRunnable);
-        return null;
-    }
+        return (ConvertResult) param2[1];
+   }
 
     public ConvertResult convert2(Object[] param2) {
         ConvertResult result = new ConvertResult();
@@ -180,6 +171,7 @@ public class Tika extends ConvertAbstract {
             log.error(Constants.EXCEPTION, e);
             error[0] = "tika exception " + e.getClass().getName() + " ";
         } catch (java.lang.ThreadDeath e) {
+            // note ThreadDeath still in use
             log.error("Error expected {} {}", Thread.currentThread().getId(), filename);
             log.error(Constants.ERROR, e);
             error[0] = "tika timeout " + e.getClass().getName() + " ";
