@@ -50,14 +50,11 @@ import roart.database.DatabaseAbstractController;
 import roart.database.DatabaseOperations;
 
 @RestController
-@SpringBootApplication
-/*
-(exclude = {
+@SpringBootApplication(exclude = {
         DataSourceAutoConfiguration.class, 
         DataSourceTransactionManagerAutoConfiguration.class, 
         JdbcRepositoriesAutoConfiguration.class
 })
-*/
 @EnableDiscoveryClient
 @ComponentScan(basePackages = "roart.database.spring")
 public class SpringController extends DatabaseAbstractController {
