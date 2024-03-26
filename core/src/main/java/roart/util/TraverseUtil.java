@@ -252,4 +252,7 @@ public class TraverseUtil {
         return null;
     }
 
+    public static void log(QueueElement element, String text) {
+        log.info("QueueElement {} roundtrip {}", text, (System.currentTimeMillis() - element.getTimestamp()) / 1000);
+    }
 }

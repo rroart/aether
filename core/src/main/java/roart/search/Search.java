@@ -121,7 +121,8 @@ public class Search {
         // config with finegrained distrib
         dbindex.setChecked("" + System.currentTimeMillis());             
         new IndexFilesDao(nodeConf, controlService).add(dbindex);
-
+        TraverseUtil.log(el, "indexed");
+        
         if (el.getMessage() != null) {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             inmemory.delete(el.getMessage());
@@ -237,6 +238,7 @@ public class Search {
             // config with finegrained distrib
             dbindex.setChecked("" + System.currentTimeMillis());             
             new IndexFilesDao(nodeConf, controlService).add(dbindex);
+            TraverseUtil.log(el, "indexed");
 
             if (el.getMessage() != null) {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
