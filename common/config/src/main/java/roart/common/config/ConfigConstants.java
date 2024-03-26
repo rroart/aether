@@ -7,6 +7,7 @@ public class ConfigConstants {
     public static final String MPTHREADSFS = "mp.threads.fs";
     public static final String MPTHREADSCONVERT = "mp.threads.convert";
     public static final String MPTHREADSINDEX = "mp.threads.index";
+    public static final String MPQUEUELIMIT = "mp.queue.limit";
     @Deprecated
     public static final String FS = "fs";
     @Deprecated

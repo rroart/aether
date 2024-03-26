@@ -21,6 +21,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.MPTHREADSFS, Integer.class);
         map.put(ConfigConstants.MPTHREADSCONVERT, Integer.class);
         map.put(ConfigConstants.MPTHREADSINDEX, Integer.class);
+        map.put(ConfigConstants.MPQUEUELIMIT, Integer.class);
         map.put(ConfigConstants.FS, String.class);
         map.put(ConfigConstants.LOCAL, String.class);
         map.put(ConfigConstants.HADOOP, String.class);
@@ -154,6 +155,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.MPTHREADSFS, 4);
         deflt.put(ConfigConstants.MPTHREADSCONVERT, 4);
         deflt.put(ConfigConstants.MPTHREADSINDEX, 4);
+        deflt.put(ConfigConstants.MPQUEUELIMIT, 100);
         deflt.put(ConfigConstants.FS, null);
         deflt.put(ConfigConstants.LOCAL, null);
         deflt.put(ConfigConstants.HADOOP, null);
@@ -285,6 +287,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.MPTHREADSFS, "MP threads fs");
         text.put(ConfigConstants.MPTHREADSCONVERT, "MP threads convert");
         text.put(ConfigConstants.MPTHREADSFS, "MP threads index");
+        text.put(ConfigConstants.MPQUEUELIMIT, "MP queue limit");
         text.put(ConfigConstants.FS, "Filesystem");
         text.put(ConfigConstants.LOCAL, "");
         text.put(ConfigConstants.HADOOP, "");
@@ -413,6 +416,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.MPTHREADSFS, new XMLType( Integer.class, 4, "MP threads fs"));
         mymap.put(ConfigConstants.MPTHREADSCONVERT, new XMLType( Integer.class, 4, "MP threads convert"));
         mymap.put(ConfigConstants.MPTHREADSINDEX, new XMLType( Integer.class, 4, "MP threads index"));
+        mymap.put(ConfigConstants.MPQUEUELIMIT, new XMLType( Integer.class, 100, "MP queue limit"));
         mymap.put(ConfigConstants.FS, new XMLType( String.class, null, "Filesystem"));
         mymap.put(ConfigConstants.LOCAL, new XMLType( String.class, null, ""));
         mymap.put(ConfigConstants.HADOOP, new XMLType( String.class, null, ""));

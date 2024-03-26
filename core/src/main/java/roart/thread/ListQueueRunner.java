@@ -117,10 +117,6 @@ public class ListQueueRunner implements Runnable {
     }
  
     private void doListingTimeout() {
-        int limit = nodeConf.getMPBatch();
-        if (limit < 1) {
-            limit = LIMIT;
-        }
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getListingQueue();
         QueueElement listing = queue.poll(QueueElement.class);
         if (listing == null) {

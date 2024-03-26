@@ -49,6 +49,10 @@ public class NodeConfig extends MyConfig {
         return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPTHREADSINDEX);       
     }
     
+    public int getMPQueueLimit() {
+        return (Integer) getNotEmptyValueOrDefault(ConfigConstants.MPQUEUELIMIT);       
+    }
+    
     @JsonIgnore
     public String[] getLanguages() {
         String languages = (String) getValueOrDefault(ConfigConstants.NODELANGUAGES);

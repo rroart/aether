@@ -50,8 +50,6 @@ public class Queues {
 
     private Logger log = LoggerFactory.getLogger(Queues.class);
 
-    final int limit = 100;
-
     //public Queue<TikaQueueElement> tikaRunQueue = new ConcurrentLinkedQueue<TikaQueueElement>();
 
     /*
@@ -161,7 +159,7 @@ public class Queues {
     }
 
     public boolean convertQueueHeavyLoaded() {
-        if (getConvertQueueSize() >= limit) {
+        if (getConvertQueueSize() >= nodeConf.getMPQueueLimit()) {
             return true;
         }
         return convertQueuesHeavyLoaded();
@@ -174,7 +172,7 @@ public class Queues {
         for (Converter converter : converters) {
             MyQueue queue = new MyQueueFactory().create(converter.getName(), nodeConf, controlService.curatorClient);
             size += queue.size();
-            if (size >= limit) {
+            if (size >= nodeConf.getMPQueueLimit()) {
                 return true;
             }
         }
@@ -182,15 +180,15 @@ public class Queues {
     }
 
     public boolean indexQueueHeavyLoaded() {
-        return getIndexQueueSize() >= limit || getIndexQueuesSize() >= limit;
+        return getIndexQueueSize() >= nodeConf.getMPQueueLimit() || getIndexQueuesSize() >= nodeConf.getMPQueueLimit();
     }
 
     public boolean traverseQueueHeavyLoaded() {
-        return getTraverseQueueSize() >= limit;
+        return getTraverseQueueSize() >= nodeConf.getMPQueueLimit();
     }
 
     public boolean listingQueueHeavyLoaded() {
-        return getListingQueueSize() >= limit;
+        return getListingQueueSize() >= nodeConf.getMPQueueLimit();
     }
 
     public String webstat() {
