@@ -12,6 +12,7 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import roart.common.config.NodeConfig;
@@ -33,6 +34,7 @@ import roart.common.util.FsUtil;
 import roart.database.DatabaseOperations;
 
 @Component
+@ConditionalOnProperty(name = "springdata.single", havingValue = "true")
 public class SpringIndexFilesWrapper extends DatabaseOperations {
 
     private static Logger log = LoggerFactory.getLogger(SpringIndexFilesWrapper.class);
@@ -44,12 +46,16 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
     private SpringConfiguration config;
     
     @Autowired
-    public SpringIndexFilesWrapper(IndexFilesRepository repo, FilesRepository filesrepo, SpringConfiguration config) {
+    public SpringIndexFilesWrapper(IndexFilesRepository repo, FilesRepository filesrepo, NodeConfig nodeConf, SpringConfiguration config) {
         this.repo = repo;
         this.filesrepo = filesrepo;
         this.config = config;
 
         String driver = config != null ? config.getDriver() : null;
+        if (driver == null) {
+            log.info("Getting driver from nodeConf");
+            driver = nodeConf.getSpringdataDriver();
+        }
         log.info("Using driver {}", driver);
         
         if ("org.h2.Driver".equals(driver) || driver == null) {

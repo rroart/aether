@@ -257,7 +257,7 @@ public class TraverseFile {
             // TODO indexfiles is new, created
             doindex = doindex && created;
             if (doindex) {
-                indexFilesDao.add(indexfiles);                
+                // no. only save once indexFilesDao.add(indexfiles);                
                 indexsingle(trav, md5, filename, indexfiles);
             } else {
                 indexFilesDao.add(indexfiles);
@@ -738,7 +738,7 @@ public class TraverseFile {
             // TODO indexfiles is new, created
             doindex = doindex && created;
             if (doindex) {
-                indexFilesDao.add(indexfiles);
+                // no. only save once indexFilesDao.add(indexfiles);
                 traverseElement.setOpid(null);
                 indexsingle(traverseElement, md5, filename, indexfiles);
             } else {
