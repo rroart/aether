@@ -108,6 +108,10 @@ public class ConfigConstants {
     public static final String CONVERSION = "conversion";
     public static final String DATABASEDATANUCLEUS = "database.datanucleus[@enable]";
     public static final String DATABASESPRING = "database.spring[@enable]";
+    public static final String DATABASESPRINGURL = "database.spring.url";
+    public static final String DATABASESPRINGUSERNAME = "database.spring.username";
+    public static final String DATABASESPRINGPASSWORD = "database.spring.password";
+    public static final String DATABASESPRINGDRIVER = "database.spring.driver";
     public static final String SYNCHRONIZATIONZOOKEEPER = "synchronization.zookeeper";
     public static final String SYNCHRONIZATIONREDIS = "synchronization.redis";
     public static final String SYNCHRONIZATIONCOMMUNICATION = "synchronization.communication[@enable]";

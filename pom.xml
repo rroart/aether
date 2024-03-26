@@ -107,7 +107,7 @@
     <springcore.version>6.1.5</springcore.version>
     <eurekaclient.version>2.0.0</eurekaclient.version>
     <jdk.version>17</jdk.version>
-    <junit.version>5.7.2</junit.version>
+    <junit.version>5.10.2</junit.version>
     <mahout.lucene.version>8.9.0</mahout.lucene.version>
     <lucene.version>9.10.0</lucene.version>
     <solr.version>9.5.0</solr.version>
@@ -147,7 +147,7 @@
     <jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
     <jdbc.url><![CDATA[jdbc:h2:${h2dir}]]>
     </jdbc.url>
-    <postgresql.version>42.5.0</postgresql.version>
+    <postgresql.version>42.7.3</postgresql.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>7.6.0</vaadin.version>
     <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>

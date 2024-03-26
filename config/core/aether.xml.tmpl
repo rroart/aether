@@ -55,7 +55,12 @@
       <host>$DYNAMODBHOST</host>
       <port>$DYNAMODBPORT</port>
     </dynamodb>
-    <spring enable='$SPRINGDATA'/>
+    <spring enable='$SPRINGDATA'>
+      <url>$SPRINGDATAURL</url>
+      <username>$SPRINGDATAUSERNAME</username>
+      <password>$SPRINGDATAPASSWORD</password>
+      <driver>$SPRINGDATADRIVER</driver>
+    </spring>
   </database>
   <machinelearning>
     <sparkml enable='$SPARKML'>

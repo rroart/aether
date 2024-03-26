@@ -272,7 +272,7 @@ public abstract class IndexFilesAccess {
 
     public MyQueue<QueueElement> getQueue(FileObject fileObject) {
         String appId = queueWithAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
-        String queueName = getQueueName() + appId;
+        String queueName = getQueueName(); // + appId;
         return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
     }
 

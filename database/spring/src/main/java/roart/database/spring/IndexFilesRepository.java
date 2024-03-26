@@ -1,6 +1,7 @@
 package roart.database.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+@ConditionalOnProperty(name = "springdata.single", havingValue = "true")
 @Repository
 public interface IndexFilesRepository extends CrudRepository<Index, String> {
 

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
@@ -211,25 +212,42 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         for (IndexFiles i : is) {
             Index in = map(i);
             if (in != null) {
+                log.debug("Save {}", in.toString());
                 indexes.add(in);
             }
             for (FileLocation f : i.getFilelocations()) {                
                 Files fi = map(i, f);
+                log.debug("Save {}", fi.toString());
                 files.add(fi);
             }
         }
         repo.saveAll(indexes);
-        filesrepo.saveAll(files);
+        //filesrepo.saveAll(files);
+        for (Files file : files) {
+            Optional<Files> optFile = filesrepo.findById(file.getFilename());
+            if (optFile.isPresent()) {
+                Files aFile = optFile.get();
+                if (!aFile.getMd5().equals(file.getMd5())) {
+                    aFile.setMd5(file.getMd5());
+                    log.info("Saving modified files");
+                    filesrepo.save(aFile);
+                }
+            } else {
+                filesrepo.save(file);
+            }
+         }
     }
 
     public DatabaseResult save(IndexFiles i) {
         log.debug("Md5 {}", i.getMd5());
         Index hif = map(i);
         if ( hif != null ) {
+            log.debug("Save {}",  hif.toString());
             repo.save(hif);
         }
         for (FileLocation f : i.getFilelocations()) {
             Files fi = map(i, f);
+            log.debug("Save {}", fi.toString());
             filesrepo.save(fi);
         }
         return null;
@@ -246,6 +264,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         try {
             Index hif = new Index(); //hibernateIndexFiles.ensureExistence(i.getMd5());
             hif.setMd5(i.getMd5());
+            hif.setVersion(i.getVersion());
             hif.setIndexed(i.getIndexed());
             hif.setTimeindex(i.getTimeindex());
             hif.setTimestamp(i.getTimestamp());

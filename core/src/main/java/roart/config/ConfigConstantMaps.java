@@ -40,6 +40,10 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.DATABASEHIBERNATE, Boolean.class);
         map.put(ConfigConstants.DATABASEHIBERNATEH2DIR, String.class);
         map.put(ConfigConstants.DATABASESPRING, Boolean.class);
+        map.put(ConfigConstants.DATABASESPRINGURL, String.class);
+        map.put(ConfigConstants.DATABASESPRINGUSERNAME, String.class);
+        map.put(ConfigConstants.DATABASESPRINGPASSWORD, String.class);
+        map.put(ConfigConstants.DATABASESPRINGDRIVER, String.class);
         map.put(ConfigConstants.NODECLASSIFY, Boolean.class);
         map.put(ConfigConstants.MACHINELEARNINGMAHOUT, Boolean.class);
         map.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, Boolean.class);
@@ -169,6 +173,10 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
         deflt.put(ConfigConstants.DATABASEHIBERNATEH2DIR, "");
         deflt.put(ConfigConstants.DATABASESPRING, Boolean.FALSE);
+        deflt.put(ConfigConstants.DATABASESPRINGURL, "");
+        deflt.put(ConfigConstants.DATABASESPRINGUSERNAME, "");
+        deflt.put(ConfigConstants.DATABASESPRINGPASSWORD, "");
+        deflt.put(ConfigConstants.DATABASESPRINGDRIVER, "");
         deflt.put(ConfigConstants.NODECLASSIFY, Boolean.FALSE);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUT, Boolean.FALSE);
         deflt.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, Boolean.FALSE);
@@ -296,6 +304,10 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.DATABASEHIBERNATE, "");
         text.put(ConfigConstants.DATABASEHIBERNATE, "Hibernate H2 directory");
         text.put(ConfigConstants.DATABASESPRING, "");
+        text.put(ConfigConstants.DATABASESPRINGURL, "URL");
+        text.put(ConfigConstants.DATABASESPRINGUSERNAME, "Username");
+        text.put(ConfigConstants.DATABASESPRINGPASSWORD, "Password");
+        text.put(ConfigConstants.DATABASESPRINGDRIVER, "Driver");
         text.put(ConfigConstants.NODECLASSIFY, "Use classifier ML");
         text.put(ConfigConstants.MACHINELEARNINGMAHOUT, "");
         text.put(ConfigConstants.MACHINELEARNINGMAHOUTSPARK, "");
@@ -420,6 +432,10 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.DATABASEHIBERNATE, new XMLType( Boolean.class, Boolean.TRUE, "Hibernate H2 directory"));
         mymap.put(ConfigConstants.DATABASEHIBERNATEH2DIR, new XMLType( String.class, "", null));
         mymap.put(ConfigConstants.DATABASESPRING, new XMLType( Boolean.class, Boolean.FALSE, ""));
+        mymap.put(ConfigConstants.DATABASESPRINGURL, new XMLType( String.class, "", "URL"));
+        mymap.put(ConfigConstants.DATABASESPRINGUSERNAME, new XMLType( String.class, "", "Username"));
+        mymap.put(ConfigConstants.DATABASESPRINGPASSWORD, new XMLType( String.class, "", "Password"));
+        mymap.put(ConfigConstants.DATABASESPRINGDRIVER, new XMLType( String.class, "", "Driver"));
         mymap.put(ConfigConstants.NODECLASSIFY, new XMLType( Boolean.class, Boolean.FALSE, "Use classifier ML"));
         mymap.put(ConfigConstants.MACHINELEARNINGOPENNLP, new XMLType( Boolean.class, Boolean.FALSE, "Machine learning OpenNLP"));
         mymap.put(ConfigConstants.GUIDOWNLOADER, new XMLType( Boolean.class, Boolean.TRUE, "Use downloader"));

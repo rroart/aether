@@ -51,7 +51,7 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
     private Logger log = LoggerFactory.getLogger(this.getClass());
     
     @Autowired
-    private ServletWebServerApplicationContext webServerAppCtxt;
+    protected ServletWebServerApplicationContext webServerAppCtxt;
 
     private static Map<String, DatabaseOperations> operationMap = new HashMap<>();
 
@@ -84,7 +84,7 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
             operationMap.put(param.getConfigid(), operation);
             String appid = useAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
             if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-                DatabaseQueue queue = new DatabaseQueue(getQueueName() + appid, this, curatorClient, nodeConf);
+                DatabaseQueue queue = new DatabaseQueue(getQueueName() /*+ appid*/, this, curatorClient, nodeConf);
                 queueMap.put(param.getConfigid(),  queue);
             }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());

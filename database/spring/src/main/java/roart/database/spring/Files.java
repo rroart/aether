@@ -30,4 +30,8 @@ public class Files {
         this.version = version;
     }
 
+    @Override
+    public String toString() {
+        return "id " + filename + " v " + version;
+    }
 }

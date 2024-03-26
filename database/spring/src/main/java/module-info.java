@@ -5,7 +5,7 @@
  * @author roart
  *
  */
-module springdata {
+open module springdata {
     exports roart.database.spring;
 
     requires common.config;

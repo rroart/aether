@@ -18,10 +18,6 @@ ENV DISTLIB ${distlib}
 ENV DISTJAR ${distjar}
 ENV MYWEBPORT ${mywebport}
 ENV MYCONFIG ${myconfig}
-ENV SPRINGDATAURL ${springdataurl}
-ENV SPRINGDATAUSERNAME ${springdatausername}
-ENV SPRINGDATAPASSWORD ${springdatapassword}
-ENV SPRINGDATADRIVER ${springdatadriver}
 ENV MYDEBUG ${mydebug}
 ENV EXTRAS ${extras}
 ENV LANG ${lang}

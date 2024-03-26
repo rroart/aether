@@ -496,6 +496,26 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public String getSpringdataURL() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASESPRINGURL);
+    }
+    
+    @JsonIgnore
+    public String getSpringdataUsername() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASESPRINGUSERNAME);
+    }
+    
+    @JsonIgnore
+    public String getSpringdataPassword() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASESPRINGPASSWORD);
+    }
+    
+    @JsonIgnore
+    public String getSpringdataDriver() {
+        return (String) getValueOrDefault(ConfigConstants.DATABASESPRINGDRIVER);
+    }
+    
+    @JsonIgnore
     public Integer getTikaTimeout() {
         return (Integer) getValueOrDefault(ConfigConstants.CONVERSIONTIKATIMEOUT);        
     }

@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.Table;
 
+import roart.common.model.FileLocation;
+
 @Table
 public class Index {
     @Version
@@ -22,6 +24,7 @@ public class Index {
     private String failedreason;
     private String timeoutreason;
     private String noindexreason;
+    // TODO test private Set<FileLocation> filenames;
     private Set<String> filenames;
     private String language;
     private String isbn;
@@ -134,5 +137,10 @@ public class Index {
     }
     public void setVersion(Integer version) {
         this.version = version;
+    }
+    
+    @Override
+    public String toString() {
+        return "id " + md5 + " v " + version;
     }
 }

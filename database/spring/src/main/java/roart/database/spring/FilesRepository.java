@@ -1,10 +1,12 @@
 package roart.database.spring;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+@ConditionalOnProperty(name = "springdata.single", havingValue = "true")
 @Repository
 public interface FilesRepository extends CrudRepository<Files, String>{
     @Modifying
