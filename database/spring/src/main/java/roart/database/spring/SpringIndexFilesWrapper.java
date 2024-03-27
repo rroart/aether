@@ -305,6 +305,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         String md5 = hif.getMd5();
         IndexFiles ifile = new IndexFiles(md5);
         //ifile.setMd5(hif.getMd5());
+        ifile.setVersion(hif.getVersion());
         ifile.setIndexed(hif.getIndexed());
         ifile.setTimeindex(hif.getTimeindex());
         ifile.setTimestamp(hif.getTimestamp());
