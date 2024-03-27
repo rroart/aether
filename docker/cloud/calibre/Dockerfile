@@ -1,4 +1,4 @@
-FROM debianjdk:latest
+FROM debiantestingjdk:latest
 MAINTAINER <roart@nvg.ntnu.no>
 ARG distlib
 ARG distjar

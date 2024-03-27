@@ -14,3 +14,7 @@ build:
     context: ../../..
     docker:
       dockerfile: docker/cloud/debianjre/Dockerfile
+  - image: debiantestingjdk
+    context: ../../..
+    docker:
+      dockerfile: docker/cloud/debiantestingjdk/Dockerfile
