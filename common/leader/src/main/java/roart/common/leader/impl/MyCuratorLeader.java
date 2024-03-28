@@ -11,6 +11,7 @@ import com.hazelcast.core.HazelcastInstance;
 
 import roart.common.constants.Constants;
 import roart.common.leader.MyLeader;
+import roart.common.zkutil.ZKUtil;
 
 public class MyCuratorLeader extends MyLeader {
 
@@ -22,7 +23,7 @@ public class MyCuratorLeader extends MyLeader {
         this.curatorFramework = curatorFramework;
         try {
             String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
-            latch = new LeaderLatch(curatorFramework, "/" + Constants.AETHER + "/latch" + appid, id);
+            latch = new LeaderLatch(curatorFramework, ZKUtil.getPath(Constants.LATCH) + appid, id);
             latch.start();
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);

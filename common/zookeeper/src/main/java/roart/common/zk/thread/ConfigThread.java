@@ -13,11 +13,12 @@ import org.slf4j.LoggerFactory;
 import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.zkutil.ZKInitialize;
+import roart.common.zkutil.ZKUtil;
 
 public class ConfigThread implements Runnable {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final String path = "/" + Constants.AETHER + "/" + Constants.CONFIG + "/" + UUID.randomUUID();
+    private final String path = ZKUtil.getPath(Constants.CONFIG) + UUID.randomUUID();
 
     private String data;
 

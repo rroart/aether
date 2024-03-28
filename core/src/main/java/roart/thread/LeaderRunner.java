@@ -19,6 +19,7 @@ import roart.common.leader.impl.MyLeaderFactory;
 import roart.common.model.ConfigParam;
 import roart.common.util.JsonUtil;
 import roart.common.webflux.WebFluxUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.eureka.util.EurekaUtil;
 import roart.common.hcutil.GetHazelcastInstance;
 import roart.common.leader.MyLeader;
@@ -74,7 +75,7 @@ public class LeaderRunner implements Runnable {
                     confMe.run(); // return when finished, don't start new
                 }
 
-                String zPath = "/" + Constants.AETHER + "/" + Constants.CONFIG;
+                String zPath = ZKUtil.getPath() + Constants.CONFIG;
                 CuratorFramework curatorClient = controlService.curatorClient;
                 while (true) {
                     Set<String> done = new HashSet<>();
@@ -119,7 +120,7 @@ public class LeaderRunner implements Runnable {
                         break;
                     }
                     try {
-                        String path = "/" + Constants.AETHER + "/" + Constants.DB;
+                        String path = ZKUtil.getPath() + Constants.DB;
                         deleteOld(curatorClient, path, 15 * 60 * 1000, false, false);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -127,7 +128,7 @@ public class LeaderRunner implements Runnable {
                     }
 
                     try {
-                        String path = "/" + Constants.AETHER + "/" + Constants.QUEUES;
+                        String path = ZKUtil.getPath() + Constants.QUEUES;
                         deleteOld(curatorClient, path, 20 * 60 * 1000, true, false);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -135,7 +136,7 @@ public class LeaderRunner implements Runnable {
                     }
 
                     try {
-                        String path = "/" + Constants.AETHER + "/" + Constants.DATA;
+                        String path = ZKUtil.getPath() + Constants.DATA;
                         deleteOld(curatorClient, path, 20 * 60 * 1000, true, true);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -204,7 +205,7 @@ public class LeaderRunner implements Runnable {
             // duplicated
             traverseCountMap.remove(id);
             log.info("Removed old traverse {}", id);
-            String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + id;
+            String path = ZKUtil.getPath(Constants.QUEUES) + id;
             Stat b = curatorClient.checkExists().forPath(path);
             if (b == null) {
                 continue;
@@ -261,7 +262,7 @@ public class LeaderRunner implements Runnable {
         log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
         log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
         queues.queueStat();
-        String path = "/" + Constants.AETHER + "/" + Constants.QUEUES;
+        String path = ZKUtil.getPath() + Constants.QUEUES;
         Stat b = curatorClient.checkExists().forPath(path);
         if (b == null) {
             return;

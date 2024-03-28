@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -44,6 +45,7 @@ import roart.common.model.Location;
 import roart.common.util.FsUtil;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.filesystem.FileSystemOperations;
 
 import org.slf4j.Logger;
@@ -310,9 +312,9 @@ public class HDFS extends FileSystemOperations {
             String md5 = getMd5(filename);
             try (InputStream inputStream = getInputStreamInner(filename)) {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
-                InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + FsUtil.encode(filename.toString()), inputStream, md5);
+                InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + FsUtil.encode(filename.toString()) + UUID.randomUUID(), inputStream, md5);
                 map.put(filename.object, msg);
-                curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
+                curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;

@@ -6,6 +6,8 @@ import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 
 import roart.common.constants.Constants;
 import roart.common.synchronization.MySemaphore;
+import roart.common.zkutil.ZKUtil;
+
 import org.apache.curator.framework.CuratorFramework;
 
 public class MyCuratorSemaphore extends MySemaphore {
@@ -20,7 +22,7 @@ public class MyCuratorSemaphore extends MySemaphore {
         super();
         this.path = path;
         this.curatorClient = curatorClient;
-        this.lock = new InterProcessSemaphoreMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
+        this.lock = new InterProcessSemaphoreMutex(curatorClient, ZKUtil.getPath(Constants.DB) + path);
     }
 
     @Override

@@ -10,6 +10,7 @@ import roart.common.constants.Constants;
 import roart.common.constants.FileSystemConstants;
 import roart.common.model.FileObject;
 import roart.common.util.FsUtil;
+import roart.common.zkutil.ZKUtil;
 
 public class FileSystemThread implements Runnable {
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -56,7 +57,7 @@ public class FileSystemThread implements Runnable {
             if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                 fo.location.fs = FileSystemConstants.LOCALTYPE;
             }
-            String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+            String str = ZKUtil.getPath() + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
             if (str.endsWith("/")) {
                 str = str.substring(0, str.length() - 1);
             }
@@ -89,7 +90,7 @@ public class FileSystemThread implements Runnable {
                 if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                     fo.location.fs = FileSystemConstants.LOCALTYPE;
                 }
-                String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+                String str = ZKUtil.getPath() + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
                 if (str.endsWith("/")) {
                     str = str.substring(0, str.length() - 1);
                 }

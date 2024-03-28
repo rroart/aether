@@ -272,23 +272,23 @@ public class Queues {
     }
     
     public MyAtomicLong getMyConverts() {
-        return MyAtomicLongs.get(prefix() + Constants.CONVERTS, nodeConf, controlService.curatorClient);
+        return MyAtomicLongs.get(Constants.CONVERTS + prefix(), nodeConf, controlService.curatorClient);
     }
 
     public MyAtomicLong getMyIndexs() {
-        return MyAtomicLongs.get(prefix() + Constants.INDEXS, nodeConf, controlService.curatorClient);
+        return MyAtomicLongs.get(Constants.INDEXS + prefix(), nodeConf, controlService.curatorClient);
     }
 
     public MyAtomicLong getMyTraverses() {
-        return MyAtomicLongs.get(prefix() + Constants.TRAVERSES, nodeConf, controlService.curatorClient);
+        return MyAtomicLongs.get(Constants.TRAVERSES + prefix(), nodeConf, controlService.curatorClient);
     }
 
     public MyAtomicLong getMyListings() {
-        return MyAtomicLongs.get(prefix() + Constants.LISTINGS, nodeConf, controlService.curatorClient);
+        return MyAtomicLongs.get(Constants.LISTINGS + prefix(), nodeConf, controlService.curatorClient);
     }
 
     public MyAtomicLong getMyClients() {
-        return MyAtomicLongs.get(prefix() + Constants.CLIENTS, nodeConf, controlService.curatorClient);
+        return MyAtomicLongs.get(Constants.CLIENTS + prefix(), nodeConf, controlService.curatorClient);
     }
 
     public int getListingQueueSize() {

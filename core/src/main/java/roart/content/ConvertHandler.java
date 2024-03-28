@@ -34,6 +34,7 @@ import roart.common.synchronization.MyLock;
 import roart.common.util.IOUtil;
 import roart.common.util.JsonUtil;
 import roart.common.util.QueueUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.convert.ConvertDAO;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
@@ -139,7 +140,7 @@ public class ConvertHandler {
         }
         inmemory.delete(message);
         try {
-            controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + message.getId());
+            controlService.curatorClient.delete().forPath(ZKUtil.getPath(Constants.DATA) + message.getId());
         } catch (Exception e) {
             log.info(Constants.EXCEPTION, e);
         }
@@ -313,7 +314,7 @@ public class ConvertHandler {
         if (element.getOpid() != null && element.getOpid().equals(OperationConstants.CONVERT)) {
             inmemory.delete(element.getMessage());
             try {
-                controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + element.getMessage().getId());
+                controlService.curatorClient.delete().forPath(ZKUtil.getPath(Constants.DATA) + element.getMessage().getId());
             } catch (Exception e) {
                 log.info(Constants.EXCEPTION, e);
             }

@@ -23,4 +23,5 @@ module calibre {
     requires org.apache.commons.codec;
     requires curator.framework;
     requires common.util;
+    requires common.zookeeper;
 }

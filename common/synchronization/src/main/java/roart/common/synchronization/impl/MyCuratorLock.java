@@ -6,6 +6,8 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyLock;
+import roart.common.zkutil.ZKUtil;
+
 import org.apache.curator.framework.CuratorFramework;
 
 public class MyCuratorLock extends MyLock {
@@ -20,7 +22,7 @@ public class MyCuratorLock extends MyLock {
         super();
         this.path = path;
         this.curatorClient = curatorClient;
-        this.lock = new InterProcessMutex(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path);
+        this.lock = new InterProcessMutex(curatorClient, ZKUtil.getPath(Constants.DB) + path);
     }
 
     @Override

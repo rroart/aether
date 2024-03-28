@@ -12,6 +12,7 @@ module common.leader {
     requires common.config;
     requires common.constants;
     requires common.util;
+    requires common.zookeeper;
     requires curator.client;
     requires curator.framework;
     requires curator.recipes;

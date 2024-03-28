@@ -13,6 +13,7 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.zkutil.ZKInitialize;
 import roart.common.zkutil.ZKMessageUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
@@ -35,7 +36,7 @@ public class ZKRunner implements Runnable {
     	List<String> children = null;
 
     	ZKInitialize.initZK(nodeConf.getZookeeper(), new DummyWatcher(), controlService.nodename);
-    	String dir = "/" + Constants.AETHER + "/" + Constants.NODES + "/" + controlService.nodename;
+    	String dir = ZKUtil.getPath(Constants.NODES) + controlService.nodename;
 
     	while (true) {
     		log.info("get children");

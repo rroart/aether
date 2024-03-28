@@ -10,6 +10,7 @@ module common.synchronization {
     exports roart.common.synchronization.impl;
 
     requires common.constants;
+    requires common.zookeeper;
     requires curator.framework;
     requires curator.recipes;
     requires com.hazelcast.core;

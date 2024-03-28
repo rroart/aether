@@ -22,11 +22,11 @@ public class ZKInitialize {
         }
         try {
             zk = new ZooKeeper(zookeeper, Integer.MAX_VALUE, watcher);
-            createIfNotExists(zk, "/" + Constants.AETHER);
-            createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.LOCK);
-            createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES);
-            createIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.CONFIG);
-            createTempIfNotExists(zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + nodename);
+            createIfNotExists(zk, ZKUtil.getPath0());
+            createIfNotExists(zk, ZKUtil.getPath() + Constants.LOCK);
+            createIfNotExists(zk, ZKUtil.getPath() + Constants.NODES);
+            createIfNotExists(zk, ZKUtil.getPath() + Constants.CONFIG);
+            createTempIfNotExists(zk, ZKUtil.getPath(Constants.NODES) + nodename);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }

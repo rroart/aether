@@ -32,6 +32,7 @@ import roart.common.synchronization.MyLock;
 import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.util.QueueUtil;
 import roart.common.zkutil.ZKMessageUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.queue.Queues;
@@ -170,7 +171,7 @@ public abstract class AbstractFunction {
                 fetchFromQueues(filestodoSet, retList, retNotList, notfoundList, newfileList, retDeletedList, retChangedList, retNotConvertedList, newfileQueue,
                         notfoundQueue, retQueue, retnotQueue, filestodoQueue, filesdoneQueue, deletedQueue, changedQueue, notconvertedQueue);
                 for (String queue : queueList) {
-                    String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + queue;
+                    String path = ZKUtil.getPath(Constants.QUEUES) + queue;
                     Stat stat = controlService.curatorClient.checkExists().forPath(path);
                     if (stat == null) {
                         controlService.curatorClient.create().creatingParentsIfNeeded().forPath(path, new byte[0]);

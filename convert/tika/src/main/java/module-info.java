@@ -28,5 +28,6 @@ module tika {
     requires java.xml;
     requires curator.framework;
     requires common.util;
+    requires common.zookeeper;
 }
 

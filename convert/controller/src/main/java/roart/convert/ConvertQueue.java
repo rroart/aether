@@ -17,6 +17,7 @@ import roart.common.constants.OperationConstants;
 import roart.common.convert.ConvertParam;
 import roart.common.convert.ConvertResult;
 import roart.common.queue.QueueElement;
+import roart.common.zkutil.ZKUtil;
 
 public class ConvertQueue {
 
@@ -27,7 +28,7 @@ public class ConvertQueue {
         Runnable run = () -> {
             long zkTime = 0;
             while (true) { 
-                String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + name;
+                String path = ZKUtil.getPath(Constants.QUEUES) + name;
                 try {
                     long newTime = System.currentTimeMillis();
                     if ((newTime - zkTime) > 60 * 1000) {

@@ -14,6 +14,8 @@ import roart.common.constants.OperationConstants;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.queue.QueueElement;
+import roart.common.zkutil.ZKUtil;
+
 import org.apache.zookeeper.data.Stat;
 
 public class MachineLearningQueue {
@@ -25,7 +27,7 @@ public class MachineLearningQueue {
         Runnable run = () -> {
             long zkTime = 0;
             while (true) {
-                String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + name;
+                String path = ZKUtil.getPath(Constants.QUEUES) + name;
                 try {
                     long newTime = System.currentTimeMillis();
                     if ((newTime - zkTime) > 60 * 1000) {

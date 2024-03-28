@@ -20,6 +20,7 @@ import roart.common.synchronization.MyObjectLockData;
 import roart.common.util.JsonUtil;
 import roart.common.util.LockUtils;
 import roart.common.util.QueueUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.database.IndexFilesDao;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.collections.MyList;
@@ -127,7 +128,7 @@ public class Search {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             inmemory.delete(el.getMessage());
             try {
-                controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + el.getMessage().getId());
+                controlService.curatorClient.delete().forPath(ZKUtil.getPath(Constants.DATA) + el.getMessage().getId());
             } catch (Exception e) {
                 log.info(Constants.EXCEPTION, e);
             }
@@ -244,7 +245,7 @@ public class Search {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 inmemory.delete(el.getMessage());
                 try {
-                    controlService.curatorClient.delete().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + el.getMessage().getId());
+                    controlService.curatorClient.delete().forPath(ZKUtil.getPath(Constants.DATA) + el.getMessage().getId());
                 } catch (Exception e) {
                     log.info(Constants.EXCEPTION, e);
                 }

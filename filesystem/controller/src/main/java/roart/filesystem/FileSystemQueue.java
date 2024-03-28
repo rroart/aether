@@ -18,6 +18,8 @@ import roart.common.filesystem.FileSystemMyFileResult;
 import roart.common.filesystem.FileSystemParam;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.queue.QueueElement;
+import roart.common.zkutil.ZKUtil;
+
 import org.apache.zookeeper.data.Stat;
 
 public class FileSystemQueue {
@@ -37,7 +39,7 @@ public class FileSystemQueue {
             Runnable run = () -> {
                 long zkTime = 0;
                 while (true) {
-                    String path = "/" + Constants.AETHER + "/" + Constants.QUEUES + "/" + aName;
+                    String path = ZKUtil.getPath(Constants.QUEUES) + aName;
                     try {
                         long newTime = System.currentTimeMillis();
                         if ((newTime - zkTime) > 60 * 1000) {

@@ -23,6 +23,7 @@ import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.util.JsonUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.convert.ConvertAbstract;
 import roart.convert.ConvertUtil;
 
@@ -84,7 +85,7 @@ public class Calibre extends ConvertAbstract {
             try (InputStream is = new FileInputStream(out)) {
                 InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), is, md5);
                 result.message = msg;
-                curatorClient.create().creatingParentsIfNeeded().forPath("/" + Constants.AETHER + "/" + Constants.DATA + "/" + msg.getId(), JsonUtil.convert(msg).getBytes());
+                curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }

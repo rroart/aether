@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyObjectLock;
 import roart.common.synchronization.MyObjectLockData;
+import roart.common.zkutil.ZKUtil;
 
 public class MyCuratorObjectLock extends MyObjectLock {
 
@@ -33,7 +34,7 @@ public class MyCuratorObjectLock extends MyObjectLock {
         this.path = new MyObjectLockData(path);
         this.curatorClient = curatorClient;
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3); 
-        this.lock = new DistributedAtomicValue(curatorClient, "/" + Constants.AETHER + "/" + Constants.DB + "/" + path, retryPolicy);
+        this.lock = new DistributedAtomicValue(curatorClient, ZKUtil.getPath(Constants.DB) + path, retryPolicy);
     }
 
     @Override

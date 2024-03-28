@@ -26,4 +26,5 @@ module local {
     requires org.apache.commons.codec;
     requires common.util;
     requires curator.framework;
+    requires common.zookeeper;
 }

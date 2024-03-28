@@ -33,10 +33,10 @@ public class ZKMessageUtil {
 	}
 	log.info("sendMsgRefresh");
 	try {
-	    List<String> nodes = ZKInitialize.zk.getChildren("/" + Constants.AETHER + "/" + Constants.NODES, false);
+	    List<String> nodes = ZKInitialize.zk.getChildren(ZKUtil.getPath() + Constants.NODES, false);
 	    for (String node : nodes) {
 		if (!nodename.equals(node)) {
-			ZKInitialize.createTempIfNotExists(ZKInitialize.zk, "/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.REFRESH);
+			ZKInitialize.createTempIfNotExists(ZKInitialize.zk, ZKUtil.getPath(Constants.NODES) + node + "/" + Constants.REFRESH);
 		    log.info("send refresh to " + node);
 		}
 	    }
@@ -51,10 +51,10 @@ public class ZKMessageUtil {
     }
     log.info("sendMsgReconfig");
     try {
-        List<String> nodes = ZKInitialize.zk.getChildren("/" + Constants.AETHER + "/" + Constants.NODES, false);
+        List<String> nodes = ZKInitialize.zk.getChildren(ZKUtil.getPath() + Constants.NODES, false);
         for (String node : nodes) {
         if (!nodename.equals(node)) {
-            ZKInitialize.createTempIfNotExists(ZKInitialize.zk,"/" + Constants.AETHER + "/" + Constants.NODES + "/" + node + "/" + Constants.RECONFIG);
+            ZKInitialize.createTempIfNotExists(ZKInitialize.zk, ZKUtil.getPath(Constants.NODES) + node + "/" + Constants.RECONFIG);
             log.info("send reconfig to " + node);
         }
         }
