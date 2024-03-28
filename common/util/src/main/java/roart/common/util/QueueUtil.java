@@ -13,71 +13,71 @@ public class QueueUtil {
     }
 
     public static String filesetnewQueue(String myid) {
-        return prefix() + Constants.FILESETNEWQUEUE + myid;
+        return Constants.FILESETNEWQUEUE + prefix() + myid;
     }
 
     public static String notfoundsetQueue(String myid) {
-        return prefix() + Constants.NOTFOUNDSETQUEUE + myid;
+        return Constants.NOTFOUNDSETQUEUE + prefix() + myid;
     }
 
     public static String retlistQueue(String myid) {
-        return prefix() + Constants.RETLISTQUEUE + myid;
+        return Constants.RETLISTQUEUE + prefix() + myid;
     }
 
     public static String retlistnotQueue(String myid) {
-        return prefix() + Constants.RETNOTLISTQUEUE + myid;
+        return Constants.RETNOTLISTQUEUE + prefix() + myid;
     }
 
     public static String filestodoQueue(String myid) {
-        return prefix() + Constants.FILESTODOSETQUEUE + myid;
+        return Constants.FILESTODOSETQUEUE + prefix() + myid;
     }
 
     public static String filesdoneQueue(String myid) {
-        return prefix() + Constants.FILESDONESETQUEUE + myid;
+        return Constants.FILESDONESETQUEUE + prefix() + myid;
     }
 
     public static String deletedQueue(String myid) {
-        return prefix() + Constants.DELETEDQUEUE + myid;
+        return Constants.DELETEDQUEUE + prefix() + myid;
     }
 
     public static String changedQueue(String myid) {
-        return prefix() + Constants.CHANGEDQUEUE + myid;
+        return Constants.CHANGEDQUEUE + prefix() + myid;
     }
 
     public static String notconvertedQueue(String myid) {
-        return prefix() + Constants.UNCONVERTEDQUEUE + myid;
+        return Constants.UNCONVERTEDQUEUE + prefix() + myid;
     }
 
     public static String traversecount(String myid) {
-        return prefix() + Constants.TRAVERSECOUNT + myid;
+        return Constants.TRAVERSECOUNT + prefix() + myid;
     }
 
     public static String getListingQueue() {
-        return prefix() + Constants.LISTINGQUEUE;
+        return Constants.LISTINGQUEUE + prefix();
     }
 
     public static String getTraverseQueue() {
-        return prefix() + Constants.TRAVERSEQUEUE;
+        return Constants.TRAVERSEQUEUE + prefix();
     }
 
     public static String getConvertQueue() {
-        return prefix() + Constants.CONVERTQUEUE;
+        return Constants.CONVERTQUEUE + prefix();
     }
 
     public static String getIndexQueue() {
-        return prefix() + Constants.INDEXQUEUE;
+        return Constants.INDEXQUEUE + prefix();
     }
 
     public static String getTaskMap() {
-        return prefix() + Constants.TASKMAP;
+        return Constants.TASKMAP + prefix();
     }
 
     public static String getResultMap() {
-        return prefix() + Constants.RESULTMAP;
+        return Constants.RESULTMAP + prefix();
     }
 
     public static String getTraverseCountMap() {
-        return prefix() + Constants.TRAVERSECOUNTMAP;
+        return Constants.TRAVERSECOUNTMAP + prefix();
     }
 
     /*

@@ -57,7 +57,7 @@ public abstract class IndexFilesAccess {
     public abstract String getQueueName();
     
     public boolean queueWithAppId() {
-        return false;
+        return true;
     }
 
     public String constructor() {
@@ -271,8 +271,8 @@ public abstract class IndexFilesAccess {
     }
 
     public MyQueue<QueueElement> getQueue(FileObject fileObject) {
-        String appId = queueWithAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
-        String queueName = getQueueName(); // + appId;
+        String appId = queueWithAppId() && System.getenv(Constants.DATABASEAPPID) != null ? System.getenv(Constants.DATABASEAPPID) : "";
+        String queueName = getQueueName() + appId;
         return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
     }
 

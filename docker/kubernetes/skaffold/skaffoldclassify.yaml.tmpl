@@ -4,25 +4,25 @@ metadata:
   name: classify
 build:
   artifacts:
-  - image: aether-opennlp-data$APPID
+  - image: aether-opennlp-data$CLASSIFYAPPID
     context: ../../..
     docker:
       dockerfile: docker/cloud/opennlpdata/Dockerfile
       buildArgs:
         mydata: '{{.MYOPENNLPDATA}}'
-  - image: aether-spark-ml-data$APPID
+  - image: aether-spark-ml-data$CLASSIFYAPPID
     context: ../../..
     docker:
       dockerfile: docker/cloud/sparkmldata/Dockerfile
       buildArgs:
         mydata: '{{.MYSPARKMLDATA}}'
-  - image: aether-mahout-spark-data$APPID
+  - image: aether-mahout-spark-data$CLASSIFYAPPID
     context: ../../..
     docker:
       dockerfile: docker/cloud/mahoutsparkdata/Dockerfile
       buildArgs:
         mydata: '{{.MYMAHOUTSPARKDATA}}'
-  - image: aether-opennlp$IMGID
+  - image: aether-opennlp$CLASSIFYIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -32,11 +32,11 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-        appid: '{{.APPID}}'
+        appid: '{{.CLASSIFYAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         mydata: '{{.MYOPENNLPDATA}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-mahout-spark$IMGID
+  - image: aether-mahout-spark$CLASSIFYIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -47,11 +47,11 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
-        appid: '{{.APPID}}'
+        appid: '{{.CLASSIFYAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         mydata: '{{.MYMAHOUTSPARKDATA}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-spark-ml$IMGID
+  - image: aether-spark-ml$CLASSIFYIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -62,7 +62,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED" 
-        appid: '{{.APPID}}'
+        appid: '{{.CLASSIFYAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         mydata: '{{.MYSPARKMLDATA}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'

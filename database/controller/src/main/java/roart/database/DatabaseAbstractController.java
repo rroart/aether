@@ -82,9 +82,9 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
             NodeConfig nodeConf = getNodeConf(param);
             operation = createOperations(param.getConfigname(), param.getConfigid(), nodeConf);
             operationMap.put(param.getConfigid(), operation);
-            String appid = useAppId() && System.getenv("APPID") != null ? System.getenv("APPID") : "";
+            String appid = useAppId() && System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
             if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-                DatabaseQueue queue = new DatabaseQueue(getQueueName() /*+ appid*/, this, curatorClient, nodeConf);
+                DatabaseQueue queue = new DatabaseQueue(getQueueName() + appid, this, curatorClient, nodeConf);
                 queueMap.put(param.getConfigid(),  queue);
             }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
@@ -275,7 +275,7 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
     public abstract String getQueueName();
     
     public boolean useAppId( ) {
-        return false;
+        return true;
     };
     
     private NodeConfig getNodeConf(ConfigParam param) {

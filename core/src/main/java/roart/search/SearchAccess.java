@@ -61,7 +61,8 @@ public abstract class SearchAccess {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
-        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient);
+        String appId = System.getenv(Constants.SEARCHAPPID) != null ? System.getenv(Constants.SEARCHAPPID) : "";
+        this.queue =  new MyQueueFactory().create(getQueueName() + appId, nodeConf, controlService.curatorClient);
     }
 
     public abstract String getAppName();

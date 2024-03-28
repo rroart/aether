@@ -22,6 +22,7 @@ import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.queue.QueueElement;
 import roart.common.util.FsUtil;
+import roart.common.zkutil.ZKUtil;
 import roart.service.ControlService;
 import roart.util.TraverseUtil;
 
@@ -171,8 +172,8 @@ public class FileSystemDao {
         //ControlServer.z
         String url = null;
         try {
-            String str = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
-            String zPath = "/" + Constants.AETHER + "/" + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
+            String str = ZKUtil.getPath() + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
+            String zPath = ZKUtil.getPath() + Constants.FS + stringOrNull(fs.nodename) + "/" + fs.fs + stringOrNull(fs.extra) + s;
             log.debug("Path {}", zPath);
             Stat b = curatorClient.checkExists().forPath(zPath);
             if (b == null) {

@@ -230,7 +230,7 @@ public class TraverseUtil {
     }
 
     public static void doCounters(QueueElement trav, int value, NodeConfig nodeConf, ControlService controlService) {
-        MyAtomicLong total = MyAtomicLongs.get(new Queues(null, null).prefix() + Constants.TRAVERSECOUNT, nodeConf, controlService.curatorClient);
+        MyAtomicLong total = MyAtomicLongs.get(Constants.TRAVERSECOUNT + new Queues(null, null).prefix(), nodeConf, controlService.curatorClient);
         total.addAndGet(value);
         MyAtomicLong count = MyAtomicLongs.get(QueueUtil.traversecount(trav.getMyid()), nodeConf, controlService.curatorClient);
         count.addAndGet(value);

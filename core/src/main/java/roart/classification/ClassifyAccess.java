@@ -40,7 +40,8 @@ public abstract class ClassifyAccess {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
-        this.queue =  new MyQueueFactory().create(getQueueName(), nodeConf, controlService.curatorClient);
+        String appId = System.getenv(Constants.CLASSIFYAPPID) != null ? System.getenv(Constants.CLASSIFYAPPID) : "";
+        this.queue =  new MyQueueFactory().create(getQueueName() + appId, nodeConf, controlService.curatorClient);
     }
 
     public abstract String getAppName();

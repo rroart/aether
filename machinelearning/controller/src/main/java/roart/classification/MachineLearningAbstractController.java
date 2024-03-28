@@ -72,8 +72,9 @@ public abstract class MachineLearningAbstractController implements CommandLineRu
             NodeConfig nodeConf = getNodeConf(param);
             operation = createClassifier(param.getConfigname(), param.getConfigid(), nodeConf);
             classifierMap.put(param.getConfigid(), operation);
+            String appid = System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
             if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-                MachineLearningQueue queue = new MachineLearningQueue(getQueueName(), this, curatorClient, nodeConf);
+                MachineLearningQueue queue = new MachineLearningQueue(getQueueName() + appid, this, curatorClient, nodeConf);
                 queueMap.put(param.getConfigid(),  queue);
             }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());

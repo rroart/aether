@@ -4,7 +4,7 @@ metadata:
   name: database
 build:
   artifacts:
-  - image: aether-hbase$IMGID
+  - image: aether-hbase$DATABASEIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -15,12 +15,12 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.nio=ALL-UNNAMED"
-        appid: '{{.APPID}}'
+        appid: '{{.DATABASEAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-hibernatedata$APPID
+  - image: aether-hibernatedata$DATABASEAPPID
     context: ../../../docker/cloud/hibernatedata
-  - image: aether-hibernate$IMGID
+  - image: aether-hibernate$DATABASEIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -30,10 +30,10 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-        appid: '{{.APPID}}'
+        appid: '{{.DATABASEAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-cassandra$IMGID
+  - image: aether-cassandra$DATABASEIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -43,10 +43,10 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-        appid: '{{.APPID}}'
+        appid: '{{.DATABASEAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-dynamodb$IMGID
+  - image: aether-dynamodb$DATABASEIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -57,10 +57,10 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
-        appid: '{{.APPID}}'
+        appid: '{{.DATABASEAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-springdata$IMGID
+  - image: aether-springdata$DATABASEIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -71,7 +71,7 @@ build:
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
         extras: "--add-opens java.base/java.lang=ALL-UNNAMED"
-        appid: '{{.APPID}}'
+        appid: '{{.DATABASEAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:

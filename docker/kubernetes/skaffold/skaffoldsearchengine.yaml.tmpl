@@ -4,9 +4,9 @@ metadata:
   name: searchengine
 build:
   artifacts:
-  - image: aether-lucenedata$APPID
+  - image: aether-lucenedata$SEARCHAPPID
     context: ../../../docker/cloud/lucenedata
-  - image: aether-lucene$IMGID
+  - image: aether-lucene$SEARCHIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -16,10 +16,10 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-        appid: '{{.APPID}}'
+        appid: '{{.SEARCHAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-elastic$IMGID
+  - image: aether-elastic$SEARCHIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -29,10 +29,10 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-        appid: '{{.APPID}}'
+        appid: '{{.SEARCHAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-solr$IMGID
+  - image: aether-solr$SEARCHIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -42,7 +42,7 @@ build:
         mywebport: "8080"
         myconfig: '{{.MYCONFIG}}'
         mydebug: '{{.MYDEBUG}}'
-        appid: '{{.APPID}}'
+        appid: '{{.SEARCHAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:

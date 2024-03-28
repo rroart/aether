@@ -4,54 +4,54 @@ metadata:
   name: convert
 build:
   artifacts:
-  - image: aether-calibre$IMGID
+  - image: aether-calibre$CONVERTIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/calibre/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.CALIBREJAR}}'
-        appid: '{{.APPID}}'
+        appid: '{{.CONVERTAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-djvutxt$IMGID
+  - image: aether-djvutxt$CONVERTIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/djvutxt/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.DJVUTXTJAR}}'
-        appid: '{{.APPID}}'
+        appid: '{{.CONVERTAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-pdftotext$IMGID
+  - image: aether-pdftotext$CONVERTIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/pdftotext/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.PDFTOTEXTJAR}}'
-        appid: '{{.APPID}}'
+        appid: '{{.CONVERTAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-tika$IMGID
+  - image: aether-tika$CONVERTIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/tika/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.TIKAJAR}}'
-        appid: '{{.APPID}}'
+        appid: '{{.CONVERTAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-wvtext$IMGID
+  - image: aether-wvtext$CONVERTIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/wvtext/Dockerfile
       buildArgs:
         distlib: '{{.DISTLIB}}'
         distjar: '{{.WVTEXTJAR}}'
-        appid: '{{.APPID}}'
+        appid: '{{.CONVERTAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
 deploy:

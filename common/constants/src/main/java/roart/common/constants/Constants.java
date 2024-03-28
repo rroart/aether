@@ -57,6 +57,10 @@ public static final String HZ = "hz";
 public static final String MAPNAME = "inmemory";
 
 public static final String APPID = "APPID";
+public static final String DATABASEAPPID = "DATABASEAPPID";
+public static final String SEARCHAPPID = "SEARCHAPPID";
+public static final String CONVERTAPPID = "CONVERTAPPID";
+public static final String CLASSIFYAPPID = "CLASSIFYAPPID";
 public static final String LOCALIP = "LOCALIP";
 
 public static final String CONVERTS = "converts";

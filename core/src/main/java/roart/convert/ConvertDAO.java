@@ -64,7 +64,8 @@ public class ConvertDAO {
     }
 
     public MyQueue getQueue(String queueName) {
-        return new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
+        String appId = System.getenv(Constants.CONVERTAPPID) != null ? System.getenv(Constants.CONVERTAPPID) : "";
+        return new MyQueueFactory().create(queueName + appId, nodeConf, controlService.curatorClient);
     }
 
     public void convertQueue(QueueElement element, List<Converter> converters, InmemoryMessage message, Map<String, String> metadata, String filename, IndexFiles index) {

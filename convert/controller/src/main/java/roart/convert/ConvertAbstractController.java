@@ -73,8 +73,9 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
             NodeConfig nodeConf = getNodeConf(param);
             operation = createConvert(param.getConfigname(), param.getConfigid(), nodeConf, curatorClient);
             convertMap.put(param.getConfigid(), operation);
+            String appid = System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
             if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-                ConvertQueue queue = new ConvertQueue(getQueueName(), this, curatorClient, nodeConf);
+                ConvertQueue queue = new ConvertQueue(getQueueName() + appid, this, curatorClient, nodeConf);
                 queueMap.put(param.getConfigid(), queue);
             }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());

@@ -7,6 +7,10 @@ ARG myconfig
 ARG mydebug
 ARG lang=C.utf8
 ARG appid
+ARG classifyappid
+ARG convertappid
+ARG databaseappid
+ARG searchappid
 ARG eurekaserver
 ARG jdk_java_options=
 ENV DISTLIB ${distlib}
@@ -16,6 +20,10 @@ ENV MYCONFIG ${myconfig}
 ENV MYDEBUG ${mydebug}
 ENV LANG ${lang}
 ENV APPID ${appid}
+ENV CLASSIFYAPPID ${classifyappid}
+ENV CONVERTAPPID ${convertappid}
+ENV DATABASEAPPID ${databaseappid}
+ENV SEARCHAPPID ${searchappid}
 ENV EUREKA_SERVER_URI ${eurekaserver}
 ENV JDK_JAVA_OPTIONS ${jdk_java_options}
 #RUN microdnf install hostname

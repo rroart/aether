@@ -79,8 +79,9 @@ public abstract class SearchEngineAbstractController implements CommandLineRunne
             NodeConfig nodeConf = getNodeConf(param);
             operation = createSearcher(param.getConfigname(), param.getConfigid(), nodeConf);
             searchMap.put(param.getConfigid(), operation);
+            String appid = System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
             if (nodeConf.wantDistributedTraverse() || nodeConf.wantAsync()) {
-                SearchEngineQueue queue = new SearchEngineQueue(getQueueName(), this, curatorClient, nodeConf);
+                SearchEngineQueue queue = new SearchEngineQueue(getQueueName() + appid, this, curatorClient, nodeConf);
                 queueMap.put(param.getConfigid(),  queue);
             }
             log.info("Created config for {} {}", param.getConfigname(), param.getConfigid());
