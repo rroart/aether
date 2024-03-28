@@ -46,7 +46,7 @@ function getcolumns(resultitemtable, baseurl, callback) {
       continue;
     }
     if (head.items[i] != "Score") {
-      columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row) => (<span data-tip = {row.value}>{row.value}</span>) });
+      columns.push({ accessor: head.items[i], Header: head.items[i], sort: true, id: 'col'+i, Cell: (row, value) => (<p dangerouslySetInnerHTML={{__html: row.value }}/>) });
     } else {
       columns.push({ accessor: head.items[i], Header: head.items[i], sort: true });
     }
