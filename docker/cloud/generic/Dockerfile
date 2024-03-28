@@ -4,10 +4,6 @@ ARG distlib
 ARG distjar
 ARG mywebport
 ARG myconfig
-ARG springdataurl
-ARG springdatausername
-ARG springdatapassword
-ARG springdatadriver
 ARG mydebug
 ARG extras
 ARG lang=C.utf8
