@@ -459,6 +459,21 @@ public class IndexFiles {
         }
     }
 
+    @JsonIgnore
+    public Date getCheckedDate() {
+        if (checked == null) {
+            return new Date(0);
+        }
+        try { 
+            Long date = new Long(checked);
+            return new Date(date.longValue());
+        } catch (Exception e) {
+            log.error("Exception from " + checked);
+            log.error(Constants.EXCEPTION, e);
+            return new Date(0);
+        }
+    }
+
     // not used
     @JsonIgnore
     public Set<String> getFilenames() {
@@ -507,6 +522,7 @@ public class IndexFiles {
             ri.add("Classification");
         }
         ri.add("Timestamp");
+        ri.add("Updated");
         ri.add("Convertsw");
         ri.add("Converttime");
         ri.add("Indextime");
@@ -540,6 +556,7 @@ public class IndexFiles {
             ri.add("Classification");
         }
         ri.add("Timestamp");
+        ri.add("Updated");
         if (admin) {
             ri.add("Convertsw");
             ri.add("Converttime");
@@ -589,6 +606,7 @@ public class IndexFiles {
             ri.add(index.getClassification());
         }
         ri.add(index.getTimestampDate().toString());
+        ri.add(index.getCheckedDate().toString());
         if (admin) {
             ri.add(index.getConvertsw());
             ri.add(index.getConverttime("%.2f"));
@@ -639,6 +657,7 @@ public class IndexFiles {
             ri.add(index.getClassification());
         }
         ri.add(index.getTimestampDate().toString());
+        ri.add(index.getCheckedDate().toString());
         ri.add(index.getConvertsw());
         ri.add(index.getConverttime("%.2f"));
         ri.add(index.getTimeindex("%.2f"));
