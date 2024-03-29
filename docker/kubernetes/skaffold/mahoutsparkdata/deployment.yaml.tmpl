@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mahout-sparkdatapv$APPID
+  name: mahout-sparkdatapv$CLASSIFYAPPID
 spec:
   storageClassName: manual
   capacity:
@@ -10,14 +10,14 @@ spec:
     - ReadWriteMany
   claimRef:
     namespace: default
-    name: mahout-sparkdatapv$APPID
+    name: mahout-sparkdatapv$CLASSIFYAPPID
   hostPath:
-    path: "/data/mahoutsparkdata$APPID"
+    path: "/data/mahoutsparkdata$CLASSIFYAPPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mahout-sparkdatapv$APPID
+  name: mahout-sparkdatapv$CLASSIFYAPPID
 spec:
   # Specify "" as the storageClassName so it matches the PersistentVolume's StorageClass.
   # A nil storageClassName value uses the default StorageClass. For details, see

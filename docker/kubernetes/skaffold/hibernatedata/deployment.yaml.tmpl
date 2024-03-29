@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: hibernatedatapv$APPID
+  name: hibernatedatapv$DATABASEAPPID
 spec:
   storageClassName: manual
   capacity:
@@ -10,14 +10,14 @@ spec:
     - ReadWriteMany
   claimRef:
     namespace: default
-    name: hibernatedatapv$APPID
+    name: hibernatedatapv$DATABASEAPPID
   hostPath:
-    path: "/data/hibernatedata$APPID"
+    path: "/data/hibernatedata$DATABASEAPPID"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hibernatedatapv$APPID
+  name: hibernatedatapv$DATABASEAPPID
 spec:
   # Specify "" as the storageClassName so it matches the PersistentVolume's StorageClass.
   # A nil storageClassName value uses the default StorageClass. For details, see

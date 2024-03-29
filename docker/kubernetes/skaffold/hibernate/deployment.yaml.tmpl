@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aether-hibernate$APPID
+  name: aether-hibernate$DATABASEAPPID
   labels:
-    app: aether-hibernate$APPID
+    app: aether-hibernate$DATABASEAPPID
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: aether-hibernate$APPID
+      app: aether-hibernate$DATABASEAPPID
   template:
     metadata:
       labels:
-        app: aether-hibernate$APPID
+        app: aether-hibernate$DATABASEAPPID
     spec:
       initContainers:
       - name: hibernateinit
-        image: aether-hibernatedata$APPID
+        image: aether-hibernatedata$DATABASEAPPID
         command: ["/bin/sh", "-c", "cp -R /data/* /newdata/"]
         volumeMounts:
         - name: hibernatedatavol
           mountPath: /newdata
       containers:
-      - name: aether-hibernate$APPID
-        image: aether-hibernate$IMGID
+      - name: aether-hibernate$DATABASEAPPID
+        image: aether-hibernate$DATABASEIMGID
         ports:
         - containerPort: 80
         volumeMounts:
@@ -32,14 +32,14 @@ spec:
       volumes:
       - name: hibernatedatavol
         persistentVolumeClaim:
-          claimName: hibernatedatapv$APPID
+          claimName: hibernatedatapv$DATABASEAPPID
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aether-hibernate$APPID
+  name: aether-hibernate$DATABASEAPPID
   labels:
-    app: aether-hibernate$APPID
+    app: aether-hibernate$DATABASEAPPID
 spec:
   type: NodePort
   ports:
@@ -47,7 +47,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: aether-hibernate$APPID
+    app: aether-hibernate$DATABASEAPPID
   sessionAffinity: None  
 status:
   loadBalancer: {}    
@@ -57,7 +57,7 @@ kind: IngressClass
 metadata:
   labels:
     app.kubernetes.io/component: controller
-  name: aether-hibernate$APPID
+  name: aether-hibernate$DATABASEAPPID
   annotations:
     ingressclass.kubernetes.io/is-default-class: "false"
 spec:
@@ -66,9 +66,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: name-virtual-host-ingress-aether-hibernate$APPID
+  name: name-virtual-host-ingress-aether-hibernate$DATABASEAPPID
 spec:
-  ingressClassName: aether-hibernate$APPID
+  ingressClassName: aether-hibernate$DATABASEAPPID
   rules:
   - host: $HIBERNATEIHOST
     http:
@@ -77,6 +77,6 @@ spec:
         path: "/"
         backend:
           service:
-            name: aether-hibernate$APPID
+            name: aether-hibernate$DATABASEAPPID
             port:
               number: 8080

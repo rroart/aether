@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aether-calibre$APPID
+  name: aether-calibre$CONVERTAPPID
   labels:
-    app: aether-calibre$APPID
+    app: aether-calibre$CONVERTAPPID
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: aether-calibre$APPID
+      app: aether-calibre$CONVERTAPPID
   template:
     metadata:
       labels:
-        app: aether-calibre$APPID
+        app: aether-calibre$CONVERTAPPID
     spec:
       containers:
       - name: aether-calibre
-        image: aether-calibre$IMGID
+        image: aether-calibre$CONVERTIMGID
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aether-calibre$APPID
+  name: aether-calibre$CONVERTAPPID
   labels:
-    app: aether-calibre$APPID
+    app: aether-calibre$CONVERTAPPID
 spec:
   type: NodePort
   ports:
@@ -33,7 +33,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: aether-calibre$APPID
+    app: aether-calibre$CONVERTAPPID
   sessionAffinity: None  
 status:
   loadBalancer: {}    
@@ -43,7 +43,7 @@ kind: IngressClass
 metadata:
   labels:
     app.kubernetes.io/component: controller
-  name: aether-calibre$APPID
+  name: aether-calibre$CONVERTAPPID
   annotations:
     ingressclass.kubernetes.io/is-default-class: "false"
 spec:
@@ -52,9 +52,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: name-virtual-host-ingress-aether-calibre$APPID
+  name: name-virtual-host-ingress-aether-calibre$CONVERTAPPID
 spec:
-  ingressClassName: aether-calibre$APPID
+  ingressClassName: aether-calibre$CONVERTAPPID
   rules:
   - host: $CALIBREIHOST
     http:
@@ -63,6 +63,6 @@ spec:
         path: "/"
         backend:
           service:
-            name: aether-calibre$APPID
+            name: aether-calibre$CONVERTAPPID
             port:
               number: 8080

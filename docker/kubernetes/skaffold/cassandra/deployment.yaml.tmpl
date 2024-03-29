@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aether-cassandra$APPID
+  name: aether-cassandra$DATABASEAPPID
   labels:
-    app: aether-cassandra$APPID
+    app: aether-cassandra$DATABASEAPPID
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: aether-cassandra$APPID
+      app: aether-cassandra$DATABASEAPPID
   template:
     metadata:
       labels:
-        app: aether-cassandra$APPID
+        app: aether-cassandra$DATABASEAPPID
     spec:
       containers:
       - name: aether-cassandra
-        image: aether-cassandra$IMGID
+        image: aether-cassandra$DATABASEIMGID
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aether-cassandra$APPID
+  name: aether-cassandra$DATABASEAPPID
   labels:
-    app: aether-cassandra$APPID
+    app: aether-cassandra$DATABASEAPPID
 spec:
   type: NodePort
   ports:
@@ -33,7 +33,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: aether-cassandra$APPID
+    app: aether-cassandra$DATABASEAPPID
   sessionAffinity: None  
 status:
   loadBalancer: {}    
@@ -43,7 +43,7 @@ kind: IngressClass
 metadata:
   labels:
     app.kubernetes.io/component: controller
-  name: aether-cassandra$APPID
+  name: aether-cassandra$DATABASEAPPID
   annotations:
     ingressclass.kubernetes.io/is-default-class: "false"
 spec:
@@ -52,9 +52,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: name-virtual-host-ingress-aether-cassandra$APPID
+  name: name-virtual-host-ingress-aether-cassandra$DATABASEAPPID
 spec:
-  ingressClassName: aether-cassandra$APPID
+  ingressClassName: aether-cassandra$DATABASEAPPID
   rules:
   - host: $CASSANDRAIHOST
     http:
@@ -63,6 +63,6 @@ spec:
         path: "/"
         backend:
           service:
-            name: aether-cassandra$APPID
+            name: aether-cassandra$DATABASEAPPID
             port:
               number: 8080
