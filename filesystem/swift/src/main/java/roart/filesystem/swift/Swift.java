@@ -354,7 +354,7 @@ public class Swift extends FileSystemOperations {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 InmemoryMessage msg = inmemory.send(EurekaConstants.READFILE + FsUtil.encode(filename.toString()) + UUID.randomUUID(), inputStream, md5);
                 map.put(filename.object, msg);
-                curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
+                curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getAppidPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 return null;

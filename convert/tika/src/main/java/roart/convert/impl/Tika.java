@@ -121,7 +121,7 @@ public class Tika extends ConvertAbstract {
                 if (outputArray.length > 0) {
                     InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), new ByteArrayInputStream(outputArray), md5);
                     result.message = msg;
-                    curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
+                    curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getAppidPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
                 } else {
                     result.error = "Tika empty";
                 }

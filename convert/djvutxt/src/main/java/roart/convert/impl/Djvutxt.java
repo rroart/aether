@@ -90,7 +90,7 @@ public class Djvutxt extends ConvertAbstract {
             try (InputStream is = new FileInputStream(out)) {
                 InmemoryMessage msg = inmemory.send(EurekaConstants.CONVERT + param.message.getId(), is, md5);
                 result.message = msg;
-                curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
+                curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getAppidPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
             }

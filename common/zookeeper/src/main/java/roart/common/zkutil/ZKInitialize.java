@@ -22,11 +22,20 @@ public class ZKInitialize {
         }
         try {
             zk = new ZooKeeper(zookeeper, Integer.MAX_VALUE, watcher);
-            createIfNotExists(zk, ZKUtil.getPath0());
-            createIfNotExists(zk, ZKUtil.getPath() + Constants.LOCK);
-            createIfNotExists(zk, ZKUtil.getPath() + Constants.NODES);
-            createIfNotExists(zk, ZKUtil.getPath() + Constants.CONFIG);
-            createTempIfNotExists(zk, ZKUtil.getPath(Constants.NODES) + nodename);
+            createIfNotExists(zk, ZKUtil.getCommonPath0());
+            createIfNotExists(zk, ZKUtil.getCommonPath() + Constants.CONFIG);
+            createIfNotExists(zk, ZKUtil.getCommonPath() + Constants.DATA);
+            createIfNotExists(zk, ZKUtil.getCommonPath() + Constants.QUEUES);
+            createIfNotExists(zk, ZKUtil.getAppidPath0());
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.CONFIG);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.DATA);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.DB);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.FS);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.LATCH);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.LOCK);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.NODES);
+            createIfNotExists(zk, ZKUtil.getAppidPath() + Constants.QUEUES);
+            createTempIfNotExists(zk, ZKUtil.getAppidPath(Constants.NODES) + nodename);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }

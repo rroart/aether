@@ -29,7 +29,7 @@ public class SearchEngineQueue {
         Runnable run = () -> {
             long zkTime = 0;
             while (true) {
-                String path = ZKUtil.getPath(Constants.QUEUES) + name;
+                String path = ZKUtil.getAppidPath(Constants.QUEUES) + name;
                 try {
                     long newTime = System.currentTimeMillis();
                     if ((newTime - zkTime) > 60 * 1000) {

@@ -22,7 +22,7 @@ public class MyCuratorSemaphore extends MySemaphore {
         super();
         this.path = path;
         this.curatorClient = curatorClient;
-        this.lock = new InterProcessSemaphoreMutex(curatorClient, ZKUtil.getPath(Constants.DB) + path);
+        this.lock = new InterProcessSemaphoreMutex(curatorClient, ZKUtil.getAppidPath(Constants.DB) + path);
     }
 
     @Override

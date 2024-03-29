@@ -18,7 +18,7 @@ import roart.common.zkutil.ZKUtil;
 public class ConfigThread implements Runnable {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final String path = ZKUtil.getPath(Constants.CONFIG) + UUID.randomUUID();
+    private final String path = ZKUtil.getAppidPath(Constants.CONFIG) + UUID.randomUUID();
 
     private String data;
 

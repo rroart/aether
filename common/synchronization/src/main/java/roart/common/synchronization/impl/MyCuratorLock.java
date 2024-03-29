@@ -22,7 +22,7 @@ public class MyCuratorLock extends MyLock {
         super();
         this.path = path;
         this.curatorClient = curatorClient;
-        this.lock = new InterProcessMutex(curatorClient, ZKUtil.getPath(Constants.DB) + path);
+        this.lock = new InterProcessMutex(curatorClient, ZKUtil.getAppidPath(Constants.DB) + path);
     }
 
     @Override

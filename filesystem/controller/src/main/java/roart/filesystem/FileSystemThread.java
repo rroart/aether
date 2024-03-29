@@ -57,7 +57,7 @@ public class FileSystemThread implements Runnable {
             if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                 fo.location.fs = FileSystemConstants.LOCALTYPE;
             }
-            String str = ZKUtil.getPath() + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+            String str = ZKUtil.getAppidPath() + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
             if (str.endsWith("/")) {
                 str = str.substring(0, str.length() - 1);
             }
@@ -90,7 +90,7 @@ public class FileSystemThread implements Runnable {
                 if (fo.location.fs == null || fo.location.fs.isEmpty()) {
                     fo.location.fs = FileSystemConstants.LOCALTYPE;
                 }
-                String str = ZKUtil.getPath() + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
+                String str = ZKUtil.getAppidPath() + Constants.FS + stringOrNull(fo.location.nodename) + "/" + fo.location.fs + stringOrNull(fo.location.extra) + fo.object;
                 if (str.endsWith("/")) {
                     str = str.substring(0, str.length() - 1);
                 }

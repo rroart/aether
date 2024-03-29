@@ -112,7 +112,7 @@ public class ControlService {
 
     public String nodename = "localhost";
 
-    public String appid = System.getenv("APPID") != null ? System.getenv("APPID") : "";
+    public String appid = System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
 
     public String getConfigName() {
         return getAppid();

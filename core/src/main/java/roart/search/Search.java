@@ -128,7 +128,7 @@ public class Search {
             Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
             inmemory.delete(el.getMessage());
             try {
-                controlService.curatorClient.delete().forPath(ZKUtil.getPath(Constants.DATA) + el.getMessage().getId());
+                controlService.curatorClient.delete().forPath(ZKUtil.getCommonPathIfCommon(Constants.DATA) + el.getMessage().getId());
             } catch (Exception e) {
                 log.info(Constants.EXCEPTION, e);
             }
@@ -245,7 +245,7 @@ public class Search {
                 Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
                 inmemory.delete(el.getMessage());
                 try {
-                    controlService.curatorClient.delete().forPath(ZKUtil.getPath(Constants.DATA) + el.getMessage().getId());
+                    controlService.curatorClient.delete().forPath(ZKUtil.getCommonPathIfCommon(Constants.DATA) + el.getMessage().getId());
                 } catch (Exception e) {
                     log.info(Constants.EXCEPTION, e);
                 }

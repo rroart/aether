@@ -135,7 +135,7 @@ public class ExecCommand {
                 lang = "en_US.UTF-8";
             }
             envarray[2] = "LANG=" + lang;
-            envarray[3] = "APPID=" + (System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "");
+            envarray[3] = Constants.APPID + "=" + (System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "");
             envarray[4] = Constants.USEHOSTNAME + "=" + Constants.TRUE;
             proc = Runtime.getRuntime().exec(cmdarray, envarray);
             p = proc;

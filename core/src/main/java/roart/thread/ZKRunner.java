@@ -36,7 +36,7 @@ public class ZKRunner implements Runnable {
     	List<String> children = null;
 
     	ZKInitialize.initZK(nodeConf.getZookeeper(), new DummyWatcher(), controlService.nodename);
-    	String dir = ZKUtil.getPath(Constants.NODES) + controlService.nodename;
+    	String dir = ZKUtil.getAppidPath(Constants.NODES) + controlService.nodename;
 
     	while (true) {
     		log.info("get children");

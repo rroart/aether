@@ -28,7 +28,7 @@ public class ConvertQueue {
         Runnable run = () -> {
             long zkTime = 0;
             while (true) { 
-                String path = ZKUtil.getPath(Constants.QUEUES) + name;
+                String path = ZKUtil.getAppidPath(Constants.QUEUES) + name;
                 try {
                     long newTime = System.currentTimeMillis();
                     if ((newTime - zkTime) > 60 * 1000) {
@@ -74,6 +74,8 @@ public class ConvertQueue {
                                 queueName = element.getQueue();
                             } else {
                                 queueName = converters.get(0).getName();
+                                String appId = System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
+                                queueName = queueName + appId;
                             }
                             MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);

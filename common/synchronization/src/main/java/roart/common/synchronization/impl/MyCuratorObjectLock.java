@@ -34,7 +34,7 @@ public class MyCuratorObjectLock extends MyObjectLock {
         this.path = new MyObjectLockData(path);
         this.curatorClient = curatorClient;
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3); 
-        this.lock = new DistributedAtomicValue(curatorClient, ZKUtil.getPath(Constants.DB) + path, retryPolicy);
+        this.lock = new DistributedAtomicValue(curatorClient, ZKUtil.getAppidPath(Constants.DB) + path, retryPolicy);
     }
 
     @Override

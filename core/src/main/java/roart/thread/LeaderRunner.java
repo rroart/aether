@@ -75,52 +75,24 @@ public class LeaderRunner implements Runnable {
                     confMe.run(); // return when finished, don't start new
                 }
 
-                String zPath = ZKUtil.getPath() + Constants.CONFIG;
+                String zAppidPath = ZKUtil.getAppidPath() + Constants.CONFIG;
+                String zCommonPath = ZKUtil.getCommonPath() + Constants.CONFIG;
+                boolean useCommon = !zAppidPath.equals(zCommonPath);
                 CuratorFramework curatorClient = controlService.curatorClient;
                 while (true) {
                     Set<String> done = new HashSet<>();
                     try {
-                        if (curatorClient.checkExists().forPath(zPath) != null) {
-                            List<String> children = curatorClient.getChildren().forPath(zPath);
-                            for (String child : children) {
-                                log.debug("Child {}", child);
-                                String path = zPath + "/" + child;            
-                                String data = new String(curatorClient.getData().forPath(path));
-                                Stat stat = curatorClient.checkExists().forPath(path);
-                                long time = System.currentTimeMillis() - stat.getMtime();
-                                if (false && time > 3600 * 1000) {
-                                    curatorClient.delete().forPath(path);
-                                    done.remove(data);
-                                }
-                                if (done.contains(data)) {
-                                    continue;
-                                }
-                                ConfigParam param = new ConfigParam();
-                                param.setConfigname(controlService.getConfigName());
-                                param.setConfigid(controlService.getConfigId());
-                                param.setIconf(controlService.iconf);
-                                param.setIserver(nodeConf.getInmemoryServer());
-                                if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
-                                    param.setIconnection(nodeConf.getInmemoryRedis());
-                                } else {
-                                    param.setIconnection(nodeConf.getInmemoryHazelcast());
-                                }
-                                try {
-                                    String result = WebFluxUtil.sendMe(String.class, param, "http://" + data + "/" + EurekaConstants.CONSTRUCTOR);
-                                    done.add(data);
-                                } catch (Exception e) {
-                                    log.error(Constants.EXCEPTION, e);
-                                    curatorClient.delete().forPath(path);
-                                }
-                            }      
-                            Thread.sleep(10 * 1000);
+                        zConfigure(zAppidPath, curatorClient, done);
+                        if (useCommon) {
+                            zConfigure(zCommonPath, curatorClient, done);
                         }
+                        Thread.sleep(10 * 1000);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
                     }
                     try {
-                        String path = ZKUtil.getPath() + Constants.DB;
+                        String path = ZKUtil.getAppidPath() + Constants.DB;
                         deleteOld(curatorClient, path, 15 * 60 * 1000, false, false);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -128,16 +100,24 @@ public class LeaderRunner implements Runnable {
                     }
 
                     try {
-                        String path = ZKUtil.getPath() + Constants.QUEUES;
+                        String path = ZKUtil.getAppidPath() + Constants.QUEUES;
                         deleteOld(curatorClient, path, 20 * 60 * 1000, true, false);
+                        if (useCommon) {
+                            String pathCommon = ZKUtil.getCommonPath() + Constants.QUEUES;
+                            deleteOld(curatorClient, pathCommon, 20 * 60 * 1000, true, false);                            
+                        }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
                     }
 
                     try {
-                        String path = ZKUtil.getPath() + Constants.DATA;
+                        String path = ZKUtil.getAppidPath() + Constants.DATA;
                         deleteOld(curatorClient, path, 20 * 60 * 1000, true, true);
+                        if (useCommon) {
+                            String pathCommon = ZKUtil.getCommonPath() + Constants.DATA;
+                            deleteOld(curatorClient, pathCommon, 20 * 60 * 1000, true, true);                            
+                        }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
@@ -165,6 +145,44 @@ public class LeaderRunner implements Runnable {
             } catch (InterruptedException e) {
                 log.error(Constants.EXCEPTION, e);
             }
+        }
+    }
+
+    private void zConfigure(String zPath, CuratorFramework curatorClient, Set<String> done)
+            throws Exception, InterruptedException {
+        if (curatorClient.checkExists().forPath(zPath) != null) {
+            List<String> children = curatorClient.getChildren().forPath(zPath);
+            for (String child : children) {
+                log.debug("Child {}", child);
+                String path = zPath + "/" + child;            
+                String data = new String(curatorClient.getData().forPath(path));
+                Stat stat = curatorClient.checkExists().forPath(path);
+                long time = System.currentTimeMillis() - stat.getMtime();
+                if (false && time > 3600 * 1000) {
+                    curatorClient.delete().forPath(path);
+                    done.remove(data);
+                }
+                if (done.contains(data)) {
+                    continue;
+                }
+                ConfigParam param = new ConfigParam();
+                param.setConfigname(controlService.getConfigName());
+                param.setConfigid(controlService.getConfigId());
+                param.setIconf(controlService.iconf);
+                param.setIserver(nodeConf.getInmemoryServer());
+                if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+                    param.setIconnection(nodeConf.getInmemoryRedis());
+                } else {
+                    param.setIconnection(nodeConf.getInmemoryHazelcast());
+                }
+                try {
+                    String result = WebFluxUtil.sendMe(String.class, param, "http://" + data + "/" + EurekaConstants.CONSTRUCTOR);
+                    done.add(data);
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e);
+                    curatorClient.delete().forPath(path);
+                }
+            }      
         }
     }
 
@@ -205,7 +223,7 @@ public class LeaderRunner implements Runnable {
             // duplicated
             traverseCountMap.remove(id);
             log.info("Removed old traverse {}", id);
-            String path = ZKUtil.getPath(Constants.QUEUES) + id;
+            String path = ZKUtil.getAppidPath(Constants.QUEUES) + id;
             Stat b = curatorClient.checkExists().forPath(path);
             if (b == null) {
                 continue;
@@ -262,7 +280,7 @@ public class LeaderRunner implements Runnable {
         log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
         log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
         queues.queueStat();
-        String path = ZKUtil.getPath() + Constants.QUEUES;
+        String path = ZKUtil.getAppidPath() + Constants.QUEUES;
         Stat b = curatorClient.checkExists().forPath(path);
         if (b == null) {
             return;

@@ -171,7 +171,7 @@ public abstract class AbstractFunction {
                 fetchFromQueues(filestodoSet, retList, retNotList, notfoundList, newfileList, retDeletedList, retChangedList, retNotConvertedList, newfileQueue,
                         notfoundQueue, retQueue, retnotQueue, filestodoQueue, filesdoneQueue, deletedQueue, changedQueue, notconvertedQueue);
                 for (String queue : queueList) {
-                    String path = ZKUtil.getPath(Constants.QUEUES) + queue;
+                    String path = ZKUtil.getAppidPath(Constants.QUEUES) + queue;
                     Stat stat = controlService.curatorClient.checkExists().forPath(path);
                     if (stat == null) {
                         controlService.curatorClient.create().creatingParentsIfNeeded().forPath(path, new byte[0]);

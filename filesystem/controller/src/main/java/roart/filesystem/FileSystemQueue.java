@@ -39,7 +39,7 @@ public class FileSystemQueue {
             Runnable run = () -> {
                 long zkTime = 0;
                 while (true) {
-                    String path = ZKUtil.getPath(Constants.QUEUES) + aName;
+                    String path = ZKUtil.getAppidPath(Constants.QUEUES) + aName;
                     try {
                         long newTime = System.currentTimeMillis();
                         if ((newTime - zkTime) > 60 * 1000) {
