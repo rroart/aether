@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aether-s3$APPID
+  name: aether-s3$FILESYSTEMAPPID
   labels:
-    app: aether-s3$APPID
+    app: aether-s3$FILESYSTEMAPPID
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: aether-s3$APPID
+      app: aether-s3$FILESYSTEMAPPID
   template:
     metadata:
       labels:
-        app: aether-s3$APPID
+        app: aether-s3$FILESYSTEMAPPID
     spec:
       containers:
       - name: aether-s3
-        image: aether-s3$IMGID
+        image: aether-s3$FILESYSTEMIMGID
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aether-s3$APPID
+  name: aether-s3$FILESYSTEMAPPID
   labels:
-    app: aether-s3$APPID
+    app: aether-s3$FILESYSTEMAPPID
 spec:
   type: NodePort
   ports:
@@ -33,7 +33,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: aether-s3$APPID
+    app: aether-s3$FILESYSTEMAPPID
   sessionAffinity: None  
 status:
   loadBalancer: {}    
@@ -43,7 +43,7 @@ kind: IngressClass
 metadata:
   labels:
     app.kubernetes.io/component: controller
-  name: aether-s3$APPID
+  name: aether-s3$FILESYSTEMAPPID
   annotations:
     ingressclass.kubernetes.io/is-default-class: "false"
 spec:
@@ -52,9 +52,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: name-virtual-host-ingress-aether-s3$APPID
+  name: name-virtual-host-ingress-aether-s3$FILESYSTEMAPPID
 spec:
-  ingressClassName: aether-s3$APPID
+  ingressClassName: aether-s3$FILESYSTEMAPPID
   rules:
   - host: $S3IHOST
     http:
@@ -63,6 +63,6 @@ spec:
         path: "/"
         backend:
           service:
-            name: aether-s3$APPID
+            name: aether-s3$FILESYSTEMAPPID
             port:
               number: 8080

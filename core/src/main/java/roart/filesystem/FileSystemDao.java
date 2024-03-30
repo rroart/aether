@@ -225,7 +225,8 @@ public class FileSystemDao {
         }
         FileObject fo = TraverseUtil.indirlistmatch(f, dirlist);
         FileSystemAccess access = new FileSystemAccess(nodeConf, controlService);
-        String queueName = QueueConstants.FS + "_" + fo.toString();
+        String appId = System.getenv(Constants.FILESYSTEMAPPID) != null ? System.getenv(Constants.FILESYSTEMAPPID) : "";
+        String queueName = QueueConstants.FS + "_" + fo.toString() + appId;
         access.setQueue(queueName);
         return access;
     }

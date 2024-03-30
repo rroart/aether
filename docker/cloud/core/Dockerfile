@@ -11,6 +11,7 @@ ARG classifyappid
 ARG convertappid
 ARG databaseappid
 ARG searchappid
+ARG filesystemappid
 ARG eurekaserver
 ARG jdk_java_options=
 ENV DISTLIB ${distlib}
@@ -23,6 +24,7 @@ ENV APPID ${appid}
 ENV CLASSIFYAPPID ${classifyappid}
 ENV CONVERTAPPID ${convertappid}
 ENV DATABASEAPPID ${databaseappid}
+ENV FILESYSTEMAPPID ${filesystemappid}
 ENV SEARCHAPPID ${searchappid}
 ENV EUREKA_SERVER_URI ${eurekaserver}
 ENV JDK_JAVA_OPTIONS ${jdk_java_options}

@@ -6,7 +6,7 @@ build:
   artifacts:
   #- image: aether-local$IMGID
   #  context: ../../../docker/cloud/local
-  - image: aether-hdfs$IMGID
+  - image: aether-hdfs$FILESYSTEMIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -21,7 +21,7 @@ build:
         zookeeper: '{{.ZOOKEEPER}}'
         extras: '{{.HDFSPATH}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-s3$IMGID
+  - image: aether-s3$FILESYSTEMIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile
@@ -36,7 +36,7 @@ build:
         zookeeper: '{{.ZOOKEEPER}}'
         extras: '{{.S3PATH}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-swift$IMGID
+  - image: aether-swift$FILESYSTEMIMGID
     context: ../../..
     docker:
       dockerfile: docker/cloud/generic/Dockerfile

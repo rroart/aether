@@ -62,6 +62,7 @@ public static final String DATABASEAPPID = "DATABASEAPPID";
 public static final String SEARCHAPPID = "SEARCHAPPID";
 public static final String CONVERTAPPID = "CONVERTAPPID";
 public static final String CLASSIFYAPPID = "CLASSIFYAPPID";
+public static final String FILESYSTEMAPPID = "FILESYSTEMAPPID";
 public static final String LOCALIP = "LOCALIP";
 
 public static final String CONVERTS = "converts";

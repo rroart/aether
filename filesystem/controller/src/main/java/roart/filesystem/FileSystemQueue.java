@@ -27,15 +27,16 @@ public class FileSystemQueue {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public FileSystemQueue(String name, FileSystemAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
+        String appid = System.getenv(Constants.APPID) != null ? System.getenv(Constants.APPID) : "";
         String ip = System.getProperty("IP");
         String fs = System.getProperty("FS");
         String mypath = System.getProperty("PATH");
         log.info("Using {} {} {}", ip, fs, mypath);
         String[] paths = mypath.split(",");
         for (String aPath : paths) {
-            log.info("Queue name {}", QueueConstants.FS + "_" + aPath);
-            final String aName = QueueConstants.FS + "_" + aPath;
-            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath, nodeConf, curatorClient);
+            log.info("Queue name {}", QueueConstants.FS + "_" + aPath + appid);
+            final String aName = QueueConstants.FS + "_" + aPath + appid;
+            final MyQueue<QueueElement> queue = new MyQueueFactory().create(QueueConstants.FS + "_" + aPath + appid, nodeConf, curatorClient);
             Runnable run = () -> {
                 long zkTime = 0;
                 while (true) {
@@ -45,6 +46,7 @@ public class FileSystemQueue {
                         if ((newTime - zkTime) > 60 * 1000) {
                             zkTime = newTime;
                             Stat stat = curatorClient.checkExists().forPath(path);
+                            // TODO fix name
                             if (stat == null) {
                                 curatorClient.create().creatingParentsIfNeeded().forPath(path, name.getBytes());
                             } else {
