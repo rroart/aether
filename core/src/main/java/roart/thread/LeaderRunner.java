@@ -132,7 +132,12 @@ public class LeaderRunner implements Runnable {
                     try {
                         if ((newTime - qtime) > 60 * 1000) {
                             qtime = newTime;
-                            mylogs(queues, curatorClient);
+                            String path = ZKUtil.getAppidPath() + Constants.QUEUES;
+                            mylogs(queues, curatorClient, path);
+                            if (ZKUtil.useCommon()) {
+                                String pathCommon = ZKUtil.getCommonPath() + Constants.QUEUES;
+                                mylogs(queues, curatorClient, pathCommon);
+                            }
                         }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -276,11 +281,10 @@ public class LeaderRunner implements Runnable {
         }
     }
 
-    private void mylogs(Queues queues, CuratorFramework curatorClient) throws Exception {
+    private void mylogs(Queues queues, CuratorFramework curatorClient, String path) throws Exception {
         log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
         log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
         queues.queueStat();
-        String path = ZKUtil.getAppidPath() + Constants.QUEUES;
         Stat b = curatorClient.checkExists().forPath(path);
         if (b == null) {
             return;

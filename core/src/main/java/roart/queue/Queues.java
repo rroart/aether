@@ -170,11 +170,19 @@ public class Queues {
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         int size = 0;
         for (Converter converter : converters) {
-            MyQueue queue = new MyQueueFactory().create(converter.getName(), nodeConf, controlService.curatorClient);
+            MyQueue queue = new MyQueueFactory().create(converter.getName() + convertappid(), nodeConf, controlService.curatorClient);
             size += queue.size();
             if (size >= nodeConf.getMPQueueLimit()) {
                 return true;
             }
+        }
+        List<String> classifiers = List.of(QueueConstants.OPENNLP, QueueConstants.SPARKML, QueueConstants.MAHOUTMR, QueueConstants.MAHOUTSPARK);
+        for (String classifier : classifiers) {
+            MyQueue queue = new MyQueueFactory().create(classifier + classifierappid(), nodeConf, controlService.curatorClient);
+            size += queue.size();
+            if (size >= nodeConf.getMPQueueLimit()) {
+                return true;
+            }            
         }
         return false;
     }
@@ -311,7 +319,12 @@ public class Queues {
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
         int size = 0;
         for (Converter converter : converters) {
-            MyQueue queue = new MyQueueFactory().create(converter.getName(), nodeConf, controlService.curatorClient);
+            MyQueue queue = new MyQueueFactory().create(converter.getName() + convertappid(), nodeConf, controlService.curatorClient);
+            size += queue.size();
+        }
+        List<String> classifiers = List.of(QueueConstants.OPENNLP, QueueConstants.SPARKML, QueueConstants.MAHOUTMR, QueueConstants.MAHOUTSPARK);
+        for (String classifier : classifiers) {
+            MyQueue queue = new MyQueueFactory().create(classifier + classifierappid(), nodeConf, controlService.curatorClient);
             size += queue.size();
         }
         return size;
@@ -340,4 +353,22 @@ public class Queues {
             return "";
         }
     }
-}
+    
+    public static String convertappid() {
+        String appid = System.getenv(Constants.CONVERTAPPID);
+        if (appid != null) {
+            return appid;
+        } else {
+            return "";
+        }
+    }
+    
+    public static String classifierappid() {
+        String appid = System.getenv(Constants.CLASSIFYAPPID);
+        if (appid != null) {
+            return appid;
+        } else {
+            return "";
+        }
+    }
+ }
