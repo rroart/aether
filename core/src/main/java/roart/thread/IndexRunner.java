@@ -109,7 +109,12 @@ public class IndexRunner implements Runnable {
         }
 
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getIndexQueue();
-        QueueElement el = queue.poll(QueueElement.class);
+        QueueElement el = null;
+        try {
+            el = queue.poll(QueueElement.class);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e); 
+        }
         if (el == null) {
             log.error("empty queue");
             try {

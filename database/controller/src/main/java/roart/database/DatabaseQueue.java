@@ -46,7 +46,12 @@ public class DatabaseQueue {
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e); 
                 }
-                QueueElement element = queue.poll(QueueElement.class);
+                QueueElement element = null;
+                try {
+                    element = queue.poll(QueueElement.class);
+                } catch (Exception e) {
+                    log.error(Constants.EXCEPTION, e); 
+                }
                 if (element == null) {
                     try {
                         TimeUnit.SECONDS.sleep(1);

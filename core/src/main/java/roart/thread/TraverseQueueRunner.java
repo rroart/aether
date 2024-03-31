@@ -147,7 +147,12 @@ public class TraverseQueueRunner implements Runnable {
         List<QueueElement> traverseList = new ArrayList<>();
         // limit = 1;
         for (int i = 0; i < limit; i++) {
-            QueueElement trav = queue.poll(QueueElement.class);
+            QueueElement trav = null;
+            try {
+                trav = queue.poll(QueueElement.class);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e); 
+            }
             if (trav == null) {
                 break;
             }

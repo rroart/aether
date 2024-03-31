@@ -167,7 +167,7 @@ public abstract class AbstractFunction {
             while (doLoop /* || filestodoset.size() > 0 */) {
                 mylogs(queues, traversecount);
 		// queues.getConvertQueueSize()
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(15);
                 fetchFromQueues(filestodoSet, retList, retNotList, notfoundList, newfileList, retDeletedList, retChangedList, retNotConvertedList, newfileQueue,
                         notfoundQueue, retQueue, retnotQueue, filestodoQueue, filesdoneQueue, deletedQueue, changedQueue, notconvertedQueue);
                 for (String queue : queueList) {
@@ -292,7 +292,12 @@ public abstract class AbstractFunction {
 
     private <T> void fromQueueToList(Collection<T> resultList, MyQueue<T> resultQueue, Class<T> clazz) {
         while (true) {
-            T s = resultQueue.poll(clazz);
+            T s = null;
+            try {
+                s = resultQueue.poll(clazz);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e); 
+            }
             if (s == null) {
                 break;
             }

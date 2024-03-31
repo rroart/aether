@@ -138,7 +138,12 @@ public class ConvertRunner implements Runnable {
         }
 
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getConvertQueue();
-        QueueElement element = queue.poll(QueueElement.class);
+        QueueElement element = null;
+        try {
+            element = queue.poll(QueueElement.class);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e); 
+        }
         if (element == null) {
             log.error("empty queue");
             try {

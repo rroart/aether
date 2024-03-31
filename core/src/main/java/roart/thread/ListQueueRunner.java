@@ -118,7 +118,12 @@ public class ListQueueRunner implements Runnable {
  
     private void doListingTimeout() {
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getListingQueue();
-        QueueElement listing = queue.poll(QueueElement.class);
+        QueueElement listing = null;
+        try {
+            listing = queue.poll(QueueElement.class);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e); 
+        }
         if (listing == null) {
             try {
                 TimeUnit.SECONDS.sleep(1);
