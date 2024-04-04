@@ -71,8 +71,8 @@ public class LeaderRunner implements Runnable {
                 log.info("I am leader");
 
                 if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
-                    Runnable confMe = new EurekaThread(nodeConf);
-                    confMe.run(); // return when finished, don't start new
+                    Runnable confMe = new EurekaThread(nodeConf, controlService);
+                    new Thread(confMe).start(); // start new
                 }
 
                 String zAppidPath = ZKUtil.getAppidPath() + Constants.CONFIG;

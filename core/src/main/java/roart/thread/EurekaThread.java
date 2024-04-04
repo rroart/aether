@@ -4,41 +4,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.config.NodeConfig;
+import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
-import roart.common.service.ServiceParam;
+import roart.common.model.ConfigParam;
 import roart.common.service.ServiceResult;
 import roart.eureka.util.EurekaUtil;
+import roart.service.ControlService;
 
 public class EurekaThread implements Runnable {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private NodeConfig nodeConf;
+
+    private ControlService controlService;
     
-    public EurekaThread(NodeConfig nodeConf) {
+    public EurekaThread(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
+        this.controlService = controlService;
     }
 
     public void run() {
-        boolean noException = false;
-        while (noException == false) {
+        while (true) {
             try {
-                ServiceParam param = new ServiceParam();
-                param.config = nodeConf;
+                Thread.sleep(60 * 1000);
+                ConfigParam param = new ConfigParam();
+                param.setConf(nodeConf);
+                param.setConfigname(controlService.getConfigName());
+                param.setConfigid(controlService.getConfigId());
                 ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, EurekaConstants.AETHERSERVICEMANAGER, EurekaConstants.SETCONFIG, nodeConf);
-                noException = true;
                 log.info("got");
             } catch (Exception e) {
-                log.error("Ex, sleep 15", e);
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException ex) {
-                    // TODO Auto-generated catch block
-                    log.error("Exception", ex);
-                }
-                //EurekaUtil.initEurekaClient();
+                log.error(Constants.EXCEPTION, e);
             }
         }
-        log.info("sent");
     }
 }
