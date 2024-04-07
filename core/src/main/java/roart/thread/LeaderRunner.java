@@ -71,7 +71,8 @@ public class LeaderRunner implements Runnable {
                 log.info("I am leader");
 
                 if (!"false".equals(System.getProperty("eureka.client.enabled"))) {
-                    Runnable confMe = new EurekaThread(nodeConf, controlService);
+                    ConfigParam configParam = getConfigParam();
+                    Runnable confMe = new EurekaThread(nodeConf, controlService, configParam);
                     new Thread(confMe).start(); // start new
                 }
 
@@ -170,16 +171,7 @@ public class LeaderRunner implements Runnable {
                 if (done.contains(data)) {
                     continue;
                 }
-                ConfigParam param = new ConfigParam();
-                param.setConfigname(controlService.getConfigName());
-                param.setConfigid(controlService.getConfigId());
-                param.setIconf(controlService.iconf);
-                param.setIserver(nodeConf.getInmemoryServer());
-                if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
-                    param.setIconnection(nodeConf.getInmemoryRedis());
-                } else {
-                    param.setIconnection(nodeConf.getInmemoryHazelcast());
-                }
+                ConfigParam param = getConfigParam();
                 try {
                     String result = WebFluxUtil.sendMe(String.class, param, "http://" + data + "/" + EurekaConstants.CONSTRUCTOR);
                     done.add(data);
@@ -189,6 +181,20 @@ public class LeaderRunner implements Runnable {
                 }
             }      
         }
+    }
+
+    private ConfigParam getConfigParam() {
+        ConfigParam param = new ConfigParam();
+        param.setConfigname(controlService.getConfigName());
+        param.setConfigid(controlService.getConfigId());
+        param.setIconf(controlService.iconf);
+        param.setIserver(nodeConf.getInmemoryServer());
+        if (Constants.REDIS.equals(nodeConf.getInmemoryServer())) {
+            param.setIconnection(nodeConf.getInmemoryRedis());
+        } else {
+            param.setIconnection(nodeConf.getInmemoryHazelcast());
+        }
+        return param;
     }
 
     private void deleteOldResults(MyMap<String, InmemoryMessage> resultMap, Map<String, Long> keyMap) {

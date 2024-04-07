@@ -17,11 +17,14 @@ public class EurekaThread implements Runnable {
     private NodeConfig nodeConf;
 
     private ControlService controlService;
+
+    private ConfigParam configParam;
     
-    public EurekaThread(NodeConfig nodeConf, ControlService controlService) {
+    public EurekaThread(NodeConfig nodeConf, ControlService controlService, ConfigParam configParam) {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;
+        this.configParam = configParam;
     }
 
     public void run() {
@@ -32,7 +35,7 @@ public class EurekaThread implements Runnable {
                 param.setConf(nodeConf);
                 param.setConfigname(controlService.getConfigName());
                 param.setConfigid(controlService.getConfigId());
-                ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, param, EurekaConstants.AETHERSERVICEMANAGER, EurekaConstants.SETCONFIG, nodeConf);
+                ServiceResult result = EurekaUtil.sendMe(ServiceResult.class, configParam, EurekaConstants.AETHERSERVICEMANAGER, EurekaConstants.SETCONFIG, nodeConf);
                 log.info("got");
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);

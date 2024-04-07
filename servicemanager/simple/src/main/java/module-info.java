@@ -16,6 +16,9 @@ module servicemanager.simple {
     requires common.util;
     requires common.constants;
     requires common.service;
+    requires common.inmemory.message;
+    requires common.inmemory.model;
+    requires common.inmemory.factory;
     requires org.apache.commons.lang3;
     requires common.model;
 }

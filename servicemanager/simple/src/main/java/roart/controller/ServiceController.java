@@ -1,5 +1,6 @@
 package roart.controller;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -11,8 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
+import roart.common.inmemory.common.Inmemory;
+import roart.common.inmemory.factory.InmemoryFactory;
+import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.ConfigParam;
 import roart.common.service.ServiceResult;
+import roart.common.util.IOUtil;
+import roart.common.util.JsonUtil;
 import roart.config.MyXMLConfig;
 import roart.common.config.NodeConfig;
 
@@ -31,7 +37,7 @@ public class ServiceController {
             String key = param.getConfigid();
             NodeConfig conf = confMap.get(key);
             if (conf == null) {
-                conf = param.getConf();
+                conf = getNodeConf(param);
                 confMap.put(key, conf);
                 MyXMLConfig.instance(conf);
             }
@@ -42,4 +48,17 @@ public class ServiceController {
         return result;
     }
 
+    private NodeConfig getNodeConf(ConfigParam param) {
+        NodeConfig nodeConf = null;
+        Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());
+        try (InputStream contentStream = inmemory.getInputStream(param.getIconf())) {
+            if (InmemoryUtil.validate(param.getIconf().getMd5(), contentStream)) {
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArray1G(inmemory.getInputStream(param.getIconf())));
+                nodeConf = JsonUtil.convertnostrip(content, NodeConfig.class);
+            }
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e);
+        }
+        return nodeConf;
+    }
 }
