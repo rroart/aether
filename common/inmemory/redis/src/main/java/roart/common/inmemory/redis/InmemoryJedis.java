@@ -1,7 +1,7 @@
 package roart.common.inmemory.redis;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -10,7 +10,7 @@ import roart.common.inmemory.common.Inmemory;
 
 public class InmemoryJedis extends Inmemory {
 
-    private static Map<String, JedisPool> map = new HashMap<>();
+    private static Map<String, JedisPool> map = new ConcurrentHashMap<>();
 
     private String server;
     
