@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.classification.ClassifyDao;
 import roart.common.collections.MyMap;
 import roart.common.collections.MyQueue;
 import roart.common.collections.MySet;
@@ -29,9 +30,14 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.QueueConstants;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.model.FileObject;
+import roart.common.util.FsUtil;
 import roart.common.util.JsonUtil;
 import roart.common.util.QueueUtil;
+import roart.database.IndexFilesDao;
+import roart.search.SearchDao;
 import roart.service.ControlService;
+import roart.util.TraverseUtil;
 import roart.common.queue.QueueElement;
 
 /**
@@ -195,6 +201,22 @@ public class Queues {
         return getTraverseQueueSize() >= nodeConf.getMPQueueLimit();
     }
 
+    public boolean filesystemQueueHeavyLoaded() {
+        return getFileSystemQueueSize() >= nodeConf.getMPQueueLimit();
+    }
+
+    public boolean databaseQueueHeavyLoaded() {
+        return getDatabaseQueueSize() >= nodeConf.getMPQueueLimit();
+    }
+
+    public boolean classifierQueueHeavyLoaded() {
+        return getClassifierQueueSize() >= nodeConf.getMPQueueLimit();
+    }
+
+    public boolean searchQueueHeavyLoaded() {
+        return getSearchQueueSize() >= nodeConf.getMPQueueLimit();
+    }
+
     public boolean listingQueueHeavyLoaded() {
         return getListingQueueSize() >= nodeConf.getMPQueueLimit();
     }
@@ -343,6 +365,32 @@ public class Queues {
             size += queue.size();
         }
         return size;
+    }
+    
+    public int getFileSystemQueueSize() {
+        String appId = System.getenv(Constants.FILESYSTEMAPPID) != null ? System.getenv(Constants.FILESYSTEMAPPID) : "";
+        String[] dirlistarr = nodeConf.getDirList();
+        int i = 0;
+        int size = 0;
+        for (String dir : dirlistarr) {
+            FileObject fo = FsUtil.getFileObject(dir);
+            String queueName = QueueConstants.FS + "_" + fo.toString() + appId;
+            MyQueue<QueueElement> queue = new MyQueueFactory().create(queueName, nodeConf, controlService.curatorClient);
+            size += queue.size();
+        }
+        return size;
+    }
+
+    public int getDatabaseQueueSize() {
+        return new IndexFilesDao(nodeConf, controlService).getQueue().size();
+    }
+
+    public int getSearchQueueSize() {
+        return new SearchDao(nodeConf, controlService).getQueue().size();
+    }
+
+    public int getClassifierQueueSize() {
+        return new ClassifyDao(nodeConf, controlService).getQueue().size();
     }
 
     public String prefix() {

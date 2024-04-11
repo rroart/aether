@@ -290,6 +290,7 @@ public class LeaderRunner implements Runnable {
     private void mylogs(Queues queues, CuratorFramework curatorClient, String path) throws Exception {
         log.info("Queues {} {} {} {}", queues.getListingQueueSize(), queues.getTraverseQueueSize(), queues.getConvertQueueSize(), queues.getIndexQueueSize());
         log.info("Queues {} {} {} {}", queues.getMyListings().get(), queues.getMyTraverses().get(), queues.getMyConverts().get(), queues.getMyIndexs().get());
+        log.info("Queues {} {} {} {}", queues.getFileSystemQueueSize(), queues.getDatabaseQueueSize(), queues.getClassifierQueueSize(), queues.getSearchQueueSize());
         queues.queueStat();
         Stat b = curatorClient.checkExists().forPath(path);
         if (b == null) {

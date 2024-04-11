@@ -30,6 +30,7 @@ import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.util.ExecCommand;
 import roart.common.util.FsUtil;
 import roart.common.util.QueueUtil;
+import roart.common.util.TimeUtil;
 import roart.database.IndexFilesDao;
 import roart.filesystem.FileSystemDao;
 import roart.function.AbstractFunction;
@@ -215,19 +216,19 @@ public class Traverse {
         for (IndexFiles index : indexes) {
             while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
                 log.info("Convert queue heavy loaded, sleeping");
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
+                TimeUtil.sleep(1);
+            }
+            while (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
+                log.info("Filesystem queue heavy loaded, sleeping");
+                TimeUtil.sleep(1);
+            }
+            while (new Queues(nodeConf, controlService).databaseQueueHeavyLoaded()) {
+                log.info("Database queue heavy loaded, sleeping");
+                TimeUtil.sleep(1);
             }
             while (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
                 log.info("Index queue heavy loaded, sleeping");
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    log.error(Constants.EXCEPTION, e);
-                }
+                TimeUtil.sleep(1);
             }
             if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                 break;

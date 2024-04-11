@@ -24,6 +24,7 @@ import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MySemaphore;
+import roart.common.util.TimeUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.TraverseFile;
 import roart.queue.Queues;
@@ -68,62 +69,45 @@ public class TraverseQueueRunner implements Runnable {
         nThreads = 3;
         for(int i = running; i < nThreads; i++) {
             Runnable run = () -> {
-                try {
-                    Queue<MyLock> locks = new ConcurrentLinkedQueue<>();
-                    Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
-                    while (true) {
-                        try {
-                            unlock(locks);
-                        } catch (Exception e) {
-                            log.error(Constants.EXCEPTION, e); 
-                        }                   
-                        try {
-                            unlockSemaphores(semaphores);
-                        } catch (Exception e) {
-                            log.error(Constants.EXCEPTION, e); 
-                        }                   
+                Queue<MyLock> locks = new ConcurrentLinkedQueue<>();
+                Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
+                while (true) {
+                    try {
+                        unlock(locks);
+                        unlockSemaphores(semaphores);
                         if (new Queues(nodeConf, controlService).getTraverseQueueSize() == 0) {
                             log.debug("Traverse queue empty, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(10);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(10);
+                            continue;
+                        }
+                        if (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
+                            log.info("Filesystem queue heavy loaded, sleeping");
+                            TimeUtil.sleep(1);
+                            continue;
+                        }
+                        if (new Queues(nodeConf, controlService).databaseQueueHeavyLoaded()) {
+                            log.info("Database queue heavy loaded, sleeping");
+                            TimeUtil.sleep(1);
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
                             log.info("Convert queue heavy loaded, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(1);
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
                             log.info("Index queue heavy loaded, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(1);
                             continue;
                         }
                         new Queues(nodeConf, controlService).incTraverses();
                         doTraverseTimeout(locks, semaphores);
                         new Queues(nodeConf, controlService).decTraverses();
-                    }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                } catch (Error e) {
-                    System.gc();
-                    log.error("Error " + Thread.currentThread().getId());
-                    log.error(Constants.ERROR, e);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e); 
+                        TimeUtil.sleep(10);
+                    }                   
                 }
-                finally {
-                    //log.info("myend");
-                }
-                return; //myMethod();
             };      
             new Thread(run).start();
         }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
+import roart.common.collections.MyQueue;
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -47,5 +48,9 @@ public class ClassifyDao {
             return;
         }
         classify.classifyQueue(element, message, language);
+    }
+    
+    public MyQueue<QueueElement> getQueue() {
+        return classify.getQueue();
     }
 }

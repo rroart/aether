@@ -13,6 +13,7 @@ import roart.common.constants.Constants;
 import roart.common.queue.QueueElement;
 import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MySemaphoreFactory;
+import roart.common.util.TimeUtil;
 import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.search.Search;
@@ -43,38 +44,23 @@ public class IndexRunner implements Runnable {
 
         for(int i = running; i < nThreads; i++) {
             Runnable run = () -> {
-                try {
-                    Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
-                    while (true) {
-                        try {
-                            unlockSemaphores(semaphores);
-                        } catch (Exception e) {
-                            log.error(Constants.EXCEPTION, e); 
-                        }                   
+                Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
+                while (true) {
+                    try {
+                        unlockSemaphores(semaphores);
                         if (new Queues(nodeConf, controlService).getIndexQueueSize() == 0) {
                             log.debug("Index queue empty, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(10);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(10);
                             continue;
                         }
                         new Queues(nodeConf, controlService).incIndexs();
                         doIndexTimeout(semaphores);
                         new Queues(nodeConf, controlService).decIndexs();
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e); 
+                        TimeUtil.sleep(10);
                     }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                } catch (Error e) {
-                    System.gc();
-                    log.error("Error " + Thread.currentThread().getId());
-                    log.error(Constants.ERROR, e);
                 }
-                finally {
-                    //log.info("myend");
-                }
-                return; //myMethod();
             };      
             new Thread(run).start();
         }

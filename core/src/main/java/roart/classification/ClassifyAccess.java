@@ -96,5 +96,9 @@ public abstract class ClassifyAccess {
         queue.offer(element);
     }
 
+   public MyQueue<QueueElement> getQueue() {
+       return queue;
+   }
+
 }
 

@@ -231,5 +231,9 @@ public abstract class SearchAccess {
         queue.offer(element);
     }
 
+    public MyQueue<QueueElement> getQueue() {
+        return queue;
+    }
+
 }
 

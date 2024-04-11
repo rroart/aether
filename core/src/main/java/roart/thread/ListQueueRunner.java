@@ -20,6 +20,7 @@ import roart.common.model.FileObject;
 import roart.common.queue.QueueElement;
 import roart.common.util.FsUtil;
 import roart.common.util.QueueUtil;
+import roart.common.util.TimeUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
 import roart.filesystem.FileSystemDao;
@@ -62,48 +63,35 @@ public class ListQueueRunner implements Runnable {
 
         for(int i = running; i < nThreads; i++) {
             Runnable run = () -> {
-                try {
-                    while (true) {
+                while (true) {
+                    try {
                         if (new Queues(nodeConf, controlService).getListingQueueSize() == 0) {
                             log.debug("Listing queue empty, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(10);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(10);
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
                             log.info("List queue heavy loaded, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(1);
+                            continue;
+                        }
+                        if (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
+                            log.info("Filesystem queue heavy loaded, sleeping");
+                            TimeUtil.sleep(1);
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
                             log.debug("Traverse queue heavy loaded, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(1);
                             continue;
                         }
                         new Queues(nodeConf, controlService).incListings();
                         doListingTimeout();
                         new Queues(nodeConf, controlService).decListings();
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                        TimeUtil.sleep(10);
                     }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                } catch (Error e) {
-                    System.gc();
-                    log.error("Error " + Thread.currentThread().getId());
-                    log.error(Constants.ERROR, e);
-                }
-                finally {
-                    //log.info("myend");
                 }
             };      
             new Thread(run).start();

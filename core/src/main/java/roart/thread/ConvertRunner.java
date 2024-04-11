@@ -23,6 +23,7 @@ import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.common.synchronization.impl.MySemaphoreFactory;
+import roart.common.util.TimeUtil;
 import roart.content.ConvertHandler;
 import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
@@ -63,47 +64,28 @@ public class ConvertRunner implements Runnable {
 
         for(int i = running; i < nThreads; i++) {
             Runnable run = () -> {
-                try {
-                    Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
-                    while (true) {
-                        try {
-                            unlockSemaphores(semaphores);
-                        } catch (Exception e) {
-                            log.error(Constants.EXCEPTION, e); 
-                        }                   
+                Queue<MySemaphore> semaphores = new ConcurrentLinkedQueue<>();
+                while (true) {
+                    try {
+                        unlockSemaphores(semaphores);
                         if (new Queues(nodeConf, controlService).getConvertQueueSize() == 0) {
                             log.debug("Convert queue empty, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(10);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(10);
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
                             log.info("Index queue heavy loaded, sleeping");
-                            try {
-                                TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException e) {
-                                log.error(Constants.EXCEPTION, e);
-                            }
+                            TimeUtil.sleep(1);
                             continue;
                         }
                         new Queues(nodeConf, controlService).incConverts();
                         doConvertTimeout(nodeConf, semaphores);
                         new Queues(nodeConf, controlService).decConverts();
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e); 
+                        TimeUtil.sleep(10);
                     }
-                } catch (Exception e) {
-                    log.error(Constants.EXCEPTION, e);
-                } catch (Error e) {
-                    System.gc();
-                    log.error("Error " + Thread.currentThread().getId());
-                    log.error(Constants.ERROR, e);
                 }
-                finally {
-                    //log.info("myend");
-                }
-                return; //myMethod();
             };      
             new Thread(run).start();
         }

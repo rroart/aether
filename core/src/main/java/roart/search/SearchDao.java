@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
 
+import roart.common.collections.MyQueue;
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
@@ -83,6 +84,10 @@ public class SearchDao {
 
     public void indexmeQueue(QueueElement element, String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
         search.indexmeQueue(element, md5, dbfilename, metadata, lang, classification, index, message);
+    }
+    
+    public MyQueue<QueueElement> getQueue() {
+        return search.getQueue();
     }
 
 }

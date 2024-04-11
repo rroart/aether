@@ -444,4 +444,7 @@ public class IndexFilesDao {
         }
     }
 
+    public MyQueue<QueueElement> getQueue() {
+        return indexFiles.getQueue(null);
+    }
 }
