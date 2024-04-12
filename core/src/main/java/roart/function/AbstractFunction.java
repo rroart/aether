@@ -121,7 +121,7 @@ public abstract class AbstractFunction {
             String filestodosetid = QueueUtil.filestodoQueue(myid);
             MyQueue<String> filestodoQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient);
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
-            MyQueue<String> filesdoneQueue = MyQueues.get(filestodosetid, nodeConf, controlService.curatorClient);
+            MyQueue<String> filesdoneQueue = MyQueues.get(filesdonesetid, nodeConf, controlService.curatorClient);
 
             String deletedsetid = QueueUtil.deletedQueue(myid);
             MyQueue<ResultItem> deletedQueue = MyQueues.get(deletedsetid, nodeConf, controlService.curatorClient);
@@ -164,6 +164,7 @@ public abstract class AbstractFunction {
 
             boolean doLoop = true;
             
+            // TODO try again
             while (doLoop /* || filestodoset.size() > 0 */) {
                 mylogs(queues, traversecount);
 		// queues.getConvertQueueSize()
