@@ -212,7 +212,6 @@ public class Traverse {
         MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
         indexFilesDao.getAllFiles();
         List<IndexFiles> indexes = indexFilesDao.getAll();
-        count.addAndGet(-1);
         for (IndexFiles index : indexes) {
             while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
                 log.info("Convert queue heavy loaded, sleeping");
@@ -264,6 +263,7 @@ public class Traverse {
             }
             TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
         }
+        count.addAndGet(-1);
 
         return null;
     }
