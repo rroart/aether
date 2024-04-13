@@ -12,6 +12,7 @@ import roart.common.communication.factory.CommunicationFactory;
 import roart.common.communication.model.Communication;
 import roart.common.config.NodeConfig;
 import roart.common.util.JsonUtil;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class MyCommunicationQueue<T> extends MyQueue<T> {
     
@@ -21,6 +22,9 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
     private Communication comm;
     
     public MyCommunicationQueue(String queuename, NodeConfig nodeConf, CuratorFramework curatorFramework) {
+        log.info("Communication queue real {}", queuename);
+        queuename = DigestUtils.md5Hex(queuename);
+        log.info("Communication queue {}", queuename);
         String name = nodeConf.getSynchronizationCommunicationName();
         String connection = nodeConf.getSynchronizationCommunicationConnection();
         size = MyAtomicLongs.get(queuename + "size", nodeConf, curatorFramework);
@@ -40,10 +44,10 @@ public class MyCommunicationQueue<T> extends MyQueue<T> {
                 Object[] array = comm.receive();
                 for (Object o : array) {
                     queue.offer((T) o);
+                    size.decrementAndGet();
                 }
             }
             if (!queue.isEmpty()) {
-                size.decrementAndGet();
                 return queue.poll();
             } else {
                 return (T) null;
