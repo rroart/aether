@@ -178,6 +178,16 @@
       <artifactId>tika-parser-scientific-package</artifactId>
       <version>${tika.version}</version>
     </dependency>
+    <!--dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parser-nlp-package</artifactId>
+      <version>${tika.version}</version>
+    </dependency-->
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parser-advancedmedia-package</artifactId>
+      <version>${tika.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
