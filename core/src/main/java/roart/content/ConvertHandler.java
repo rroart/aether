@@ -220,9 +220,9 @@ public class ConvertHandler {
 	    Path tempFile = Paths.get("/tmp", filename);
 	    Files.deleteIfExists(tempFile);
             //Path tempFile = Files.createFile(Paths.get("/tmp", filename));
-	    log.info("File {} {}", filename, tempFile.toString());
             Files.copy(content, tempFile);
             String mimetype = Files.probeContentType(tempFile);
+            log.info("File {} {} {}", filename, mimetype, tempFile.toString());
             Files.delete(tempFile);
             return mimetype;
         //} catch (Exception e) {
