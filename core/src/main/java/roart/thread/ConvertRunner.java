@@ -115,6 +115,10 @@ public class ConvertRunner implements Runnable {
                     TraverseUtil.doCounters(el, -1, nodeConf, controlService);
                 } catch (Exception e) {
                     log.error(Constants.EXCEPTION, e);
+                } catch (Error e) {
+                    log.error("Error {} {}", Thread.currentThread().getId(), el.getMd5());
+                    log.error(Constants.ERROR, e);
+                    TraverseUtil.doCounters(el, -1, nodeConf, controlService);
                 }
             }
         }
