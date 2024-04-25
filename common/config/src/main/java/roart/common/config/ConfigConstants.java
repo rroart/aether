@@ -107,6 +107,7 @@ public class ConfigConstants {
     public static final String CONVERSIONTIKATIMEOUT = "conversion.tikatimeout";
     public static final String CONVERSIONOTHERTIMEOUT = "conversion.othertimeout";
     public static final String CONVERSION = "conversion";
+    public static final String CONVERTIKAOCR = "convert.tika.ocr[@enable]";
     public static final String DATABASEDATANUCLEUS = "database.datanucleus[@enable]";
     public static final String DATABASESPRING = "database.spring[@enable]";
     public static final String DATABASESPRINGURL = "database.spring.url";

@@ -531,6 +531,11 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public Boolean wantsTikaOCR() {
+        return (Boolean) getValueOrDefault(ConfigConstants.CONVERTIKAOCR);        
+    }
+    
+    @JsonIgnore
     public String getConverters() {
         return (String) getNotEmptyValueOrDefault(ConfigConstants.CONVERSION);        
     }

@@ -119,6 +119,7 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.INDEXINDEXLIMIT, Integer.class);
         map.put(ConfigConstants.CONVERSIONTIKATIMEOUT, Integer.class);
         map.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, Integer.class);
+        map.put(ConfigConstants.CONVERTIKAOCR, Boolean.class);
         map.put(ConfigConstants.CONVERSION, String.class);
         map.put(ConfigConstants.CONNECTOR, String.class);
         map.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.class);
@@ -253,6 +254,7 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.INDEXINDEXLIMIT, 0);
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, 600);
+        deflt.put(ConfigConstants.CONVERTIKAOCR, Boolean.FALSE);
         deflt.put(ConfigConstants.CONVERSION, MYCONVERSION);
         deflt.put(ConfigConstants.CONNECTOR, "[]");
         deflt.put(ConfigConstants.DATABASEDATANUCLEUS, Boolean.FALSE);
@@ -385,6 +387,7 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.INDEXINDEXLIMIT, "Index limit");
         text.put(ConfigConstants.CONVERSIONTIKATIMEOUT, "Tika timeout");
         text.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, "Other conversion timeout");
+        text.put(ConfigConstants.CONVERTIKAOCR, "Tika OCR");
         text.put(ConfigConstants.CONVERSION, "Conversion");
         text.put(ConfigConstants.CONNECTOR, "Connectors");
         text.put(ConfigConstants.DATABASEDATANUCLEUS, "Use datanucleus");
@@ -514,6 +517,7 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.INDEXINDEXLIMIT, new XMLType( Integer.class, 0, "Index limit"));
         mymap.put(ConfigConstants.CONVERSIONTIKATIMEOUT, new XMLType( Integer.class, 600, "Tika timeout"));
         mymap.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, new XMLType( Integer.class, 600, "Other conversion timeout"));
+        mymap.put(ConfigConstants.CONVERTIKAOCR, new XMLType( Boolean.class, 600, "Tika OCR"));
         mymap.put(ConfigConstants.CONVERSION, new XMLType( String.class, MYCONVERSION, "Conversion"));
         mymap.put(ConfigConstants.CONNECTOR, new XMLType( String.class, "{}", "Connectors"));
         mymap.put(ConfigConstants.DATABASEDATANUCLEUS, new XMLType( Boolean.class, Boolean.FALSE, "Use datanucleus"));
