@@ -43,6 +43,12 @@ public class LeaderRunner implements Runnable {
 
     private static final java.util.Queue<Object[]> execQueue = new ConcurrentLinkedQueue<Object[]>();
 
+    private static final int DBLOCKLIFE = 15 * 60 * 1000;
+
+    private static final int QUEUELIFE = 20 * 60 * 1000;
+
+    private static final int DATALIFE = 20 * 60 * 1000;
+
     ThreadPoolExecutor /*ExecutorService*/ pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
 
     private NodeConfig nodeConf;
@@ -63,6 +69,7 @@ public class LeaderRunner implements Runnable {
         Map<String, Long> keyMap = new HashMap<>();
         MyLeader leader = new MyLeaderFactory().create(controlService.nodename, nodeConf, controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
         long qtime = 0;
+        int extraTimeOCR = extraTimeOCR() * 1000;
         while (true) {
             boolean leading = leader.await(1, TimeUnit.SECONDS);
             if (!leading) {
@@ -94,7 +101,7 @@ public class LeaderRunner implements Runnable {
                     }
                     try {
                         String path = ZKUtil.getAppidPath() + Constants.DB;
-                        deleteOld(curatorClient, path, 15 * 60 * 1000, false, false);
+                        deleteOld(curatorClient, path, DBLOCKLIFE + extraTimeOCR, false, false);
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
                         break;
@@ -102,10 +109,10 @@ public class LeaderRunner implements Runnable {
 
                     try {
                         String path = ZKUtil.getAppidPath() + Constants.QUEUES;
-                        deleteOld(curatorClient, path, 20 * 60 * 1000, true, false);
+                        deleteOld(curatorClient, path, QUEUELIFE, true, false);
                         if (useCommon) {
                             String pathCommon = ZKUtil.getCommonPath() + Constants.QUEUES;
-                            deleteOld(curatorClient, pathCommon, 20 * 60 * 1000, true, false);                            
+                            deleteOld(curatorClient, pathCommon, QUEUELIFE, true, false);
                         }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -114,10 +121,10 @@ public class LeaderRunner implements Runnable {
 
                     try {
                         String path = ZKUtil.getAppidPath() + Constants.DATA;
-                        deleteOld(curatorClient, path, 20 * 60 * 1000, true, true);
+                        deleteOld(curatorClient, path, DATALIFE + extraTimeOCR, true, true);
                         if (useCommon) {
                             String pathCommon = ZKUtil.getCommonPath() + Constants.DATA;
-                            deleteOld(curatorClient, pathCommon, 20 * 60 * 1000, true, true);                            
+                            deleteOld(curatorClient, pathCommon, DATALIFE + extraTimeOCR, true, true);
                         }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
@@ -316,7 +323,7 @@ public class LeaderRunner implements Runnable {
                 continue;
             }
             */
-            if ((stat.getMtime() - System.currentTimeMillis()) < 20 * 60 * 1000) {
+            if ((stat.getMtime() - System.currentTimeMillis()) < QUEUELIFE) {
                 byte[] data = curatorClient.getData().forPath(path + "/" + child);                                
                 //curatorClient.delete().forPath(path + "/" + child);                                
                 //log.info("Delete old lock or data {}", child);
@@ -325,5 +332,13 @@ public class LeaderRunner implements Runnable {
             }
         }
         
+    }
+    
+    private int extraTimeOCR() {
+        if (nodeConf.wantsTikaOCR()) {
+            return nodeConf.getTikaOCRTimeout();
+        } else {
+            return 0;
+        }        
     }
 }

@@ -527,12 +527,17 @@ public class NodeConfig extends MyConfig {
     
     @JsonIgnore
     public Integer getOtherTimeout() {
-        return (Integer) getValueOrDefault(ConfigConstants.CONVERSIONOTHERTIMEOUT);        
+        return (Integer) getValueOrDefault(ConfigConstants.CONVERSIONOTHERTIMEOUT);
     }
     
     @JsonIgnore
     public Boolean wantsTikaOCR() {
-        return (Boolean) getValueOrDefault(ConfigConstants.CONVERTIKAOCR);        
+        return (Boolean) getValueOrDefault(ConfigConstants.CONVERTTIKAOCR);        
+    }
+    
+    @JsonIgnore
+    public Integer getTikaOCRTimeout() {
+        return (Integer) getValueOrDefault(ConfigConstants.CONVERTTIKAOCRTIMEOUT);
     }
     
     @JsonIgnore

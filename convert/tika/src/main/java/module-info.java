@@ -29,5 +29,7 @@ module tika {
     requires curator.framework;
     requires common.util;
     requires common.zookeeper;
+    requires org.apache.tika.parser.ocr;
+    requires org.apache.tika.parser.pdf;
 }
 

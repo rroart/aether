@@ -182,6 +182,7 @@
     <redisson.version>3.27.1</redisson.version>
     <chill.version>0.10.0</chill.version>
     <jersey.version>2.36</jersey.version>
+    <imageio.version>1.4.0</imageio.version>
   </properties>
   <!--repositories>
     <repository>

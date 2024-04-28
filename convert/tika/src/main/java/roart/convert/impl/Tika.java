@@ -25,6 +25,8 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.ocr.TesseractOCRConfig;
+import org.apache.tika.parser.pdf.PDFParserConfig;
 import org.apache.tika.sax.BodyContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,12 @@ public class Tika extends ConvertAbstract {
         otherWorker.setName("OtherTimeout");
         otherWorker.start();
         int timeout = param.converter.getTimeout();
+        if (nodeConf.wantsTikaOCR()) {
+            Integer timeoutOCR = nodeConf.getTikaOCRTimeout();
+            if (timeoutOCR != null && timeoutOCR > 0) {
+                timeout = timeoutOCR;
+            }
+        }
         long start = System.currentTimeMillis();
         boolean b = true;
         while (b) {
@@ -98,9 +106,11 @@ public class Tika extends ConvertAbstract {
     public ConvertResult convert2(Object[] param2) {
         ConvertResult result = new ConvertResult();
         ConvertParam param = (ConvertParam) param2[0];
+        param2[1] = result;
         Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         try (InputStream content = inmemory.getInputStream(param.message)) {
             if (!InmemoryUtil.validate(param.message.getMd5(), content)) {
+                log.error("Invalid msg {}", param.message.getMd5());
                 return result;
             }
         } catch (Exception e) {
@@ -125,11 +135,11 @@ public class Tika extends ConvertAbstract {
                 } else {
                     result.error = "Tika empty";
                 }
-                param2[1] = result;
+                //param2[1] = result;
             } else {
                 log.error("Tika with no output for {}", inmd5);
                 result.error = ret[0];
-                param2[1] = result;
+                //param2[1] = result;
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -147,6 +157,22 @@ public class Tika extends ConvertAbstract {
                 listConfig();
             }
             ParseContext context = new ParseContext();
+            log.info("OCR {}", nodeConf.wantsTikaOCR());
+            if (nodeConf.wantsTikaOCR()) {
+                PDFParserConfig pdfConfig = new PDFParserConfig();
+                pdfConfig.setExtractInlineImages(false);
+                context.set(PDFParserConfig.class, pdfConfig);
+                // djvu?
+                //context.set(TesseractOCRConfig.class, new TesseractOCRConfig());
+            } else {
+                //PDFParserConfig pdfConfig = new PDFParserConfig();
+                //pdfConfig.setExtractInlineImages(false);
+                //context.set(PDFParserConfig.class, pdfConfig);
+                // djvu?
+                TesseractOCRConfig ocrConfig = new TesseractOCRConfig();
+                ocrConfig.setSkipOcr(true);
+                context.set(TesseractOCRConfig.class, ocrConfig);
+            }
             Detector detector = new DefaultDetector();
             Parser parser = new AutoDetectParser(detector);
             context.set(Parser.class, parser);
