@@ -34,6 +34,7 @@ RUN mkdir /usr/local/conf
 ADD docker/cloud/core/$MYCONFIG /usr/local/conf
 WORKDIR /usr/local/bin
 RUN apt update -y
+RUN apt install -y media-types
 RUN ln -s /tmp /usr/local/logs
 CMD java $MYDEBUG -Dserver.port=${MYWEBPORT} -Dconfig=$MYCONFIG -jar /usr/local/bin/$DISTJAR --spring.profiles.active=docker
 #-Deureka.client.enabled=false 
