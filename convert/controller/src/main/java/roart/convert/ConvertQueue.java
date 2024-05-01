@@ -72,6 +72,7 @@ public class ConvertQueue {
                             }
                             element.setConvertResult(ret);
                             List<Converter> converters = element.getConvertParam().converters;
+                            log.debug("Converters {}", converters);
                             converters = converters.subList(1, converters.size());
                             element.getConvertParam().converters = converters;
                             String queueName;
@@ -84,6 +85,7 @@ public class ConvertQueue {
                             }
                             MyQueue<QueueElement> returnQueue =  new MyQueueFactory().create(queueName, nodeConf, curatorClient);
                             returnQueue.offer(element);
+                            log.debug("Next queue {} {}", element.getMd5(), queueName);
                         } catch (Exception e) {
                             log.error(Constants.EXCEPTION, e); 
                         }

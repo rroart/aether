@@ -289,18 +289,21 @@ public class ConvertHandler {
             List<Converter> converterList = new ArrayList<>();
             for (int i = 0; i < converters.length; i++) {
                 Converter converter = converters[i];
+                boolean found = converter.getMimetypes().length == 0 && converter.getSuffixes().length == 0;
                 if (converter.getMimetypes().length > 0) {
-                    if (!Arrays.asList(converter.getMimetypes()).contains(mimetype)) {
-                        continue;
+                    if (Arrays.asList(converter.getMimetypes()).contains(mimetype)) {
+                        found = true;
                     }
                 }
                 if (converter.getSuffixes().length > 0) {
                     String myfilename = element.getFileObject().object.toLowerCase();
-                    if (!Arrays.asList(converter.getSuffixes()).stream().anyMatch(myfilename::endsWith)) {
-                        continue;
+                    if (Arrays.asList(converter.getSuffixes()).stream().anyMatch(myfilename::endsWith)) {
+                        found = true;
                     }
                 }
-                converterList.add(converter);
+                if (found) {
+                    converterList.add(converter);
+                }
             }
             try {
                 new ConvertDAO(nodeConf, controlService).convertQueue(element, converterList, message, metadata, Paths.get(filename.object).getFileName().toString(), element.getIndexFiles());
@@ -325,6 +328,7 @@ public class ConvertHandler {
             InmemoryMessage str = element.getMessage();
             if (str != null) {
                 String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(str)));
+                log.info("Size {} {}", md5, content.length());
                 try {
                     element.getIndexFiles().setIsbn(new ISBNUtil().extract(content, false));
                     log.info("ISBN {}", element.getIndexFiles().getIsbn());
