@@ -101,6 +101,7 @@ public class Search {
             ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             retlistnot.offer(ri);
+            dbindex.incrFailed();
         } else {
 
             log.info("size2 " + md5 + " " + retsize);
@@ -115,6 +116,7 @@ public class Search {
             ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
             ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
             retlist.offer(ri);
+            dbindex.setFailed(0);
 
         }
         dbindex.setPriority(1);
@@ -219,6 +221,7 @@ public class Search {
                 ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
                 ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
                 retlistnot.offer(ri);
+                dbindex.incrFailed();
             } else {
 
                 log.info("size2 " + md5 + " " + retsize);
@@ -232,6 +235,7 @@ public class Search {
                 ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
                 ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
                 retlist.offer(ri);
+                dbindex.setFailed(0);
 
             }
             dbindex.setPriority(1);

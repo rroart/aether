@@ -187,6 +187,7 @@ public class ConvertHandler {
             //elem.setMessage(str);
             new Queues(nodeConf, controlService).getIndexQueue().offer(element);
             //Queues.getIndexQueueSize().incrementAndGet();
+            index.setFailed(0);
             new IndexFilesDao(nodeConf, controlService).add(index);
 
         } else {
@@ -197,7 +198,7 @@ public class ConvertHandler {
             MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
             unconverted.offer(ri);
             Boolean isIndexed = index.getIndexed();
-            if (isIndexed == null || isIndexed.booleanValue() == false) {
+            if (true || isIndexed == null || isIndexed.booleanValue() == false) {
                 index.incrFailed();
                 //index.save();
             }
@@ -362,6 +363,7 @@ public class ConvertHandler {
                 //elem.setMessage(str);
                 //Queues.getIndexQueueSize().incrementAndGet();
                 // no TODO
+                index.setFailed(0);
             } else {
                 log.info("Not converted {} {} {}", filename, md5, size);
                 FileLocation aFl = element.getIndexFiles().getaFilelocation();
@@ -370,7 +372,7 @@ public class ConvertHandler {
                 MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
                 unconverted.offer(ri);
                 Boolean isIndexed = index.getIndexed();
-                if (isIndexed == null || isIndexed.booleanValue() == false) {
+                if (true || isIndexed == null || isIndexed.booleanValue() == false) {
                     index.incrFailed();
                     //index.save();
                 }

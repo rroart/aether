@@ -37,6 +37,7 @@ public class TraverseUtil {
     public static boolean isMaxed(String myid, ServiceParam element, NodeConfig nodeConf, ControlService controlService) {
         int max = nodeConf.getReindexLimit();
         int maxindex = nodeConf.getIndexLimit();
+        // counter not working / used?
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient); 
         boolean isMaxed = false;
         if (element.reindex && max > 0 && indexcount.get() > max) {
