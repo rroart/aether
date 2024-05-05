@@ -295,6 +295,13 @@ public class ConvertHandler {
                 log.error("File copy error");
                 element.getIndexFiles().setFailedreason("File copy error");
                 converters = new Converter[0];
+                // TODO continue;
+                index.setPriority(1);
+                // file unlock dbindex
+                // config with finegrained distrib
+                index.setChecked("" + System.currentTimeMillis());
+                new IndexFilesDao(nodeConf, controlService).add(index);
+                return; // TODO
             }
 
             // before convert
