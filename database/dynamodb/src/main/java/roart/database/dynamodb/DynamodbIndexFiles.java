@@ -225,6 +225,8 @@ public class DynamodbIndexFiles {
     private final String timeindexq = "timeindex";
     private final String timeclassq = "timeclass";
     private final String classificationq = "classification";
+    private final String sizeq = "size";
+    private final String convertsizeq = "convertsize";
     private final String convertswq = "convertsw";
     private final String converttimeq = "converttime";
     private final String failedq = "failed";
@@ -326,6 +328,12 @@ public class DynamodbIndexFiles {
         if (ifile.getClassification() != null && !ifile.getClassification().isEmpty()) {
             updatedvalues.put(classificationq, AttributeValue.builder().s(ifile.getClassification()).build());
         }
+        if (ifile.getSize() != null) {
+            updatedvalues.put(sizeq, AttributeValue.builder().s("" + ifile.getSize()).build());
+        }
+        if (ifile.getConvertsize() != null) {
+            updatedvalues.put(convertsizeq, AttributeValue.builder().s("" + ifile.getConvertsize()).build());
+        }
         if (ifile.getConvertsw() != null && !ifile.getConvertsw().isEmpty()) {
             updatedvalues.put(convertswq, AttributeValue.builder().s(ifile.getConvertsw()).build());
         }
@@ -394,9 +402,11 @@ public class DynamodbIndexFiles {
         ifile.setTimestamp(itemgets(item.get(timestampq)));
         ifile.setTimeclass(itemgets(item.get(timeclassq)));
         ifile.setClassification(itemgets(item.get(classificationq)));
+        ifile.setSize(convertInt(itemgets(item.get(sizeq))));
+        ifile.setConvertsize(convertInt(itemgets(item.get(convertsizeq))));
         ifile.setConvertsw(itemgets(item.get(convertswq)));
         ifile.setConverttime(itemgets(item.get(converttimeq)));
-        ifile.setFailed(Integer.valueOf(itemgets(item.get(failedq)) != null ? itemgets(item.get(failedq)) : "0"));
+        ifile.setFailed(convertInt(itemgets(item.get(failedq)) != null ? itemgets(item.get(failedq)) : "0"));
         ifile.setFailedreason(itemgets(item.get(failedreasonq)));
         ifile.setTimeoutreason(itemgets(item.get(timeoutreasonq)));
         ifile.setNoindexreason(itemgets(item.get(noindexreasonq)));
@@ -446,6 +456,13 @@ public class DynamodbIndexFiles {
             listnew.addAll(Arrays.asList(fl));
         }
         return listnew;
+    }
+
+    private Integer convertInt(String s) {
+        if (s == null) {
+            return null;
+        }
+        return Integer.valueOf(s);
     }
 
     public Map<String, IndexFiles> get(Set<String> md5s) {

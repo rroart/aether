@@ -73,6 +73,8 @@ public class CassandraIndexFiles {
     private final String timeindexq = "timeindex";
     private final String timeclassq = "timeclass";
     private final String classificationq = "classification";
+    private final String sizeq = "size";
+    private final String convertsizeq = "convertsize";
     private final String convertswq = "convertsw";
     private final String converttimeq = "converttime";
     private final String failedq = "failed";
@@ -253,6 +255,12 @@ public class CassandraIndexFiles {
         if (ifile.getClassification() != null) {
             updatewa = updatewa.setColumn(classificationq, literal(ifile.getClassification()));
         }
+        if (ifile.getSize() != null) {
+            updatewa = updatewa.setColumn(sizeq, literal(ifile.getSize()));
+        }
+        if (ifile.getConvertsize() != null) {
+            updatewa = updatewa.setColumn(convertsizeq, literal(ifile.getConvertsize()));
+        }
         if (ifile.getConvertsw() != null) {
             updatewa = updatewa.setColumn(convertswq, literal(ifile.getConvertsw()));
         }
@@ -313,6 +321,8 @@ public class CassandraIndexFiles {
         ifile.setTimestamp(row.getString(timestampq));
         ifile.setTimeclass(row.getString(timeclassq));
         ifile.setClassification(row.getString(classificationq));
+        ifile.setSize(row.getInt(sizeq));
+        ifile.setConvertsize(row.getInt(convertsizeq));
         ifile.setConvertsw(row.getString(convertswq));
         ifile.setConverttime(row.getString(converttimeq));
         ifile.setFailed(row.getInt(failedq));

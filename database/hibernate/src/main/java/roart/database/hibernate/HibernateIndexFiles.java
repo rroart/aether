@@ -61,6 +61,8 @@ import roart.common.model.IndexFiles;
 	private String timeindex;
 	private String timestamp;
 	private String timeclass;
+	private Integer size;
+	private Integer convertsize;
 	private String convertsw;
 	private String converttime;
 	private String classification;
@@ -180,6 +182,34 @@ import roart.common.model.IndexFiles;
 	public void setClassification(String classification) {
 	    this.classification = classification;
 	}
+
+        /**
+         * @hibernate.property
+         *  column="size"
+         */
+        @Column(name = "size")
+        
+        public Integer getSize() {
+            return size;
+        }
+
+        public void setSize(Integer size) {
+            this.size = size;
+        }
+
+        /**
+         * @hibernate.property
+         *  column="convertsw"
+         */
+        @Column(name = "convertsize")
+        
+        public Integer getConvertsize() {
+            return convertsize;
+        }
+
+        public void setConvertsize(Integer convertsize) {
+            this.convertsize = convertsize;
+        }
 
 	/**
 	 * @hibernate.property

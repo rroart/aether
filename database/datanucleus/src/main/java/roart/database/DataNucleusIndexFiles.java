@@ -114,6 +114,30 @@ import roart.common.model.IndexFiles;
 	    this.classification = classification;
 	}
 
+        @Column(name = "size")
+        @Persistent     
+        private Integer size;
+        
+        public Integer getSize() {
+            return size;
+        }
+
+        public void setSize(Integer size) {
+            this.size = size;
+        }
+
+        @Column(name = "convertsize")
+        @Persistent     
+        private Integer convertsize;
+        
+        public Integer getConvertsize() {
+            return convertsize;
+        }
+
+        public void setConvertsize(Integer convertsize) {
+            this.convertsize = convertsize;
+        }
+
 	@Column(name = "convertsw")
 	@Persistent	
 	private String convertsw;

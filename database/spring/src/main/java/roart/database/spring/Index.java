@@ -17,6 +17,8 @@ public class Index {
     private String timeindex;
     private String timestamp;
     private String timeclass;
+    private Integer size;
+    private Integer convertsize;
     private String convertsw;
     private String converttime;
     private String classification;
@@ -59,6 +61,18 @@ public class Index {
     }
     public void setTimeclass(String timeclass) {
         this.timeclass = timeclass;
+    }
+    public Integer getSize() {
+        return size;
+    }
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+    public Integer getConvertsize() {
+        return convertsize;
+    }
+    public void setConvertsize(Integer convertsize) {
+        this.convertsize = convertsize;
     }
     public String getConvertsw() {
         return convertsw;

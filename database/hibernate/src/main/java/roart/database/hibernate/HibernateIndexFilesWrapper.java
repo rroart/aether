@@ -145,6 +145,8 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
             hif.setTimestamp(i.getTimestamp());
             hif.setTimeclass(i.getTimeclass());
             hif.setClassification(i.getClassification());
+            hif.setSize(i.getSize());
+            hif.setConvertsize(i.getConvertsize());
             hif.setConvertsw(i.getConvertsw());
             hif.setConverttime(i.getConverttime());
             hif.setFailed(i.getFailed());
@@ -179,6 +181,8 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         ifile.setTimestamp(hif.getTimestamp());
         ifile.setTimeclass(hif.getTimeclass());
         ifile.setClassification(hif.getClassification());
+        ifile.setSize(hif.getSize());
+        ifile.setConvertsize(hif.getConvertsize());
         ifile.setConvertsw(hif.getConvertsw());
         ifile.setConverttime(hif.getConverttime());
         ifile.setFailed(hif.getFailed());

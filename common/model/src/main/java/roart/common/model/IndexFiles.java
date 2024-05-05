@@ -46,6 +46,8 @@ public class IndexFiles {
     private String isbn;
     private String created;
     private String checked;
+    private Integer size;
+    private Integer convertsize;
     private Integer version;
 
     private boolean changed = false;
@@ -348,6 +350,22 @@ public class IndexFiles {
         this.checked = checked;
     }
 
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public Integer getConvertsize() {
+        return convertsize;
+    }
+
+    public void setConvertsize(Integer convertsize) {
+        this.convertsize = convertsize;
+    }
+
     public Integer getVersion() {
         return version;
     }
@@ -523,6 +541,8 @@ public class IndexFiles {
         }
         ri.add("Timestamp");
         ri.add("Updated");
+        ri.add("Size");
+        ri.add("Convertsize");
         ri.add("Convertsw");
         ri.add("Converttime");
         ri.add("Indextime");
@@ -558,6 +578,8 @@ public class IndexFiles {
         ri.add("Timestamp");
         ri.add("Updated");
         if (admin) {
+            ri.add("Size");
+            ri.add("Convertsize");
             ri.add("Convertsw");
             ri.add("Converttime");
             ri.add("Indextime");
@@ -608,6 +630,8 @@ public class IndexFiles {
         ri.add(index.getTimestampDate().toString());
         ri.add(index.getCheckedDate().toString());
         if (admin) {
+            ri.add("" + index.getSize());
+            ri.add("" + index.getConvertsize());
             ri.add(index.getConvertsw());
             ri.add(index.getConverttime("%.2f"));
             ri.add(index.getTimeindex("%.2f"));
@@ -658,6 +682,8 @@ public class IndexFiles {
         }
         ri.add(index.getTimestampDate().toString());
         ri.add(index.getCheckedDate().toString());
+        ri.add("" + index.getSize());
+        ri.add("" + index.getConvertsize());
         ri.add(index.getConvertsw());
         ri.add(index.getConverttime("%.2f"));
         ri.add(index.getTimeindex("%.2f"));
@@ -695,13 +721,15 @@ public class IndexFiles {
                 && Objects.equals(language, f.language)
                 && Objects.equals(isbn, f.isbn)
                 && Objects.equals(created, f.created)
+                && Objects.equals(size, f.size)
+                && Objects.equals(convertsize, f.convertsize)
                 && Objects.equals(checked, f.checked);
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(md5, indexed, timeindex, timestamp, timeclass, convertsw, classification, failed, failedreason, timeoutreason, noindexreason, filelocations, language, isbn, created, checked);
+        return Objects.hash(md5, indexed, timeindex, timestamp, timeclass, convertsw, classification, failed, failedreason, timeoutreason, noindexreason, filelocations, language, isbn, created, size, convertsize, checked);
     }
 
 }

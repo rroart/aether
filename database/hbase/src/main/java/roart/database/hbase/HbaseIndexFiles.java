@@ -69,6 +69,8 @@ public class HbaseIndexFiles {
     private final byte[] timeindexq = Bytes.toBytes("timeindex");
     private final byte[] timeclassq = Bytes.toBytes("timeclass");
     private final byte[] classificationq = Bytes.toBytes("classification");
+    private final byte[] sizeq = Bytes.toBytes("size");
+    private final byte[] convertsizeq = Bytes.toBytes("convertsize");
     private final byte[] convertswq = Bytes.toBytes("convertsw");
     private final byte[] converttimeq = Bytes.toBytes("converttime");
     private final byte[] failedq = Bytes.toBytes("failed");
@@ -229,6 +231,12 @@ private Put map(IndexFiles ifile) {
     if (ifile.getClassification() != null) {
         put.addColumn(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
     }
+    if (ifile.getSize() != null) {
+        put.addColumn(indexcf, sizeq, Bytes.toBytes("" + ifile.getSize()));
+    }
+    if (ifile.getConvertsize() != null) {
+        put.addColumn(indexcf, convertsizeq, Bytes.toBytes("" + ifile.getConvertsize()));
+    }
     if (ifile.getConvertsw() != null) {
         put.addColumn(indexcf, convertswq, Bytes.toBytes(ifile.getConvertsw()));
     }
@@ -328,14 +336,16 @@ private Put map(IndexFiles ifile) {
         String md5 = bytesToString(index.getValue(indexcf, md5q));
         IndexFiles ifile = new IndexFiles(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
-        ifile.setIndexed(new Boolean(bytesToString(index.getValue(indexcf, indexedq))));
+        ifile.setIndexed(Boolean.valueOf(bytesToString(index.getValue(indexcf, indexedq))));
         ifile.setTimeindex(bytesToString(index.getValue(indexcf, timeindexq)));
         ifile.setTimestamp(bytesToString(index.getValue(indexcf, timestampq)));
         ifile.setTimeclass(bytesToString(index.getValue(indexcf, timeclassq)));
         ifile.setClassification(bytesToString(index.getValue(indexcf, classificationq)));
+        ifile.setSize(convert(bytesToString(index.getValue(indexcf, sizeq))));
+        ifile.setConvertsize(convert(bytesToString(index.getValue(indexcf, convertsizeq))));
         ifile.setConvertsw(bytesToString(index.getValue(indexcf, convertswq)));
         ifile.setConverttime(bytesToString(index.getValue(indexcf, converttimeq)));
-        ifile.setFailed(new Integer(convert0(bytesToString(index.getValue(indexcf, failedq)))));
+        ifile.setFailed(convert(bytesToString(index.getValue(indexcf, failedq))));
         ifile.setFailedreason(bytesToString(index.getValue(indexcf, failedreasonq)));
         ifile.setTimeoutreason(bytesToString(index.getValue(indexcf, timeoutreasonq)));
         ifile.setNoindexreason(bytesToString(index.getValue(indexcf, noindexreasonq)));
@@ -571,6 +581,18 @@ private Put map(IndexFiles ifile) {
         return FsUtil.getFileLocation(fl);
     }
 
+    private Integer convert(String s) {
+        if (s == null) {
+            return null;
+        }
+        // last is a temp workaround after accident
+        if (s.equals("\0".repeat(s.length()))) {
+            log.debug("accident {}", s.length());
+            return null;
+        }
+        return Integer.valueOf(s);
+    }
+
     private String convertNullNot(String s) {
         if (s == null) {
             return "";
@@ -579,7 +601,17 @@ private Put map(IndexFiles ifile) {
     }
 
     private String convert0(String s) {
+        //int s0 = s != null ? s.length() : 0;
+        //log.info("ss" + s + "ss" + s0 );
+        //for (int i = 0; i < s.length(); i ++) {
+        //    log.info("ss" + s.charAt(i) + " " + Integer.valueOf(s.charAt(i)));
+        //}
         if (s == null) {
+            return "0";
+        }
+        // last is a temp workaround after accident
+        if (s.equals("\0".repeat(s.length()))) {
+            log.info("accident {}", s.length());
             return "0";
         }
         return s;

@@ -85,11 +85,17 @@ public class ConvertHandler {
 
 	log.info("file {}", element.getFileObject());
 	
-	// find converters
+        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
+
+        if (element.getIndexFiles().getSize() == null) {
+            String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(message)));
+            element.getIndexFiles().setSize(content.length());
+        }
+
+        // find converters
 	
         String converterString = nodeConf.getConverters();
         Converter[] converters = JsonUtil.convert(converterString, Converter[].class);
-        Inmemory inmemory = InmemoryFactory.get(nodeConf.getInmemoryServer(), nodeConf.getInmemoryHazelcast(), nodeConf.getInmemoryRedis());
         String mimetype = null;
         try (InputStream origcontent = inmemory.getInputStream(message)) {
             mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
@@ -154,6 +160,7 @@ public class ConvertHandler {
         }
         if (str != null) {
             String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(str)));
+            element.getIndexFiles().setConvertsize(content.length());
             String lang = null;
             try {
                 LanguageDetect languageDetect = LanguageDetectFactory.getMe(LanguageDetectFactory.Detect.OPTIMAIZE);
@@ -269,6 +276,11 @@ public class ConvertHandler {
 
             log.info("file {}", element.getFileObject());
 
+            if (element.getIndexFiles().getSize() == null) {
+                String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(message)));
+                element.getIndexFiles().setSize(content.length());
+            }
+
             // find converters
 
             String converterString = nodeConf.getConverters();
@@ -329,6 +341,7 @@ public class ConvertHandler {
             InmemoryMessage str = element.getMessage();
             if (str != null) {
                 String content = InmemoryUtil.convertWithCharset(IOUtil.toByteArrayMax(inmemory.getInputStream(str)));
+                element.getIndexFiles().setConvertsize(content.length());
                 log.info("Size {} {}", md5, content.length());
                 try {
                     element.getIndexFiles().setIsbn(new ISBNUtil().extract(content, false));
