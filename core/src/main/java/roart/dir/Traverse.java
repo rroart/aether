@@ -213,55 +213,61 @@ public class Traverse {
         indexFilesDao.getAllFiles();
         List<IndexFiles> indexes = indexFilesDao.getAll();
         for (IndexFiles index : indexes) {
-            while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
-                log.info("Convert queue heavy loaded, sleeping");
-                TimeUtil.sleep(1);
-            }
-            while (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
-                log.info("Filesystem queue heavy loaded, sleeping");
-                TimeUtil.sleep(1);
-            }
-            while (new Queues(nodeConf, controlService).databaseQueueHeavyLoaded()) {
-                log.info("Database queue heavy loaded, sleeping");
-                TimeUtil.sleep(1);
-            }
-            while (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
-                log.info("Index queue heavy loaded, sleeping");
-                TimeUtil.sleep(1);
-            }
-            if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
-                break;
-            }
-            if (!FilterUtil.indexFilter(index, element)) {
-                continue;
-            }
-            String md5 = index.getMd5();
-            //String name = getExistingLocalFile(index);
-            FileLocation fl = index.getaFilelocation();
-            FileObject filename = FsUtil.getFileObject(fl);
-            /*
+            try {
+                if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
+                    break;
+                }
+                if (!FilterUtil.indexFilter(index, element)) {
+                    continue;
+                }
+                String md5 = index.getMd5();
+                //String name = getExistingLocalFile(index);
+                FileLocation fl = index.getaFilelocation();
+                FileObject filename = FsUtil.getFileObject(fl);
+                /*
             if (name == null) {
                 log.error("filename should not be null {}", md5);
                 continue;
             }
-            */
-            // TODO check if fo needed
-            QueueElement trav = new QueueElement(myid, filename, element, null);
-            if (!function.indexFilter(index, trav)) {
-                continue;
+                 */
+                // TODO check if fo needed
+                QueueElement trav = new QueueElement(myid, filename, element, null);
+                if (!function.indexFilter(index, trav)) {
+                    continue;
+                }
+                trav.setIndexFiles(index);
+
+                while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
+                    log.info("Convert queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
+                while (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
+                    log.info("Filesystem queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
+                while (new Queues(nodeConf, controlService).databaseQueueHeavyLoaded()) {
+                    log.info("Database queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
+                while (new Queues(nodeConf, controlService).indexQueueHeavyLoaded()) {
+                    log.info("Index queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
+                // config with finegrained distrib
+                TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
+                // ?
+                //queue.offer(trav);
+                //String md5sdoneid = "md5sdoneid"+trav.getMyid();
+                //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
+                TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService, searchDao);
+                if (traverseFile.getDoIndex(trav, index, function)) {
+                    traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
+                }
+                TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e); 
+                TimeUtil.sleep(10);
             }
-            trav.setIndexFiles(index);
-            // config with finegrained distrib
-            TraverseUtil.doCounters(trav, 1, nodeConf, controlService);
-        // ?
-            //queue.offer(trav);
-            //String md5sdoneid = "md5sdoneid"+trav.getMyid();
-            //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
-            TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService, searchDao);
-            if (traverseFile.getDoIndex(trav, index, function)) {
-                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
-            }
-            TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
         }
         count.addAndGet(-1);
 
