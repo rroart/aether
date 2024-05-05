@@ -225,6 +225,7 @@ public class DynamodbIndexFiles {
     private final String timeindexq = "timeindex";
     private final String timeclassq = "timeclass";
     private final String classificationq = "classification";
+    private final String mimetypeq = "mimetype";
     private final String sizeq = "size";
     private final String convertsizeq = "convertsize";
     private final String convertswq = "convertsw";
@@ -328,6 +329,9 @@ public class DynamodbIndexFiles {
         if (ifile.getClassification() != null && !ifile.getClassification().isEmpty()) {
             updatedvalues.put(classificationq, AttributeValue.builder().s(ifile.getClassification()).build());
         }
+        if (ifile.getMimetype() != null && !ifile.getMimetype().isEmpty()) {
+            updatedvalues.put(mimetypeq, AttributeValue.builder().s(ifile.getMimetype()).build());
+        }
         if (ifile.getSize() != null) {
             updatedvalues.put(sizeq, AttributeValue.builder().s("" + ifile.getSize()).build());
         }
@@ -402,6 +406,7 @@ public class DynamodbIndexFiles {
         ifile.setTimestamp(itemgets(item.get(timestampq)));
         ifile.setTimeclass(itemgets(item.get(timeclassq)));
         ifile.setClassification(itemgets(item.get(classificationq)));
+        ifile.setMimetype(itemgets(item.get(mimetypeq)));
         ifile.setSize(convertInt(itemgets(item.get(sizeq))));
         ifile.setConvertsize(convertInt(itemgets(item.get(convertsizeq))));
         ifile.setConvertsw(itemgets(item.get(convertswq)));

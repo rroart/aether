@@ -73,6 +73,7 @@ public class CassandraIndexFiles {
     private final String timeindexq = "timeindex";
     private final String timeclassq = "timeclass";
     private final String classificationq = "classification";
+    private final String mimetypeq = "mimetype";
     private final String sizeq = "size";
     private final String convertsizeq = "convertsize";
     private final String convertswq = "convertsw";
@@ -255,6 +256,9 @@ public class CassandraIndexFiles {
         if (ifile.getClassification() != null) {
             updatewa = updatewa.setColumn(classificationq, literal(ifile.getClassification()));
         }
+        if (ifile.getMimetype() != null) {
+            updatewa = updatewa.setColumn(mimetypeq, literal(ifile.getMimetype()));
+        }
         if (ifile.getSize() != null) {
             updatewa = updatewa.setColumn(sizeq, literal(ifile.getSize()));
         }
@@ -321,6 +325,7 @@ public class CassandraIndexFiles {
         ifile.setTimestamp(row.getString(timestampq));
         ifile.setTimeclass(row.getString(timeclassq));
         ifile.setClassification(row.getString(classificationq));
+        ifile.setMimetype(row.getString(mimetypeq));
         ifile.setSize(row.getInt(sizeq));
         ifile.setConvertsize(row.getInt(convertsizeq));
         ifile.setConvertsw(row.getString(convertswq));

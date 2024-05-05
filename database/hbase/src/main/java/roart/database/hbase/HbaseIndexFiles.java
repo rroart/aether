@@ -69,6 +69,7 @@ public class HbaseIndexFiles {
     private final byte[] timeindexq = Bytes.toBytes("timeindex");
     private final byte[] timeclassq = Bytes.toBytes("timeclass");
     private final byte[] classificationq = Bytes.toBytes("classification");
+    private final byte[] mimetypeq = Bytes.toBytes("mimetype");
     private final byte[] sizeq = Bytes.toBytes("size");
     private final byte[] convertsizeq = Bytes.toBytes("convertsize");
     private final byte[] convertswq = Bytes.toBytes("convertsw");
@@ -231,6 +232,9 @@ private Put map(IndexFiles ifile) {
     if (ifile.getClassification() != null) {
         put.addColumn(indexcf, classificationq, Bytes.toBytes(ifile.getClassification()));
     }
+    if (ifile.getMimetype() != null) {
+        put.addColumn(indexcf, mimetypeq, Bytes.toBytes(ifile.getMimetype()));
+    }
     if (ifile.getSize() != null) {
         put.addColumn(indexcf, sizeq, Bytes.toBytes("" + ifile.getSize()));
     }
@@ -341,6 +345,7 @@ private Put map(IndexFiles ifile) {
         ifile.setTimestamp(bytesToString(index.getValue(indexcf, timestampq)));
         ifile.setTimeclass(bytesToString(index.getValue(indexcf, timeclassq)));
         ifile.setClassification(bytesToString(index.getValue(indexcf, classificationq)));
+        ifile.setMimetype(bytesToString(index.getValue(indexcf, mimetypeq)));
         ifile.setSize(convert(bytesToString(index.getValue(indexcf, sizeq))));
         ifile.setConvertsize(convert(bytesToString(index.getValue(indexcf, convertsizeq))));
         ifile.setConvertsw(bytesToString(index.getValue(indexcf, convertswq)));

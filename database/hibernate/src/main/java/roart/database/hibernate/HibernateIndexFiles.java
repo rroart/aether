@@ -66,6 +66,7 @@ import roart.common.model.IndexFiles;
 	private String convertsw;
 	private String converttime;
 	private String classification;
+	private String mimetype;
 	private Integer failed;
 	private String failedreason;
 	private String timeoutreason;
@@ -183,7 +184,21 @@ import roart.common.model.IndexFiles;
 	    this.classification = classification;
 	}
 
-        /**
+	       /**
+         * @hibernate.property
+         *  column="mimetype"
+         */
+        @Column(name = "mimetype")
+        
+        public String getMimetype() {
+            return mimetype;
+        }
+
+        public void setMimetype(String mimetype) {
+            this.mimetype = mimetype;
+        }
+
+       /**
          * @hibernate.property
          *  column="size"
          */

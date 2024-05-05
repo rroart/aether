@@ -96,6 +96,12 @@ public class DbSearch extends AbstractFunction {
                         match = language.equals(text);
                     }
                 }
+                if (field.equals("mimetype")) {
+                    String language = index.getMimetype();
+                    if (language != null) {
+                        match = language.equals(text);
+                    }
+                }
                 if (match) {
                     FileLocation aFl = index.getaFilelocation();
                     indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));

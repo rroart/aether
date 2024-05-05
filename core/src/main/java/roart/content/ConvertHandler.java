@@ -102,6 +102,7 @@ public class ConvertHandler {
             log.info("Mimetype {}", mimetype);
             if (mimetype != null) {
                 metadata.put(Constants.FILESCONTENTTYPE, mimetype);
+                element.getIndexFiles().setMimetype(mimetype);
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
@@ -288,6 +289,7 @@ public class ConvertHandler {
             String mimetype = null;
             try (InputStream origcontent = inmemory.getInputStream(message)) {
                 mimetype = getMimetype(origcontent, Paths.get(filename.object).getFileName().toString());
+                element.getIndexFiles().setMimetype(mimetype);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e);
                 log.error("File copy error");

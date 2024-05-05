@@ -20,6 +20,7 @@ public class Index {
     private String timeindex;
     private String timestamp;
     private String timeclass;
+    private String mimetype;
     private Integer size;
     private Integer convertsize;
     private String convertsw;
@@ -64,6 +65,12 @@ public class Index {
     }
     public void setTimeclass(String timeclass) {
         this.timeclass = timeclass;
+    }
+    public String getMimetype() {
+        return mimetype;
+    }
+    public void setMimetype(String mimetype) {
+        this.mimetype = mimetype;
     }
     public Integer getSize() {
         return size;

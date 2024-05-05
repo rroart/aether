@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class IndexFiles {
 
     public static final int FILENAMECOLUMN = 3;
-    public static final int HIGHLIGHTMLTCOLUMN = 4;
+    public static final int MIMETYPECOLUMN = 4;
 
     private static Logger log = LoggerFactory.getLogger(IndexFiles.class);
     private String md5;
@@ -48,6 +48,7 @@ public class IndexFiles {
     private String checked;
     private Integer size;
     private Integer convertsize;
+    private String mimetype;
     private Integer version;
 
     private boolean changed = false;
@@ -366,6 +367,14 @@ public class IndexFiles {
         this.convertsize = convertsize;
     }
 
+    public String getMimetype() {
+        return mimetype;
+    }
+
+    public void setMimetype(String mimetype) {
+        this.mimetype = mimetype;
+    }
+
     public Integer getVersion() {
         return version;
     }
@@ -534,6 +543,7 @@ public class IndexFiles {
         ri.add("Md5/Id");
         ri.add("Node");
         ri.add("Filename");
+        ri.add("Mimetype");
         ri.add("Lang");
         ri.add("ISBN");
         if (doclassify) {
@@ -567,6 +577,7 @@ public class IndexFiles {
         ri.add("Md5/Id");
         ri.add("Node");
         ri.add("Filename");
+        ri.add("Mimetype");
         if (dohighlightmlt) {
             ri.add("Highlight and similar");
         }
@@ -615,6 +626,7 @@ public class IndexFiles {
         }
         ri.add(nodename);
         ri.add(filename);
+        ri.add(index.getMimetype());
         if (dohighlightmlt) {
             if (highlights != null && highlights.length > 0) {
                 ri.add(highlights[0]);
@@ -675,6 +687,7 @@ public class IndexFiles {
         }
         ri.add(nodename);
         ri.add(filename);
+        ri.add(index.getMimetype());
         ri.add(lang);
         ri.add(index.getIsbn());
         if (doclassify) {
@@ -723,13 +736,14 @@ public class IndexFiles {
                 && Objects.equals(created, f.created)
                 && Objects.equals(size, f.size)
                 && Objects.equals(convertsize, f.convertsize)
+                && Objects.equals(mimetype, f.mimetype)
                 && Objects.equals(checked, f.checked);
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(md5, indexed, timeindex, timestamp, timeclass, convertsw, classification, failed, failedreason, timeoutreason, noindexreason, filelocations, language, isbn, created, size, convertsize, checked);
+        return Objects.hash(md5, indexed, timeindex, timestamp, timeclass, convertsw, classification, failed, failedreason, timeoutreason, noindexreason, filelocations, language, isbn, created, size, convertsize, mimetype, checked);
     }
 
 }

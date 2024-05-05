@@ -114,6 +114,18 @@ import roart.common.model.IndexFiles;
 	    this.classification = classification;
 	}
 
+        @Column(name = "mimetype")
+        @Persistent     
+        private String mimetype;
+        
+        public String getMimetype() {
+            return mimetype;
+        }
+
+        public void setMimetype(String mimetype) {
+            this.mimetype = mimetype;
+        }
+
         @Column(name = "size")
         @Persistent     
         private Integer size;
