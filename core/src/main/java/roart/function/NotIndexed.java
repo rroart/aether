@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -26,17 +28,25 @@ public class NotIndexed extends AbstractFunction {
         List<List> retlistlist = new ArrayList<>();
         List<ResultItem> retlist = new ArrayList<>();
         List<ResultItem> retlist2 = new ArrayList<>();
+        List<ResultItem> retlist3 = new ArrayList<>();
         ResultItem ri3 = new ResultItem();
-        ri3.add("Column 1");
-        ri3.add("Column 2");
-        ri3.add("Column 3");
+        ri3.add("Suffix");
+        ri3.add("Success");
+        ri3.add("Fail");
         retlist2.add(ri3);
+        ResultItem ri4 = new ResultItem();
+        ri4.add("Mimetype");
+        ri4.add("Success");
+        ri4.add("Fail");
+        retlist3.add(ri4);
         List<ResultItem> retlistyes = null;
         try {
             retlist.addAll(TraverseUtil.notindexed(param, indexFilesDao, controlService));
             retlistyes = TraverseUtil.indexed(param, indexFilesDao, controlService);
             Map<String, Integer> plusretlist = new HashMap<>();
             Map<String, Integer> plusretlistyes = new HashMap<>();
+            Map<String, Integer> plusretlistmime = new HashMap<>();
+            Map<String, Integer> plusretlistmimeyes = new HashMap<>();
             for(ResultItem ri : retlist) {
                 if (ri == retlist.get(0)) {
                     continue;
@@ -50,12 +60,11 @@ public class NotIndexed extends AbstractFunction {
                     continue;
                 }
                 String suffix = filename.substring(ind+1);
-                Integer i = plusretlist.get(suffix);
-                if (i == null) {
-                    i = new Integer(0);
+                plusretlist.merge(suffix, 1, Integer::sum);
+                String mimetype = (String) ri.get().get(IndexFiles.MIMETYPECOLUMN);
+                if (mimetype != null && !mimetype.isEmpty()) {
+                    plusretlistmime.merge(mimetype, 1, Integer::sum);
                 }
-                i++;
-                plusretlist.put(suffix, i);
             }
             for(ResultItem ri : retlistyes) {
                 //String filename = (String) ri.get().get(0); // or for a whole list?
@@ -68,34 +77,40 @@ public class NotIndexed extends AbstractFunction {
                     continue;
                 }
                 String suffix = filename.substring(ind+1);
-                Integer i = plusretlistyes.get(suffix);
-                if (i == null) {
-                    i = new Integer(0);
+                plusretlistyes.merge(suffix, 1, Integer::sum);
+                String mimetype = (String) ri.get().get(IndexFiles.MIMETYPECOLUMN);
+                if (mimetype != null && !mimetype.isEmpty()) {
+                    plusretlistmimeyes.merge(mimetype, 1, Integer::sum);
                 }
-                i++;
-                plusretlistyes.put(suffix, i);
             }
             log.info("size " + plusretlist.size());
             log.info("sizeyes " + plusretlistyes.size());
-            for(String string : plusretlist.keySet()) {
+            Set<String> keys = new TreeSet<>();
+            keys.addAll(plusretlist.keySet());
+            keys.addAll(plusretlistyes.keySet());
+            Set<String> mimekeys = new TreeSet<>();
+            mimekeys.addAll(plusretlistmime.keySet());
+            mimekeys.addAll(plusretlistmimeyes.keySet());
+            for(String string : keys) {
                 ResultItem ri2 = new ResultItem();
-                ri2.add("Format");
                 ri2.add(string);
-                ri2.add("" + plusretlist.get(string).intValue());
+                ri2.add(plusretlistyes.get(string) != null ? "" + plusretlistyes.get(string) : "");
+                ri2.add(plusretlist.get(string) != null ? "" + plusretlist.get(string) : "");
                 retlist2.add(ri2);
             }
-            for(String string : plusretlistyes.keySet()) {
+            for(String string : mimekeys) {
                 ResultItem ri2 = new ResultItem();
-                ri2.add("Formatyes");
                 ri2.add(string);
-                ri2.add("" + plusretlistyes.get(string).intValue());
-                retlist2.add(ri2);
+                ri2.add(plusretlistmimeyes.get(string) != null ? "" + plusretlistmimeyes.get(string) : "");
+                ri2.add(plusretlistmime.get(string) != null ? "" + plusretlistmime.get(string) : "");
+                retlist3.add(ri2);
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
         log.info("sizes " + retlist.size() + " " + retlist2.size() + " " + System.currentTimeMillis());
         retlistlist.add(retlist);
+        retlistlist.add(retlist3);
         retlistlist.add(retlist2);
         return retlistlist;
     }
