@@ -301,14 +301,12 @@ public class TraverseFile {
 
     public void indexsingle(QueueElement trav,
             String md5, FileObject filename, IndexFiles index) {
-        int maxfailed = nodeConf.getFailedLimit();
-        if (!trav.getClientQueueElement().reindex && maxfailed > 0) {
-            int failed = index.getFailed();
-            if (failed >= maxfailed) {
-                log.info("failed too much for {}", md5);
-                return;
-            }
+        
+        if (!TraverseUtil.checklimits(index, nodeConf)) {
+            return;
         }
+        MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient); 
+        indexcount.addAndGet(1);
 
         log.debug("index {} {}", md5, filename);
         //InputStream stream = null;

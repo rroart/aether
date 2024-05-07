@@ -256,4 +256,25 @@ public class TraverseUtil {
     public static void log(QueueElement element, String text) {
         log.info("QueueElement {} {} roundtrip {}", element.getMd5(), text, (System.currentTimeMillis() - element.getTimestamp()) / 1000);
     }
+
+    public static boolean checklimits(IndexFiles index, NodeConfig nodeConf) {
+        long now = System.currentTimeMillis();
+        long indextime = index.getTimestamp() != null ? Long.valueOf(index.getTimestamp()) : 0;
+        long checktime = index.getChecked() != null ? Long.valueOf(index.getChecked()) : 0;
+        long indextimelimit = nodeConf.getIndexTimeLimit() * 86400 * 1000;
+        long indexretrytimelimit = nodeConf.getIndexRetryTimeLimit() * 86400 * 1000;
+        if (indextime > 0 && now - indextime < indextimelimit) {
+            return false;
+        }
+        if (checktime > 0 && now - checktime < indexretrytimelimit) {
+            return false;
+        }
+        
+        int maxfailed = nodeConf.getFailedLimit();
+        if (maxfailed > 0 && index.getFailed() >= maxfailed) {
+            return false;
+        }
+
+        return true;
+    }
 }

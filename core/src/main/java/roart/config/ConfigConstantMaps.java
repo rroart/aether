@@ -117,6 +117,8 @@ public class ConfigConstantMaps {
         map.put(ConfigConstants.FSDIRLISTNOT, String.class);
         map.put(ConfigConstants.INDEXREINDEXLIMIT, Integer.class);
         map.put(ConfigConstants.INDEXINDEXLIMIT, Integer.class);
+        map.put(ConfigConstants.INDEXTIMELIMIT, Integer.class);
+        map.put(ConfigConstants.INDEXRETRYTIMELIMIT, Integer.class);
         map.put(ConfigConstants.CONVERSIONTIKATIMEOUT, Integer.class);
         map.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, Integer.class);
         map.put(ConfigConstants.CONVERTTIKAOCR, Boolean.class);
@@ -253,6 +255,8 @@ public class ConfigConstantMaps {
         deflt.put(ConfigConstants.FSDIRLISTNOT, "");
         deflt.put(ConfigConstants.INDEXREINDEXLIMIT, 0);
         deflt.put(ConfigConstants.INDEXINDEXLIMIT, 0);
+        deflt.put(ConfigConstants.INDEXTIMELIMIT, 1);
+        deflt.put(ConfigConstants.INDEXRETRYTIMELIMIT, 1);
         deflt.put(ConfigConstants.CONVERSIONTIKATIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, 600);
         deflt.put(ConfigConstants.CONVERTTIKAOCR, Boolean.FALSE);
@@ -387,6 +391,8 @@ public class ConfigConstantMaps {
         text.put(ConfigConstants.FSDIRLISTNOT, "Filesystem exclude dirs");
         text.put(ConfigConstants.INDEXREINDEXLIMIT, "Reindex limit");
         text.put(ConfigConstants.INDEXINDEXLIMIT, "Index limit");
+        text.put(ConfigConstants.INDEXTIMELIMIT, "Index time limit");
+        text.put(ConfigConstants.INDEXRETRYTIMELIMIT, "Index retry time limit");
         text.put(ConfigConstants.CONVERSIONTIKATIMEOUT, "Tika timeout");
         text.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, "Other conversion timeout");
         text.put(ConfigConstants.CONVERTTIKAOCR, "Tika OCR");
@@ -518,6 +524,8 @@ public class ConfigConstantMaps {
         mymap.put(ConfigConstants.FSDIRLISTNOT, new XMLType( String.class, "", "Filesystem exclude dirs"));
         mymap.put(ConfigConstants.INDEXREINDEXLIMIT, new XMLType( Integer.class, 0, "Reindex limit"));
         mymap.put(ConfigConstants.INDEXINDEXLIMIT, new XMLType( Integer.class, 0, "Index limit"));
+        mymap.put(ConfigConstants.INDEXTIMELIMIT, new XMLType( Integer.class, 1, "Index time limit"));
+        mymap.put(ConfigConstants.INDEXRETRYTIMELIMIT, new XMLType( Integer.class, 1, "Index retry time limit"));
         mymap.put(ConfigConstants.CONVERSIONTIKATIMEOUT, new XMLType( Integer.class, 600, "Tika timeout"));
         mymap.put(ConfigConstants.CONVERSIONOTHERTIMEOUT, new XMLType( Integer.class, 600, "Other conversion timeout"));
         mymap.put(ConfigConstants.CONVERTTIKAOCR, new XMLType( Boolean.class, 600, "Tika OCR"));

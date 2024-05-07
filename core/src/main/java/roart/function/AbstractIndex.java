@@ -18,6 +18,7 @@ public abstract class AbstractIndex extends AbstractFunction {
         super(param, nodeConf, controlService);
     }
 
+    @Deprecated
     public boolean filterindex(IndexFiles index, QueueElement trav)
             throws Exception {
         if (index == null) {

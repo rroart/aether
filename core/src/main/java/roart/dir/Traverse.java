@@ -217,6 +217,9 @@ public class Traverse {
                 if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                     break;
                 }
+                if (!TraverseUtil.checklimits(index, nodeConf)) {
+                    break;
+                }
                 if (!FilterUtil.indexFilter(index, element)) {
                     continue;
                 }
@@ -235,6 +238,11 @@ public class Traverse {
                 if (!function.indexFilter(index, trav)) {
                     continue;
                 }
+                TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService, searchDao);
+                if (!traverseFile.getDoIndex(trav, index, function)) {
+                    continue;
+                }
+                
                 trav.setIndexFiles(index);
 
                 while (new Queues(nodeConf, controlService).convertQueueHeavyLoaded()) {
@@ -259,10 +267,7 @@ public class Traverse {
                 //queue.offer(trav);
                 //String md5sdoneid = "md5sdoneid"+trav.getMyid();
                 //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
-                TraverseFile traverseFile = new TraverseFile(indexFilesDao, nodeConf, controlService, searchDao);
-                if (traverseFile.getDoIndex(trav, index, function)) {
-                    traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
-                }
+                traverseFile.indexsingle(trav, md5, FsUtil.getFileObject(index.getaFilelocation()), index);
                 TraverseUtil.doCounters(trav, -1, nodeConf, controlService);
             } catch (Exception e) {
                 log.error(Constants.EXCEPTION, e); 

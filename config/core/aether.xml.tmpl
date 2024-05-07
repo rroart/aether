@@ -40,9 +40,11 @@
     </tika>
   </convert>
   <index>
-    <indexlimit>0</indexlimit>
+    <indexlimit>$INDEXLIMIT</indexlimit>
     <failedlimit>$FAILEDLIMIT</failedlimit>
-    <reindexlimit>10000</reindexlimit>
+    <reindexlimit>$REINDEXLIMIT</reindexlimit>
+    <timelimit>$INDEXTIMELIMIT</timelimit>
+    <retrytimelimit>$INDEXRETRYTIMELIMIT</retrytimelimit>
   </index>
   <database>
     <hbase enable='$HBASE'>

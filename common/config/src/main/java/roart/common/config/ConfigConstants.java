@@ -36,7 +36,6 @@ public class ConfigConstants {
     public static final String MACHINELEARNINGOPENNLP = "machinelearning.opennlp[@enable]";
     public static final String GUIDOWNLOADER = "gui.downloader[@enable]";
     public static final String GUIAUTHENTICATE = "gui.authenticate[@enable]";
-    public static final String INDEXFAILEDLIMIT = "index.failedlimit";
     public static final String MACHINELEARNINGMAHOUT = "machinelearning.mahout[@enable]";
     public static final String MACHINELEARNINGMAHOUTMAHOUTBASEPATH = "machinelearning.mahout.mahoutbasepath";
     public static final String MACHINELEARNINGMAHOUTMAHOUTMODELPATH = "machinelearning.mahout.mahoutmodelpath";
@@ -102,8 +101,11 @@ public class ConfigConstants {
     public static final String FSLOGDIR = "fs.logdir";
     public static final String FSDIRLIST = "fs.dirlist";
     public static final String FSDIRLISTNOT = "fs.dirlistnot";
+    public static final String INDEXFAILEDLIMIT = "index.failedlimit";
     public static final String INDEXREINDEXLIMIT = "index.reindexlimit";
     public static final String INDEXINDEXLIMIT = "index.indexlimit";
+    public static final String INDEXTIMELIMIT = "index.timelimit";
+    public static final String INDEXRETRYTIMELIMIT = "index.retrytimelimit";
     public static final String CONVERSIONTIKATIMEOUT = "conversion.tikatimeout";
     public static final String CONVERSIONOTHERTIMEOUT = "conversion.othertimeout";
     public static final String CONVERSION = "conversion";

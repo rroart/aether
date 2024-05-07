@@ -566,6 +566,16 @@ public class NodeConfig extends MyConfig {
     }
     
     @JsonIgnore
+    public Integer getIndexTimeLimit() {
+        return (Integer) getValueOrDefault(ConfigConstants.INDEXTIMELIMIT);        
+    }
+    
+    @JsonIgnore
+    public Integer getIndexRetryTimeLimit() {
+        return (Integer) getValueOrDefault(ConfigConstants.INDEXRETRYTIMELIMIT);        
+    }
+    
+    @JsonIgnore
     public String getH2dir() {
         return (String) getValueOrDefault(ConfigConstants.DATABASEHIBERNATEH2DIR);        
     }
