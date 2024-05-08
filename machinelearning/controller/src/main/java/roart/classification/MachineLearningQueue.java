@@ -56,7 +56,7 @@ public class MachineLearningQueue {
                         log.error(Constants.EXCEPTION, e); 
                     }                   
                 } else {
-                    log.info("Opid {} {}", element.getOpid(), element.getQueue());
+                    log.info("Opid {} {} {}", element.getOpid(), element.getQueue(), element.getMd5());
                     if (element.getOpid().equals(OperationConstants.CLASSIFY)) {
                         MachineLearningClassifyParam param = element.getMachineLearningClassifyParam();
                         element.setFileSystemFileObjectParam(null);

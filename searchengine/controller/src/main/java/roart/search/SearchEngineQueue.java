@@ -58,7 +58,7 @@ public class SearchEngineQueue {
                         log.error(Constants.EXCEPTION, e); 
                     }                   
                 } else {
-                    log.info("Opid {} {}", element.getOpid(), element.getQueue());
+                    log.info("Opid {} {} {}", element.getOpid(), element.getQueue(), element.getMd5());
                     if (element.getOpid().equals(OperationConstants.INDEX)) {
                         SearchEngineIndexParam param = element.getSearchEngineIndexParam();
                         element.setFileSystemFileObjectParam(null);

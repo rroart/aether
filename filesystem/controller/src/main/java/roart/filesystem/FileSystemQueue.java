@@ -70,7 +70,7 @@ public class FileSystemQueue {
                             log.error(Constants.EXCEPTION, e); 
                         }                   
                     } else {
-                        log.info("Opid {} {}", element.getOpid(), element.getQueue());
+                        log.info("Opid {} {} {}", element.getOpid(), element.getQueue(), element.getMd5());
                         if (element.getOpid().equals(OperationConstants.LISTFILESFULL)) {
                             FileSystemFileObjectParam param = element.getFileSystemFileObjectParam();
                             element.setFileSystemFileObjectParam(null);

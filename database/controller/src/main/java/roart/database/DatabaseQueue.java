@@ -60,7 +60,7 @@ public class DatabaseQueue {
                         log.error(Constants.EXCEPTION, e); 
                     }                   
                 } else {
-                    log.info("Opid {} {}", element.getOpid(), element.getQueue());
+                    log.info("Opid {} {} {}", element.getOpid(), element.getQueue(), element.getMd5());
                     if (element.getOpid().equals(OperationConstants.GETMD5BYFILELOCATION)) {
                         DatabaseFileLocationParam param = element.getDatabaseFileLocationParam();
                         element.setDatabaseFileLocationParam(null);

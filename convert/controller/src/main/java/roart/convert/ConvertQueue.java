@@ -57,7 +57,7 @@ public class ConvertQueue {
                         log.error(Constants.EXCEPTION, e); 
                     }                   
                 } else {
-                    log.info("Opid {} {}", element.getOpid(), element.getQueue());
+                    log.info("Opid {} {} {}", element.getOpid(), element.getQueue(), element.getMd5());
                     if (element.getOpid().equals(OperationConstants.CONVERT)) {
                         ConvertParam param = element.getConvertParam();
                         element.setFileSystemFileObjectParam(null);
