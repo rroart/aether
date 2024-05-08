@@ -218,7 +218,7 @@ public class Traverse {
                     break;
                 }
                 if (!TraverseUtil.checklimits(index, nodeConf)) {
-                    break;
+                    continue;
                 }
                 if (!FilterUtil.indexFilter(index, element)) {
                     continue;

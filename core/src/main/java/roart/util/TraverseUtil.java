@@ -40,10 +40,10 @@ public class TraverseUtil {
         // counter not working / used?
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + myid, nodeConf, controlService.curatorClient); 
         boolean isMaxed = false;
-        if (element.reindex && max > 0 && indexcount.get() > max) {
+        if (element.reindex && max > 0 && indexcount.get() >= max) {
             isMaxed = true;
         }		
-        if (!element.reindex && maxindex > 0 && indexcount.get() > maxindex) {
+        if (!element.reindex && maxindex > 0 && indexcount.get() >= maxindex) {
             isMaxed = true;
         }
         return isMaxed;
