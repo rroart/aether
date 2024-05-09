@@ -125,7 +125,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
         try (InputStream contentStream = inmemory.getInputStream(index.message)) {
             if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
                 SearchEngineIndexResult result = new SearchEngineIndexResult();
-                result.noindexreason = "invalid";
+                result.noindexreason = this.getClass().getSimpleName() + " " +  "invalid";
                 result.size = -1;
                 return result;
             }
@@ -191,7 +191,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
             log.info("Error3: " + e.getMessage());
             log.error(Constants.EXCEPTION, e);
             SearchEngineIndexResult result = new SearchEngineIndexResult();
-            result.noindexreason = "index exception " + e.getClass().getName();
+            result.noindexreason = this.getClass().getSimpleName() + " " +  "index exception " + e.getClass().getName() + " " + e.getMessage();
             result.size = -1;
             return result;
         }

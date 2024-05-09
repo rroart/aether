@@ -60,7 +60,7 @@ public class Wvtext extends ConvertAbstract {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
             log.error("File copy error");
-            result.error = e.getMessage();
+            result.error = this.getClass().getSimpleName() + " File copy error " + e.getMessage();
             return result;
         }
         String in = inPath.toString();
@@ -103,7 +103,7 @@ public class Wvtext extends ConvertAbstract {
         }
         if (output == null) {
             log.info("Wvtext with no output");
-            result.error = ret[0];
+            result.error = this.getClass().getSimpleName() + " no output " + ret[0];
             return result;
         }
         return result;

@@ -95,7 +95,7 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
             error = e.getMessage();
         }
         ConvertResult result = new ConvertResult();
-        result.error = error;
+        result.error = this.getClass().getSimpleName() + " " + error;
         return result;
     }
     

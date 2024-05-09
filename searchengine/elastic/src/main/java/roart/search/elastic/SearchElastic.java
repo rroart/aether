@@ -197,7 +197,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
         try (InputStream contentStream = inmemory.getInputStream(index.message)) {
             if (!InmemoryUtil.validate(index.message.getMd5(), contentStream)) {
                 SearchEngineIndexResult result = new SearchEngineIndexResult();
-                result.noindexreason = "invalid";
+                result.noindexreason = this.getClass().getSimpleName() + " " +  "invalid";
                 result.size = -1;
                 return result;
             }
@@ -229,7 +229,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             // IndexResponse response = conf.client.index(new IndexRequest(indexName).id(md5).source(builder), RequestOptions.DEFAULT);
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
-            result.noindexreason = "index exception " + e.getClass().getName();
+            result.noindexreason = this.getClass().getSimpleName() + " " +  "index exception " + e.getClass().getName() + " " + e.getMessage();
             result.size = -1;
             return result;
         }

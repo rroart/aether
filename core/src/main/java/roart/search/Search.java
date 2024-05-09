@@ -1,45 +1,28 @@
 package roart.search;
 
-import roart.queue.IndexQueueElement;
-import roart.queue.Queues;
 import roart.service.ControlService;
-import roart.service.SearchService;
 import roart.util.TraverseUtil;
-import roart.lang.LanguageDetect;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
-import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
-import roart.common.searchengine.SearchEngineSearchResult;
-import roart.common.searchengine.SearchResult;
 import roart.common.synchronization.MyLock;
-import roart.common.synchronization.MyObjectLock;
 import roart.common.synchronization.MyObjectLockData;
-import roart.common.util.JsonUtil;
-import roart.common.util.LockUtils;
 import roart.common.util.QueueUtil;
 import roart.common.zkutil.ZKUtil;
 import roart.database.IndexFilesDao;
 import roart.common.inmemory.model.InmemoryMessage;
-import roart.common.collections.MyList;
 import roart.common.collections.MyQueue;
-import roart.common.collections.impl.MyLists;
 import roart.common.collections.impl.MyQueues;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
-import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +65,8 @@ public class Search {
         int retsize = 0;
 
         try {
-            retsize = new SearchDao(nodeConf, controlService).indexme(md5, filename, metadata, lang, classification, dbindex, message);
+            SearchEngineIndexResult result = new SearchDao(nodeConf, controlService).indexme(md5, filename, metadata, lang, classification, dbindex, message);
+            handleSearchResult(result, dbindex);
         } catch (Exception e) {
             log.error(roart.common.constants.Constants.EXCEPTION, e);
             dbindex.setNoindexreason("index exception " + e.getClass().getName());
@@ -209,10 +193,12 @@ public class Search {
                 retsize = -1;
             }
         } else {
+            SearchEngineIndexResult result = el.getSearchEngineIndexResult();
+            IndexFiles dbindex = el.getIndexFiles();
+            handleSearchResult(result, dbindex);
             MyQueue<ResultItem> retlist = MyQueues.get(QueueUtil.retlistQueue(el.getMyid()), nodeConf, controlService.curatorClient);
             MyQueue<ResultItem> retlistnot = MyQueues.get(QueueUtil.retlistnotQueue(el.getMyid()), nodeConf, controlService.curatorClient);
-            int retsize = el.getSearchEngineIndexResult().size;
-            IndexFiles dbindex = el.getIndexFiles();
+            int retsize = result.size;
             String md5 = el.getMd5();
             FileObject filename = el.getFileObject();
             if (retsize < 0) {
@@ -265,5 +251,16 @@ public class Search {
                 log.error("Missing lock");
             }
         }
+    }
+
+    public void handleSearchResult(SearchEngineIndexResult result, IndexFiles index) {
+        if (result == null) {
+            return;
+        }
+
+        if (result.size == -1) {
+            index.setFailedreason(result.noindexreason);
+        }
+        //return result.size;
     }
 }

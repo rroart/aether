@@ -133,12 +133,12 @@ public class Tika extends ConvertAbstract {
                     result.message = msg;
                     curatorClient.create().creatingParentsIfNeeded().forPath(ZKUtil.getAppidPath(Constants.DATA) + msg.getId(), JsonUtil.convert(msg).getBytes());
                 } else {
-                    result.error = "Tika empty";
+                    result.error = this.getClass().getSimpleName() + " " + "Tika empty";
                 }
                 //param2[1] = result;
             } else {
                 log.error("Tika with no output for {}", inmd5);
-                result.error = ret[0];
+                result.error = this.getClass().getSimpleName() + " no output " + ret[0];
                 //param2[1] = result;
             }
         } catch (Exception e) {

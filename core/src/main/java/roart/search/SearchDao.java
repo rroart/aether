@@ -1,25 +1,16 @@
 package roart.search;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
-import java.util.HashSet;
 
 import roart.common.collections.MyQueue;
-import roart.common.config.ConfigConstants;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.queue.QueueElement;
-import roart.common.searchengine.SearchEngineDeleteResult;
 import roart.common.searchengine.SearchEngineIndexResult;
-import roart.common.searchengine.SearchEngineSearchResult;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -38,7 +29,7 @@ public class SearchDao {
         this.search = SearchAccessFactory.get(nodeConf, controlService);
     }
 
-    public int indexme(String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
+    public SearchEngineIndexResult indexme(String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {
         return search.indexme(md5, dbfilename, metadata, lang, classification, index, message);
     }
 
