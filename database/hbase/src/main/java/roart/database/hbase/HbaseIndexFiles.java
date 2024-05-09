@@ -93,6 +93,9 @@ public class HbaseIndexFiles {
     private final String FILES = "files";
     
     public HbaseIndexFiles(String configname, NodeConfig nodeConf) {
+        if (!nodeConf.wantHBase()) {
+            return;
+        }
         config = new HbaseConfig();
         try {
             Configuration conf = HBaseConfiguration.create();

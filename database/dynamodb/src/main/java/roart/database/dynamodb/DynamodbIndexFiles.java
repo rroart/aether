@@ -249,6 +249,9 @@ public class DynamodbIndexFiles {
     //Table indexTable;
     //DynamoDB ddb;
     public DynamodbIndexFiles(DynamoDbClient ddb, String configname, NodeConfig nodeConf) {
+        if (!nodeConf.wantDynamodb()) {
+            return;
+        }
         config = new DynamodbConfig();
         String port = "8000";
         String host = "localhost";

@@ -106,6 +106,9 @@ public class CassandraIndexFiles {
     private MutableCodecRegistry codecRegistry;
     
     public CassandraIndexFiles(CqlSession session, String configname, NodeConfig nodeConf) {
+        if (!nodeConf.wantCassandra()) {
+            return;
+        }
         String port = "9042";
         String host = "localhost";
         if (session == null) {
