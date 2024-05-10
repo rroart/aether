@@ -47,6 +47,8 @@ public class LeaderRunner implements Runnable {
 
     private static final int QUEUELIFE = 20 * 60 * 1000;
 
+    private static final int DATALIFE_OCR = 120 * 60 * 1000;
+
     private static final int DATALIFE = 20 * 60 * 1000;
 
     ThreadPoolExecutor /*ExecutorService*/ pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
@@ -120,11 +122,12 @@ public class LeaderRunner implements Runnable {
                     }
 
                     try {
+                        int datalife = nodeConf.wantsTikaOCR() ? DATALIFE_OCR : DATALIFE;
                         String path = ZKUtil.getAppidPath() + Constants.DATA;
-                        deleteOld(curatorClient, path, DATALIFE + extraTimeOCR, true, true);
+                        deleteOld(curatorClient, path, datalife + extraTimeOCR, true, true);
                         if (useCommon) {
                             String pathCommon = ZKUtil.getCommonPath() + Constants.DATA;
-                            deleteOld(curatorClient, pathCommon, DATALIFE + extraTimeOCR, true, true);
+                            deleteOld(curatorClient, pathCommon, datalife + extraTimeOCR, true, true);
                         }
                     } catch (Exception e) {
                         log.error(Constants.EXCEPTION, e);
