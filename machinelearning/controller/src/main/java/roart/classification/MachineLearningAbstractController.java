@@ -3,6 +3,7 @@ package roart.classification;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.*;
@@ -22,11 +23,9 @@ import roart.common.zk.thread.ConfigThread;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
-import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.machinelearning.MachineLearningClassifyParam;
 import roart.common.machinelearning.MachineLearningClassifyResult;
 
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.slf4j.LoggerFactory;
 import org.apache.curator.RetryPolicy;
@@ -146,11 +145,23 @@ public abstract class MachineLearningAbstractController implements CommandLineRu
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName, this::handleConfig).run();
     }
 
     public abstract String getQueueName();
-    
+
+    private Integer handleConfig(Queue<String> params) {
+        for (String param : params) {
+            ConfigParam configParam = JsonUtil.convertnostrip(param, ConfigParam.class);
+            if (configParam == null) {
+                log.error("Can not use {}", param);
+                continue;
+            }
+            getClassifier(configParam);
+        }
+        return 0;
+    }
+
     private NodeConfig getNodeConf(ConfigParam param) {
         NodeConfig nodeConf = null;
         Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());

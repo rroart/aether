@@ -1,11 +1,9 @@
 package roart.filesystem;
 
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,11 +11,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
-import roart.common.constants.FileSystemConstants;
 import roart.common.filesystem.FileSystemBooleanResult;
 import roart.common.filesystem.FileSystemByteResult;
 import roart.common.filesystem.FileSystemConstructorParam;
@@ -31,16 +27,12 @@ import roart.common.filesystem.FileSystemPathParam;
 import roart.common.filesystem.FileSystemPathResult;
 import roart.common.filesystem.FileSystemStringResult;
 import roart.common.model.ConfigParam;
-import roart.common.model.FileObject;
-import roart.common.util.FsUtil;
 import roart.common.inmemory.common.Inmemory;
 import roart.common.inmemory.factory.InmemoryFactory;
 import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.zk.thread.ConfigThread;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -268,11 +260,23 @@ public abstract class FileSystemAbstractController implements CommandLineRunner 
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
         new Thread(new FileSystemThread(curatorClient, port, getFs())).start();
-        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName, this::handleConfig).run();
     }
 
     public abstract String getQueueName();
-    
+
+    private Integer handleConfig(Queue<String> params) {
+        for (String param : params) {
+            ConfigParam configParam = JsonUtil.convertnostrip(param, ConfigParam.class);
+            if (configParam == null) {
+                log.error("Can not use {}", param);
+                continue;
+            }
+            getOperations(configParam);
+        }
+        return 0;
+    }
+
     private NodeConfig getNodeConf(ConfigParam param) {
         NodeConfig nodeConf = null;
         Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());

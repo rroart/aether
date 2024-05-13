@@ -3,6 +3,7 @@ package roart.database;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -31,7 +32,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -269,7 +269,7 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName, this::handleConfig).run();
     }
 
     public abstract String getQueueName();
@@ -277,7 +277,19 @@ public abstract class DatabaseAbstractController implements CommandLineRunner {
     public boolean useAppId( ) {
         return true;
     };
-    
+
+    private Integer handleConfig(Queue<String> params) {
+        for (String param : params) {
+            ConfigParam configParam = JsonUtil.convertnostrip(param, ConfigParam.class);
+            if (configParam == null) {
+                log.error("Can not use {}", param);
+                continue;
+            }
+            getOperation(configParam);
+        }
+        return 0;
+    }
+
     private NodeConfig getNodeConf(ConfigParam param) {
         NodeConfig nodeConf = null;
         Inmemory inmemory = InmemoryFactory.get(param.getIserver(), param.getIconnection(), param.getIconnection());

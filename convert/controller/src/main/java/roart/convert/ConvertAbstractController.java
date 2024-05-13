@@ -3,11 +3,11 @@ package roart.convert;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
-import roart.common.constants.QueueConstants;
 import roart.common.convert.ConvertParam;
 import roart.common.convert.ConvertResult;
 import roart.common.inmemory.common.Inmemory;
@@ -128,10 +128,22 @@ public abstract class ConvertAbstractController implements CommandLineRunner {
         curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         curatorClient.start();
         int port = webServerAppCtxt.getWebServer().getPort();
-        new ConfigThread(zookeeperConnectionString, port, useHostName).run();
+        new ConfigThread(zookeeperConnectionString, port, useHostName, this::handleConfig).run();
     }
 
     public abstract String getQueueName();
+
+    private Integer handleConfig(Queue<String> params) {
+        for (String param : params) {
+            ConfigParam configParam = JsonUtil.convertnostrip(param, ConfigParam.class);
+            if (configParam == null) {
+                log.error("Can not use {}", param);
+                continue;
+            }
+            getConvert(configParam);
+        }
+        return 0;
+    }
 
     private NodeConfig getNodeConf(ConfigParam param) {
         NodeConfig nodeConf = null;

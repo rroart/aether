@@ -164,13 +164,24 @@ public class LeaderRunner implements Runnable {
         }
     }
 
+    // TODO delete old config?
+
     private void zConfigure(String zPath, CuratorFramework curatorClient, Set<String> done)
+            throws Exception, InterruptedException {
+        ConfigParam param = getConfigParam();
+        if (curatorClient.checkExists().forPath(zPath + "/" + param.getConfigid()) != null) {
+            return;
+        }
+        curatorClient.create().forPath(zPath + "/" + param.getConfigid(), JsonUtil.convert(param).getBytes());
+    }
+
+    private void zConfigureOld(String zPath, CuratorFramework curatorClient, Set<String> done)
             throws Exception, InterruptedException {
         if (curatorClient.checkExists().forPath(zPath) != null) {
             List<String> children = curatorClient.getChildren().forPath(zPath);
             for (String child : children) {
                 log.debug("Child {}", child);
-                String path = zPath + "/" + child;            
+                String path = zPath + "/" + child;
                 String data = new String(curatorClient.getData().forPath(path));
                 Stat stat = curatorClient.checkExists().forPath(path);
                 long time = System.currentTimeMillis() - stat.getMtime();
@@ -189,7 +200,7 @@ public class LeaderRunner implements Runnable {
                     log.error(Constants.EXCEPTION, e);
                     curatorClient.delete().forPath(path);
                 }
-            }      
+            }
         }
     }
 
