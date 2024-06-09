@@ -11,6 +11,7 @@ import roart.dir.Traverse;
 import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
+import roart.util.FilterUtil;
 
 public abstract class AbstractIndex extends AbstractFunction {
 
@@ -38,10 +39,7 @@ public abstract class AbstractIndex extends AbstractFunction {
         // and a failed limit it set
         // and the file has come to that limit
 
-        int maxfailed = nodeConf.getFailedLimit();
-        if (!trav.getClientQueueElement().reindex && maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
-            return false;
-        }
+        if (FilterUtil.hasFailedLimit(nodeConf, index, trav.getClientQueueElement())) return false;
 
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient); 
 

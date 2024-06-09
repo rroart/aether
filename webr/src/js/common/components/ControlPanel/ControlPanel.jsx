@@ -17,6 +17,7 @@ import TaskList from './TaskList';
 function ControlPanel ({ props, callbackNewTab }) {
   const [ startdate, setStartdate ] = useState(null);
   const [ enddate, setEnddate ] = useState(null);
+  const [ failedlimit, setFailedlimit ] = useState(null);
   const [ param, setParam ] = useState(null);
   const [ hcolumns, setHcolumns ] = useState(null);
   const [ hdata, setHdata ] = useState(null);
@@ -61,6 +62,7 @@ function ControlPanel ({ props, callbackNewTab }) {
     param.reindex = reindex;
     param.lowerdate = startdate;
     param.higherdate = enddate;
+    param.failedlimit = failedlimit;
     param.webpath = "task";
     param.async = true;
     setParam(param);
@@ -159,7 +161,6 @@ function ControlPanel ({ props, callbackNewTab }) {
       if (param.async === true) {
         callbackAsync(result.uuid);
       } else {
-        console.log("resultlist" + result.list);
         const tables = MyTable.getTabNew(result.list, Date.now(), callbackNewTab, props);
         callbackNewTab(tables);
       }
@@ -172,7 +173,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   }, []);
 
   const callbackAsync = useCallback( (uuid) => {
-    console.log("typeof" + (typeof uuids));
+    console.log("typeofuuid" + (typeof uuids));
     uuids.add(uuid);
       setUuids(new Set([...uuids]));
   }, [uuids]);
@@ -188,7 +189,6 @@ function ControlPanel ({ props, callbackNewTab }) {
       const data = await res.json();
       console.log(data);
       if (data.list != null) {
-        console.log(data);
         console.log(JSON.stringify(data));
         const tables = MyTable.getTabNew(data.list, Date.now(), callbackNewTab, props);
         callbackNewTab(tables);
@@ -226,6 +226,14 @@ function ControlPanel ({ props, callbackNewTab }) {
             <DatePicker id="enddatepicker" selected={useEnddate} onChange={e => setEnddate(e)}/>
         </Nav>
       </Navbar>
+      <Nav>
+        <Form>
+          Failed limit
+          <FormControl
+            onChange = { (e) => { e.preventDefault(); setFailedlimit(e.target.value) } }
+            type="text"/>
+        </Form>
+      </Nav>
       <Nav>
         <Form>
           Path

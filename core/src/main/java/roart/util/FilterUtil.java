@@ -7,11 +7,11 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
-import roart.common.queue.QueueElement;
 import roart.common.service.ServiceParam;
 
 public class FilterUtil {
@@ -126,6 +126,17 @@ public class FilterUtil {
             return true;
         }
         return fo.toString().endsWith(element.suffix);
+    }
+
+    public static boolean hasFailedLimit(NodeConfig nodeConf, IndexFiles index, ServiceParam element) {
+        int maxfailed = nodeConf.getFailedLimit();
+        if (element.failedlimit != null) {
+            maxfailed = Integer.valueOf(element.failedlimit);
+        }
+        if (maxfailed > 0 && maxfailed <= index.getFailed().intValue()) {
+            return true;
+        }
+        return false;
     }
 
 }

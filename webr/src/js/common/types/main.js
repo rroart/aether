@@ -16,6 +16,7 @@ class ServiceParam {
       suffix: string;
       lowerdate: string;
       higherdate: string;
+      failedlimit: string;
       reindex: boolean;
       clean: boolean;
       md5checknew: boolean;

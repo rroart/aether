@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
@@ -24,10 +23,8 @@ import roart.common.util.FsUtil;
 import roart.common.util.QueueUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
-import roart.dir.TraverseFile;
 import roart.filesystem.FileSystemDao;
 import roart.queue.Queues;
-import roart.queue.TraverseQueueElement;
 import roart.service.ControlService;
 import roart.common.queue.QueueElement;
 
@@ -257,7 +254,7 @@ public class TraverseUtil {
         log.info("QueueElement {} {} roundtrip {}", element.getMd5(), text, (System.currentTimeMillis() - element.getTimestamp()) / 1000);
     }
 
-    public static boolean checklimits(IndexFiles index, NodeConfig nodeConf) {
+    public static boolean checklimits(IndexFiles index, NodeConfig nodeConf, ServiceParam element) {
         long now = System.currentTimeMillis();
         long indextime = index.getTimestamp() != null ? Long.valueOf(index.getTimestamp()) : 0;
         long checktime = index.getChecked() != null ? Long.valueOf(index.getChecked()) : 0;
@@ -269,11 +266,8 @@ public class TraverseUtil {
         if (checktime > 0 && now - checktime < indexretrytimelimit) {
             return false;
         }
-        
-        int maxfailed = nodeConf.getFailedLimit();
-        if (maxfailed > 0 && index.getFailed() >= maxfailed) {
-            return false;
-        }
+
+        if (FilterUtil.hasFailedLimit(nodeConf, index, element)) return false;
 
         return true;
     }

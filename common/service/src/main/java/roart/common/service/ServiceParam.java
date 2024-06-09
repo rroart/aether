@@ -12,6 +12,7 @@ public NodeConfig config;
     public String suffix;
     public String lowerdate;
     public String higherdate;
+    public String failedlimit;
     public boolean reindex;
     public boolean clean;
     public boolean md5checknew;

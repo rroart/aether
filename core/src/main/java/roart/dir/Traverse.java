@@ -217,7 +217,7 @@ public class Traverse {
                 if (TraverseUtil.isMaxed(myid, element, nodeConf, controlService)) {
                     break;
                 }
-                if (!TraverseUtil.checklimits(index, nodeConf)) {
+                if (!TraverseUtil.checklimits(index, nodeConf, element)) {
                     continue;
                 }
                 if (!FilterUtil.indexFilter(index, element)) {

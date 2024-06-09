@@ -1,28 +1,21 @@
 package roart.dir;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MyQueue;
-import roart.common.collections.MySet;
 import roart.common.collections.impl.MyAtomicLong;
 import roart.common.collections.impl.MyAtomicLongs;
 import roart.common.collections.impl.MyQueues;
-import roart.common.collections.impl.MySets;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.OperationConstants;
@@ -40,7 +33,6 @@ import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
 import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
-import roart.common.synchronization.impl.MyLockFactory;
 import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.common.synchronization.impl.MySemaphoreFactory;
 import roart.common.util.FsUtil;
@@ -302,7 +294,7 @@ public class TraverseFile {
     public void indexsingle(QueueElement trav,
             String md5, FileObject filename, IndexFiles index) {
         
-        if (!TraverseUtil.checklimits(index, nodeConf)) {
+        if (!TraverseUtil.checklimits(index, nodeConf, trav.getClientQueueElement())) {
             return;
         }
         MyAtomicLong indexcount = MyAtomicLongs.get(Constants.INDEXCOUNT + trav.getMyid(), nodeConf, controlService.curatorClient); 
