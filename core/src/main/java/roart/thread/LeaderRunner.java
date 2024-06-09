@@ -133,7 +133,11 @@ public class LeaderRunner implements Runnable {
                         log.error(Constants.EXCEPTION, e);
                         break;
                     }
-                    deleteOldResults(resultMap, keyMap);
+                    try {
+                        deleteOldResults(resultMap, keyMap);
+                    } catch (Exception e) {
+                        log.error(Constants.EXCEPTION, e);
+                    }
                     try {
                         deleteOldTraverseCounts(traverseCountMap, curatorClient);
                     } catch (Exception e) {
