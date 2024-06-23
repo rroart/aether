@@ -25,6 +25,7 @@ import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.common.synchronization.impl.MySemaphoreFactory;
 import roart.common.util.TimeUtil;
 import roart.content.ConvertHandler;
+import roart.database.IndexFilesDao;
 import roart.common.hcutil.GetHazelcastInstance;
 import roart.queue.Queues;
 import roart.service.ControlService;
@@ -119,6 +120,11 @@ public class ConvertRunner implements Runnable {
                     log.error("Error {} {}", Thread.currentThread().getId(), el.getMd5());
                     log.error(Constants.ERROR, e);
                     TraverseUtil.doCounters(el, -1, nodeConf, controlService);
+                    el.getIndexFiles().incrFailed();
+                    el.getIndexFiles().setPriority(1);
+                    el.getIndexFiles().setChecked("" + System.currentTimeMillis());             
+                    el.getIndexFiles().setFailedreason(e.getMessage());
+                    new IndexFilesDao(nodeConf, controlService).add(el.getIndexFiles());
                 }
             }
         }
