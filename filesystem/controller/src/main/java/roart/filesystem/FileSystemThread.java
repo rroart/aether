@@ -97,6 +97,7 @@ public class FileSystemThread implements Runnable {
                 boolean success = false;
                 while (!success) {
                     try {
+                        curatorClient.create().creatingParentsIfNeeded().forPath(str, bytes);
                         curatorClient.setData().forPath(str, bytes);
                         success = true;
                         break;
