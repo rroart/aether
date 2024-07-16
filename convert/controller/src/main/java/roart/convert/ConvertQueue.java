@@ -24,6 +24,11 @@ public class ConvertQueue {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ConvertQueue(String name, ConvertAbstractController controller, CuratorFramework curatorClient, NodeConfig nodeConf) {
+        try {
+            TimeUnit.SECONDS.sleep(60);
+        } catch (Exception e) {
+            log.error(Constants.EXCEPTION, e); 
+        }
         final MyQueue<QueueElement> queue = new MyQueueFactory().create(name, nodeConf, curatorClient);
         Runnable run = () -> {
             long zkTime = 0;
