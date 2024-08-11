@@ -73,10 +73,12 @@ public class ListQueueRunner implements Runnable {
                             TimeUtil.sleep(10);
                             continue;
                         }
+                        if (false) {
                         if (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
                             log.info("List queue heavy loaded, sleeping");
                             TimeUtil.sleep(1);
                             continue;
+                        }
                         }
                         if (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
                             log.info("Filesystem queue heavy loaded, sleeping");
