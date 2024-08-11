@@ -1,6 +1,8 @@
 package roart.thread;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
@@ -18,6 +20,7 @@ import roart.common.constants.OperationConstants;
 import roart.common.filesystem.MyFile;
 import roart.common.model.FileObject;
 import roart.common.queue.QueueElement;
+import roart.common.service.ServiceParam;
 import roart.common.util.FsUtil;
 import roart.common.util.QueueUtil;
 import roart.common.util.TimeUtil;
@@ -216,7 +219,8 @@ public class ListQueueRunner implements Runnable {
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
-        List<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFull(fileObject);
+        Collection<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFull(fileObject);
+        listDir = shuffle(listDir);
         long time1 = System.currentTimeMillis();
         log.debug("Time0 {}", usedTime(time1, time0));
         //log.info("dir " + dirname);
@@ -291,6 +295,7 @@ public class ListQueueRunner implements Runnable {
             new FileSystemDao(nodeConf, controlService).listFilesFullQueue(element, fileObject);
         } else {
             Collection<MyFile> listDir = element.getFileSystemMyFileResult().map.values();
+            listDir = shuffle(listDir);
             // TODO not needing? element.setFileSystemMyFileResult(null);
             //log.info("dir " + dirname);
             //log.info("listDir " + listDir.length);
@@ -347,5 +352,12 @@ public class ListQueueRunner implements Runnable {
                 }
             }
         }
+    }
+
+    private Collection<MyFile> shuffle(Collection<MyFile> listDir) {
+        List<MyFile> listDir2 = new ArrayList<>(listDir);
+        Collections.shuffle(listDir2);
+        listDir = listDir2;
+        return listDir;
     }
 }
