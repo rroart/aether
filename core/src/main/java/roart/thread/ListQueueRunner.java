@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roart.common.collections.MyQueue;
+import roart.common.collections.MySet;
 import roart.common.collections.impl.MyQueues;
+import roart.common.collections.impl.MySets;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.OperationConstants;
@@ -86,7 +88,7 @@ public class ListQueueRunner implements Runnable {
                             continue;
                         }
                         if (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
-                            log.debug("Traverse queue heavy loaded, sleeping");
+                            log.info("Traverse queue heavy loaded, sleeping");
                             TimeUtil.sleep(1);
                             continue;
                         }
@@ -221,6 +223,10 @@ public class ListQueueRunner implements Runnable {
         }
         //HashSet<String> md5set = new HashSet<String>();
         long time0 = System.currentTimeMillis();
+        
+        String traversedsetid = QueueUtil.traversedSet("");
+        MySet<String> traversedSet = MySets.get(traversedsetid, nodeConf, controlService.curatorClient);
+
         Collection<MyFile> listDir = new FileSystemDao(nodeConf, controlService).listFilesFull(fileObject);
         listDir = shuffle(listDir);
         long time1 = System.currentTimeMillis();
@@ -249,6 +255,15 @@ public class ListQueueRunner implements Runnable {
             }
             //log.info("file " + filename);
             if (file.isDirectory) {
+                while (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
+                    log.info("List queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
+
+                while (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
+                    log.debug("Traverse queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
                 log.debug("isdir {}", filename);
                 FileObject dirObject = file.fileObject[0];
                 QueueElement listQueueElement = new QueueElement(listing.getMyid(), dirObject, listing.getClientQueueElement(), null);
@@ -258,6 +273,19 @@ public class ListQueueRunner implements Runnable {
             } else {
                 if (!FilterUtil.filterSuffix(fo, listing.getClientQueueElement())) {
                     continue;
+                }
+                if (traversedSet.remove(fo.toString())) {
+                    log.info("Done already {}", fo.toString());
+                    continue;
+                }
+                while (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
+                    log.info("List queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
+                }
+
+                while (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
+                    log.debug("Traverse queue heavy loaded, sleeping");
+                    TimeUtil.sleep(1);
                 }
                 MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
                 QueueElement trav = new QueueElement(listing.getMyid(), fo, listing.getClientQueueElement(), null);
@@ -296,6 +324,9 @@ public class ListQueueRunner implements Runnable {
             element.setQueue(QueueUtil.getListingQueue());
             new FileSystemDao(nodeConf, controlService).listFilesFullQueue(element, fileObject);
         } else {
+            String traversedsetid = QueueUtil.traversedSet("");
+            MySet<String> traversedSet = MySets.get(traversedsetid, nodeConf, controlService.curatorClient);
+            
             Collection<MyFile> listDir = element.getFileSystemMyFileResult().map.values();
             listDir = shuffle(listDir);
             // TODO not needing? element.setFileSystemMyFileResult(null);
@@ -323,6 +354,16 @@ public class ListQueueRunner implements Runnable {
                 }
                 //log.info("file " + filename);
                 if (file.isDirectory) {
+                    while (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
+                        log.info("List queue heavy loaded, sleeping");
+                        TimeUtil.sleep(1);
+                    }
+
+                    while (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
+                        log.debug("Traverse queue heavy loaded, sleeping");
+                        TimeUtil.sleep(1);
+                    }
+                    
                     log.debug("isdir {}", filename);
                     FileObject dirObject = file.fileObject[0];
                     String queueName = QueueUtil.getListingQueue();
@@ -334,14 +375,20 @@ public class ListQueueRunner implements Runnable {
                     if (!FilterUtil.filterSuffix(fo, element.getClientQueueElement())) {
                         continue;
                     }
-                    
+                    // the same as contains boolean
+                    if (traversedSet.remove(fo.toString())) {
+                        log.info("Done already {}", fo.toString());
+                        continue;
+                    }
+  
+                    while (new Queues(nodeConf, controlService).listingQueueHeavyLoaded()) {
+                        log.info("List queue heavy loaded, sleeping");
+                        TimeUtil.sleep(1);
+                    }
+
                     while (new Queues(nodeConf, controlService).traverseQueueHeavyLoaded()) {
                         log.debug("Traverse queue heavy loaded, sleeping");
-                        try {
-                            TimeUnit.SECONDS.sleep(1);
-                        } catch (InterruptedException e) {
-                            log.error(Constants.EXCEPTION, e);
-                        }
+                        TimeUtil.sleep(1);
                     }
                     
                     MyQueue<QueueElement> queue = new Queues(nodeConf, controlService).getTraverseQueue();
@@ -356,7 +403,7 @@ public class ListQueueRunner implements Runnable {
         }
     }
 
-    private Collection<MyFile> shuffle(Collection<MyFile> listDir) {
+    static Collection<MyFile> shuffle(Collection<MyFile> listDir) {
         List<MyFile> listDir2 = new ArrayList<>(listDir);
         Collections.shuffle(listDir2);
         listDir = listDir2;
