@@ -80,10 +80,12 @@ public class TraverseQueueRunner implements Runnable {
                             TimeUtil.sleep(10);
                             continue;
                         }
+                        if (false) {
                         if (new Queues(nodeConf, controlService).filesystemQueueHeavyLoaded()) {
                             log.info("Filesystem queue heavy loaded, sleeping");
                             TimeUtil.sleep(1);
                             continue;
+                        }
                         }
                         if (new Queues(nodeConf, controlService).databaseQueueHeavyLoaded()) {
                             log.info("Database queue heavy loaded, sleeping");
