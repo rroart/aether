@@ -25,18 +25,26 @@ import roart.common.collections.impl.MySets;
 import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
+import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
+import roart.common.service.ServiceParam.Function;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.impl.MyLockFactory;
+import roart.common.util.FsUtil;
 import roart.common.util.QueueUtil;
+import roart.common.util.TimeUtil;
 import roart.common.zkutil.ZKMessageUtil;
 import roart.common.zkutil.ZKUtil;
 import roart.database.IndexFilesDao;
 import roart.dir.Traverse;
+import roart.dir.TraverseFile;
 import roart.queue.Queues;
 import roart.service.ControlService;
+import roart.util.FilterUtil;
+import roart.util.TraverseUtil;
 import roart.common.queue.QueueElement;
 
 public abstract class AbstractFunction {
@@ -48,10 +56,13 @@ public abstract class AbstractFunction {
 
     protected ControlService controlService;
 
+    private IndexFilesDao indexFilesDao;
+
     public AbstractFunction(ServiceParam param, NodeConfig nodeConf, ControlService controlService) {
         this.param = param;
         this.nodeConf = nodeConf;
         this.controlService = controlService;
+        this.indexFilesDao = new IndexFilesDao(nodeConf, controlService);
     }
 
     public abstract List doClient(ServiceParam param);
@@ -123,6 +134,9 @@ public abstract class AbstractFunction {
             String filesdonesetid = QueueUtil.filesdoneQueue(myid);
             MyQueue<String> filesdoneQueue = MyQueues.get(filesdonesetid, nodeConf, controlService.curatorClient);
 
+            String traversedsetid = QueueUtil.traversedSet("");
+            MySet<String> traversedSet = MySets.get(traversedsetid, nodeConf, controlService.curatorClient);
+
             String deletedsetid = QueueUtil.deletedQueue(myid);
             MyQueue<ResultItem> deletedQueue = MyQueues.get(deletedsetid, nodeConf, controlService.curatorClient);
 
@@ -146,6 +160,13 @@ public abstract class AbstractFunction {
             queueList.add(deletedsetid);
             queueList.add(changedsetid);
             queueList.add(notconvertedsetid);
+            
+            Set<String> traversed = traversedb(null, myid);
+            if (param.md5checknew != true) {
+                for (String file : traversed) {
+                    traversedSet.add(file);
+                }
+            }
             
             Traverse traverse = new Traverse(myid, el, nodeConf.getDirListNot(), traversecountid, false, nodeConf, controlService);
 
@@ -311,5 +332,34 @@ public abstract class AbstractFunction {
 
     public boolean indexFilter(IndexFiles index, QueueElement trav) {
         return true;
+    }
+
+    public Set<String> traversedb(AbstractFunction function, String myid) throws Exception {
+        Set<String> done = new HashSet<>();
+        indexFilesDao.getAllFiles();
+        List<IndexFiles> indexes = indexFilesDao.getAll();
+        for (IndexFiles index : indexes) {
+            try {
+                /*
+                if (TraverseUtil.isMaxed(myid, param, nodeConf, controlService)) {
+                    break;
+                }
+                if (!TraverseUtil.checklimits(index, nodeConf, param)) {
+                    continue;
+                }
+                if (!FilterUtil.indexFilter(index, param)) {
+                    continue;
+                }
+                */
+
+                for (FileLocation fl : index.getFilelocations()) {
+                    done.add(fl.toString());
+                }
+            } catch (Exception e) {
+                log.error(Constants.EXCEPTION, e); 
+                TimeUtil.sleep(10);
+            }
+        }
+        return done;
     }
 }

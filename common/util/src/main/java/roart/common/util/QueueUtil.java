@@ -48,6 +48,10 @@ public class QueueUtil {
         return Constants.UNCONVERTEDQUEUE + prefix() + myid;
     }
 
+    public static String traversedSet(String myid) {
+        return Constants.TRAVERSEDSET + prefix() + myid;
+    }
+
     public static String traversecount(String myid) {
         return Constants.TRAVERSECOUNT + prefix() + myid;
     }

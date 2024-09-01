@@ -51,6 +51,7 @@ public static final String FILESDONESETQUEUE = "filesdonequeue";
 public static final String DELETEDQUEUE = "deletedqueue";
 public static final String CHANGEDQUEUE = "changedqueue";
 public static final String UNCONVERTEDQUEUE = "unconvertedqueue";
+public static final String TRAVERSEDSET = "traversedset";
 
 public static final String REDIS = "redis";
 public static final String HAZELCAST = "hazelcast";
