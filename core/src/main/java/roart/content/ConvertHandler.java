@@ -145,7 +145,11 @@ public class ConvertHandler {
             } else {
             }
         }
-        inmemory.delete(message);
+        try {
+            inmemory.delete(message);
+        } catch (Exception e) {
+            log.info(Constants.EXCEPTION, e);
+        }
         try {
             controlService.curatorClient.delete().forPath(ZKUtil.getAppidPath(Constants.DATA) + message.getId());
         } catch (Exception e) {
@@ -337,7 +341,11 @@ public class ConvertHandler {
         // after convert
         ClassifyDao classifyDao = new ClassifyDao(nodeConf, controlService);
         if (element.getOpid() != null && element.getOpid().equals(OperationConstants.CONVERT)) {
-            inmemory.delete(element.getMessage());
+            try {
+                inmemory.delete(element.getMessage());
+            } catch (Exception e) {
+                log.info(Constants.EXCEPTION, e);
+            }
             try {
                 controlService.curatorClient.delete().forPath(ZKUtil.getAppidPath(Constants.DATA) + element.getMessage().getId());
             } catch (Exception e) {
