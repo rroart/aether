@@ -92,7 +92,20 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+      </plugin>
+      <plugin>
+	<groupId>org.cyclonedx</groupId>
+	<artifactId>cyclonedx-maven-plugin</artifactId>
+	<version>${cyclonedx.version}</version>
+	<executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>makeAggregateBom</goal>
+            </goals>
+          </execution>
+	</executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -184,6 +197,7 @@
     <chill.version>0.10.0</chill.version>
     <jersey.version>2.36</jersey.version>
     <imageio.version>1.4.0</imageio.version>
+    <cyclonedx.version>2.9.0</cyclonedx.version>
   </properties>
   <!--repositories>
     <repository>
