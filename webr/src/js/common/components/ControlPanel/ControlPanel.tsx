@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 import { Client, ConvertToSelect } from '../util'
 import Select from 'react-select';
-import { DropdownButton, MenuItem, Button, ButtonToolbar, Nav, Navbar, NavItem, Form, FormControl } from 'react-bootstrap';
+import { Button, Nav, Navbar, Form, FormControl } from 'react-bootstrap';
 import { ServiceParam } from '../../types/main'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,7 +21,7 @@ function ControlPanel ({ props, callbackNewTab }) {
   const [ param, setParam ] = useState(null);
   const [ hcolumns, setHcolumns ] = useState(null);
   const [ hdata, setHdata ] = useState(null);
-  const [ uuids, setUuids ] = useState( new Set() );
+  const [ uuids, setUuids ] = useState( new Set<string>() );
   const [ suffix, setSuffix ] = useState( null );
   const [ path, setPath ] = useState( null );
   const [ language, setLanguage ] = useState( null );
@@ -161,7 +161,7 @@ function ControlPanel ({ props, callbackNewTab }) {
       if (param.async === true) {
         callbackAsync(result.uuid);
       } else {
-        const tables = MyTable.getTabNew(result.list, Date.now(), callbackNewTab, props);
+        const tables = MyTable.getTabNew(result.list, Date.now(), callbackNewTab);
         callbackNewTab(tables);
       }
     });
@@ -175,11 +175,11 @@ function ControlPanel ({ props, callbackNewTab }) {
   const callbackAsync = useCallback( (uuid) => {
     console.log("typeofuuid" + (typeof uuids));
     uuids.add(uuid);
-      setUuids(new Set([...uuids]));
+      setUuids(new Set(uuids));
   }, [uuids]);
 
   const getTask = async () => {
-    for (const id of uuids) {
+    for (const id of Array.from(uuids)) {
       const url = Client.geturl("/task/" + id);
       console.log("uuids"+ url);
       const settings = {
@@ -190,11 +190,11 @@ function ControlPanel ({ props, callbackNewTab }) {
       console.log(data);
       if (data.list != null) {
         console.log(JSON.stringify(data));
-        const tables = MyTable.getTabNew(data.list, Date.now(), callbackNewTab, props);
+        const tables = MyTable.getTabNew(data.list, Date.now(), callbackNewTab);
         callbackNewTab(tables);
         uuids.delete(id);
       }
-      setUuids(new Set([...uuids]));
+      setUuids(new Set(uuids));
     }
   };
 
@@ -221,9 +221,9 @@ function ControlPanel ({ props, callbackNewTab }) {
       <Navbar>
         <Nav>
           Before date
-            <DatePicker id="startdatepicker" selected={useStartdate} onChange={e => setStartdate(e)}/>
+            <DatePicker id="startdatepicker" selected={useStartdate} onChange={(e: Date | null) => setStartdate(e)}/>
           After date
-            <DatePicker id="enddatepicker" selected={useEnddate} onChange={e => setEnddate(e)}/>
+            <DatePicker id="enddatepicker" selected={useEnddate} onChange={(e: Date | null) => setEnddate(e)}/>
         </Nav>
       </Navbar>
       <Nav>
@@ -259,7 +259,7 @@ function ControlPanel ({ props, callbackNewTab }) {
         </Form>
       </Nav>
       <Nav>
-        <Select options="[{size:'5'}]"
+        <Select
                 onChange={e => setLanguage(e)}
                 options={languages}
         />
@@ -269,7 +269,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             Filesystem add new
           </Navbar.Brand>
         <Nav>
-            <Button bsStyle="primary" onClick={ (e) => traverse(props) }>Filesystem add new</Button>
+            <Button onClick={ (e) => traverse(props) }>Filesystem add new</Button>
          </Nav>
       </Navbar>
         <Navbar>
@@ -277,10 +277,10 @@ function ControlPanel ({ props, callbackNewTab }) {
             Filesystem add and index
           </Navbar.Brand>
          <Nav>
-             <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(props, false) }>Index filesystem new items</Button>
+             <Button onClick={ (e) => filesystemlucenenew(props, false) }>Index filesystem new items</Button>
         </Nav>
          <Nav>
-             <Button bsStyle="primary" onClick={ (e) => filesystemlucenenew(props, true) }>Index filesystem changed items</Button>
+             <Button onClick={ (e) => filesystemlucenenew(props, true) }>Index filesystem changed items</Button>
         </Nav>
       </Navbar>
       <Navbar>
@@ -288,8 +288,8 @@ function ControlPanel ({ props, callbackNewTab }) {
             Index
            </Navbar.Brand>
 	  <Nav>
-            <Button bsStyle="primary" onClick={ (e) => index(props, false) }>Index</Button>
-          <Button bsStyle="primary" onClick={ (e) => index(props, true) }>Reindex</Button>
+            <Button onClick={ (e) => index(props, false) }>Index</Button>
+          <Button onClick={ (e) => index(props, true) }>Reindex</Button>
         </Nav>
       </Navbar>
       <Navbar>
@@ -297,9 +297,9 @@ function ControlPanel ({ props, callbackNewTab }) {
             File system consistency
           </Navbar.Brand>
          <Nav>
-             <Button bsStyle="primary" onClick={ (e) => consistentclean(props, false) }>Get consistency</Button>
-             <Button bsStyle="primary" onClick={ (e) => consistentclean(props, true) }>Get consistency and clean</Button>
-              <Button bsStyle="primary" onClick={ (e) => overlapping(props) }>Get duplicates</Button>
+             <Button onClick={ (e) => consistentclean(props, false) }>Get consistency</Button>
+             <Button onClick={ (e) => consistentclean(props, true) }>Get consistency and clean</Button>
+              <Button onClick={ (e) => overlapping(props) }>Get duplicates</Button>
         </Nav>
       </Navbar>
       <Navbar>
@@ -307,11 +307,11 @@ function ControlPanel ({ props, callbackNewTab }) {
             Database
           </Navbar.Brand>
          <Nav>
-              <Button bsStyle="primary" onClick={ (e) => dbcheck(props) }>Db check</Button>
-          <Button bsStyle="primary" onClick={ (e) => dbindex(props) }>Database search index</Button>
-          <Button bsStyle="primary" onClick={ (e) => dbsearch(props) }>Database search</Button>
-          <Button bsStyle="primary" onClick={ (e) => deletepathdb(props) }>Delete path</Button>
-            <Button bsStyle="primary" onClick={ (e) => notindexed(props) }>Get not yet indexed</Button>
+              <Button onClick={ (e) => dbcheck(props) }>Db check</Button>
+          <Button onClick={ (e) => dbindex(props) }>Database search index</Button>
+          <Button onClick={ (e) => dbsearch(props) }>Database search</Button>
+          <Button onClick={ (e) => deletepathdb(props) }>Delete path</Button>
+            <Button onClick={ (e) => notindexed(props) }>Get not yet indexed</Button>
         </Nav>
       </Navbar>
       <Navbar>
@@ -319,7 +319,7 @@ function ControlPanel ({ props, callbackNewTab }) {
             Diagnostics
           </Navbar.Brand>
         <Nav>
-            <Button bsStyle="primary" onClick={ (e) => memoryusage(props) }>Memory usage</Button>
+            <Button onClick={ (e) => memoryusage(props) }>Memory usage</Button>
         </Nav>
       </Navbar>
     </div>

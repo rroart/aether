@@ -12,6 +12,7 @@ class ServiceParam {
       function: string;
       name: string;
       path: string;
+      search: string;
       file: string;
       suffix: string;
       lowerdate: string;

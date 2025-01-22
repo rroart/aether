@@ -26,10 +26,10 @@ function SearchBar({ text, type, config, callbackNewTab, callbackMLT }) {
     console.log(type);
     //console.log(props);
     const param = new SearchEngineSearchParam();
-    param.config = config;
+    param.conf = config;
     param.str = searchnetstring;
     param.searchtype = type;
-    console.log(searchnetstring + " " + type + " " + searchnetstring.value);
+    console.log(searchnetstring + " " + type + " " + searchnetstring);
     console.log(Object.keys(searchnetstring));
     //console.log(Object.keys(props));
     //console.log(Object.keys(searchnetstring.target) + " " + searchnetstring.type);

@@ -88,9 +88,12 @@ function convert(resultitemtable, date, props) {
   const array = resultitemtable;
   console.log(array);
   if (array.length == 0) {
+    return;
+    /*
     return (
       <ReactTable key={date} data={ [] } columns={ [] } />
     );
+    */
   }
   const head = array[0];
   const rest = array.slice(1);
@@ -208,6 +211,7 @@ function gethtable(getTableProps, getTableBodyProps, headerGroups, rows, prepare
   );
 }
 
+// unused
 function convert2(array) {
   console.log("here");
   console.log(array);
@@ -233,11 +237,14 @@ function convert2(array) {
   }
   console.log(result);
   console.log(columns);
+  /*
   return (
     <ReactTable data={ result } columns={ columns } />
   );
+  */
 }
 
+// unused
 function convertbs(resultitemtable) {
   console.log("here");
   const array = resultitemtable.rows;
@@ -264,11 +271,14 @@ function convertbs(resultitemtable) {
     result.push(newrow);
   }
   console.log(result);
+  /*
   return (
     <BootstrapTable keyField='id' data={ result } columns={ columns } />
   );
+  */
 }
 
+// unused
 function convert2bs(array) {
   console.log("here");
   console.log(array);
@@ -293,9 +303,11 @@ function convert2bs(array) {
     result.push(newrow);
   }
   console.log(result);
+  /*
   return (
     <BootstrapTable keyField='id' data={ result } columns={ columns } />
   );
+  */
 }
 
 function getTable(resultitemtable, date, props) {
@@ -304,7 +316,8 @@ function getTable(resultitemtable, date, props) {
 
 function getTableNew(hcolumns, hdata) {
   return <div>
-    <Tooltip effect="solid" html="true"/>
+    // TODO  effect="solid" html="true"
+    <Tooltip/>
     <Table columns={hcolumns} data={hdata} />
   </div>;
 }

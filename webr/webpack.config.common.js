@@ -54,7 +54,7 @@ const COMMON_LOADERS = [
       }
     ],
   }, {
-    test: /\.(js|jsx)?$/,
+    test: /\.(js|jsx|ts|tsx)?$/,
     exclude: /node_modules/,
     loader: 'babel-loader',
     options: {
@@ -146,7 +146,7 @@ module.exports = {
     path: path.join(__dirname, 'docroot'),
   },
   resolve: {
-      extensions: ['.js', '.jsx', '.css'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
       fallback: {
 	  "path": require.resolve("path-browserify"),
 	  fs: false

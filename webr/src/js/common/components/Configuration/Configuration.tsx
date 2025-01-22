@@ -1,9 +1,5 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 
-import { ServiceParam, ServiceResult } from '../../types/main'
-import { Client, ConvertToSelect } from '../util'
-import Select from 'react-select';
-import { DropdownButton, MenuItem, ButtonToolbar, Nav, Navbar, NavItem, FormControl } from 'react-bootstrap';
 import ConfigTree from './ConfigTree';
 
 function Configuration( { props, config, configname } ) {

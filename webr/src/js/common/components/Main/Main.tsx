@@ -122,7 +122,6 @@ onIncrement2() { this.props.increment2() }
           { mytabs.map((item, index) => getanewtab(item, 4 + index)) }
         </Tabs>
         <Button
-          bsStyle="primary"
           onClick={
             () => { newtab3() }
           }
@@ -130,25 +129,22 @@ onIncrement2() { this.props.increment2() }
           New tab
         </Button>
         <Button
-          bsStyle="primary"
           onClick={
-            () => { onIncrementAsync() }
+            () => { newtab() }
           }
         >
           Async
         </Button>
         <Button
-          bsStyle="primary"
           onClick={
-            () => { onIncrement() }
+            () => { newtab() }
           }
         >
           Inc
         </Button>
         <Button
-          bsStyle="primary"
           onClick={
-            () => { onIncrement2() }
+            () => { newtab() }
           }
         >
           Inc2

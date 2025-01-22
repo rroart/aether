@@ -1,5 +1,9 @@
 {
-    "presets": ["@babel/preset-env", [ "@babel/preset-typescript", { "allExtensions": false } ] ],
+    "presets": [
+        "@babel/preset-env",
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+    ],
     "assumptions": {
     "setSpreadProperties": true
   }
