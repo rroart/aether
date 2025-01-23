@@ -23,7 +23,8 @@ function getHost() {
 
 function searchn(query, cb) {
   return fetch(`http://localhost:8080` + query, {
-    accept: 'application/json',
+    headers: { 'Accept': 'application/json;charset=utf-8', 'Content-Type': 'application/json', },
+    //accept: 'application/json',
   }).then(checkStatus)
     .then(parseJSON)
     .then(cb)
@@ -57,8 +58,9 @@ function checkStatus(response) {
     return response;
   } else {
     const error = new Error(`HTTP Error ${response.statusText}`);
-    error.status = response.statusText;
-    error.response = response;
+    // TODO
+    //error.status = response.statusText;
+    //error.response = response;
     console.log(error); // eslint-disable-line no-console
     throw error;
   }
@@ -113,7 +115,7 @@ export const fetchData = async (url) => {
         const response = await fetch(url);
         const json = await response.json();
         console.log(json.slip.advice);
-        setAdvice(json.slip.advice);
+        //setAdvice(json.slip.advice);
     } catch (error) {
         console.log("error", error);
     }

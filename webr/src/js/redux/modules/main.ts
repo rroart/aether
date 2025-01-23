@@ -63,7 +63,7 @@ export const getAwesomeR4 = createAction(GET_R4, () => ({}));
 export const updateMain = createAction(UPDATE_MAIN, (result2) => ({ result2 }));
 export const updateR3 = createAction(UPDATE_R3, (result3) => ({ result3 }));
 export const updateR4 = createAction(UPDATE_R4, (result4) => ({ result4 }));
-export const newtabMain3 = createAction(NEWTAB_MAIN3, () => ( new Tab()));
+export const newtabMain3 = createAction(NEWTAB_MAIN3, (oar) => ( oar /*new Tab()*/));
 export const newtabMain = createAction(NEWTAB_MAIN, (par) => ( par ) );
 //export const increment = createAction(INCREMENT);
 export const increment = createAction(INCREMENT, ( num = 1) => ({ num }));
@@ -78,6 +78,7 @@ export const getLanguages = createAction(GETLANGUAGES, (l) => ( { l } ) );
 export const setLanguages = createAction(SETLANGUAGES, (l) => ( { l } ) );
 export const control = createAction(CONTROL, (config, param, props) => ( { config, param, props } ) );
 //export const search = createAction(SEARCH, (config, param, props) => ( { config, param, props } ) );
+/*
 export const search = (config, param, props) => {
     console.log("xxxx");
     useEffect((param) => {
@@ -93,7 +94,7 @@ export const search = (config, param, props) => {
         const json = await response.json();
         console.log(json.slip.advice);
         //setAdvice(json.slip.advice);
-	const bla = MyTable.t("hei");
+	//const bla = MyTable.t("hei");
 
     } catch (error) {
         console.log("error", error);
@@ -103,6 +104,7 @@ export const search = (config, param, props) => {
     fetchData(url);
 }, []);
 }
+*/
 
 export const actions = {
   getAwesomeCode,
@@ -124,7 +126,7 @@ export const actions = {
     getLanguages,
     setLanguages,
     control,
-    search,
+    //search,
 };
 
 export const reducers = {

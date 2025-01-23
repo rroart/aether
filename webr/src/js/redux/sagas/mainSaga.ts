@@ -4,14 +4,18 @@ import { Tabs, Tab } from 'react-bootstrap';
 import React, { PureComponent } from 'react';
 
 import { Client } from '../../common/components/util'
-import { mainType, ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
+import { ServiceParam, SearchEngineSearchParam } from '../../common/types/main'
 import { MyTable } from '../../common/components/MyTable'
+
+global.__CONFIG__ = {
+  description: 'fake description'
+}
 
 export function* fetchMainData() {
   // pretend there is an api call
   const result = {
     title: 'Myweb',
-    description: __CONFIG__.description,
+    description: global.__CONFIG__.description,
     source: 'This message is coming from Redux',
   };
   //const result3 = 3;
@@ -80,11 +84,12 @@ export function* fetchControl(action) {
     const config2 = result;
     console.log(config2);
     const list = result.list;
-    const bla = MyTable.t();
+    //const bla = MyTable.t();
     const tab = MyTable.getTab(result.list, Date.now(), props);
     yield put(mainActions.newtabMain(tab));
 }
 
+/*
 function getMyConfig(config, market, date) {
     const myconfig = new MyConfig();
     myconfig.configTreeMap = config.get('configTreeMap');
@@ -96,7 +101,7 @@ function getMyConfig(config, market, date) {
     myconfig.market = market;
     return myconfig;
 }
-
+*/
 
 export function* fetchSearch(action) {
     console.log(action);
@@ -111,8 +116,8 @@ export function* fetchSearch(action) {
     let result = yield call(Client.fetchApi.search, "/search", serviceparam)
 ;
     console.log("herecontent2");
-    console.log(data2);
-    const bla = MyTable.t("hei");
+    //console.log(data2);
+    //const bla = MyTable.t("hei");
     console.log(result);
     console.log(action);
     const config2 = result;
@@ -124,7 +129,7 @@ export function* fetchSearch(action) {
 
 export function* getNewTab() {
     console.log("bla")
-    const result = new Tab();
+    const result = null; // TODO new Tab();
   yield put(mainActions.newtabMain(result));
 }
 

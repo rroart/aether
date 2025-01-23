@@ -65,9 +65,19 @@ onIncrement2() { this.props.increment2() }
 
   const { main } = props;
 
-  console.log(main);
-  console.log(main.config);
-   console.log(main.config.configValueMap);
+  const result = main && main.result2 ? main.result2 : null;
+  // for testing
+  if (result) {
+    console.log("result");
+  }
+  else {
+    console.log("noresult");
+    return (<div/>);
+  }
+
+  console.log("main"+main);
+  console.log("CONFIG"+main.config);
+   //console.log(main.config.configValueMap);
 
   var dolucene;
   var dosolr;
@@ -79,8 +89,7 @@ onIncrement2() { this.props.increment2() }
     doelastic = MyMap.myget(configValueMap, "searchengine.elastic[@enable]");
   }
 
-  const result = main && main.result2 ? main.result2 : null;
-  const result3 = main && main.result3 ? main.result3 : null;
+    const result3 = main && main.result3 ? main.result3 : null;
   const count = main && main.count ? main.count : null;
   //const tabs = main && main.tabs ? main.tabs : null;
 
@@ -97,7 +106,7 @@ onIncrement2() { this.props.increment2() }
     console.log("callt", tabs.length);
     console.log(props);
     console.log(main);
-    console.log(result + " " + result.size);
+    //console.log(result + " " + result.size);
   if (result /*&& result.size && result.size > 0*/) {
     console.log("callt", tabs.length);
     console.log("cccc" + Object.keys({ ...props }));
