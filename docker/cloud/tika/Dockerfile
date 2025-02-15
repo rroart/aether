@@ -16,5 +16,5 @@ ADD $DISTLIB/$DISTJAR /usr/local/bin
 WORKDIR /usr/local/bin
 RUN apt update -y
 RUN apt install -y ffmpeg libimage-exiftool-perl
-RUN apt install -y imagemagick-6.q16 tesseract-ocr-all gdal-bin
+RUN apt install -y imagemagick-7.q16 tesseract-ocr-all gdal-bin
 CMD java -Dserver.port=8080 -Deureka.client.enabled=false -jar /usr/local/bin/$DISTJAR --spring.profiles.active=docker

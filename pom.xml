@@ -122,7 +122,7 @@
     <springcore.version>6.1.5</springcore.version>
     <eurekaclient.version>2.0.0</eurekaclient.version>
     <reactor.version>3.6.8</reactor.version>
-    <jdk.version>17</jdk.version>
+    <jdk.version>21</jdk.version>
     <junit.version>5.10.2</junit.version>
     <mahout.lucene.version>8.9.0</mahout.lucene.version>
     <lucene.version>9.10.0</lucene.version>

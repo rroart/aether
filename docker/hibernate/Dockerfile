@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk
+FROM openjdk:21-jdk
 MAINTAINER <roart@nvg.ntnu.no>
 ADD files/aether-hibernate-0.10-SNAPSHOT.jar /usr/local/bin
 WORKDIR /usr/local/bin
