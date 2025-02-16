@@ -5,7 +5,13 @@ D: Done
 W: Work
 C: Change
 
+Hot
+testdata
+test it
+test all functions
+
 Build
+C: dev
 T: pom auto tidy
 T: pom versioning
 T: update dependent software
@@ -13,14 +19,49 @@ T: space/tabs
 F: get tool to find unneeded deps
 F: deprecated logdir etc?
 
+Data
+list failedreason non null
+timestamp 0
+reset failedreason
+reset failedcount?
+setfailedreason not done hbase?
+
 Database
 C: Cassandra allow filtering and "You fool! You doomed us all!"
 F: cassandra
 B: hbase delete from db incomplete
 F: h2db lucene disk lokasjon rules
 F: db persistence, more db handling
+hbase first config
+cass 5
+redis timeout
+hbase exceptions
+db migrate
+db no specific, h2/hibernate
+mssqlllllllllllllllllllll
+more db start, prime db
+indexfilesdao all cache
+dyn sel search db or full conf
+batchind
+batchget
+getfilelocby return only single?
+getall -> more parallell and distribute
+spring data redis
+oldfiles null
+fileobject filelocation
+files may be deleted
+filesystemLucenenew and
+spring add files issues
+incr failed? not incr when reindex failed
+index not
+indexfiles reason setters
+speed, batch index
+index path got null
+add file size convert size
+index after error?
 
 Core
+F: config to include merged defaults
 B: resilience, handle not present fs
 T: use threads with repeat in config?
 F: split off tika etc into microservice
@@ -30,6 +71,20 @@ B: work indexcount problem
 B: client request ends too early, still has work, recheck criteria.
 B: request end criteria, ending and displaying too early
 F: consistent clean with filename only, or md5 without any files
+crawl
+func param fix
+serviceman and core
+param start clean
+start thread pause
+not catching index false,true
+test if a file is added
+stop core start core handle queues
+trav removefile convert
+searchenginequeue convertqueue etc register zk and list size
+filestodo md5todo -> notdone
+list cleanup
+i5: db,fs,ml,se local, conv kub?
+check if file content read if traverse file exists
 
 Core/Tika
 T: detect outofmemory Traverse.doTika(el); for (Future<Object> key: removes) {
@@ -39,6 +94,14 @@ F: get metadata if too small?
 F: handle delete move
 F: display diff docs and number indexed
 F: deleted/missing files and distributed system
+
+Convert:
+tika use bin/kill
+tikaq too big
+calibre/tika plugins
+tika oom
+calibre without extension
+ConvertDAO.convert exception and similar
 
 Front
 B: vaadin with errorview
@@ -51,6 +114,18 @@ C: clientrunner.notify
 F: clientrunner check alive and restart
 F: aether med ready microserv app gui
 WF: full gui config.
+taskmap duplicates
+polyfill
+web async
+filter dyn config, done?
+language String[] findDistinctByLanguageNotIn(List l);
+reindexdate
+web tasks with log from abstractfunction
+plus from queues log
+old: react-loadable, react-helmet, browser-sync-webpack-plugin
+deprecated: extract-text-webpack-plugin, babel-eslint
+gui change conf
+webr sort
 
 CD
 WF: make demo version with docker
@@ -68,6 +143,9 @@ Filesystems
 B?: use swift with non-exist dir
 WF: some service only allow one running
 F: zk timed announcement of directories
+consistenten check hfs
+integrity check hdfs
+fs special nodename
 
 Design
 T: indexing exception instead of -1
@@ -82,9 +160,88 @@ F: handle reconfig live
 F: config property file , delimiter handling (language, other lists)
 F: config file save.
 C: move node classify, as root of ml
+config change in web -> propagate?
 
 Search
 F: synonyms
+solr speed
+solr maxbool 16384
+k w hz for elastic?
+prodsolr vs elastic
+2024-04-13 16:26:40,880 ERROR [Thread-4] r.s.e.SearchElastic [SearchElastic.java:231] Exception
+java.io.IOException: Broken pipe
+        at org.elasticsearch.client.RestClient.extractAndWrapCause(RestClient.java:939)
+
+org.elasticsearch.client.ResponseException: method [PUT], host [http://192.168.0.117:9200], URI [/prod2/_doc/027ca5e5f35c4baa048be3fa1a9ad793?refresh=true], status line [HTTP/1.1 413 Request Entity Too Large]
+
+Serialize:
+jsonutil.strip
+str after convert, print both
+
+Tech
+leak
+bin/kill
+java.nio.file.InvalidPathException:
+Exception in thread "ConvertTimeout" java.lang.OutOfMemoryError: Java heap space
+
+Test:
+All IT
+
+Sec:
+Zero
+VDR
+
+Prometheus:
+metrics
+kub database config check
+
+Unknown
+ocr -> 2 db -> 2 se
+fair/pri queue shar
+roundtrip -> dynamic
+redis still gets nodeconf?
+siste f3
+missing conf write to redis
+missing updated?
+synch inmemhz with other
+check count variables and logs
+startup npe, start construct
+old leftovers and inconsistencies, locks shared data
+
+Format
+cbr
+some mp3 not done?
+
+Distributed
+deadlock
+move dbi
+more trylock
+pulsar: DnsResolverUtil cannot access class sun.net.InetAddressCachePolicy (in module java.base) because module java.base does not export sun.net to unnamed module
+redis timeout
+old locks data many
+convert lock
+rm after filesytem before index
+zk two diff cores
+one core two func diff readfile
+only unique core?
+redis still gets nodeconf?
+inmemory/127.0.1.1 map name
+inmemory: config
+leaderrun webflux timeout
+todo hz
+convertreadfile not deleted?
+async: too big traversequeue -> slow start
+sync: TraverseQueueRunner LIMIT 100 -> too big convert queue
+redis old server configs
+redis clean
+zk w appid?
+mycollection with exceptions (redis etc failure)
+
+Bug
+JedisPool.getResource forever locked
+
+Kubernetes
+k8s logs
 
 Outdated
 F: join a master config.
@@ -92,29 +249,133 @@ F: distributed locking and node los
 T: change lock strategy, hazelcast etc
 F: distrib
 F: mllib
+work big
 
-#package lang profiles
+0.10
+C: Event (I1)
+C: Communication (I2)
+C: Communication with small msg and data in memory (I3)
+C: Automation (I4)
+C: Change from local to cloud (I5)
+C: Java 16 (I6)
+C: Spark/Mahout upgrade (I7)
+C: Junit5 (I8)
+C: Build dependencies (I9)
+C: Search upgrades (I10)
+C: Misc upgrades (I11)
+C: Servicemanager (I12)
+C: Web with Vaadin (I13)
+C: Web with React (I14)
+C: Integration tests (I15)
+C: Automation (I16)
+C: S3 (I17)
+C: Config file template (I18)
+C: Filesystem (I19)
+C: Traverse (I20)
+C: ISBN (I21)
+C: Java 17 (I22)
+C: Split out Tika and Other as separate services (I23)
+C: Database names (I24)
+C: Text client (I25)
+B: Dynamodb array conversion (I26)
+C: Better support for Elastic (I27)
+C: Search speed (I28)
+C: Search index names (I29)
+C: Alternatives to deprecated stop (I30)
+C: File/content ?
+C: EurekaUtil null (I31)
+C: Filesystem protocol (I32)
+C: Database and search engine clear and drop (I33)
+?: ps list control panel db stop start cache, synch multi cores (I34)
+C: Change map id from nodename to md5 sum of config (I35)
+?: webr table link for download and similar (I36)
+?: Revert from fs map (I37)
+?: Batch transfer (I38)
+?: Handle DynamoDB Item for getall (I39)
+?: Amazon API v2 (I40)
+?: File encoding and does not exist (I41)
+?: Concurrency (I42)
+?: Eureka server param (I43)
+?: Remove noise (I44)
+?: Store created and checked date (I45)
+?: Webflux (I46)
+?: Big string limit (I47)
+?: Config CPU and batch (I48)
+Multione/multinode eureka (I49)
+Refactor Function (I50)
+MyFile with time attr (I51)
+Logback-spring (I52)
+Config with empty check (I53)
+Startup scripts (I54)
+Modernize Java (I55)
+Refactor (I56)
+Support Shenandoah GC (I57)
+Health check (I58)
+Testdata (I59)
+Db check (I60)
+Spring Data (I61)
+Db copy (I62)
+Db optimize (I63)
+Db string size (I64)
+Config protocol with inmemory (I65)
+Hibernate bug (I66)
+Tesseract OCR (I67)
+Database counters (I68)
+Database file and convert size (I69)
+Database mimetype (I70)
+Limits for indexing (I71)
+Improve reasons in database (I72)
+Config protocol with Zookeeper (I73)
+More filter config from control panel (I74)
+Zero trust (I75)
+Crawler (I76)
+Java 21 (I77)
+#Hazelcast
 
 Test:
-wrx aether-cassandra
-wrx aether-core
-aether-datanucleus
-wrx aether-dynamodb
-wrx aether-elastic
-x aether-eureka
-wrx aether-hbase
-aether-hdfs
-wrx aether-hibernate
-x aether-local
-wrx aether-lucene
-x ether-mahout-mr
-aether-mahout-spark
-x aether-opennlp
-aether-servicemanager-docker
-aether-servicemanager-mesos
-aether-servicemanager-openshift
-x aether-servicemanager-simple
-wrx aether-solr
-aether-spark-ml
-x aether-swift
-x aether-web
+wrx wrx aether-cassandra
+x aether-calibre 
+wrx wrx aether-core
+- -lib aether-datanucleus
+wrx aether-djvutxt
+wrx wrx aether-dynamodb
+wrx wrx aether-elastic
+x x aether-eureka
+wrx wrx aether-hbase
+ aether-hdfs
+wrx wrx aether-hibernate
+x x aether-local
+wrx wrx aether-lucene
+- -depr aether-mahout-mr
+ x aether-mahout-spark
+x x aether-opennlp
+x aether-pdftotext
+- aether-servicemanager-docker
+- aether-servicemanager-mesos
+- aether-servicemanager-openshift
+x x aether-servicemanager-simple
+wrx wrx aether-solr
+ x aether-spark-ml
+x x aether-s3
+? x aether-swift
+x aether-tika
+- x aether-web
+x aether-wvtext
+
+****
+
+list, node:/fstype/dir
+
+****
+
+pipeline
+
+dir ->
+ dir ->
+ file ->
+ md5
+ suffix
+ convert
+ isbn
+ classify
+ index
