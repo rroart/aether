@@ -17,11 +17,11 @@ import roart.common.constants.Constants;
 import roart.common.model.FileObject;
 import roart.service.ControlService;
 
-public abstract class RemoteFileSystemAccess extends FileSystemAccess {
+public abstract class RemoteFileSystemDS extends FileSystemDS {
 
-    private static Logger log = LoggerFactory.getLogger(RemoteFileSystemAccess.class);
+    private static Logger log = LoggerFactory.getLogger(RemoteFileSystemDS.class);
 
-    public RemoteFileSystemAccess(NodeConfig nodeConf, ControlService controlService) {
+    public RemoteFileSystemDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 

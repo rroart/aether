@@ -1,24 +1,23 @@
-package roart.filesystem;
+package roart.classification;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class HDFSAccess extends RemoteFileSystemAccess {
+public class MahoutClassifyDS extends ClassifyDS {
 
-    public HDFSAccess(NodeConfig nodeConf, ControlService controlService) {
+    public MahoutClassifyDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 
-    @Override
     public String getAppName() {
-        return EurekaConstants.HDFS;
+    	return EurekaConstants.MAHOUTMR;
     }
 
     @Override
     public String getQueueName() {
-        return QueueConstants.HDFS;
+        return QueueConstants.MAHOUTMR;
     }
-
 }
+

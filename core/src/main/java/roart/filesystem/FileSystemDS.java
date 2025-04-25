@@ -10,7 +10,6 @@ import java.util.Set;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
@@ -37,10 +36,7 @@ import roart.service.ControlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.core.HazelcastInstance;
-
-public class FileSystemAccess {
+public class FileSystemDS {
 
     private String url;
     
@@ -56,7 +52,7 @@ public class FileSystemAccess {
 
     private MyQueue<QueueElement> queue;
     
-    public FileSystemAccess(NodeConfig nodeConf, ControlService controlService) {
+    public FileSystemDS(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;

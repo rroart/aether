@@ -8,24 +8,21 @@ import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class SpringDataIndexFilesAccess extends IndexFilesAccess {
+public class DynamodbIndexFilesDS extends IndexFilesDS {
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public SpringDataIndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+    public DynamodbIndexFilesDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
+        // TODO Auto-generated constructor stub
     }
 
     public String getAppName() {
-        return EurekaConstants.SPRINGDATA;
+	return EurekaConstants.DYNAMODB;
     }
 
-    @Override
     public String getQueueName() {
-        return QueueConstants.SPRING;
+        return QueueConstants.DYNAMODB;
     }
 
-    @Override
-    public boolean queueWithAppId() {
-        return true;
-    }
 }

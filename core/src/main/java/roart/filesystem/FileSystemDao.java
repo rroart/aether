@@ -32,7 +32,7 @@ public class FileSystemDao {
 
     private static Logger log = LoggerFactory.getLogger(FileSystemDao.class);
 
-    private FileSystemAccess filesystemJpa = null;
+    private FileSystemDS filesystemJpa = null;
 
     private NodeConfig nodeConf;
 
@@ -129,10 +129,10 @@ public class FileSystemDao {
     }
 
     // TODO make this OO
-    private FileSystemAccess getFileSystemAccess(FileObject f) {
+    private FileSystemDS getFileSystemAccess(FileObject f) {
         if (f == null) {
             log.error("f null");
-            return new LocalFileSystemAccess(nodeConf, controlService);
+            return new LocalFileSystemDS(nodeConf, controlService);
         }
         /*
         if (f.fs == null) {
@@ -150,7 +150,7 @@ public class FileSystemDao {
         return getFileSystemAccess(f.location, f.object);
     }
     
-    private FileSystemAccess getFileSystemAccess(Location fs, String path) {
+    private FileSystemDS getFileSystemAccess(Location fs, String path) {
         Location fs2 = new Location(fs.nodename, fs.fs, fs.extra);
         if (fs2.fs == null || fs2.fs.isEmpty()) {
             fs2.fs = FileSystemConstants.LOCALTYPE;
@@ -160,7 +160,7 @@ public class FileSystemDao {
             log.error("URL null for {} {}", fs, path);
             return null;
         }
-        FileSystemAccess access = new FileSystemAccess(nodeConf, controlService);
+        FileSystemDS access = new FileSystemDS(nodeConf, controlService);
         access.constructor("http://" + url + "/");
         return access;
     }
@@ -216,7 +216,7 @@ public class FileSystemDao {
             return "/" + string;
         }
     }
-    private FileSystemAccess getFileSystemAccessQueue(FileObject f) {
+    private FileSystemDS getFileSystemAccessQueue(FileObject f) {
         String[] dirlistarr = nodeConf.getDirList();
         FileObject[] dirlist = new FileObject[dirlistarr.length];
         int i = 0;
@@ -224,7 +224,7 @@ public class FileSystemDao {
             dirlist[i++] = FsUtil.getFileObject(dir);
         }
         FileObject fo = TraverseUtil.indirlistmatch(f, dirlist);
-        FileSystemAccess access = new FileSystemAccess(nodeConf, controlService);
+        FileSystemDS access = new FileSystemDS(nodeConf, controlService);
         String appId = System.getenv(Constants.FILESYSTEMAPPID) != null ? System.getenv(Constants.FILESYSTEMAPPID) : "";
         String queueName = QueueConstants.FS + "_" + fo.toString() + appId;
         access.setQueue(queueName);

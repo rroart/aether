@@ -3,7 +3,6 @@ package roart.database;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,9 +11,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import roart.common.collections.MyQueue;
-import roart.common.collections.impl.MyQueueFactory;
-import roart.common.config.ConfigConstants;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
@@ -26,7 +22,6 @@ import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
 import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
-import roart.common.synchronization.impl.MyCuratorObjectLock;
 import roart.common.synchronization.impl.MyObjectLockFactory;
 import roart.service.ControlService;
 
@@ -43,7 +38,7 @@ public class IndexFilesDao {
     @Deprecated
     private static volatile ConcurrentMap<String, IndexFiles> dbitemp = new ConcurrentHashMap<String, IndexFiles>();
 
-    private IndexFilesAccess indexFiles = null;
+    private IndexFilesDS indexFiles = null;
 
     private NodeConfig nodeConf;
 
@@ -52,7 +47,7 @@ public class IndexFilesDao {
     public IndexFilesDao(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-        this.indexFiles = IndexFilesAccessFactory.get(nodeConf, controlService);
+        this.indexFiles = IndexFilesDSFactory.get(nodeConf, controlService);
         this.controlService = controlService;
     }
 

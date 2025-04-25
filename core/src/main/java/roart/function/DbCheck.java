@@ -8,8 +8,8 @@ import roart.common.model.FileLocation;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
-import roart.database.IndexFilesAccess;
-import roart.database.IndexFilesAccessFactory;
+import roart.database.IndexFilesDS;
+import roart.database.IndexFilesDSFactory;
 import roart.database.IndexFilesDao;
 import java.util.ArrayList;
 import java.util.Set;
@@ -34,7 +34,7 @@ public class DbCheck extends AbstractFunction {
                 indexes = indexFilesDao.getAll();
                 files = indexFilesDao.getAllFiles();
             } else {
-                IndexFilesAccess access = IndexFilesAccessFactory.get(db, nodeConf, controlService);
+                IndexFilesDS access = IndexFilesDSFactory.get(db, nodeConf, controlService);
                 indexes = access.getAll();
                 files = access.getAllFiles();
             }

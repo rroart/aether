@@ -1,28 +1,28 @@
-package roart.database;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package roart.search;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class DynamodbIndexFilesAccess extends IndexFilesAccess {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class LuceneSearchDS extends SearchDS {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public DynamodbIndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+    public LuceneSearchDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
-        // TODO Auto-generated constructor stub
     }
 
     public String getAppName() {
-	return EurekaConstants.DYNAMODB;
+    	return EurekaConstants.LUCENE;
     }
-
+    
+    @Override
     public String getQueueName() {
-        return QueueConstants.DYNAMODB;
+        return QueueConstants.LUCENE;
     }
 
 }

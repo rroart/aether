@@ -5,20 +5,20 @@ import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class LocalFileSystemAccess extends FileSystemAccess {
+public class HDFSDS extends RemoteFileSystemDS {
 
-    public LocalFileSystemAccess(NodeConfig nodeConf, ControlService controlService) {
+    public HDFSDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 
     @Override
     public String getAppName() {
-        return EurekaConstants.LOCAL;
+        return EurekaConstants.HDFS;
     }
-    
+
     @Override
     public String getQueueName() {
-        return QueueConstants.LOCAL;
+        return QueueConstants.HDFS;
     }
 
 }

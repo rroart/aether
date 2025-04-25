@@ -8,20 +8,20 @@ import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class HbaseIndexFilesAccess extends IndexFilesAccess {
+public class DataNucleusIndexFilesDS extends IndexFilesDS {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-   public HbaseIndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+    public DataNucleusIndexFilesDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
-     }
+    }
 
     public String getAppName() {
-	return EurekaConstants.HBASE;
+	return EurekaConstants.DATANUCLEUS;
     }
 
     public String getQueueName() {
-        return QueueConstants.HBASE;
+        return QueueConstants.DATANUCLEUS;
     }
 
 }

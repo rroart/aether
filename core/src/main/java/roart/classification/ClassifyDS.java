@@ -2,7 +2,6 @@ package roart.classification;
 
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
@@ -13,20 +12,14 @@ import roart.common.machinelearning.MachineLearningClassifyResult;
 import roart.common.machinelearning.MachineLearningConstructorParam;
 import roart.common.machinelearning.MachineLearningConstructorResult;
 import roart.common.machinelearning.MachineLearningParam;
-import roart.common.machinelearning.MachineLearningResult;
 import roart.common.queue.QueueElement;
-import roart.common.searchengine.SearchEngineIndexResult;
 import roart.eureka.util.EurekaUtil;
 import roart.service.ControlService;
-
-import java.util.List;
-
-import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ClassifyAccess {
+public abstract class ClassifyDS {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -36,7 +29,7 @@ public abstract class ClassifyAccess {
 
     private MyQueue<QueueElement> queue;
     
-    public ClassifyAccess(NodeConfig nodeConf, ControlService controlService) {
+    public ClassifyDS(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;

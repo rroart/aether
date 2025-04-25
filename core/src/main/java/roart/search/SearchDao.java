@@ -19,14 +19,14 @@ import org.slf4j.LoggerFactory;
 public class SearchDao {
     private static Logger log = LoggerFactory.getLogger(SearchDao.class);
 
-    private SearchAccess search = null;
+    private SearchDS search = null;
 
     private NodeConfig nodeConf;
     
     public SearchDao(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
-        this.search = SearchAccessFactory.get(nodeConf, controlService);
+        this.search = SearchDSFactory.get(nodeConf, controlService);
     }
 
     public SearchEngineIndexResult indexme(String md5, FileObject dbfilename, Map<String, String> metadata, String lang, String classification, IndexFiles index, InmemoryMessage message) {

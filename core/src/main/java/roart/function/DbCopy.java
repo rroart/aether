@@ -10,11 +10,10 @@ import java.util.HashSet;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
-import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.service.ServiceParam;
-import roart.database.IndexFilesAccess;
-import roart.database.IndexFilesAccessFactory;
+import roart.database.IndexFilesDS;
+import roart.database.IndexFilesDSFactory;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
@@ -32,8 +31,8 @@ public class DbCopy extends AbstractFunction {
         IndexFilesDao out = new IndexFilesDao(nodeConf, controlService);
         String src = param.name;
         String dst = param.path;
-        IndexFilesAccess srcAccess = IndexFilesAccessFactory.get(src, nodeConf, controlService);
-        IndexFilesAccess dstAccess = IndexFilesAccessFactory.get(dst, nodeConf, controlService);
+        IndexFilesDS srcAccess = IndexFilesDSFactory.get(src, nodeConf, controlService);
+        IndexFilesDS dstAccess = IndexFilesDSFactory.get(dst, nodeConf, controlService);
         try {
             long time0;
             dstAccess.clear();

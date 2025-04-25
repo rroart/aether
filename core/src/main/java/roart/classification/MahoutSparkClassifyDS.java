@@ -1,24 +1,23 @@
-package roart.filesystem;
+package roart.classification;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class SwiftAccess extends RemoteFileSystemAccess {
+public class MahoutSparkClassifyDS extends ClassifyDS {
 
-    public SwiftAccess(NodeConfig nodeConf, ControlService controlService) {
+    public MahoutSparkClassifyDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 
-    @Override
     public String getAppName() {
-        return EurekaConstants.SWIFT;
+    	return EurekaConstants.MAHOUTSPARK;
     }
 
     @Override
     public String getQueueName() {
-        return QueueConstants.SWIFT;
+        return QueueConstants.MAHOUTSPARK;
     }
+ }
 
-}

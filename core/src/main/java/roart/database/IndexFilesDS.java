@@ -11,11 +11,9 @@ import java.util.Set;
 import roart.service.ControlService;
 import roart.common.collections.MyQueue;
 import roart.common.collections.impl.MyQueueFactory;
-import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.constants.EurekaConstants;
-import roart.common.constants.FileSystemConstants;
 import roart.common.constants.OperationConstants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
@@ -38,7 +36,7 @@ import roart.eureka.util.EurekaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class IndexFilesAccess {
+public abstract class IndexFilesDS {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -46,7 +44,7 @@ public abstract class IndexFilesAccess {
 
     protected ControlService controlService;
 
-    public IndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+    public IndexFilesDS(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;

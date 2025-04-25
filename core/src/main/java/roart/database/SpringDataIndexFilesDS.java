@@ -8,20 +8,24 @@ import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class CassandraIndexFilesAccess extends IndexFilesAccess {
-
+public class SpringDataIndexFilesDS extends IndexFilesDS {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public CassandraIndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+    public SpringDataIndexFilesDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 
     public String getAppName() {
-	return EurekaConstants.CASSANDRA;
+        return EurekaConstants.SPRINGDATA;
     }
 
+    @Override
     public String getQueueName() {
-        return QueueConstants.CASSANDRA;
+        return QueueConstants.SPRING;
     }
 
+    @Override
+    public boolean queueWithAppId() {
+        return true;
+    }
 }

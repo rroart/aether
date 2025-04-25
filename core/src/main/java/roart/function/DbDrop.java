@@ -4,8 +4,8 @@ import java.util.List;
 
 import roart.common.config.NodeConfig;
 import roart.common.service.ServiceParam;
-import roart.database.IndexFilesAccess;
-import roart.database.IndexFilesAccessFactory;
+import roart.database.IndexFilesDS;
+import roart.database.IndexFilesDSFactory;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
@@ -22,7 +22,7 @@ public class DbDrop extends AbstractFunction {
         if (db == null) {
             indexFilesDao.drop();
         } else {
-            IndexFilesAccess access = IndexFilesAccessFactory.get(db, nodeConf, controlService);
+            IndexFilesDS access = IndexFilesDSFactory.get(db, nodeConf, controlService);
             access.drop();
         }
         return null;

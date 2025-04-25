@@ -6,25 +6,24 @@ import org.slf4j.LoggerFactory;
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
-import roart.database.IndexFilesAccessFactory;
 import roart.service.ControlService;
 
-public class SearchAccessFactory {
+public class SearchDSFactory {
 
-    private static Logger log = LoggerFactory.getLogger(SearchAccessFactory.class);
+    private static Logger log = LoggerFactory.getLogger(SearchDSFactory.class);
 
-    public static SearchAccess get(NodeConfig nodeConf, ControlService controlService) {
+    public static SearchDS get(NodeConfig nodeConf, ControlService controlService) {
         String type = configIndexing(nodeConf);
         // TODO make OO of this?
-        SearchAccess search = null;
+        SearchDS search = null;
         if (type.equals(ConfigConstants.SEARCHENGINELUCENE)) {
-            search = new LuceneSearchAccess(nodeConf, controlService);
+            search = new LuceneSearchDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.SEARCHENGINESOLR)) {
-            search = new SolrSearchAccess(nodeConf, controlService);
+            search = new SolrSearchDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.SEARCHENGINEELASTIC)) {
-            search = new ElasticSearchAccess(nodeConf, controlService);
+            search = new ElasticSearchDS(nodeConf, controlService);
         }
         return search;
     }

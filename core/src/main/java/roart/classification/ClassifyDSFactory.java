@@ -7,26 +7,25 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.service.ControlService;
-import roart.thread.ControlRunner;
 
-public class ClassifyAccessFactory {
+public class ClassifyDSFactory {
 
-    private static Logger log = LoggerFactory.getLogger(ClassifyAccessFactory.class);
+    private static Logger log = LoggerFactory.getLogger(ClassifyDSFactory.class);
     
-    public static ClassifyAccess get(NodeConfig nodeConf, ControlService controlService) {
-        ClassifyAccess classify = null;
+    public static ClassifyDS get(NodeConfig nodeConf, ControlService controlService) {
+        ClassifyDS classify = null;
         String type = configClassify(nodeConf);
         if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUT)) {
-            classify = new MahoutClassifyAccess(nodeConf, controlService);
+            classify = new MahoutClassifyDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGMAHOUTSPARK)) {
-            classify = new MahoutSparkClassifyAccess(nodeConf, controlService);
+            classify = new MahoutSparkClassifyDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGSPARKML)) {
-            classify = new SparkMLClassifyAccess(nodeConf, controlService);
+            classify = new SparkMLClassifyDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.MACHINELEARNINGOPENNLP)) {
-            classify = new OpennlpClassifyAccess(nodeConf, controlService);
+            classify = new OpennlpClassifyDS(nodeConf, controlService);
         }
         return classify;
     }

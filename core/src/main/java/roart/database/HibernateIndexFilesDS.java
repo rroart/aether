@@ -8,20 +8,26 @@ import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class DataNucleusIndexFilesAccess extends IndexFilesAccess {
+public class HibernateIndexFilesDS extends IndexFilesDS {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public DataNucleusIndexFilesAccess(NodeConfig nodeConf, ControlService controlService) {
+    public HibernateIndexFilesDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 
     public String getAppName() {
-	return EurekaConstants.DATANUCLEUS;
+	return EurekaConstants.HIBERNATE;
     }
 
+    @Override
     public String getQueueName() {
-        return QueueConstants.DATANUCLEUS;
+        return QueueConstants.HIBERNATE;
+    }
+
+    @Override
+    public boolean queueWithAppId() {
+        return true;
     }
 
 }

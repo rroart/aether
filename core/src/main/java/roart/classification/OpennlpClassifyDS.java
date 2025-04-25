@@ -5,9 +5,9 @@ import roart.common.constants.EurekaConstants;
 import roart.common.constants.QueueConstants;
 import roart.service.ControlService;
 
-public class OpennlpClassifyAccess extends ClassifyAccess {
+public class OpennlpClassifyDS extends ClassifyDS {
 
-    public OpennlpClassifyAccess(NodeConfig nodeConf, ControlService controlService) {
+    public OpennlpClassifyDS(NodeConfig nodeConf, ControlService controlService) {
         super(nodeConf, controlService);
     }
 

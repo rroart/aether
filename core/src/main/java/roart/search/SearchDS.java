@@ -33,7 +33,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SearchAccess {
+public abstract class SearchDS {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -43,7 +43,7 @@ public abstract class SearchAccess {
     
     private MyQueue<QueueElement> queue;
     
-    public SearchAccess(NodeConfig nodeConf, ControlService controlService) {
+    public SearchDS(NodeConfig nodeConf, ControlService controlService) {
         super();
         this.nodeConf = nodeConf;
         this.controlService = controlService;

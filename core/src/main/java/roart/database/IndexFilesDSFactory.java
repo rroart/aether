@@ -7,34 +7,34 @@ import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.service.ControlService;
 
-public class IndexFilesAccessFactory {
+public class IndexFilesDSFactory {
 
-    private static Logger log = LoggerFactory.getLogger(IndexFilesAccessFactory.class);
+    private static Logger log = LoggerFactory.getLogger(IndexFilesDSFactory.class);
 
-    public static IndexFilesAccess get(NodeConfig nodeConf, ControlService controlService) {
+    public static IndexFilesDS get(NodeConfig nodeConf, ControlService controlService) {
         String type = configDb(nodeConf);
         return get(type, nodeConf, controlService);
     }
     
-    public static IndexFilesAccess get(String type, NodeConfig nodeConf, ControlService controlService) {
-        IndexFilesAccess indexFiles = null;
+    public static IndexFilesDS get(String type, NodeConfig nodeConf, ControlService controlService) {
+        IndexFilesDS indexFiles = null;
         if (type.equals(ConfigConstants.DATABASEHIBERNATE)) {
-            indexFiles  = new HibernateIndexFilesAccess(nodeConf, controlService);
+            indexFiles  = new HibernateIndexFilesDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASEHBASE)) {
-            indexFiles = new HbaseIndexFilesAccess(nodeConf, controlService);
+            indexFiles = new HbaseIndexFilesDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASECASSANDRA)) {
-            indexFiles = new CassandraIndexFilesAccess(nodeConf, controlService);
+            indexFiles = new CassandraIndexFilesDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASEDYNAMODB)) {
-            indexFiles = new DynamodbIndexFilesAccess(nodeConf, controlService);
+            indexFiles = new DynamodbIndexFilesDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASEDATANUCLEUS)) {
-            indexFiles = new DataNucleusIndexFilesAccess(nodeConf, controlService);
+            indexFiles = new DataNucleusIndexFilesDS(nodeConf, controlService);
         }
         if (type.equals(ConfigConstants.DATABASESPRING)) {
-            indexFiles = new SpringDataIndexFilesAccess(nodeConf, controlService);
+            indexFiles = new SpringDataIndexFilesDS(nodeConf, controlService);
         }
         return indexFiles;
     }
