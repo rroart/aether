@@ -28,6 +28,7 @@ import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.service.ServiceParam.Function;
@@ -88,11 +89,11 @@ public abstract class AbstractFunction {
 
             List<List> retlistlist = new ArrayList<>();
             List<ResultItem> retList = new ArrayList<>();
-            retList.add(IndexFiles.getHeader());
+            retList.add(IndexFilesUtil.getHeader());
             List<ResultItem> retConvertTimeoutList = new ArrayList<>();
             retConvertTimeoutList.add(new ResultItem("Convert timeout"));
             List<ResultItem> retNotList = new ArrayList<>();
-            retNotList.add(IndexFiles.getHeader());
+            retNotList.add(IndexFilesUtil.getHeader());
             List<ResultItem> retNewFilesList = new ArrayList<>();
             retNewFilesList.add(new ResultItem("New file"));
             List<ResultItem> retDeletedList = new ArrayList<>();

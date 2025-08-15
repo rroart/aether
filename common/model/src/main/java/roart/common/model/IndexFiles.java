@@ -5,13 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Date;
 
 import roart.common.config.ConfigConstants;
-import roart.common.config.MyConfig;
 import roart.common.constants.Constants;
 import roart.common.synchronization.MyLock;
 import roart.common.synchronization.MyObjectLock;
@@ -24,9 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class IndexFiles {
-
-    public static final int FILENAMECOLUMN = 3;
-    public static final int MIMETYPECOLUMN = 4;
 
     private static Logger log = LoggerFactory.getLogger(IndexFiles.class);
     private String md5;
@@ -56,24 +51,8 @@ public class IndexFiles {
 
     private int priority;
 
-    @JsonIgnore
-    private MyLock flock;
-    @JsonIgnore
-    private MyLock lock;
-    @JsonIgnore
-    private Object lockqueue;
-
-    @JsonIgnore
-    private MySemaphore semaphoreflock;
-    @JsonIgnore
-    private MySemaphore semaphorelock;
-    @JsonIgnore
-    private Object semaphorelockqueue;
-
-    private MyObjectLockData objectflock;
-
-    private MyObjectLockData objectlock;
-
+    private IndexFilesLock lock = new IndexFilesLock();
+    
     private IndexFiles() {
         filelocations = new HashSet<>();
     }
@@ -407,70 +386,6 @@ public class IndexFiles {
         return priority;
     }
 
-    public void setFlock(MyLock flock) {
-        this.flock = flock;
-    }
-
-    public MyLock getFlock() {
-        return flock;
-    }
-
-    public void setLock(MyLock lock) {
-        this.lock = lock;
-    }
-
-    public MyLock getLock() {
-        return lock;
-    }
-
-    public Object getLockqueue() {
-        return lockqueue;
-    }
-
-    public void setLockqueue(Object lockqueue) {
-        this.lockqueue = lockqueue;
-    }
-
-    public void setSemaphoreflock(MySemaphore semaphoreflock) {
-        this.semaphoreflock = semaphoreflock;
-    }
-
-    public MySemaphore getSemaphoreflock() {
-        return semaphoreflock;
-    }
-
-    public void setSemaphorelock(MySemaphore semaphorelock) {
-        this.semaphorelock = semaphorelock;
-    }
-
-    public MySemaphore getSemaphorelock() {
-        return semaphorelock;
-    }
-
-    public Object getSemaphorelockqueue() {
-        return semaphorelockqueue;
-    }
-
-    public void setSemaphorelockqueue(Object semaphorelockqueue) {
-        this.semaphorelockqueue = semaphorelockqueue;
-    }
-
-    public MyObjectLockData getObjectflock() {
-        return objectflock;
-    }
-
-    public void setObjectflock(MyObjectLockData objectflock) {
-        this.objectflock = objectflock;
-    }
-
-    public MyObjectLockData getObjectlock() {
-        return objectlock;
-    }
-
-    public void setObjectlock(MyObjectLockData objectlock) {
-        this.objectlock = objectlock;
-    }
-
     @JsonIgnore
     public Date getTimestampDate() {
         if (timestamp == null) {
@@ -535,180 +450,9 @@ public class IndexFiles {
         return ((FileLocation) (getFilelocations()).iterator().next());
     }
 
-    public static ResultItem getHeader() {
-        boolean doclassify = MyConfig.conf.wantClassify();
 
-        ResultItem ri = new ResultItem();
-        ri.add("Indexed");
-        ri.add("Md5/Id");
-        ri.add("Node");
-        ri.add("Filename");
-        ri.add("Mimetype");
-        ri.add("Lang");
-        ri.add("ISBN");
-        if (doclassify) {
-            ri.add("Classification");
-        }
-        ri.add("Timestamp");
-        ri.add("Updated");
-        ri.add("Size");
-        ri.add("Convertsize");
-        ri.add("Convertsw");
-        ri.add("Converttime");
-        ri.add("Indextime");
-        if (doclassify) {
-            ri.add("Classificationtime");
-        }
-        ri.add("Failed");
-        ri.add("Failed reason");
-        ri.add("Timeout reason");
-        ri.add("No indexing reason");
-        ri.add("Filenames");
-        return ri;
-    }
-
-    public static ResultItem getHeaderSearch() {
-        boolean doclassify = MyConfig.conf.wantClassify();
-        boolean admin = MyConfig.conf.admin;
-        boolean dohighlightmlt = MyConfig.conf.getHighlightmlt();
-
-        ResultItem ri = new ResultItem();
-        ri.add("Score");
-        ri.add("Md5/Id");
-        ri.add("Node");
-        ri.add("Filename");
-        ri.add("Mimetype");
-        if (dohighlightmlt) {
-            ri.add("Highlight and similar");
-        }
-        ri.add("Lang");
-        ri.add("ISBN");
-        if (doclassify) {
-            ri.add("Classification");
-        }
-        ri.add("Timestamp");
-        ri.add("Updated");
-        if (admin) {
-            ri.add("Size");
-            ri.add("Convertsize");
-            ri.add("Convertsw");
-            ri.add("Converttime");
-            ri.add("Indextime");
-            if (doclassify) {
-                ri.add("Classificationtime");
-            }
-            ri.add("Failed");
-            ri.add("Failed reason");
-            ri.add("Timeout reason");
-            ri.add("No indexing reason");
-            ri.add("Filenames");
-            ri.add("Created");
-            ri.add("Checked");
-            ri.add("Metadata");
-        }
-        return ri;
-    }
-
-    public static ResultItem getSearchResultItem(IndexFiles index, String lang, float score, String[] highlights, List<String> metadata, String csnodename, FileLocation maybeFl) {
-        boolean doclassify = MyConfig.conf.wantClassify();
-        boolean admin = MyConfig.conf.admin;
-        boolean dohighlightmlt = MyConfig.conf.getHighlightmlt();
-
-        ResultItem ri = new ResultItem();
-        ri.add("" + score);
-        ri.add(index.getMd5());
-        FileLocation fl = maybeFl;
-        String nodename = null;
-        String filename = null;
-        if (fl != null) {
-            nodename = fl.getNodeNoLocalhost(csnodename);
-            filename = fl.getFilename();
-        }
-        ri.add(nodename);
-        ri.add(filename);
-        ri.add(index.getMimetype());
-        if (dohighlightmlt) {
-            if (highlights != null && highlights.length > 0) {
-                ri.add(highlights[0]);
-            } else {
-                ri.add(null);
-            }
-        }
-        ri.add(lang);
-        ri.add(index.getIsbn());
-        if (doclassify) {
-            ri.add(index.getClassification());
-        }
-        ri.add(index.getTimestampDate().toString());
-        ri.add(index.getCheckedDate().toString());
-        if (admin) {
-            ri.add("" + index.getSize());
-            ri.add("" + index.getConvertsize());
-            ri.add(index.getConvertsw());
-            ri.add(index.getConverttime("%.2f"));
-            ri.add(index.getTimeindex("%.2f"));
-            if (doclassify) {
-                ri.add(index.getTimeclass("%.2f"));
-            }
-            ri.add("" + index.getFailed());
-            ri.add(index.getFailedreason());
-            ri.add(index.getTimeoutreason());
-            ri.add(index.getNoindexreason());
-            ri.add("" + index.getFilelocations().size());
-            ri.add(index.getCreated());
-            ri.add(index.getChecked());
-            String metadatastring = "";
-            if (metadata != null) {
-                for (String md : metadata) {
-                    metadatastring = metadatastring + md + "<br>";
-                }  
-            }
-            ri.add(metadatastring);
-        }
-        return ri;
-    }
-
-    public static ResultItem getResultItem(IndexFiles index, String lang, String csnodename, FileLocation maybeFl) {
-        boolean doclassify = MyConfig.conf.wantClassify();
-
-        if (lang == null || lang.length() == 0) {
-            lang = "n/a";
-        }
-
-        ResultItem ri = new ResultItem();
-        ri.add("" + index.getIndexed());
-        ri.add(index.getMd5());
-        FileLocation fl = maybeFl;
-        String nodename = null;
-        String filename = null;
-        if (fl != null) {
-            nodename = fl.getNodeNoLocalhost(csnodename);
-            filename = fl.getFilename();
-        }
-        ri.add(nodename);
-        ri.add(filename);
-        ri.add(index.getMimetype());
-        ri.add(lang);
-        ri.add(index.getIsbn());
-        if (doclassify) {
-            ri.add(index.getClassification());
-        }
-        ri.add(index.getTimestampDate().toString());
-        ri.add(index.getCheckedDate().toString());
-        ri.add("" + index.getSize());
-        ri.add("" + index.getConvertsize());
-        ri.add(index.getConvertsw());
-        ri.add(index.getConverttime("%.2f"));
-        ri.add(index.getTimeindex("%.2f"));
-        if (doclassify) {
-            ri.add(index.getTimeclass("%.2f"));
-        }
-        ri.add("" + index.getFailed());
-        ri.add(index.getFailedreason());
-        ri.add(index.getTimeoutreason());
-        ri.add(index.getNoindexreason());
-        ri.add("" + index.getFilelocations().size());
-        return ri;
+    public IndexFilesLock getLock() {
+        return lock;
     }
 
     @Override

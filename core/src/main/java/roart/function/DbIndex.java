@@ -8,6 +8,7 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.content.ClientHandler;
@@ -30,7 +31,7 @@ public class DbIndex extends AbstractFunction {
 
             List<List> retlistlist = new ArrayList<>();
             List<ResultItem> indexList = new ArrayList<>();
-            indexList.add(IndexFiles.getHeader());
+            indexList.add(IndexFilesUtil.getHeader());
             List<ResultItem> indexfilesList = new ArrayList<>();
             indexfilesList.add(new ResultItem("Files"));
             List<ResultItem> filesList = new ArrayList<>();
@@ -39,7 +40,7 @@ public class DbIndex extends AbstractFunction {
             IndexFiles index = indexFilesDao.getByMd5(md5);
             if (index != null) {
                 FileLocation aFl = index.getaFilelocation();
-                indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
+                indexList.add(IndexFilesUtil.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
                 Set<FileLocation> files = index.getFilelocations();
                 if (files != null) {
                     for (FileLocation filename : files) {

@@ -11,6 +11,7 @@ import roart.common.inmemory.model.InmemoryMessage;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.queue.QueueElement;
 import roart.common.searchengine.SearchEngineConstructorParam;
@@ -139,7 +140,7 @@ public abstract class SearchDS {
     private ResultItem[] getResultItems(SearchEngineSearchResult result) {
         SearchResult[] results = result.results;
         ResultItem[] strarr = new ResultItem[results.length + 1];
-        strarr[0] = IndexFiles.getHeaderSearch();
+        strarr[0] = IndexFilesUtil.getHeaderSearch();
         try {
             int i = 1;
             Set<String> md5s = new HashSet<>();
@@ -164,7 +165,7 @@ public abstract class SearchDS {
                             log.error(Constants.EXCEPTION, e);
                         }
                  */
-                strarr[i] = IndexFiles.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, controlService.nodename, aFl);
+                strarr[i] = IndexFilesUtil.getSearchResultItem(indexmd5, res.lang, res.score, res.highlights, res.metadata, controlService.nodename, aFl);
                 i++;
             }
         } catch (Exception e) {

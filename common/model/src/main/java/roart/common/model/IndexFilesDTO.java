@@ -25,6 +25,13 @@ public class IndexFilesDTO {
     private String mimetype;
     private Integer version;
 
+    public IndexFilesDTO() {
+    }
+    
+    public IndexFilesDTO(String md5) {
+        this.md5 = md5;
+    }
+    
     public String getMd5() {
         return md5;
     }

@@ -1,8 +1,12 @@
 package roart.common.database;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import roart.common.mapper.Mapper;
 import roart.common.model.FilesDTO;
+import roart.common.model.IndexFiles;
 import roart.common.model.IndexFilesDTO;
 
 public class DatabaseIndexFilesResult extends DatabaseResult {
@@ -32,8 +36,17 @@ public class DatabaseIndexFilesResult extends DatabaseResult {
         this.files = files;
     }
 
-     public Map<String, IndexFilesDTO> getIndexFilesMap() {
+    public Map<String, IndexFilesDTO> getIndexFilesDTOMap() {
         return indexFilesMap;
+   }
+
+     public Map<String, IndexFiles> getIndexFilesMap() {
+         Map<String, IndexFiles> simpleMap = new HashMap<>();
+         for (Entry<String, IndexFilesDTO> entry : indexFilesMap.entrySet()) {
+             String key = entry.getKey();
+             simpleMap.put(key, Mapper.map(entry.getValue()));
+         }
+         return simpleMap;
     }
 
     public void setIndexFilesMap(Map<String, IndexFilesDTO> indexFilesMap) {

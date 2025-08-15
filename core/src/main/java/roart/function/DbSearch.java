@@ -7,6 +7,7 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.database.IndexFilesDao;
@@ -38,7 +39,7 @@ public class DbSearch extends AbstractFunction {
             String field = searchexpr.substring(0, i);
             String text = searchexpr.substring(i + 1);
             List<ResultItem> indexList = new ArrayList<>();
-            indexList.add(IndexFiles.getHeader());
+            indexList.add(IndexFilesUtil.getHeader());
 
             List<IndexFiles> indexes = indexFilesDao.getAll();
             for (IndexFiles index : indexes) {
@@ -104,7 +105,7 @@ public class DbSearch extends AbstractFunction {
                 }
                 if (match) {
                     FileLocation aFl = index.getaFilelocation();
-                    indexList.add(IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
+                    indexList.add(IndexFilesUtil.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
                 }
             }
 

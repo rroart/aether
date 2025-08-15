@@ -118,8 +118,8 @@ public class IndexRunner implements Runnable {
                     queue.offer(el);
                     return null;
                 }
-                el.getIndexFiles().setSemaphorelock(lock);
-                el.getIndexFiles().setSemaphorelockqueue(semaphores);
+                el.getIndexFiles().getLock().setSemaphorelock(lock);
+                el.getIndexFiles().getLock().setSemaphorelockqueue(semaphores);
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);

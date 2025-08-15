@@ -219,10 +219,10 @@ public class IndexFilesDao {
             String key = entry.getKey();
             IndexFiles i = entry.getValue();
             save(saves, i);
-            MyLock lock = i.getLock();
+            MyLock lock = i.getLock().getLock();
             if (false && lock != null) {
                 // TODO not used
-                LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLockqueue();
+                LinkedBlockingQueue lockqueue = (LinkedBlockingQueue) i.getLock().getLockqueue();
                 if (lockqueue != null) {
                     lockqueue.offer(lock);
                 } else {
@@ -256,35 +256,35 @@ public class IndexFilesDao {
             String key = entry.getKey();
             IndexFiles i = entry.getValue();
             dbi.remove(key);
-            Queue<MyLock> queue = (Queue<MyLock>) i.getLockqueue();
-            if (i.getLock() != null) {
-                 queue.offer(i.getLock());
+            Queue<MyLock> queue = (Queue<MyLock>) i.getLock().getLockqueue();
+            if (i.getLock().getLock() != null) {
+                 queue.offer(i.getLock().getLock());
             }
-            if (i.getFlock() != null) {
-                queue.offer(i.getFlock());
+            if (i.getLock().getFlock() != null) {
+                queue.offer(i.getLock().getFlock());
             }
-            Queue<MySemaphore> semaphoreQueue = (Queue<MySemaphore>) i.getSemaphorelockqueue();
-            if (i.getSemaphorelock() != null) {
-                semaphoreQueue.offer(i.getSemaphorelock());
+            Queue<MySemaphore> semaphoreQueue = (Queue<MySemaphore>) i.getLock().getSemaphorelockqueue();
+            if (i.getLock().getSemaphorelock() != null) {
+                semaphoreQueue.offer(i.getLock().getSemaphorelock());
            }
-           if (i.getSemaphoreflock() != null) {
-               semaphoreQueue.offer(i.getSemaphoreflock());
+           if (i.getLock().getSemaphoreflock() != null) {
+               semaphoreQueue.offer(i.getLock().getSemaphoreflock());
            }
-           if (i.getObjectlock() != null) {
-               MyObjectLockData lockdata = i.getObjectlock();
+           if (i.getLock().getObjectlock() != null) {
+               MyObjectLockData lockdata = i.getLock().getObjectlock();
                if (lockdata != null) {
                    MyObjectLock lock = MyObjectLockFactory.create(lockdata.id, nodeConf.getLocker(), controlService.curatorClient);
                    lock.unlock();
                }
-               i.setObjectlock(null);
+               i.getLock().setObjectlock(null);
            }
-           if (i.getObjectflock() != null) {
-               MyObjectLockData flockdata = i.getObjectflock();
+           if (i.getLock().getObjectflock() != null) {
+               MyObjectLockData flockdata = i.getLock().getObjectflock();
                if (flockdata != null) {
                    MyObjectLock lock = MyObjectLockFactory.create(flockdata.id, nodeConf.getLocker(), controlService.curatorClient);
                    lock.unlock();
                }
-               i.setObjectflock(null);
+               i.getLock().setObjectflock(null);
            }
         }
         }

@@ -16,6 +16,8 @@ import roart.common.constants.Constants;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.Location;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
@@ -98,7 +100,7 @@ public class TraverseUtil {
     public static List<ResultItem> notindexed(ServiceParam el, IndexFilesDao indexFilesDao, ControlService controlService) throws Exception {
         List<ResultItem> retlist = new ArrayList<>();
         ResultItem ri = new ResultItem();
-        retlist.add(IndexFiles.getHeader());
+        retlist.add(IndexFilesUtil.getHeader());
         List<IndexFiles> indexes = indexFilesDao.getAll();
         log.info("sizes {}", indexes.size());
         for (IndexFiles index : indexes) {
@@ -107,7 +109,7 @@ public class TraverseUtil {
                 continue;
             }
             FileLocation aFl = index.getaFilelocation();
-            ri = IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl);
+            ri = IndexFilesUtil.getResultItem(index, index.getLanguage(), controlService.nodename, aFl);
             retlist.add(ri);
         }
         return retlist;
@@ -123,7 +125,7 @@ public class TraverseUtil {
                 if (indexed != null) {
                     if (indexed.booleanValue()) {
                         FileLocation aFl = index.getaFilelocation();
-                        retlist.add(IndexFiles.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
+                        retlist.add(IndexFilesUtil.getResultItem(index, index.getLanguage(), controlService.nodename, aFl));
                     }
                 }
             }

@@ -5,6 +5,7 @@ import roart.util.TraverseUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.searchengine.SearchEngineIndexResult;
 import roart.common.synchronization.MyLock;
@@ -82,8 +83,8 @@ public class Search {
         if (retsize < 0) {
             //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
             FileLocation aFl = dbindex.getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+            ResultItem ri = IndexFilesUtil.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
+            ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
             retlistnot.offer(ri);
             dbindex.incrFailed();
         } else {
@@ -97,8 +98,8 @@ public class Search {
             log.info("timerStop filename " + time);
 
             FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(dbindex, nodeConf, controlService);
-            ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+            ResultItem ri = IndexFilesUtil.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
+            ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
             retlist.offer(ri);
             dbindex.setFailed(0);
 
@@ -123,7 +124,7 @@ public class Search {
                 log.info(Constants.EXCEPTION, e);
             }
         }
-        MyLock lock = dbindex.getLock();
+        MyLock lock = dbindex.getLock().getLock();
         if (lock != null) {
             //lock.unlock();
         } else {
@@ -208,8 +209,8 @@ public class Search {
             if (retsize < 0) {
                 //dbindex.setNoindexreason(Constants.EXCEPTION); // later, propagate the exception
                 FileLocation aFl = dbindex.getaFilelocation();
-                ResultItem ri = IndexFiles.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
-                ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                ResultItem ri = IndexFilesUtil.getResultItem(dbindex, dbindex.getLanguage(), controlService.nodename, aFl);
+                ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
                 retlistnot.offer(ri);
                 dbindex.incrFailed();
             } else {
@@ -222,8 +223,8 @@ public class Search {
                 String lang = dbindex.getLanguage();
 
                 FileLocation maybeFl = TraverseUtil.getExistingLocalFilelocationMaybe(dbindex, nodeConf, controlService);
-                ResultItem ri = IndexFiles.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
-                ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                ResultItem ri = IndexFilesUtil.getResultItem(dbindex, lang, controlService.nodename, maybeFl);
+                ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
                 retlist.offer(ri);
                 dbindex.setFailed(0);
 
@@ -252,7 +253,7 @@ public class Search {
             MyQueue<String> filesdoneset = (MyQueue<String>) MyQueues.get(QueueUtil.filesdoneQueue(el.getMyid()), nodeConf, controlService.curatorClient); 
             filesdoneset.offer(filename.toString());
 
-            MyObjectLockData lockdata = dbindex.getObjectlock();
+            MyObjectLockData lockdata = dbindex.getLock().getObjectlock();
             if (lockdata != null) {
                 //lock.unlock();
             } else {

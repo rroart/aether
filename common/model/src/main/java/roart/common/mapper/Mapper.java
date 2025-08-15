@@ -28,6 +28,18 @@ public class Mapper {
         return ifile;
     }
 
+    public static FilesDTO map(Files hif) {
+        if (hif == null) {
+            return null;
+        }
+        String md5 = hif.getMd5();
+        FilesDTO ifile = new FilesDTO();
+        ifile.setVersion(hif.getVersion());
+        ifile.setMd5(hif.getMd5());
+        ifile.setFilename(hif.getFilename());
+        return ifile;
+    }
+
     public static IndexFiles map(IndexFilesDTO i) {
         IndexFiles hif = new IndexFiles(i.getMd5());
         hif.setMd5(i.getMd5());

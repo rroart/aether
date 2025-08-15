@@ -27,6 +27,7 @@ import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.common.synchronization.MyLock;
@@ -138,13 +139,13 @@ public class TraverseFile {
                             oldindexfiles.setChecked("" + System.currentTimeMillis());                    
                             indexFilesDao.add(oldindexfiles);
                             //oldindexfiles.setFlock(folock);
-                            oldindexfiles.setSemaphorelock(oldLock);
-                            oldindexfiles.setLockqueue(locks);
-                            oldindexfiles.setSemaphorelockqueue(semaphores);
+                            oldindexfiles.getLock().setSemaphorelock(oldLock);
+                            oldindexfiles.getLock().setLockqueue(locks);
+                            oldindexfiles.getLock().setSemaphorelockqueue(semaphores);
                         } else {
                             MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(trav.getMyid()), nodeConf, controlService.curatorClient);
-                            ResultItem ri = IndexFiles.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
-                            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                            ResultItem ri = IndexFilesUtil.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
+                            ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
                             retdeletedlist.offer(ri);
                             indexFilesDao.delete(oldindexfiles);
                             searchDao.deleteme(oldindexfiles.getMd5());
@@ -235,10 +236,10 @@ public class TraverseFile {
             log.debug("info {} {}", md5, indexfiles);
         }
         if (indexfiles != null && lock != null) {
-            indexfiles.setSemaphoreflock(folock);
-            indexfiles.setSemaphorelock(lock);
-            indexfiles.setLockqueue(locks);
-            indexfiles.setSemaphorelockqueue(semaphores);
+            indexfiles.getLock().setSemaphoreflock(folock);
+            indexfiles.getLock().setSemaphorelock(lock);
+            indexfiles.getLock().setLockqueue(locks);
+            indexfiles.getLock().setSemaphorelockqueue(semaphores);
         }
         //String md5sdoneid = "md5sdoneid"+trav.getMyid();
         //MySet<String> md5sdoneset = MySets.get(md5sdoneid);
@@ -411,7 +412,7 @@ public class TraverseFile {
 
 	
         // Get Md5s by fileobject from database
-        // TODO check if need full indexfiles?
+        // TODO check if need full IndexFiles?
         // TODO file may be gone after list
 	// code location independent
         if (traverseElement.getOpid() == null) {
@@ -612,13 +613,13 @@ public class TraverseFile {
                             oldindexfiles.setChecked("" + System.currentTimeMillis());                    
                             indexFilesDao.add(oldindexfiles);
                             //oldindexfiles.setFlock(folock);
-                            oldindexfiles.setObjectlock(new MyObjectLockData(oldMd5));
+                            oldindexfiles.getLock().setObjectlock(new MyObjectLockData(oldMd5));
                             //oldindexfiles.setLockqueue(locks);
                             //oldindexfiles.setSemaphorelockqueue(semaphores);
                         } else {
                             MyQueue<ResultItem> retdeletedlist = MyQueues.get(QueueUtil.deletedQueue(traverseElement.getMyid()), nodeConf, controlService.curatorClient);
-                            ResultItem ri = IndexFiles.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
-                            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                            ResultItem ri = IndexFilesUtil.getResultItem(oldindexfiles, oldindexfiles.getLanguage(), controlService.nodename, new FileLocation(filename.location.toString(), filename.object));
+                            ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
                             retdeletedlist.offer(ri);
                             indexFilesDao.delete(oldindexfiles);
                             searchDao.deleteme(oldindexfiles.getMd5());
@@ -714,8 +715,8 @@ public class TraverseFile {
             log.debug("info {} {}", md5, indexfiles);
         }
         if (indexfiles != null && md5 != null) {
-            indexfiles.setObjectflock(new MyObjectLockData(FsUtil.encode(filename.toString())));
-            indexfiles.setObjectlock(new MyObjectLockData(md5));
+            indexfiles.getLock().setObjectflock(new MyObjectLockData(FsUtil.encode(filename.toString())));
+            indexfiles.getLock().setObjectlock(new MyObjectLockData(md5));
             //indexfiles.setLockqueue(locks);
             //indexfiles.setSemaphorelockqueue(semaphores);
         }

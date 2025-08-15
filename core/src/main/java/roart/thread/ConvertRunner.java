@@ -154,7 +154,7 @@ public class ConvertRunner implements Runnable {
                     queue.offer(element);
                     return null;
                 }       
-                element.getIndexFiles().setObjectlock(new MyObjectLockData(element.getMd5()));
+                element.getIndexFiles().getLock().setObjectlock(new MyObjectLockData(element.getMd5()));
             } else {
                 MySemaphore lock = MySemaphoreFactory.create(element.getMd5(), nodeConf.getLocker(), controlService.curatorClient, GetHazelcastInstance.instance(nodeConf));
                 boolean locked = lock.tryLock();
@@ -162,8 +162,8 @@ public class ConvertRunner implements Runnable {
                     queue.offer(element);
                     return null;
                 }
-                element.getIndexFiles().setSemaphorelock(lock);
-                element.getIndexFiles().setSemaphorelockqueue(semaphores);
+                element.getIndexFiles().getLock().setSemaphorelock(lock);
+                element.getIndexFiles().getLock().setSemaphorelockqueue(semaphores);
             }
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);

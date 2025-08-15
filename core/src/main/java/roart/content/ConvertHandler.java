@@ -28,6 +28,7 @@ import roart.common.inmemory.util.InmemoryUtil;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.queue.QueueElement;
 import roart.common.synchronization.MyLock;
@@ -205,8 +206,8 @@ public class ConvertHandler {
         } else {
             log.info("Not converted {} {} {}", filename, md5, size);
             FileLocation aFl = element.getIndexFiles().getaFilelocation();
-            ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
-            ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+            ResultItem ri = IndexFilesUtil.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
+            ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
             MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
             unconverted.offer(ri);
             Boolean isIndexed = index.getIndexed();
@@ -222,7 +223,7 @@ public class ConvertHandler {
             new IndexFilesDao(nodeConf, controlService).add(index);
         }
         log.info("ending {} {}", element.getMd5(), element.getFileObject());
-        MyLock lock = index.getLock();
+        MyLock lock = index.getLock().getLock();
         if (lock != null) {
             lock.unlock();
         }
@@ -397,8 +398,8 @@ public class ConvertHandler {
             } else {
                 log.info("Not converted {} {} {}", filename, md5, size);
                 FileLocation aFl = element.getIndexFiles().getaFilelocation();
-                ResultItem ri = IndexFiles.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
-                ri.get().set(IndexFiles.FILENAMECOLUMN, filename);
+                ResultItem ri = IndexFilesUtil.getResultItem(element.getIndexFiles(), element.getIndexFiles().getLanguage(), controlService.getConfigName(), aFl);
+                ri.get().set(IndexFilesUtil.FILENAMECOLUMN, filename);
                 MyQueue<ResultItem> unconverted = (MyQueue<ResultItem>) MyQueues.get(QueueUtil.notconvertedQueue(element.getMyid()), nodeConf, controlService.curatorClient); 
                 unconverted.offer(ri);
                 Boolean isIndexed = index.getIndexed();

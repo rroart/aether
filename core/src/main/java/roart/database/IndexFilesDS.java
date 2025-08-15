@@ -119,7 +119,7 @@ public abstract class IndexFilesDS {
         md5s.add(md5);
         param.setMd5s(md5s);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYMD5, nodeConf);
-        IndexFilesDTO dto = result.getIndexFilesMap().get(md5);
+        IndexFilesDTO dto = result.getIndexFilesDTOMap().get(md5);
         return dto != null ? Mapper.map(dto) : null;
     }
 
@@ -221,7 +221,7 @@ public abstract class IndexFilesDS {
         configureParam(param);
         param.setMd5s(md5s);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYMD5, nodeConf);
-        Map<String, IndexFilesDTO> fullMap = result.getIndexFilesMap();
+        Map<String, IndexFilesDTO> fullMap = result.getIndexFilesDTOMap();
         Map<String, IndexFiles> simpleMap = new HashMap<>();
         for (Entry<String, IndexFilesDTO> entry : fullMap.entrySet()) {
             String key = entry.getKey();

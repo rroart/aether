@@ -121,10 +121,10 @@ public class ConsistentClean extends AbstractFunction {
             // TODO or indexes?
             // TODO not here?
             for (IndexFiles i : ifs) {
-                MyLock filelock = i.getLock();
+                MyLock filelock = i.getLock().getLock();
                 if (false && filelock != null) {
                     filelock.unlock();
-                    i.setLock(null);
+                    i.getLock().setLock(null);
                 } else {
                     log.debug("locknull");
                 }
@@ -179,10 +179,10 @@ public class ConsistentClean extends AbstractFunction {
                     TimeUnit.SECONDS.sleep(60);
                 }
                 for (IndexFiles i : ifs) {
-                    MyLock filelock = i.getLock();
+                    MyLock filelock = i.getLock().getLock();
                     if (filelock != null) {
                         filelock.unlock();
-                        i.setLock(null);
+                        i.getLock().setLock(null);
                     }
                 }
 

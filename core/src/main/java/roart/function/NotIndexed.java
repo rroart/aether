@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
-import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesUtil;
 import roart.common.model.ResultItem;
 import roart.common.service.ServiceParam;
 import roart.database.IndexFilesDao;
@@ -51,7 +51,7 @@ public class NotIndexed extends AbstractFunction {
                 if (ri == retlist.get(0)) {
                     continue;
                 }
-                String filename = (String) ri.get().get(IndexFiles.FILENAMECOLUMN);
+                String filename = (String) ri.get().get(IndexFilesUtil.FILENAMECOLUMN);
                 if (filename == null) {
                     continue;
                 }
@@ -61,14 +61,14 @@ public class NotIndexed extends AbstractFunction {
                 }
                 String suffix = filename.substring(ind+1);
                 plusretlist.merge(suffix, 1, Integer::sum);
-                String mimetype = (String) ri.get().get(IndexFiles.MIMETYPECOLUMN);
+                String mimetype = (String) ri.get().get(IndexFilesUtil.MIMETYPECOLUMN);
                 if (mimetype != null && !mimetype.isEmpty()) {
                     plusretlistmime.merge(mimetype, 1, Integer::sum);
                 }
             }
             for(ResultItem ri : retlistyes) {
                 //String filename = (String) ri.get().get(0); // or for a whole list?
-                String filename = (String) ri.get().get(IndexFiles.FILENAMECOLUMN);
+                String filename = (String) ri.get().get(IndexFilesUtil.FILENAMECOLUMN);
                 if (filename == null) {
                     continue;
                 }
@@ -78,7 +78,7 @@ public class NotIndexed extends AbstractFunction {
                 }
                 String suffix = filename.substring(ind+1);
                 plusretlistyes.merge(suffix, 1, Integer::sum);
-                String mimetype = (String) ri.get().get(IndexFiles.MIMETYPECOLUMN);
+                String mimetype = (String) ri.get().get(IndexFilesUtil.MIMETYPECOLUMN);
                 if (mimetype != null && !mimetype.isEmpty()) {
                     plusretlistmimeyes.merge(mimetype, 1, Integer::sum);
                 }
