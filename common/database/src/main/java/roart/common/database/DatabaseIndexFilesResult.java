@@ -2,41 +2,41 @@ package roart.common.database;
 
 import java.util.Map;
 
-import roart.common.model.Files;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 
 public class DatabaseIndexFilesResult extends DatabaseResult {
-    private Files[] files;
+    private FilesDTO[] files;
 
-    private IndexFiles[] indexFiles;
+    private IndexFilesDTO[] indexFiles;
 
-    private Map<String, IndexFiles> indexFilesMap;
+    private Map<String, IndexFilesDTO> indexFilesMap;
     
     public DatabaseIndexFilesResult() {
         super();
     }
 
-    public IndexFiles[] getIndexFiles() {
+    public IndexFilesDTO[] getIndexFiles() {
         return indexFiles;
     }
 
-    public void setIndexFiles(IndexFiles[] indexFiles) {
+    public void setIndexFiles(IndexFilesDTO[] indexFiles) {
         this.indexFiles = indexFiles;
     }
 
-    public Files[] getFiles() {
+    public FilesDTO[] getFiles() {
         return files;
     }
 
-    public void setFiles(Files[] files) {
+    public void setFiles(FilesDTO[] files) {
         this.files = files;
     }
 
-     public Map<String, IndexFiles> getIndexFilesMap() {
+     public Map<String, IndexFilesDTO> getIndexFilesMap() {
         return indexFilesMap;
     }
 
-    public void setIndexFilesMap(Map<String, IndexFiles> indexFilesMap) {
+    public void setIndexFilesMap(Map<String, IndexFilesDTO> indexFilesMap) {
         this.indexFilesMap = indexFilesMap;
     }
 }

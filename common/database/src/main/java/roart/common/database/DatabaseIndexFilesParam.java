@@ -5,31 +5,31 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import roart.common.model.IndexFiles;
-import roart.common.model.Files;
+import roart.common.model.IndexFilesDTO;
+import roart.common.model.FilesDTO;
 
 public class DatabaseIndexFilesParam extends DatabaseParam {
-    private Set<IndexFiles> indexFiles = new HashSet<>();
+    private Set<IndexFilesDTO> indexFiles = new HashSet<>();
 
-    private Set<Files> files = new HashSet<>();
+    private Set<FilesDTO> files = new HashSet<>();
 
     public DatabaseIndexFilesParam() {
         super();
     }
 
-    public Set<IndexFiles> getIndexFiles() {
+    public Set<IndexFilesDTO> getIndexFiles() {
         return indexFiles;
     }
 
-    public void setIndexFiles(Set<IndexFiles> indexFiles) {
+    public void setIndexFiles(Set<IndexFilesDTO> indexFiles) {
         this.indexFiles = indexFiles;
     }
 
-    public Set<Files> getFiles() {
+    public Set<FilesDTO> getFiles() {
         return files;
     }
 
-    public void setFiles(Set<Files> files) {
+    public void setFiles(Set<FilesDTO> files) {
         this.files = files;
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import roart.service.ControlService;
 import roart.common.collections.MyQueue;
@@ -26,10 +27,13 @@ import roart.common.database.DatabaseMd5Param;
 import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
+import roart.common.mapper.Mapper;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.Files;
+import roart.common.model.FilesDTO;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesDTO;
 import roart.common.queue.QueueElement;
 import roart.eureka.util.EurekaUtil;
 
@@ -92,7 +96,8 @@ public abstract class IndexFilesDS {
         configureParam(param);
         param.setFileLocation(fl);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYFILELOCATION, nodeConf);
-        return result.getIndexFiles()[0];
+        IndexFilesDTO dto = result.getIndexFiles()[0];
+        return dto != null ? Mapper.map(dto) : null;
     }
 
     // todo qu
@@ -114,8 +119,8 @@ public abstract class IndexFilesDS {
         md5s.add(md5);
         param.setMd5s(md5s);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYMD5, nodeConf);
-        return result.getIndexFilesMap().get(md5);
-
+        IndexFilesDTO dto = result.getIndexFilesMap().get(md5);
+        return dto != null ? Mapper.map(dto) : null;
     }
 
     public Set<FileLocation> getFilelocationsByMd5(String md5) throws Exception {
@@ -138,22 +143,21 @@ public abstract class IndexFilesDS {
         long time = System.currentTimeMillis();
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALL, nodeConf);
         log.info("Load time {} for {}", (System.currentTimeMillis() - time) / 1000, result.getIndexFiles().length);
-        return Arrays.asList(result.getIndexFiles());
-
+        return Arrays.asList(result.getIndexFiles()).stream().map(Mapper::map).toList();
     }
 
     public List<Files> getAllFiles() throws Exception {
         DatabaseFileLocationParam param = new DatabaseFileLocationParam();
         configureParam(param);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETALLFILES, nodeConf);
-        return Arrays.asList(result.getFiles());
+        return Arrays.asList(result.getFiles()).stream().map(Mapper::map).toList();
 
     }
 
     public void save(Set<IndexFiles> saves) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
         configureParam(param);
-        param.setIndexFiles(saves);
+        param.setIndexFiles(saves.stream().map(Mapper::map).collect(Collectors.toSet()));
         long time = System.currentTimeMillis();
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.SAVE, nodeConf);
         if (!saves.isEmpty()) {
@@ -197,8 +201,8 @@ public abstract class IndexFilesDS {
     public void delete(IndexFiles index) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
         configureParam(param);
-        Set<IndexFiles> indexes = new HashSet<>();
-        indexes.add(index);
+        Set<IndexFilesDTO> indexes = new HashSet<>();
+        indexes.add(Mapper.map(index));
         param.setIndexFiles(indexes);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.DELETE, nodeConf);
     }
@@ -206,8 +210,8 @@ public abstract class IndexFilesDS {
     public void delete(Files index) throws Exception {
         DatabaseIndexFilesParam param = new DatabaseIndexFilesParam();
         configureParam(param);
-        Set<Files> indexes = new HashSet<>();
-        indexes.add(index);
+        Set<FilesDTO> indexes = new HashSet<>();
+        indexes.add(Mapper.map(index));
         param.setFiles(indexes);
         EurekaUtil.sendMe(DatabaseResult.class, param, getAppName(), EurekaConstants.DELETE, nodeConf);
     }
@@ -217,11 +221,11 @@ public abstract class IndexFilesDS {
         configureParam(param);
         param.setMd5s(md5s);
         DatabaseIndexFilesResult result = EurekaUtil.sendMe(DatabaseIndexFilesResult.class, param, getAppName(), EurekaConstants.GETBYMD5, nodeConf);
-        Map<String, IndexFiles> fullMap = result.getIndexFilesMap();
+        Map<String, IndexFilesDTO> fullMap = result.getIndexFilesMap();
         Map<String, IndexFiles> simpleMap = new HashMap<>();
-        for (Entry<String, IndexFiles> entry : fullMap.entrySet()) {
+        for (Entry<String, IndexFilesDTO> entry : fullMap.entrySet()) {
             String key = entry.getKey();
-            simpleMap.put(key, entry.getValue());
+            simpleMap.put(key, Mapper.map(entry.getValue()));
         }
         return simpleMap;
     }

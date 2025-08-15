@@ -7,6 +7,7 @@
  */
 module common.model {
     exports roart.common.model;
+    exports roart.common.mapper;
 
     requires com.fasterxml.jackson.annotation;
     requires common.config;
