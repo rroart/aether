@@ -22,6 +22,7 @@ module searchengine {
     requires spring.cloud.commons;
     requires spring.web;
     requires spring.boot;
+    requires spring.boot.web.server;
     requires common.util;
     requires curator.framework;
     requires common.model;

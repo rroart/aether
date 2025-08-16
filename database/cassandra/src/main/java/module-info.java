@@ -23,6 +23,7 @@ module cassandra {
     requires guava;
     requires org.slf4j;
     requires spring.boot.autoconfigure;
+    requires spring.boot.cassandra;
     requires spring.cloud.commons;
     requires spring.web;
     requires spring.boot;

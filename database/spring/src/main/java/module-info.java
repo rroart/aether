@@ -19,7 +19,9 @@ open module springdata {
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;
     requires spring.web;
-    requires spring.boot;
+    requires spring.boot; 
+    requires spring.boot.data.jdbc; 
+    requires spring.boot.web.server;
     requires java.naming;
     requires spring.context;
     requires spring.beans;
@@ -28,4 +30,6 @@ open module springdata {
     requires spring.tx;
     requires spring.data.relational;
     requires spring.data.jdbc;
+    requires spring.boot.jdbc;
+    requires spring.boot.tomcat;
 }

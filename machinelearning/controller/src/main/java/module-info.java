@@ -27,5 +27,6 @@ module classification {
     requires common.model;
     requires curator.framework;
     requires spring.boot;
+    requires spring.boot.web.server;
     requires curator.client;
 }

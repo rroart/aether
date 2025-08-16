@@ -116,10 +116,10 @@
     <mavenshade.version>3.2.1</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>11.0.12</jetty.version>
-    <springboot.version>3.2.4</springboot.version>
-    <springcloud.version>4.1.0</springcloud.version>
-    <springcloudstarter.version>2023.0.0</springcloudstarter.version>
-    <springcore.version>6.1.5</springcore.version>
+    <springboot.version>4.0.0-M1</springboot.version>
+    <springcloud.version>5.0.0-M1</springcloud.version>
+    <springcloudstarter.version>2025.1.0-M1</springcloudstarter.version>
+    <springcore.version>7.0.0-M8</springcore.version>
     <eurekaclient.version>2.0.0</eurekaclient.version>
     <reactor.version>3.6.8</reactor.version>
     <jdk.version>21</jdk.version>

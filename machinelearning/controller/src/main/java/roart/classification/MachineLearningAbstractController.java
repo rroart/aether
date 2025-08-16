@@ -7,7 +7,7 @@ import java.util.Queue;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.*;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import roart.common.machinelearning.MachineLearningConstructorParam;

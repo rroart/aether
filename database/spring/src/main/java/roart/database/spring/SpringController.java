@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration;
+//import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
+//import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+//import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+//import org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration;
+import org.springframework.boot.data.jdbc.autoconfigure.JdbcRepositoriesAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -106,9 +109,9 @@ public class SpringController extends DatabaseAbstractController {
         SqlGeneratorSource generatorSource = new SqlGeneratorSource(context, converter, dialect);
         SqlParametersFactory sqlParametersFactory = new SqlParametersFactory(context, converter);
         InsertStrategyFactory insertStrategyFactory = new InsertStrategyFactory(operations, dialect);
-
+ 
         this.dataAccessStrategy = new DefaultDataAccessStrategy(generatorSource, context, converter, operations,
-                sqlParametersFactory, insertStrategyFactory);
+                sqlParametersFactory, insertStrategyFactory, null);
         delegatingDataAccessStrategy.setDelegate(dataAccessStrategy);
         JdbcRepositoryFactory factory = new JdbcRepositoryFactory(dataAccessStrategy, context, converter,
                 dialect, publisher, operations);

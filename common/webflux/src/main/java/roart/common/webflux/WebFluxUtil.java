@@ -37,6 +37,7 @@ public class WebFluxUtil {
     
     public static <T> T sendMeInner(Class<T> myclass, Object param, String url, ObjectMapper objectMapper) {
         long time = System.currentTimeMillis();
+        log.info("URL {}", url);
         if (objectMapper != null) {
             ExchangeStrategies jacksonStrategy = ExchangeStrategies.builder()
                     .codecs(config -> {
@@ -57,7 +58,7 @@ public class WebFluxUtil {
                 .post()
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(BodyInserters.fromObject(param))
+                .body(BodyInserters.fromValue(param))
                 .retrieve()
                 .bodyToMono(myclass)
                 .onErrorMap(Exception::new)
