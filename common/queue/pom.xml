@@ -39,11 +39,6 @@
     </dependency>
     <dependency>
       <groupId>roart</groupId>
-      <artifactId>aether-common-filesystem</artifactId>
-      <version>${aether.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>roart</groupId>
       <artifactId>aether-common-service</artifactId>
       <version>${aether.version}</version>
     </dependency>

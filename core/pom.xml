@@ -398,11 +398,11 @@
       <artifactId>aether.shadow.zookeeper</artifactId>
       <version>${aether.version}</version>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>com.netflix.eureka</groupId>
       <artifactId>eureka-client</artifactId>
       <version>${eurekaclient.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
