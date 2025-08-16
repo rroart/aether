@@ -22,7 +22,9 @@ import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
 import roart.common.model.Files;
+import roart.common.model.FilesDTO;
 import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesDTO;
 import roart.database.DatabaseOperations;
 
 import org.slf4j.Logger;
@@ -46,7 +48,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
-        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        Map<String, IndexFilesDTO> indexFilesMap = new HashMap<>();
         for (String md5 : param.getMd5s()) {
             HibernateIndexFiles index = hibernateIndexFiles.getByMd5(md5);
             indexFilesMap.put(md5, convert(index));
@@ -75,7 +77,7 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
             return null;
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        IndexFiles[] indexFiles = new IndexFiles[1];
+        IndexFilesDTO[] indexFiles = new IndexFilesDTO[1];
         indexFiles[0] = convert(files);
         result.setIndexFiles(indexFiles);
         return result;
@@ -96,28 +98,31 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
-        List<IndexFiles> retlist = new ArrayList<IndexFiles>();
+        List<IndexFilesDTO> retlist = new ArrayList<IndexFilesDTO>();
         List<HibernateIndexFiles> indexes = hibernateIndexFiles.getAll();
         for (HibernateIndexFiles index : indexes) {
-            IndexFiles ifile = convert(index);
+            IndexFilesDTO ifile = convert(index);
             retlist.add(ifile);
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setIndexFiles(retlist.stream().toArray(IndexFiles[]::new));
+        result.setIndexFiles(retlist.stream().toArray(IndexFilesDTO[]::new));
         return result;
     }
 
     @Override
     public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
-        List<Files> retlist = new ArrayList<>();
+        List<FilesDTO> retlist = new ArrayList<>();
         List<HibernateIndexFiles> indexes = hibernateIndexFiles.getAll();
         for (HibernateIndexFiles index : indexes) {
             for (String filename : index.getFilenames()) {
-                retlist.add(new Files(filename, index.getMd5()));
+                FilesDTO files = new FilesDTO();
+                files.setMd5(index.getMd5());
+                files.setFilename(filename);
+                retlist.add(files);
             }
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setFiles(retlist.stream().toArray(Files[]::new));
+        result.setFiles(retlist.stream().toArray(FilesDTO[]::new));
         return result;
     }
 
@@ -128,14 +133,14 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
-        Set<IndexFiles> is = param.getIndexFiles();
-        for (IndexFiles i : is) {
+        Set<IndexFilesDTO> is = param.getIndexFiles();
+        for (IndexFilesDTO i : is) {
             save(i);
         }
         return null;
     }
     
-    public DatabaseResult save(IndexFiles i) {
+    public DatabaseResult save(IndexFilesDTO i) {
         log.info("Md5 {}", i.getMd5());
         try {
             HibernateIndexFiles hif = new HibernateIndexFiles(configname, nodeConf); //hibernateIndexFiles.ensureExistence(i.getMd5());
@@ -170,12 +175,12 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
-    private IndexFiles convert(HibernateIndexFiles hif) {
+    private IndexFilesDTO convert(HibernateIndexFiles hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setMd5(hif.getMd5());
         ifile.setIndexed(hif.getIndexed());
         ifile.setTimeindex(hif.getTimeindex());
@@ -197,9 +202,9 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
         ifile.setChecked(hif.getChecked());
         Set<String> files = hif.getFilenames();
         for (String file : files) {
-            ifile.addFile(FsUtil.getFileLocation(file));
+            ifile.getFilelocations().add(FsUtil.getFileLocation(file));
         }
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
@@ -237,8 +242,8 @@ public class HibernateIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception { 
-        Set<IndexFiles> indexes = param.getIndexFiles();
-        for (IndexFiles index : indexes) {
+        Set<IndexFilesDTO> indexes = param.getIndexFiles();
+        for (IndexFilesDTO index : indexes) {
             hibernateIndexFiles.delete(index);
         }
         return null;

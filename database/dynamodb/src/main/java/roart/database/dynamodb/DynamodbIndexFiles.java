@@ -17,8 +17,8 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
-import roart.common.model.Files;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,7 +311,7 @@ public class DynamodbIndexFiles {
         return client;
     }
 
-    public void put(IndexFiles ifile) throws Exception {
+    public void put(IndexFilesDTO ifile) throws Exception {
         //HTable /*Interface*/ filesTable = new HTable(conf, "index");
         Map<String, AttributeValue> item = new HashMap<>();
         //item.primaryKey(md5q, ifile.getMd5());
@@ -400,9 +400,9 @@ public class DynamodbIndexFiles {
         }
     }
 
-    public IndexFiles get(Map<String, AttributeValue> item) {
+    public IndexFilesDTO get(Map<String, AttributeValue> item) {
         String md5 = item.get(md5q).s();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
         ifile.setIndexed(new Boolean(itemgets(item.get(indexedq))));
         ifile.setTimeindex(itemgets(item.get(timeindexq)));
@@ -433,12 +433,12 @@ public class DynamodbIndexFiles {
         log.error(Constants.EXCEPTION, e);
     }
          */
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
-    public Files getFiles(Map<String, AttributeValue> item) {
-        Files ifile = new Files();
+    public FilesDTO getFiles(Map<String, AttributeValue> item) {
+        FilesDTO ifile = new FilesDTO();
         ifile.setFilename(itemgets(item.get(filenameq)));
         ifile.setMd5(itemgets(item.get(md5q)));
         return ifile;
@@ -473,10 +473,10 @@ public class DynamodbIndexFiles {
         return Integer.valueOf(s);
     }
 
-    public Map<String, IndexFiles> get(Set<String> md5s) {
-        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+    public Map<String, IndexFilesDTO> get(Set<String> md5s) {
+        Map<String, IndexFilesDTO> indexFilesMap = new HashMap<>();
         for (String md5 : md5s) {
-            IndexFiles indexFile = get(md5);
+            IndexFilesDTO indexFile = get(md5);
             if (indexFile != null) {
                 indexFilesMap.put(md5, indexFile);
             }
@@ -484,7 +484,7 @@ public class DynamodbIndexFiles {
         return indexFilesMap;
     }
 
-    public IndexFiles get(String md5) {
+    public IndexFilesDTO get(String md5) {
         Map<String, AttributeValue> keyMap = Map.of(md5q, AttributeValue.builder().s(md5).build());
         Map<String, AttributeValue> item = client.getItem(GetItemRequest.builder().tableName(getIndexFiles()).key(keyMap).build()).item();
         if (item == null || item.isEmpty()) {
@@ -493,7 +493,7 @@ public class DynamodbIndexFiles {
         return get(item);
     }
 
-    public IndexFiles getIndexByFilelocation(FileLocation fl) {
+    public IndexFilesDTO getIndexByFilelocation(FileLocation fl) {
         String md5 = getMd5ByFilelocation(fl);
         if (md5.length() == 0) {
             return null;
@@ -553,8 +553,8 @@ public class DynamodbIndexFiles {
         return flset;
     }
 
-    public List<IndexFiles> getAll() throws Exception {
-        List<IndexFiles> retlist = new ArrayList<>();
+    public List<IndexFilesDTO> getAll() throws Exception {
+        List<IndexFilesDTO> retlist = new ArrayList<>();
         ScanRequest scanRequest = ScanRequest.builder()
                 .tableName(getIndexFiles()).build();
 
@@ -576,8 +576,8 @@ public class DynamodbIndexFiles {
         return retlist;
     }
 
-    public List<Files> getAllFiles() throws Exception {
-        List<Files> retlist = new ArrayList<>();
+    public List<FilesDTO> getAllFiles() throws Exception {
+        List<FilesDTO> retlist = new ArrayList<>();
         ScanRequest scanRequest = ScanRequest.builder()
                 .tableName(getFiles()).build();
 
@@ -599,7 +599,7 @@ public class DynamodbIndexFiles {
         return retlist;
     }
 
-    public IndexFiles ensureExistenceNot(String md5) throws Exception {
+    public IndexFilesDTO ensureExistenceNot(String md5) throws Exception {
         return null;
     }
 
@@ -675,7 +675,7 @@ public class DynamodbIndexFiles {
         return languages;
     }
 
-    public void delete(IndexFiles index) throws Exception {
+    public void delete(IndexFilesDTO index) throws Exception {
             client.deleteItem(DeleteItemRequest.builder().tableName(getIndexFiles()).key(Map.of(md5q, AttributeValue.builder().s(index.getMd5()).build())).build());
 
         Set<FileLocation> curfls = getFilelocationsByMd5(index.getMd5());
@@ -688,7 +688,7 @@ public class DynamodbIndexFiles {
         }
     }
 
-    public void delete(Files index) throws Exception {
+    public void delete(FilesDTO index) throws Exception {
         deleteFile(index.getFilename());
     }
 

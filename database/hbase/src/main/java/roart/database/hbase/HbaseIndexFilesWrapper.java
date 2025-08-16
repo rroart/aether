@@ -33,8 +33,8 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
-import roart.common.model.Files;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 import roart.database.DatabaseOperations;
 
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
         Set<String> md5s = param.getMd5s();
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        Map<String, IndexFiles> indexFilesMap = hbaseIndexFiles.get(md5s);
+        Map<String, IndexFilesDTO> indexFilesMap = hbaseIndexFiles.get(md5s);
         result.setIndexFilesMap(indexFilesMap);
         return result;
     }
@@ -72,9 +72,9 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception {
         FileLocation fl = param.getFileLocation();
-        IndexFiles indexFilesGot = hbaseIndexFiles.getIndexByFilelocation(fl);
+        IndexFilesDTO indexFilesGot = hbaseIndexFiles.getIndexByFilelocation(fl);
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        IndexFiles[] indexFiles = new IndexFiles[1];
+        IndexFilesDTO[] indexFiles = new IndexFilesDTO[1];
         indexFiles[0] = indexFilesGot;
         result.setIndexFiles(indexFiles);
         return result;
@@ -102,20 +102,20 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setIndexFiles(hbaseIndexFiles.getAll().stream().toArray(IndexFiles[]::new));
+        result.setIndexFiles(hbaseIndexFiles.getAll().stream().toArray(IndexFilesDTO[]::new));
         return result;
     }
 
     @Override
     public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setFiles(hbaseIndexFiles.getAllFiles().stream().toArray(Files[]::new));
+        result.setFiles(hbaseIndexFiles.getAllFiles().stream().toArray(FilesDTO[]::new));
         return result;
     }
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
-        Set<IndexFiles> is = param.getIndexFiles();
+        Set<IndexFilesDTO> is = param.getIndexFiles();
         hbaseIndexFiles.save(is);
         return null;
     }
@@ -154,12 +154,12 @@ public class HbaseIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception {
-        Set<IndexFiles> indexes = param.getIndexFiles();
-        for (IndexFiles index : indexes) {
+        Set<IndexFilesDTO> indexes = param.getIndexFiles();
+        for (IndexFilesDTO index : indexes) {
             hbaseIndexFiles.delete(index);
         }
-        Set<Files> files = param.getFiles();
-        for (Files index : files) {
+        Set<FilesDTO> files = param.getFiles();
+        for (FilesDTO index : files) {
             hbaseIndexFiles.delete(index);
         }
         return null;

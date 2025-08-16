@@ -23,7 +23,8 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 import roart.common.util.FsUtil;
 import roart.database.DatabaseOperations;
 
@@ -43,7 +44,7 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
         Set<String> md5s = param.getMd5s();
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        Map<String, IndexFiles> indexFilesMap = cassandraIndexFiles.get(md5s);
+        Map<String, IndexFilesDTO> indexFilesMap = cassandraIndexFiles.get(md5s);
         result.setIndexFilesMap(indexFilesMap);
         return result;
     }
@@ -61,9 +62,9 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseIndexFilesResult getByFilelocation(DatabaseFileLocationParam param) throws Exception {
         FileLocation fl = param.getFileLocation();
-        IndexFiles indexFilesGot = cassandraIndexFiles.getIndexByFilelocation(fl);
+        IndexFilesDTO indexFilesGot = cassandraIndexFiles.getIndexByFilelocation(fl);
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        IndexFiles[] indexFiles = new IndexFiles[1];
+        IndexFilesDTO[] indexFiles = new IndexFilesDTO[1];
         indexFiles[0] = indexFilesGot;
         result.setIndexFiles(indexFiles);
         return result;
@@ -95,9 +96,9 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
         if (useMapper) {
-            result.setIndexFiles(cassandraIndexFiles.getIndexDao().findAll().stream().map(e -> map(e)).toList().toArray(IndexFiles[]::new));
+            result.setIndexFiles(cassandraIndexFiles.getIndexDao().findAll().stream().map(e -> map(e)).toList().toArray(IndexFilesDTO[]::new));
         } else {
-        result.setIndexFiles(cassandraIndexFiles.getAll().stream().toArray(IndexFiles[]::new));
+        result.setIndexFiles(cassandraIndexFiles.getAll().stream().toArray(IndexFilesDTO[]::new));
         }
         return result;
     }
@@ -106,17 +107,17 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
     public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
         if (useMapper) {
-            result.setFiles(cassandraIndexFiles.getFilesDao().findAll().stream().map(e -> map(e)).toList().toArray(roart.common.model.Files[]::new));
+            result.setFiles(cassandraIndexFiles.getFilesDao().findAll().stream().map(e -> map(e)).toList().toArray(FilesDTO[]::new));
         } else {
-        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(roart.common.model.Files[]::new));
+        result.setFiles(cassandraIndexFiles.getAllFiles().stream().toArray(FilesDTO[]::new));
         }
         return result;
     }
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) throws Exception {
-        Set<IndexFiles> is = param.getIndexFiles();
-        for (IndexFiles i : is) {
+        Set<IndexFilesDTO> is = param.getIndexFiles();
+        for (IndexFilesDTO i : is) {
             cassandraIndexFiles.put(i);
         }
         return null;
@@ -156,12 +157,12 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception {
-        Set<IndexFiles> indexes = param.getIndexFiles();
-        for (IndexFiles index : indexes) {
+        Set<IndexFilesDTO> indexes = param.getIndexFiles();
+        for (IndexFilesDTO index : indexes) {
             cassandraIndexFiles.delete(index);
         }
-        Set<roart.common.model.Files> files = param.getFiles();
-        for (roart.common.model.Files index : files) {
+        Set<FilesDTO> files = param.getFiles();
+        for (FilesDTO index : files) {
             cassandraIndexFiles.delete(index);
         }
         return null;
@@ -185,14 +186,14 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         return new DatabaseConstructorResult();        
     }
     
-    private Files map(IndexFiles i, FileLocation f) {
+    private Files map(IndexFilesDTO i, FileLocation f) {
         Files fi = new Files();
         fi.setFilename(f.toString());
         fi.setMd5(i.getMd5());
         return fi;
     }
 
-    private Index map(IndexFiles i) {
+    private Index map(IndexFilesDTO i) {
         try {
             Index hif = new Index(); //hibernateIndexFiles.ensureExistence(i.getMd5());
             hif.setMd5(i.getMd5());
@@ -226,12 +227,12 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         }
     }
 
-    private IndexFiles convert(Index hif) {
+    private IndexFilesDTO convert(Index hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setMd5(hif.getMd5());
         ifile.setIndexed(hif.getIndexed());
         ifile.setTimeindex(hif.getTimeindex());
@@ -257,16 +258,16 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
             ifile.addFile(FsUtil.getFileLocation(file));
         }
         */
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
-     private IndexFiles map(Index hif) {
+     private IndexFilesDTO map(Index hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setVersion(hif.getVersion());
         //ifile.setMd5(hif.getMd5());
         ifile.setIndexed(hif.getIndexed());
@@ -294,16 +295,16 @@ public class CassandraIndexFilesWrapper extends DatabaseOperations {
         }
         */
         ifile.setFilelocations(new HashSet<>(hif.getFilelocations()));
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
-    private roart.common.model.Files map(Files hif) {
+    private FilesDTO map(Files hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        roart.common.model.Files ifile = new roart.common.model.Files();
+        FilesDTO ifile = new FilesDTO();
         //ifile.setVersion(hif.getVersion());
         ifile.setMd5(hif.getMd5());
         ifile.setFilename(hif.getFilename());

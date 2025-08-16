@@ -41,8 +41,8 @@ import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.database.DatabaseConstructorResult;
 import roart.common.model.FileLocation;
-import roart.common.model.Files;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 import roart.common.util.FsUtil;
 import roart.common.util.JsonUtil;
 
@@ -164,10 +164,10 @@ public class HbaseIndexFiles {
         }
     }
 
-    public void save(Set<IndexFiles> is) throws IOException, InterruptedException {
+    public void save(Set<IndexFilesDTO> is) throws IOException, InterruptedException {
         List<Row> indexes = new ArrayList<>();
         List<Row> files = new ArrayList<>();
-        for (IndexFiles i : is) {
+        for (IndexFilesDTO i : is) {
             Put put = map(i);
             if (put != null) {
                 indexes.add(put);
@@ -209,7 +209,7 @@ public class HbaseIndexFiles {
     }
     
     // not used
-    public void put(IndexFiles ifile) throws Exception {
+    public void put(IndexFilesDTO ifile) throws Exception {
         Put put = map(ifile);
 
         put(ifile.getMd5(), ifile.getFilelocations());	    
@@ -217,7 +217,7 @@ public class HbaseIndexFiles {
 
     }
 
-private Put map(IndexFiles ifile) {
+private Put map(IndexFilesDTO ifile) {
     Put put = new Put(Bytes.toBytes(ifile.getMd5()));
     put.addColumn(indexcf, md5q, Bytes.toBytes(ifile.getMd5()));
     if (ifile.getIndexed() != null) {
@@ -336,12 +336,12 @@ private Put map(IndexFiles ifile) {
         return put;
     }
 
-    public IndexFiles get(Result index) {
+    public IndexFilesDTO get(Result index) {
         if (index.isEmpty()) {
             return null;
         }
         String md5 = bytesToString(index.getValue(indexcf, md5q));
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
         ifile.setIndexed(Boolean.valueOf(bytesToString(index.getValue(indexcf, indexedq))));
         ifile.setTimeindex(bytesToString(index.getValue(indexcf, timeindexq)));
@@ -371,21 +371,21 @@ private Put map(IndexFiles ifile) {
                     byte[] qual = CellUtil.cloneValue(kv);
                     String loc = Bytes.toString(qual);
                     FileLocation fl = getFileLocation(loc);
-                    ifile.addFile(fl);
+                    ifile.getFilelocations().add(fl);
                 }
             }
         }
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
-    public Files getFiles(Result index) {
+    public FilesDTO getFiles(Result index) {
         if (index.isEmpty()) {
             return null;
         }
         String filename = bytesToString(index.getRow());
         String md5 = bytesToString(index.getValue(filescf, md5q));
-        Files ifile = new Files();
+        FilesDTO ifile = new FilesDTO();
         ifile.setFilename(filename);
         ifile.setMd5(md5);
         return ifile;
@@ -413,8 +413,8 @@ private Put map(IndexFiles ifile) {
         return fl;
     }
 
-    public Map<String, IndexFiles> get(Set<String> md5s) throws IOException, InterruptedException {
-        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+    public Map<String, IndexFilesDTO> get(Set<String> md5s) throws IOException, InterruptedException {
+        Map<String, IndexFilesDTO> indexFilesMap = new HashMap<>();
         List<Row> indexes = new ArrayList<>();
         for (String md5 : md5s) {
             Get get = indexGet(md5);
@@ -422,7 +422,7 @@ private Put map(IndexFiles ifile) {
         }
         Object[] results = batch(indexTable, indexes, BATCH_SIZE);
         for (int i = 0; i < indexes.size(); i++) {
-            IndexFiles index = get((Result) results[i]);
+            IndexFilesDTO index = get((Result) results[i]);
             if (index == null) {
                 continue;
             }
@@ -431,7 +431,7 @@ private Put map(IndexFiles ifile) {
         return indexFilesMap;
     }
 
-    public IndexFiles get(String md5) {
+    public IndexFilesDTO get(String md5) {
         try {
             Get get = indexGet(md5);
             //get.addFamily(flcf);
@@ -453,7 +453,7 @@ private Put map(IndexFiles ifile) {
     }
 
     @Deprecated
-    public IndexFiles getIndexByFilelocation(FileLocation fl) {
+    public IndexFilesDTO getIndexByFilelocation(FileLocation fl) {
         String md5 = getMd5ByFilelocation(fl);
         if (md5.length() == 0) {
             return null;
@@ -477,7 +477,7 @@ private Put map(IndexFiles ifile) {
         Map<FileLocation, String> retMap = new HashMap<>();
         Object[] results = batch(filesTable, files, BATCH_SIZE);
         for (int i = 0; i < files.size(); i++) {
-            Files result = getFiles((Result) results[i]);
+            FilesDTO result = getFiles((Result) results[i]);
             if (result == null) {
                 continue;
             }
@@ -534,8 +534,8 @@ private Put map(IndexFiles ifile) {
         return flset;
     }
 
-    public List<IndexFiles> getAll() throws Exception {
-        List<IndexFiles> retlist = new ArrayList<IndexFiles>();
+    public List<IndexFilesDTO> getAll() throws Exception {
+        List<IndexFilesDTO> retlist = new ArrayList<IndexFilesDTO>();
         /*
 	Configuration conf = HBaseConfiguration.create();
 	HTablePool pool = new HTablePool();
@@ -548,8 +548,8 @@ private Put map(IndexFiles ifile) {
         return retlist;
     }
 
-    public List<Files> getAllFiles() throws Exception {
-        List<Files> retlist = new ArrayList<>();
+    public List<FilesDTO> getAllFiles() throws Exception {
+        List<FilesDTO> retlist = new ArrayList<>();
         /*
         Configuration conf = HBaseConfiguration.create();
         HTablePool pool = new HTablePool();
@@ -562,7 +562,7 @@ private Put map(IndexFiles ifile) {
         return retlist;
     }
 
-    public IndexFiles ensureExistenceNot(String md5) throws Exception {
+    public IndexFilesDTO ensureExistenceNot(String md5) throws Exception {
         try {
             //HTable /*Interface*/ filesTable = new HTable(conf, getIndex());
             Put put = new Put(Bytes.toBytes(md5));
@@ -570,7 +570,7 @@ private Put map(IndexFiles ifile) {
         } catch (IOException e) {
             log.error(Constants.EXCEPTION, e);
         }
-        IndexFiles i = new IndexFiles(md5);
+        IndexFilesDTO i = new IndexFilesDTO(md5);
         //i.setMd5(md5);
         return i;
     }
@@ -672,13 +672,13 @@ private Put map(IndexFiles ifile) {
         return languages;
     }
 
-    public void delete(Set<IndexFiles> indexes) throws Exception {
-        for (IndexFiles index : indexes) {
+    public void delete(Set<IndexFilesDTO> indexes) throws Exception {
+        for (IndexFilesDTO index : indexes) {
             delete(index);
         }
     }
     
-    public void delete(IndexFiles index) throws Exception {
+    public void delete(IndexFilesDTO index) throws Exception {
         // TODO
         /*
         for (int i = -1; i < index.getFilelocations().size(); i++) {
@@ -701,7 +701,7 @@ private Put map(IndexFiles ifile) {
             deleteFile(name);
         }
     }
-    public void delete(Files index) throws Exception {
+    public void delete(FilesDTO index) throws Exception {
         deleteFile(index.getFilename());
     }
     

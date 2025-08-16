@@ -20,7 +20,7 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
-import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
-        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        Map<String, IndexFilesDTO> indexFilesMap = new HashMap<>();
         for (String md5 : param.getMd5s()) {
             DataNucleusIndexFiles index = dataNucleusIndexFiles.getByMd5(md5);
             indexFilesMap.put(md5, convert(index));
@@ -70,7 +70,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
             return null;
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        IndexFiles[] indexFiles = new IndexFiles[1];
+        IndexFilesDTO[] indexFiles = new IndexFilesDTO[1];
         indexFiles[0] = convert(files);
         result.setIndexFiles(indexFiles);
         return result;
@@ -91,20 +91,20 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
-        List<IndexFiles> retlist = new ArrayList<>();
+        List<IndexFilesDTO> retlist = new ArrayList<>();
         List<DataNucleusIndexFiles> indexes = dataNucleusIndexFiles.getAll();
         for (DataNucleusIndexFiles index : indexes) {
-            IndexFiles ifile = convert(index);
+            IndexFilesDTO ifile = convert(index);
             retlist.add(ifile);
         }
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setIndexFiles(retlist.stream().toArray(IndexFiles[]::new));
+        result.setIndexFiles(retlist.stream().toArray(IndexFilesDTO[]::new));
         return result;
     }
 
     @Override
     public DatabaseResult save(DatabaseIndexFilesParam param) { 
-        IndexFiles i = param.getIndexFiles();
+        IndexFilesDTO i = param.getIndexFiles();
         try {
             DataNucleusIndexFiles hif = dataNucleusIndexFiles.ensureExistence(i.getMd5());
             hif.setIndexed(i.getIndexed());
@@ -158,12 +158,12 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
-    private IndexFiles convert(DataNucleusIndexFiles hif) {
+    private IndexFilesDTO convert(DataNucleusIndexFiles hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFiles(md5);
         // ifile.setMd5(hif.getMd5());
         ifile.setIndexed(hif.getIndexed());
         ifile.setTimeindex(hif.getTimeindex());
@@ -228,7 +228,7 @@ public class DataNucleusIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception { 
-        IndexFiles index = param.getIndexFiles();
+        IndexFilesDTO index = param.getIndexFiles();
         dataNucleusIndexFiles.delete(index);
         dataNucleusFiles.delete(index);
         //DatabaseResult result = new DatabaseResult();

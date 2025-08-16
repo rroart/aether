@@ -10,8 +10,8 @@ public class IndexFilesUtil {
     public static final int FILENAMECOLUMN = 3;
     public static final int MIMETYPECOLUMN = 4;    
 
-    public static IndexFiles getSample() {
-        IndexFiles indexFiles = new IndexFiles("1234");
+    public static IndexFilesDTO getSample() {
+        IndexFilesDTO indexFiles = new IndexFilesDTO("1234");
         indexFiles.setFailed(1);
         indexFiles.setConvertsw("tika");
         Set<FileLocation> filelocations = new HashSet<>();
@@ -23,7 +23,7 @@ public class IndexFilesUtil {
         return indexFiles;
     }
     
-    public static IndexFiles changeSample(IndexFiles indexfiles) {
+    public static IndexFilesDTO changeSample(IndexFilesDTO indexfiles) {
         Set<FileLocation> fls = indexfiles.getFilelocations();
         fls.remove(new FileLocation("localhost", "/tmp/t2"));
         return indexfiles;

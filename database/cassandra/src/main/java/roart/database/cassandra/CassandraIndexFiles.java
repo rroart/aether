@@ -14,8 +14,8 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
-import roart.common.model.Files;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 import roart.common.util.FsUtil;
 
 import org.slf4j.Logger;
@@ -230,7 +230,7 @@ public class CassandraIndexFiles {
 
         session.execute(create2.build());
     }
-    public void put(IndexFiles ifile) throws Exception {
+    public void put(IndexFilesDTO ifile) throws Exception {
         //InsertInto insert = insertInto(TABLE_INDEXFILES_NAME);
         UpdateStart updateStart = update(TABLE_INDEXFILES_NAME);
         UpdateWithAssignments updatewa = null;
@@ -319,9 +319,9 @@ public class CassandraIndexFiles {
         }
     }
 
-    public IndexFiles get(Row row) {
+    public IndexFilesDTO get(Row row) {
         String md5 = row.getString(md5q);
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
         ifile.setIndexed(row.getBoolean(indexedq));
         ifile.setTimeindex(row.getString(timeindexq));
@@ -342,23 +342,23 @@ public class CassandraIndexFiles {
         ifile.setCreated(row.getString(createdq));
         ifile.setChecked(row.getString(checkedq));
         ifile.setFilelocations(row.getSet(filelocationsq, FileLocation.class));
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
-    public Files getFiles(Row row) {
+    public FilesDTO getFiles(Row row) {
         String md5 = row.getString(md5q);
-        Files ifile = new Files();
+        FilesDTO ifile = new FilesDTO();
         //ifile.setMd5(bytesToString(index.getValue(indexcf, md5q)));
         ifile.setFilename(row.getString(filenameq));
         ifile.setMd5(row.getString(md5q));
         return ifile;
     }
 
-    public Map<String, IndexFiles> get(Set<String> md5s) {
-        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+    public Map<String, IndexFilesDTO> get(Set<String> md5s) {
+        Map<String, IndexFilesDTO> indexFilesMap = new HashMap<>();
         for (String md5 : md5s) {
-            IndexFiles indexFile = get(md5);
+            IndexFilesDTO indexFile = get(md5);
             if (indexFile != null) {
                 indexFilesMap.put(md5, indexFile);
             }
@@ -366,7 +366,7 @@ public class CassandraIndexFiles {
         return indexFilesMap;
     }
 
-    public IndexFiles get(String md5) {
+    public IndexFilesDTO get(String md5) {
         Select select = selectFrom(TABLE_INDEXFILES_NAME)
                 .all()
                 .whereColumn(md5q)
@@ -378,7 +378,7 @@ public class CassandraIndexFiles {
         return null;
     }
 
-    public IndexFiles getIndexByFilelocation(FileLocation fl) {
+    public IndexFilesDTO getIndexByFilelocation(FileLocation fl) {
         String md5 = getMd5ByFilelocation(fl);
         if (md5.length() == 0) {
             return null;
@@ -416,27 +416,27 @@ public class CassandraIndexFiles {
         return flset;
     }
 
-    public List<IndexFiles> getAll() throws Exception {
+    public List<IndexFilesDTO> getAll() throws Exception {
         Select select = selectFrom(TABLE_INDEXFILES_NAME).all();
         ResultSet resultSet = session.execute(select.build());	
-        List<IndexFiles> retlist = new ArrayList<>();
+        List<IndexFilesDTO> retlist = new ArrayList<>();
         for (Row row : resultSet) {
             retlist.add(get(row));
         }
         return retlist;
     }
 
-    public List<Files> getAllFiles() throws Exception {
+    public List<FilesDTO> getAllFiles() throws Exception {
         Select select = selectFrom(TABLE_FILES_NAME).all();
         ResultSet resultSet = session.execute(select.build());   
-        List<Files> retlist = new ArrayList<>();
+        List<FilesDTO> retlist = new ArrayList<>();
         for (Row row : resultSet) {
             retlist.add(getFiles(row));
         }
         return retlist;
     }
 
-    public IndexFiles ensureExistenceNot(String md5) throws Exception {
+    public IndexFilesDTO ensureExistenceNot(String md5) throws Exception {
         try {
             //HTable /*Interface*/ filesTable = new HTable(conf, "index");
             //Put put = new Put(md5));
@@ -444,7 +444,7 @@ public class CassandraIndexFiles {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
-        IndexFiles i = new IndexFiles(md5);
+        IndexFilesDTO i = new IndexFilesDTO(md5);
         //i.setMd5(md5);
         return i;
     }
@@ -513,7 +513,7 @@ public class CassandraIndexFiles {
         return languages;
     }
 
-    public void delete(IndexFiles index) throws Exception {
+    public void delete(IndexFilesDTO index) throws Exception {
         Delete delete = deleteFrom(TABLE_INDEXFILES_NAME)
                 .whereColumn(md5q)
                 .isEqualTo(literal(index.getMd5()));
@@ -534,7 +534,7 @@ public class CassandraIndexFiles {
         }
     }
 
-    public void delete(Files filename) throws Exception {
+    public void delete(FilesDTO filename) throws Exception {
         deleteFile(filename.getFilename());
     }
 

@@ -43,7 +43,7 @@ import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
 import roart.common.database.DatabaseConstructorParam;
 import roart.common.model.FileLocation;
-import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesDTO;
 
 @NamedQueries({
         @NamedQuery(name = "idxByFile",
@@ -484,7 +484,7 @@ import roart.common.model.IndexFiles;
 		return new HashSet<String>(HibernateUtil.convert(HibernateUtil.currentSession(getH2Dir()).createSelectionQuery("select distinct language from HibernateIndexFiles").list(), String.class));
 	}
 
-    public void delete(IndexFiles index) throws Exception {
+    public void delete(IndexFilesDTO index) throws Exception {
         HibernateIndexFiles hif = getByMd5(index.getMd5());
         roart.database.hibernate.HibernateUtil.currentSession(getH2Dir()).remove(hif);
     }

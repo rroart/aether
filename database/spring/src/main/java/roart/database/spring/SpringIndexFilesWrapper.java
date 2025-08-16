@@ -29,7 +29,8 @@ import roart.common.database.DatabaseMd5Result;
 import roart.common.database.DatabaseParam;
 import roart.common.database.DatabaseResult;
 import roart.common.model.FileLocation;
-import roart.common.model.IndexFiles;
+import roart.common.model.FilesDTO;
+import roart.common.model.IndexFilesDTO;
 import roart.common.util.FsUtil;
 import roart.database.DatabaseOperations;
 
@@ -86,7 +87,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getByMd5(DatabaseMd5Param param) throws Exception {
-        Map<String, IndexFiles> indexFilesMap = new HashMap<>();
+        Map<String, IndexFilesDTO> indexFilesMap = new HashMap<>();
         /*
         for (String md5 : param.getMd5s()) {
             Optional<Index> index = repo.findById(md5);
@@ -110,7 +111,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         String md5 = param.getMd5();
         Optional<Index> index = repo.findById(md5);
         if (index.isPresent()) {
-            IndexFiles i = convert(index.get());
+            IndexFilesDTO i = convert(index.get());
             Set<FileLocation> fileLocationSet = i.getFilelocations();
             FileLocation[] fileLocations = new FileLocation[1];
             result.fileLocation = fileLocationSet.stream().toArray(FileLocation[]::new);            
@@ -131,8 +132,8 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
             Optional<Index> index = repo.findById(md5);
             if (index.isPresent()) {
                 DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-                IndexFiles i = convert(index.get());
-                IndexFiles[] indexFiles = new IndexFiles[1];
+                IndexFilesDTO i = convert(index.get());
+                IndexFilesDTO[] indexFiles = new IndexFilesDTO[1];
                 indexFiles[0] = i;
                 result.setIndexFiles(indexFiles);
             } else {
@@ -164,24 +165,24 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
 
     @Override
     public DatabaseIndexFilesResult getAll(DatabaseParam param) throws Exception {
-        //List<IndexFiles> retlist = new ArrayList<>();
+        //List<IndexFilesDTO> retlist = new ArrayList<>();
         //int indexes = repo.findAll();
-        List<IndexFiles> retlist = StreamSupport.stream(repo.findAll().spliterator(), false).map(e -> map(e)).toList();
+        List<IndexFilesDTO> retlist = StreamSupport.stream(repo.findAll().spliterator(), false).map(e -> map(e)).toList();
 
         /*
         for (HibernateIndexFiles index : indexes) {
-            IndexFiles ifile = convert(index);
+            IndexFilesDTO ifile = convert(index);
             retlist.add(ifile);
         }
         */
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setIndexFiles(retlist.stream().toArray(IndexFiles[]::new));
+        result.setIndexFiles(retlist.stream().toArray(IndexFilesDTO[]::new));
         return result;
     }
 
     @Override
     public DatabaseIndexFilesResult getAllFiles(DatabaseParam param) throws Exception {
-        List<roart.common.model.Files> retlist = StreamSupport.stream(filesrepo.findAll().spliterator(), false).map(e -> map(e)).toList();
+        List<FilesDTO> retlist = StreamSupport.stream(filesrepo.findAll().spliterator(), false).map(e -> map(e)).toList();
         /*
         List<HibernateIndexFiles> indexes = hibernateIndexFiles.getAll();
         for (HibernateIndexFiles index : indexes) {
@@ -191,7 +192,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         }
         */
         DatabaseIndexFilesResult result = new DatabaseIndexFilesResult();
-        result.setFiles(retlist.stream().toArray(roart.common.model.Files[]::new));
+        result.setFiles(retlist.stream().toArray(FilesDTO[]::new));
         return result;
     }
 
@@ -202,7 +203,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         } catch (Exception e) {
             log.error(Constants.EXCEPTION, e);
         }
-        Set<IndexFiles> is = param.getIndexFiles();
+        Set<IndexFilesDTO> is = param.getIndexFiles();
         save(is);
         /*
         for (IndexFiles i : is) {
@@ -212,10 +213,10 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
-    private void save(Set<IndexFiles> is) {
+    private void save(Set<IndexFilesDTO> is) {
         Set<Index> indexes = new HashSet<>();
         Set<Files> files = new HashSet<>();
-        for (IndexFiles i : is) {
+        for (IndexFilesDTO i : is) {
             Index in = map(i);
             if (in != null) {
                 log.debug("Save {}", in.toString());
@@ -244,7 +245,7 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
          }
     }
 
-    public DatabaseResult save(IndexFiles i) {
+    public DatabaseResult save(IndexFilesDTO i) {
         log.debug("Md5 {}", i.getMd5());
         Index hif = map(i);
         if ( hif != null ) {
@@ -259,14 +260,14 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         return null;
     }
 
-    private Files map(IndexFiles i, FileLocation f) {
+    private Files map(IndexFilesDTO i, FileLocation f) {
         Files fi = new Files();
         fi.setFilename(f.toString());
         fi.setMd5(i.getMd5());
         return fi;
     }
 
-    private Index map(IndexFiles i) {
+    private Index map(IndexFilesDTO i) {
         try {
             Index hif = new Index(); //hibernateIndexFiles.ensureExistence(i.getMd5());
             hif.setMd5(i.getMd5());
@@ -301,12 +302,12 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         }
     }
 
-    private IndexFiles convert(Index hif) {
+    private IndexFilesDTO convert(Index hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         //ifile.setMd5(hif.getMd5());
         ifile.setVersion(hif.getVersion());
         ifile.setIndexed(hif.getIndexed());
@@ -329,9 +330,9 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         ifile.setChecked(hif.getChecked());
         Set<String> files = hif.getFilenames();
         for (String file : files) {
-            ifile.addFile(FsUtil.getFileLocation(file));
+            ifile.getFilelocations().add(FsUtil.getFileLocation(file));
         }
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
@@ -360,18 +361,19 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
     @Override
     public DatabaseLanguagesResult getLanguages(DatabaseParam param) throws Exception {
         DatabaseLanguagesResult result = new DatabaseLanguagesResult();
+        // TODO does not work
         result.languages = repo.findDistinctByLanguageNotIn(List.of("bla"));
         return result;
     }
 
     @Override
     public DatabaseResult delete(DatabaseIndexFilesParam param) throws Exception { 
-        Set<IndexFiles> indexes = param.getIndexFiles();
-        for (IndexFiles index : indexes) {
+        Set<IndexFilesDTO> indexes = param.getIndexFiles();
+        for (IndexFilesDTO index : indexes) {
             repo.deleteById(index.getMd5());
         }
-        Set<roart.common.model.Files> files = param.getFiles();
-        for (roart.common.model.Files index : files) {
+        Set<FilesDTO> files = param.getFiles();
+        for (FilesDTO index : files) {
             filesrepo.deleteById(index.getFilename());
         }
         return null;
@@ -394,12 +396,12 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         return new DatabaseConstructorResult();        
     }
     
-    private IndexFiles map(Index hif) {
+    private IndexFilesDTO map(Index hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        IndexFiles ifile = new IndexFiles(md5);
+        IndexFilesDTO ifile = new IndexFilesDTO(md5);
         ifile.setVersion(hif.getVersion());
         //ifile.setMd5(hif.getMd5());
         ifile.setIndexed(hif.getIndexed());
@@ -422,18 +424,18 @@ public class SpringIndexFilesWrapper extends DatabaseOperations {
         ifile.setChecked(hif.getChecked());
         Set<String> files = hif.getFilenames();
         for (String file : files) {
-            ifile.addFile(FsUtil.getFileLocation(file));
+            ifile.getFilelocations().add(FsUtil.getFileLocation(file));
         }
-        ifile.setUnchanged();
+        //ifile.setUnchanged();
         return ifile;
     }
 
-    private roart.common.model.Files map(Files hif) {
+    private FilesDTO map(Files hif) {
         if (hif == null) {
             return null;
         }
         String md5 = hif.getMd5();
-        roart.common.model.Files ifile = new roart.common.model.Files();
+        FilesDTO ifile = new FilesDTO();
         ifile.setVersion(hif.getVersion());
         ifile.setMd5(hif.getMd5());
         ifile.setFilename(hif.getFilename());

@@ -16,7 +16,7 @@ import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 
 import roart.common.model.FileLocation;
-import roart.common.model.IndexFiles;
+import roart.common.model.IndexFilesDTO;
 import roart.common.model.IndexFilesUtil;
 import roart.database.dynamodb.DynamodbIndexFiles;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -47,18 +47,18 @@ public class DynamodbIT {
 
     @Test
     public void test() throws Exception {
-        IndexFiles indexFiles;
+        IndexFilesDTO indexFiles;
         indexFiles = IndexFilesUtil.getSample();
         indexfiles.put(indexFiles);
         Set<FileLocation> locs = indexfiles.getFilelocationsByMd5("1234");
         assertEquals(2,locs.size());
-        IndexFiles indexFilesGet = indexfiles.get("1234");
+        IndexFilesDTO indexFilesGet = indexfiles.get("1234");
         System.out.println("ifget " + indexFilesGet);
         IndexFilesUtil.changeSample(indexFiles);
         indexfiles.put(indexFiles);
         locs = indexfiles.getFilelocationsByMd5("1234");
         assertEquals(1,locs.size());
-        List<IndexFiles> list = indexfiles.getAll();
+        List<IndexFilesDTO> list = indexfiles.getAll();
         assertEquals(1, list.size());
         Set<String> md5s = indexfiles.getAllMd5();
         assertEquals(1, md5s.size());
