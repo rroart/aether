@@ -39,7 +39,9 @@
 		  <include>org.apache.spark:spark-mllib_2.13</include>
 		  <include>org.apache.spark:spark-mllib-local_2.13</include>
 		  <include>org.apache.spark:spark-sql_2.13</include>
+		  <include>org.apache.spark:spark-common-utils_2.13</include>
 		  <include>org.eclipse.jetty:jetty-http</include>
+		  <include>org.eclipse.jetty:jetty-plus</include>
 		  <include>org.glassfish.jersey.core:jersey-client</include>
                   <include>org.glassfish.jersey.core:jersey-common</include>
                   <include>org.glassfish.jersey.core:jersey-server</include>
@@ -128,9 +130,19 @@
       <version>${spark.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-common-utils_2.13</artifactId>
+      <version>${spark.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-http</artifactId>
       <version>9.4.50.v20221201</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>11.0.12</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
