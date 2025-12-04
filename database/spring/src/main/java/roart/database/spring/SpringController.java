@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 //import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 //import org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration;
-import org.springframework.boot.data.jdbc.autoconfigure.JdbcRepositoriesAutoConfiguration;
+import org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
@@ -56,7 +56,7 @@ import roart.database.DatabaseOperations;
 @SpringBootApplication(exclude = {
         DataSourceAutoConfiguration.class, 
         DataSourceTransactionManagerAutoConfiguration.class, 
-        JdbcRepositoriesAutoConfiguration.class
+        DataJdbcRepositoriesAutoConfiguration.class
 })
 @EnableDiscoveryClient
 @ComponentScan(basePackages = "roart.database.spring")
