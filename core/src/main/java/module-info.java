@@ -39,7 +39,7 @@ module core {
     requires curator.framework;
     requires curator.recipes;
     //requires eureka.client;
-    requires guava;
+    //requires guava;
     requires com.hazelcast.core;
     requires java.desktop;
     requires java.sql;
@@ -67,4 +67,5 @@ module core {
     requires com.fasterxml.jackson.databind;
     requires eureka.client;
     requires redis.clients.jedis;
+    requires com.google.common;
 }

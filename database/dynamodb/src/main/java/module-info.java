@@ -16,7 +16,6 @@ module dynamodb {
     requires common.model;
     requires common.util;
     requires database;
-    requires guava;
     requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.cloud.commons;

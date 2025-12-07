@@ -16,7 +16,6 @@ module mahout.spark {
     requires common.inmemory.message;
     requires common.inmemory.model;
     requires common.inmemory.factory;
-    requires guava;
     requires lucene.core;
     requires scala.library;
     requires org.slf4j;
@@ -26,4 +25,5 @@ module mahout.spark {
     requires spring.boot;
     requires classification;
     requires hadoop.common;
+    requires com.google.common;
 }
