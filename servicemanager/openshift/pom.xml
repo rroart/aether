@@ -16,7 +16,7 @@
   <build>
     <plugins>
       <plugin>
-	<groupId>org.mortbay.jetty</groupId>
+	<groupId>org.eclipse.jetty</groupId>
 	<artifactId>jetty-maven-plugin</artifactId>
       </plugin>
       <plugin>
@@ -166,4 +166,3 @@
     </dependency>
   </dependencies>
 </project>
-

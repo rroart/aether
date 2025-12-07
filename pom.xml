@@ -63,7 +63,7 @@
 	</configuration>
       </plugin>
       <plugin>
-	<groupId>org.mortbay.jetty</groupId>
+	<groupId>org.eclipse.jetty</groupId>
 	<artifactId>jetty-maven-plugin</artifactId>
 	<version>${jetty.version}</version>
       </plugin>
@@ -114,7 +114,7 @@
     <mavencompiler.version>3.11.0</mavencompiler.version>
     <mavenshade.version>3.6.0</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
-    <jetty.version>11.0.12</jetty.version>
+    <jetty.version>11.0.24</jetty.version>
     <!-- Upgrading to Spring Boot 4 GA -->
     <springboot.version>4.0.0</springboot.version>
     <!-- Align Spring Cloud with Boot 4; pick compatible release when available -->
@@ -151,7 +151,7 @@
     <hazelcast.version>5.3.1</hazelcast.version>
     <hazelcastclient.version>3.12.13</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
-    <jackson.version>2.15.4</jackson.version>
+    <jackson.version>2.18.2</jackson.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>6.1.5.Final</hibernate.version>
@@ -166,21 +166,24 @@
     </jdbc.url>
     <postgresql.version>42.7.3</postgresql.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <h2dir>${project.build.directory}/h2</h2dir>
     <vaadin.version>7.6.0</vaadin.version>
     <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     <gwt.version>2.3.0</gwt.version>
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
     <slf4j.version>1.7.32</slf4j.version>
     <ehcache.version>5.6.14.Final</ehcache.version>
-    <servlet.version>3.1.0</servlet.version>
+    <servlet.version>4.0.1</servlet.version>
+    <javaxservlet.version>4.0.1</javaxservlet.version>
+    <jakartaservlet.version>5.0.0</jakartaservlet.version>
     <!-- must keep at old version for some time -->
-    <guava.version>16.0.1</guava.version>
+    <guava.version>33.4.0-jre</guava.version>
     <commons.version>2.1.1</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
     <joss.version>0.9.14</joss.version>
     <elasticsearch.version>8.12.2</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
-    <netty.version>4.1.92.Final</netty.version>
+    <netty.version>4.1.118.Final</netty.version>
     <jaxb.version>2.3.1</jaxb.version>
     <javaxinject.version>1</javaxinject.version>
     <kafka.version>3.5.0</kafka.version>
@@ -197,7 +200,7 @@
     <redisclient.version>4.4.3</redisclient.version>
     <redisson.version>3.27.1</redisson.version>
     <chill.version>0.10.0</chill.version>
-    <jersey.version>2.36</jersey.version>
+    <jersey.version>3.0.16</jersey.version>
     <imageio.version>1.4.0</imageio.version>
     <cyclonedx.version>2.9.0</cyclonedx.version>
     <fabric8.version>7.0.1</fabric8.version>
