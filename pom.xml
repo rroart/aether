@@ -111,7 +111,7 @@
   </dependencies>
   <properties>
     <aether.version>0.10-SNAPSHOT</aether.version>
-    <mavencompiler.version>3.11.0</mavencompiler.version>
+    <mavencompiler.version>3.14.1</mavencompiler.version>
     <mavenshade.version>3.6.0</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
     <jetty.version>11.0.24</jetty.version>
@@ -151,7 +151,9 @@
     <hazelcast.version>5.3.1</hazelcast.version>
     <hazelcastclient.version>3.12.13</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
-    <jackson.version>2.18.2</jackson.version>
+    <jackson.version>3.0.2</jackson.version>
+    <jackson.annotations.version>2.20</jackson.annotations.version>
+    <jackson.jsr.version>3.0.0-rc2</jackson.jsr.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
     <hibernate.version>6.1.5.Final</hibernate.version>
@@ -205,6 +207,18 @@
     <cyclonedx.version>2.9.0</cyclonedx.version>
     <fabric8.version>7.0.1</fabric8.version>
   </properties>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Import Spring Boot dependency management so child modules inherit consistent versions -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${springboot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <!--repositories>
     <repository>
       <id>vaadin-addons</id>

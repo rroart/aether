@@ -99,23 +99,21 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson.annotations.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-scala_2.11</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
+    <!-- Jackson Scala module removed: no matching jackson-module-scala artifact resolved for Jackson ${jackson.version} in current repo index.
+         If your code needs Scala module support, add the appropriate artifact and version that matches your Scala version
+         (e.g. tools.jackson.module:jackson-module-scala_2.13:<matching-version>). -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -302,7 +300,7 @@
         <version>3.5.3</version>
         <exclusions>
           <exclusion>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>*</artifactId>
           </exclusion>
         </exclusions>

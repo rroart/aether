@@ -2,7 +2,7 @@ package roart.util;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import roart.common.model.FileObject;
 import roart.common.util.JsonData;

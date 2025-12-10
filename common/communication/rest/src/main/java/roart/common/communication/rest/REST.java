@@ -11,17 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
 
 import roart.common.constants.EurekaConstants;
 import roart.common.util.MathUtil;
 import roart.common.communication.model.Communication;
+import tools.jackson.databind.json.JsonMapper;
 
 public class REST extends Communication {
 
@@ -34,7 +35,7 @@ public class REST extends Communication {
     }
     
     public <T> T sendMe(Class<T> myclass, Object param, String host, String port, String path) {
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper objectMapper = JsonMapper.builder().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).build();
         String url = "http://" + host + ":" + port + "/" + path;
         return sendMeInner(myclass, param, url, objectMapper);
     }
@@ -112,11 +113,11 @@ public class REST extends Communication {
         if (objectMapper != null) {
             for (HttpMessageConverter<?> converter : rt.getMessageConverters()) {
                 //System.out.println(converter.getClass().getName());
-                if (converter instanceof MappingJackson2HttpMessageConverter) {
+                if (converter instanceof JacksonJsonHttpMessageConverter) {
                     //log.info("setting object ignore");
                     // temp fix for extra duplicated arr in json
-                    MappingJackson2HttpMessageConverter jsonConverter = (MappingJackson2HttpMessageConverter) converter;
-                    jsonConverter.setObjectMapper(objectMapper);
+                    JacksonJsonHttpMessageConverter jsonConverter = (JacksonJsonHttpMessageConverter) converter;
+                    // TODO jsonConverter.setObjectMapper(objectMapper);
                 }           
             }
         }

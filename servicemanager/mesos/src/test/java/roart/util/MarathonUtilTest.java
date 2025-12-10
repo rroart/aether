@@ -16,9 +16,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.netflix.discovery.util.EurekaUtils;
 
 import roart.common.util.JarThread;
@@ -44,7 +44,7 @@ public class MarathonUtilTest {
     }
 
     @Test
-    public void t5() throws JsonProcessingException {
+    public void t5() throws JacksonException {
         String str = null;
         Runnable eureka = new JarThread("/home/roart/src/aethermicro/eureka/target/aether-eureka-0.10-SNAPSHOT.jar", null, str);
         new Thread(eureka).start();

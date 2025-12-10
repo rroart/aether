@@ -11,10 +11,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class MarathonUtil {
     private static Logger log = LoggerFactory.getLogger(MarathonUtil.class);
@@ -25,7 +25,7 @@ public class MarathonUtil {
         this.url = string;
     }
 
-    public ObjectNode createMarathonJson(String id, String image, int instances, int memory, double cpus, String eurekaURI) throws JsonProcessingException {
+    public ObjectNode createMarathonJson(String id, String image, int instances, int memory, double cpus, String eurekaURI) throws JacksonException {
         ObjectMapper mapper = new ObjectMapper();
         
         ObjectNode docker = mapper.createObjectNode();
@@ -50,7 +50,7 @@ public class MarathonUtil {
         return root;
     }
 
-    public ArrayNode createMarathonJsonArray(String id, String image, int instances, int memory, double cpus, String eurekaURI) throws JsonProcessingException {
+    public ArrayNode createMarathonJsonArray(String id, String image, int instances, int memory, double cpus, String eurekaURI) throws JacksonException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = createMarathonJson(id, image, instances, memory, cpus, eurekaURI);
         ArrayNode rootArray = mapper.createArrayNode();

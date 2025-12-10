@@ -13,8 +13,8 @@ module cassandra {
     requires com.datastax.oss.driver.mapper.runtime;
     requires com.datastax.oss.driver.querybuilder;
     requires java.driver.shaded.guava;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
     requires common.config;
     requires common.constants;
     requires common.database;

@@ -8,8 +8,8 @@
 module dynamodb {
     exports roart.database.dynamodb;
 
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
     requires common.config;
     requires common.constants;
     requires common.database;

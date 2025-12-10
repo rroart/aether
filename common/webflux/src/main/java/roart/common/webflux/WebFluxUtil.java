@@ -4,25 +4,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
+//import org.springframework.http.codec.json.Jackson2JsonDecoder;
+//import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import roart.common.constants.EurekaConstants;
 import roart.common.util.MathUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 public class WebFluxUtil {
     private static Logger log = LoggerFactory.getLogger(WebFluxUtil.class);
 
     public static <T> T sendMe(Class<T> myclass, Object param, String host, String port, String path) {
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper objectMapper = JsonMapper.builder().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).build();
         String url = "http://" + host + ":" + port + "/" + path;
         return sendMeInner(myclass, param, url, objectMapper);
     }
@@ -41,8 +44,8 @@ public class WebFluxUtil {
         if (objectMapper != null) {
             ExchangeStrategies jacksonStrategy = ExchangeStrategies.builder()
                     .codecs(config -> {
-                        config.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, MediaType.APPLICATION_JSON));
-                        config.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON));
+                        config.defaultCodecs().jacksonJsonEncoder(new JacksonJsonEncoder((JsonMapper) objectMapper, MediaType.APPLICATION_JSON));
+                        config.defaultCodecs().jacksonJsonDecoder(new JacksonJsonDecoder((JsonMapper) objectMapper, MediaType.APPLICATION_JSON));
                     }).build();
             WebClient.builder().exchangeStrategies(jacksonStrategy);
         }

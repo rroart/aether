@@ -63,8 +63,8 @@ module core {
     requires common.queue;
     requires org.apache.commons.io;
     requires commons.validator;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
     requires eureka.client;
     requires redis.clients.jedis;
     requires com.google.common;

@@ -6,8 +6,8 @@
  *
  */
 module servicemanager.mesos {
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
     requires docker.java;
     requires java.logging;
     requires org.slf4j;

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import roart.common.constants.Constants;
 import roart.common.config.ConfigConstants;
@@ -43,7 +43,7 @@ public class MyXMLConfig {
         return null;
     }
 
-     public void config() throws JsonProcessingException {
+     public void config() throws JacksonException {
          String version;
          version = "";
          Map<String, String> map = new HashMap<>();

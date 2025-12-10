@@ -1,6 +1,6 @@
 package roart.common.collections.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

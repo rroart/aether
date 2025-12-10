@@ -24,4 +24,6 @@ public interface IndexDao {
     @Select
     List<Index> findAll();
     
+    @Select
+    Iterable<Index> all();
 }

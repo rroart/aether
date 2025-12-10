@@ -10,8 +10,8 @@ module common.communication.factory {
     requires common.communication.model;
     requires common.communication.rest;
     requires common.communication.integration.camel;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
     requires common.communication.integration.spring;
     requires common.communication.message.pulsar;
     requires common.communications.message.kafka;

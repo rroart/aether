@@ -2,7 +2,7 @@ package roart.common.communication.message.model;
 
 import roart.common.communication.model.Communication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public abstract class MessageCommunication extends Communication {
 

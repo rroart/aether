@@ -5,8 +5,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.exception.NotFoundException;
@@ -30,7 +30,7 @@ public class MesosUtil {
         log.info("setup done");
     }
 
-    public String start(String imageName, String eurekaURI) throws JsonProcessingException {
+    public String start(String imageName, String eurekaURI) throws JacksonException {
         DockerClientConfig config;
         config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
         DockerClient docker = DockerClientBuilder.getInstance(config).build();

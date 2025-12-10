@@ -1,18 +1,14 @@
 package roart.database.cassandra;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 import com.datastax.oss.driver.api.core.ProtocolVersion;
 import com.datastax.oss.driver.api.core.data.UdtValue;
 import com.datastax.oss.driver.api.core.type.DataType;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
 import com.datastax.oss.driver.api.core.type.codec.TypeCodec;
 import com.datastax.oss.driver.api.core.type.reflect.GenericType;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import tools.jackson.databind.ObjectMapper;
+
+import java.nio.ByteBuffer;
 
 public class JsonCodec<T> implements TypeCodec<T> {
 

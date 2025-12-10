@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.curator.framework.CuratorFramework;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import roart.common.collections.MyQueue;
 import roart.common.communication.factory.CommunicationFactory;

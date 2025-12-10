@@ -3,7 +3,7 @@ package roart.util;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public interface JsonDeserializable<T> {
      static final ObjectMapper mapper = new ObjectMapper();

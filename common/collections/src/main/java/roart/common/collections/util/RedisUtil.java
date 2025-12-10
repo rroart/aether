@@ -1,6 +1,6 @@
 package roart.common.collections.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import roart.common.util.JsonUtil;
 

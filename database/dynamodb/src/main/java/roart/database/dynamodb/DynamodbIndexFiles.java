@@ -22,11 +22,14 @@ import roart.common.model.IndexFilesDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import tools.jackson.core.JsonParseException;
+//import tools.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.core.type.TypeReference;
+//import tools.jackson.databind.JsonMappingException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
@@ -744,7 +747,7 @@ public class DynamodbIndexFiles {
             try {
                 String objectsString = objectMapper.writeValueAsString(objects);
                 return objectsString;
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 //do something
             }
             return null;
@@ -756,11 +759,9 @@ public class DynamodbIndexFiles {
             try {
                 List objects = objectMapper.readValue(objectsString, new TypeReference<List<Object>>(){});
                 return objects;
-            } catch (JsonParseException e) {
+            } catch (StreamReadException e) {
                 //do something
-            } catch (JsonMappingException e) {
-                //do something
-            } catch (IOException e) {
+            } catch (DatabindException e) {
                 //do something
             }
             return null;

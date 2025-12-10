@@ -7,8 +7,9 @@ import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
+import roart.common.constants.Constants;
 import roart.common.util.JsonUtil;
 import roart.common.util.MathUtil;
 
@@ -40,8 +41,7 @@ public abstract class Communication {
             try {
                 this.returnService = service + InetAddress.getLocalHost().getHostAddress() + System.currentTimeMillis();
             } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(Constants.EXCEPTION, e);
             }
         }
     }
