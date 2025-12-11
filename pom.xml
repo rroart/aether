@@ -145,9 +145,9 @@
     <hadoop.version>3.4.0</hadoop.version>
     <datanucleus.version>5.1.0-release</datanucleus.version>
     <jdo.version>3.0.1</jdo.version>
-    <zookeeper.version>3.8.2</zookeeper.version>
-    <!-- must keep at old version for some time -->
-    <curator.version>5.5.0</curator.version>
+    <zookeeper.version>3.8.5</zookeeper.version>
+    <!-- 5.9.0 did not work, got strange ClassNotFoundException -->
+    <curator.version>5.8.0</curator.version>
     <hazelcast.version>5.3.1</hazelcast.version>
     <hazelcastclient.version>3.12.13</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
