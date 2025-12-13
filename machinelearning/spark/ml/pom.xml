@@ -355,7 +355,7 @@
     <dependency>
       <groupId>org.json4s</groupId>
       <artifactId>json4s-core_2.13</artifactId>
-      <version>3.7.0-M11</version>
+      <version>4.0.7</version>
       <exclusions>
         <exclusion>
           <groupId>tools.jackson.core</groupId>
@@ -366,7 +366,7 @@
     <dependency>
       <groupId>org.json4s</groupId>
       <artifactId>json4s-ast_2.13</artifactId>
-      <version>3.7.0-M11</version>
+      <version>4.0.7</version>
       <exclusions>
         <exclusion>
           <groupId>tools.jackson.core</groupId>
@@ -377,7 +377,7 @@
     <dependency>
       <groupId>org.json4s</groupId>
       <artifactId>json4s-jackson_2.13</artifactId>
-      <version>3.7.0-M11</version>
+      <version>4.0.7</version>
       <exclusions>
         <exclusion>
           <groupId>tools.jackson.core</groupId>
@@ -544,6 +544,12 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>8.0.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <properties>
