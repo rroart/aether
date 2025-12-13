@@ -114,6 +114,7 @@
     <mavencompiler.version>3.14.1</mavencompiler.version>
     <mavenshade.version>3.6.0</mavenshade.version>
     <maveninstall.version>2.5.2</maveninstall.version>
+    <!-- spark 4.0.1 -->
     <jetty.version>11.0.24</jetty.version>
     <!-- Upgrading to Spring Boot 4 GA -->
     <springboot.version>4.0.0</springboot.version>
@@ -201,7 +202,9 @@
     <springrabbit.version>3.0.4</springrabbit.version>
     <redisclient.version>4.4.3</redisclient.version>
     <redisson.version>3.27.1</redisson.version>
+    <!-- spark 4.0.1 -->
     <chill.version>0.10.0</chill.version>
+    <!-- spark 4.0.1 -->
     <jersey.version>3.0.16</jersey.version>
     <imageio.version>1.4.0</imageio.version>
     <cyclonedx.version>2.9.0</cyclonedx.version>
