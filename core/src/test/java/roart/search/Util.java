@@ -16,7 +16,7 @@ import roart.queue.Queues;
 
 public class Util {
 
-    private Sender sender;
+    public Sender sender;
     
     private NodeConfig nodeConf;
     
@@ -204,7 +204,7 @@ public class Util {
         return sender.send(param, param.webpath);
     }
     
-    private NodeConfig getConfig() {
+    public NodeConfig getConfig() {
         return nodeConf;
     }
 

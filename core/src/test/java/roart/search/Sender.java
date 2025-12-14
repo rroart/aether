@@ -8,4 +8,8 @@ public class Sender {
         return WebFluxUtil.sendMe(Object.class, "http://localhost:23456/", param, webpath);
         
     }
+    public Object send(Object param, String webpath, String port) {
+        return WebFluxUtil.sendMe(Object.class, "http://localhost:" + port + "/", param, webpath);
+        
+    }
 }

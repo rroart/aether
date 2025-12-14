@@ -140,6 +140,7 @@
     <mahout.spark.version>2.4.0</mahout.spark.version>
     <spark.version>4.0.1</spark.version>
     <scala.version>2.13</scala.version>
+    <spark.scala.version>2.13.16</spark.scala.version>
     <!-- must keep at old version for some time -->
     <kryo.version>2.21</kryo.version>
     <opennlp.version>2.2.0</opennlp.version>
