@@ -68,4 +68,5 @@ module core {
     requires eureka.client;
     requires redis.clients.jedis;
     requires com.google.common;
+    requires common.inmemory.redis;
 }
