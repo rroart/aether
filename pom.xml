@@ -192,8 +192,10 @@
     <javaxinject.version>1</javaxinject.version>
     <kafka.version>3.5.0</kafka.version>
     <pulsar.version>3.0.0</pulsar.version>
+    <!-- spark 4.0.1 -->
     <commons.math3.version>3.6.1</commons.math3.version>
-    <commons.lang3.version>3.8.1</commons.lang3.version>
+    <!-- spark 4.0.1 -->
+    <commons.lang3.version>3.20.0</commons.lang3.version>
     <commons.io.version>2.11.0</commons.io.version>
     <commons.beanutils.version>1.9.4</commons.beanutils.version>
     <log4j.version>1.2.17</log4j.version>
