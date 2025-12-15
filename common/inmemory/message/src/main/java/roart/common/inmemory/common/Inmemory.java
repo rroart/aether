@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tools.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 import roart.common.constants.Constants;
 import roart.common.inmemory.model.InmemoryMessage;
@@ -84,9 +82,7 @@ public abstract class Inmemory {
         if (data instanceof String) {
             string = (String) data;
         } else {
-            ObjectMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
-            //mapper.b .registerModule(new JavaTimeModule());
-            string = JsonUtil.convert(data, mapper);
+            string = JsonUtil.convert(data);
         }
         if (string == null) {
             string = "";
