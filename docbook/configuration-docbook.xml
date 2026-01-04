@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DocBook documentation generated for configuration keys used by NodeConfig, MyConfig and ConfigConstants.
+  This file was regenerated to ensure all keys referenced by `NodeConfig.java` are documented.
+  Note: descriptions are concise inferences from the constant names and the accessor methods in
+  NodeConfig.java. Where an explicit default exists in ConfigConstants, it is noted. Boolean keys are
+  those annotated in the code with "[@enable]".
+--> 
+<book xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <title>Aether / aethermicro Configuration Reference</title>
+  <info>
+    <author>
+      <personname>Auto-generated documentation</personname>
+    </author>
+    <date>%DATE%</date>
+    <abstract>
+      <para>
+        This document lists configuration keys referenced by the classes
+        roart.common.config.NodeConfig, MyConfig and the constants in
+        ConfigConstants. The values shown are the literal configuration keys
+        (e.g. "mp.cpu") and an inferred type and short description.
+      </para>
+      <para>
+        Assumptions: where no explicit default constant exists, "Default" is
+        listed as "none". Keys marked "[@enable]" are treated as booleans.
+      </para>
+    </abstract>
+  </info>
+
+  <chapter>
+    <title>Overview</title>
+    <para>
+      The configuration system returns values via NodeConfig accessors/wrappers
+      which consult a runtime map of configuration values and a defaults map
+      (see MyConfig.deflt). The following chapters group keys by functional
+      area.
+    </para>
+  </chapter>
+
+  <chapter>
+    <title>Multi-Process / Performance</title>
+    <section>
+      <title>mp.cpu</title>
+      <para>
+        Key: "mp.cpu" - Type: number (double inferred) - Used by: NodeConfig.getMPCpu()
+        - Description: CPU quota or weight for multi-process work (e.g. conversion/indexing).
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>mp.batch</title>
+      <para>
+        Key: "mp.batch" - Type: integer - Used by: NodeConfig.getMPBatch()
+        - Description: Batch size for multi-process tasks.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>mp.threads.fs</title>
+      <para>
+        Key: "mp.threads.fs" - Type: integer - Used by: NodeConfig.getMPThreadsFS()
+        - Description: Number of threads for filesystem-related parallel work.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>mp.threads.convert</title>
+      <para>
+        Key: "mp.threads.convert" - Type: integer - Used by: NodeConfig.getMPThreadsConvert()
+        - Description: Number of threads for conversion tasks.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>mp.threads.index</title>
+      <para>
+        Key: "mp.threads.index" - Type: integer - Used by: NodeConfig.getMPThreadsIndex()
+        - Description: Number of threads for indexing tasks.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>mp.queue.limit</title>
+      <para>
+        Key: "mp.queue.limit" - Type: integer - Used by: NodeConfig.getMPQueueLimit()
+        - Description: Queue capacity limit for multi-process task queues.
+        Default: none
+      </para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Search Engines</title>
+    <section>
+      <title>searchengine.solr[@enable]</title>
+      <para>
+        Key: "searchengine.solr[@enable]" - Type: boolean - Used by: NodeConfig.wantSolr()
+        - Description: Enable/disable Solr integration.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.solr.index</title>
+      <para>
+        Key: "searchengine.solr.index" - Type: string - Used by: NodeConfig.solrIndex()
+        - Description: Default Solr index name.
+        Default: none
+      </para>
+    </section>
+
+    <section>
+      <title>searchengine.solr.solrurl</title>
+      <para>
+        Key: "searchengine.solr.solrurl" - Type: string - Used by: NodeConfig.getSolrurl()
+        - Description: Solr base URL.
+        Default: none
+      </para>
+    </section>
+
+    <section>
+      <title>searchengine.lucene[@enable]</title>
+      <para>
+        Key: "searchengine.lucene[@enable]" - Type: boolean - Used by: NodeConfig.wantLucene()
+        - Description: Enable/disable embedded Lucene search engine.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.lucene.index</title>
+      <para>
+        Key: "searchengine.lucene.index" - Type: string - Used by: NodeConfig.luceneIndex()
+        - Description: Lucene index (name or path) used by the node.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.lucene.lucenepath</title>
+      <para>
+        Key: "searchengine.lucene.lucenepath" - Type: string - Used by: NodeConfig.getLucenepath()
+        - Description: Filesystem path to Lucene indexes.
+        Default: none
+      </para>
+    </section>
+
+    <section>
+      <title>searchengine.elastic[@enable]</title>
+      <para>
+        Key: "searchengine.elastic[@enable]" - Type: boolean - Used by: NodeConfig.wantElastic()
+        - Description: Enable/disable Elasticsearch integration.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.elastic.index</title>
+      <para>
+        Key: "searchengine.elastic.index" - Type: string - Used by: NodeConfig.elasticIndex()
+        - Description: Elasticsearch index name for this node.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.elastic.elastichost</title>
+      <para>
+        Key: "searchengine.elastic.elastichost" - Type: string - Used by: NodeConfig.getElasticHost()
+        - Description: Hostname or IP of the Elasticsearch server.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.elastic.elasticport</title>
+      <para>
+        Key: "searchengine.elastic.elasticport" - Type: string - Used by: NodeConfig.getElasticPort()
+        - Description: Port for Elasticsearch HTTP (kept as string to match existing config semantics).
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.elastic.ssl</title>
+      <para>
+        Key: "searchengine.elastic.ssl" - Type: boolean - Used by: NodeConfig.getElasticSsl()
+        - Description: Use SSL/TLS to connect to Elasticsearch.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.elastic.username</title>
+      <para>
+        Key: "searchengine.elastic.username" - Type: string - Used by: NodeConfig.getElasticUsername()
+        - Description: Username for Elasticsearch authentication.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>searchengine.elastic.password</title>
+      <para>
+        Key: "searchengine.elastic.password" - Type: string - Used by: NodeConfig.getElasticPassword()
+        - Description: Password for Elasticsearch authentication.
+        Default: none
+      </para>
+    </section>
+
+    <section>
+      <title>MLT (More-Like-This) / Similarity</title>
+      <para>
+        Keys: searchengine.mlt.mltcount, searchengine.mlt.mltmindf, searchengine.mlt.mltmintf
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            searchengine.mlt.mltcount - Type: integer - Used by: NodeConfig.getMLTCount() - Default: 10
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            searchengine.mlt.mltmindf - Type: integer - Used by: NodeConfig.getMLTMinDF() - Default: 5
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            searchengine.mlt.mltmintf - Type: integer - Used by: NodeConfig.getMLTMinTF() - Default: 2
+          </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+  </chapter>
+
+  <chapter>
+    <title>Database</title>
+    <para>General flags to enable database backends and connection-related settings.</para>
+
+    <section>
+      <title>database.hibernate[@enable]</title>
+      <para>
+        Key: "database.hibernate[@enable]" - Type: boolean - Used by: NodeConfig.wantHibernate()
+        - Description: Enable Hibernate (H2 / JDBC) based persistence.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>database.hibernate.h2dir</title>
+      <para>
+        Key: "database.hibernate.h2dir" - Type: string - Used by: NodeConfig.getH2dir()
+        - Description: Directory for embedded H2 database files.
+        Default: none
+      </para>
+    </section>
+
+    <section>
+      <title>database.hbase[@enable]</title>
+      <para>
+        Key: "database.hbase[@enable]" - Type: boolean - Used by: NodeConfig.wantHBase()
+        - Description: Enable HBase backend.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>database.hbase.hbasequorum</title>
+      <para>Key: "database.hbase.hbasequorum" - Type: string - Used by: NodeConfig.getHbasequorum() - Description: HBase Zookeeper quorum hosts.</para>
+    </section>
+    <section>
+      <title>database.hbase.hbaseport</title>
+      <para>Key: "database.hbase.hbaseport" - Type: string - Used by: NodeConfig.getHbaseport() - Description: HBase Zookeeper client port.</para>
+    </section>
+    <section>
+      <title>database.hbase.hbasemaster</title>
+      <para>Key: "database.hbase.hbasemaster" - Type: string - Used by: NodeConfig.getHbasemaster() - Description: HBase master host.</para>
+    </section>
+    <section>
+      <title>database.hbase.tableprefix</title>
+      <para>Key: "database.hbase.tableprefix" - Type: string - Used by: NodeConfig.getHbaseTableprefix() - Description: Prefix to use for HBase table names.</para>
+    </section>
+
+    <section>
+      <title>database.cassandra[@enable]</title>
+      <para>
+        Key: "database.cassandra[@enable]" - Type: boolean - Used by: NodeConfig.wantCassandra()
+        - Description: Enable Cassandra backend.
+        Default: none
+      </para>
+    </section>
+    <section>
+      <title>database.cassandra.host</title>
+      <para>Key: "database.cassandra.host" - Type: string - Used by: NodeConfig.getCassandraHost()</para>
+    </section>
+    <section>
+      <title>database.cassandra.tls[@enable]</title>
+      <para>Key: "database.cassandra.tls[@enable]" - Type: boolean - Used by: NodeConfig.getCassandraTLS()</para>
+    </section>
+    <section>
+      <title>database.cassandra.port</title>
+      <para>Key: "database.cassandra.port" - Type: string - Used by: NodeConfig.getCassandraPort()</para>
+    </section>
+    <section>
+      <title>database.cassandra.keyspace</title>
+      <para>Key: "database.cassandra.keyspace" - Type: string - Used by: NodeConfig.getCassandraKeyspace()</para>
+    </section>
+    <section>
+      <title>database.cassandra.thriftport</title>
+      <para>Key: "database.cassandra.thriftport" - Type: string - Used by: NodeConfig.getCassandraThriftPort()</para>
+    </section>
+    <section>
+      <title>database.cassandra.tlsport</title>
+      <para>Key: "database.cassandra.tlsport" - Type: string - Used by: NodeConfig.getCassandraTLSPort()</para>
+    </section>
+
+    <section>
+      <title>database.dynamodb[@enable]</title>
+      <para>
+        Key: "database.dynamodb[@enable]" - Type: boolean - Used by: NodeConfig.wantDynamodb()
+      </para>
+    </section>
+    <section>
+      <title>database.dynamodb.host</title>
+      <para>Key: "database.dynamodb.host" - Type: string - Used by: NodeConfig.getDynamodbHost()</para>
+    </section>
+    <section>
+      <title>database.dynamodb.port</title>
+      <para>Key: "database.dynamodb.port" - Type: string - Used by: NodeConfig.getDynamodbPort()</para>
+    </section>
+    <section>
+      <title>database.dynamodb.tableprefix</title>
+      <para>Key: "database.dynamodb.tableprefix" - Type: string - Used by: NodeConfig.getDynamodbTableprefix()</para>
+    </section>
+
+    <section>
+      <title>database.datanucleus[@enable]</title>
+      <para>Key: "database.datanucleus[@enable]" - Type: boolean - Used by: NodeConfig.wantDataNucleus()</para>
+    </section>
+
+    <section>
+      <title>database.spring[@enable]</title>
+      <para>Key: "database.spring[@enable]" - Type: boolean - Used by: NodeConfig.wantSpringData()</para>
+    </section>
+    <section>
+      <title>database.spring.url</title>
+      <para>Key: "database.spring.url" - Type: string - Used by: NodeConfig.getSpringdataURL()</para>
+    </section>
+    <section>
+      <title>database.spring.username</title>
+      <para>Key: "database.spring.username" - Type: string - Used by: NodeConfig.getSpringdataUsername()</para>
+    </section>
+    <section>
+      <title>database.spring.password</title>
+      <para>Key: "database.spring.password" - Type: string - Used by: NodeConfig.getSpringdataPassword()</para>
+    </section>
+    <section>
+      <title>database.spring.driver</title>
+      <para>Key: "database.spring.driver" - Type: string - Used by: NodeConfig.getSpringdataDriver()</para>
+    </section>
+
+  </chapter>
+
+  <chapter>
+    <title>Filesystem</title>
+
+    <section>
+      <title>filesystem.local[@enable]</title>
+      <para>Key: "filesystem.local[@enable]" - Type: boolean - Used by: NodeConfig.wantLocal()</para>
+    </section>
+    <section>
+      <title>filesystem.hdfs[@enable]</title>
+      <para>Key: "filesystem.hdfs[@enable]" - Type: boolean - Used by: NodeConfig.wantHDFS()</para>
+    </section>
+    <section>
+      <title>filesystem.hdfs.hdfsconffs</title>
+      <para>Key: "filesystem.hdfs.hdfsconffs" - Type: string - Used by: NodeConfig.getHDFSDefaultName()</para>
+    </section>
+    <section>
+      <title>filesystem.swift[@enable]</title>
+      <para>Key: "filesystem.swift[@enable]" - Type: boolean - Used by: NodeConfig.wantSwift()</para>
+    </section>
+    <section>
+      <title>filesystem.swift.swiftconfurl</title>
+      <para>Key: "filesystem.swift.swiftconfurl" - Type: string - Used by: NodeConfig.getSwiftUrl()</para>
+    </section>
+    <section>
+      <title>filesystem.swift.swiftconfuser</title>
+      <para>Key: "filesystem.swift.swiftconfuser" - Type: string - Used by: NodeConfig.getSwiftUser()</para>
+    </section>
+    <section>
+      <title>filesystem.swift.swiftconfkey</title>
+      <para>Key: "filesystem.swift.swiftconfkey" - Type: string - Used by: NodeConfig.getSwiftKey()</para>
+    </section>
+    <section>
+      <title>filesystem.swift.swiftconfcontainer</title>
+      <para>Key: "filesystem.swift.swiftconfcontainer" - Type: string - Used by: NodeConfig.getSwiftContainer()</para>
+    </section>
+
+    <section>
+      <title>filesystem.s3[@enable]</title>
+      <para>Key: "filesystem.s3[@enable]" - Type: boolean - Used by: NodeConfig.wantS3()</para>
+    </section>
+    <section>
+      <title>filesystem.s3.host</title>
+      <para>Key: "filesystem.s3.host" - Type: string - Used by: NodeConfig.getS3Host()</para>
+    </section>
+    <section>
+      <title>filesystem.s3.port</title>
+      <para>Key: "filesystem.s3.port" - Type: string - Used by: NodeConfig.getS3Port()</para>
+    </section>
+    <section>
+      <title>filesystem.s3.region</title>
+      <para>Key: "filesystem.s3.region" - Type: string - Used by: NodeConfig.getS3Region()</para>
+    </section>
+    <section>
+      <title>filesystem.s3.accesskey</title>
+      <para>Key: "filesystem.s3.accesskey" - Type: string - Used by: NodeConfig.getS3AccessKey()</para>
+    </section>
+    <section>
+      <title>filesystem.s3.secretkey</title>
+      <para>Key: "filesystem.s3.secretkey" - Type: string - Used by: NodeConfig.getS3SecretKey()</para>
+    </section>
+
+    <section>
+      <title>fs.dirlist</title>
+      <para>Key: "fs.dirlist" - Type: CSV string - Used by: NodeConfig.getDirList()</para>
+    </section>
+    <section>
+      <title>fs.dirlistnot</title>
+      <para>Key: "fs.dirlistnot" - Type: CSV string - Used by: NodeConfig.getDirListNot()</para>
+    </section>
+    <section>
+      <title>fs.datadir / fs.homedir / fs.logdir</title>
+      <para>Keys: "fs.datadir", "fs.homedir", "fs.logdir" - Common filesystem paths; types: string.</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Machine Learning</title>
+
+    <section>
+      <title>machinelearning.mahout[@enable]</title>
+      <para>Key: "machinelearning.mahout[@enable]" - Type: boolean - Used by: NodeConfig.wantMahout()</para>
+    </section>
+
+    <section>
+      <title>machinelearning.mahout.*</title>
+      <para>Various Mahout path and algorithm settings used by NodeConfig getters (getMahoutBasePath, getMahoutModelPath, getMahoutLabelIndexPath, getMahoutDictionaryPath, getMahoutDocumentFrequencyPath, getMahoutAlgorithm, getMahoutConfFs); types: string.</para>
+      <itemizedlist>
+        <listitem><para>machinelearning.mahout.mahoutbasepath</para></listitem>
+        <listitem><para>machinelearning.mahout.mahoutmodelpath</para></listitem>
+        <listitem><para>machinelearning.mahout.mahoutlabelindexfilepath</para></listitem>
+        <listitem><para>machinelearning.mahout.mahoutdictionarypath</para></listitem>
+        <listitem><para>machinelearning.mahout.mahoutdocumentfrequencypath</para></listitem>
+        <listitem><para>machinelearning.mahout.mahoutalgorithm</para></listitem>
+        <listitem><para>machinelearning.mahout.mahoutconffs</para></listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>machinelearning.mahoutspark[@enable]</title>
+      <para>Key: "machinelearning.mahoutspark[@enable]" - Type: boolean - Used by: NodeConfig.wantMahoutSpark()</para>
+    </section>
+    <section>
+      <title>machinelearning.mahoutspark.*</title>
+      <para>MahoutSpark path/algorithm settings (strings), used by NodeConfig getters for Spark-based Mahout.</para>
+    </section>
+
+    <section>
+      <title>machinelearning.sparkml[@enable]</title>
+      <para>Key: "machinelearning.sparkml[@enable]" - Type: boolean - Used by: NodeConfig.wantSparkML()</para>
+    </section>
+    <section>
+      <title>machinelearning.sparkml.*</title>
+      <para>Spark ML paths and master (machinelearning.sparkml.sparkmlbasepath, machinelearning.sparkml.sparkmlmodelpath, machinelearning.sparkml.sparkmllabelindexpath, machinelearning.sparkml.sparkmaster).</para>
+    </section>
+
+    <section>
+      <title>machinelearning.opennlp[@enable]</title>
+      <para>Key: "machinelearning.opennlp[@enable]" - Type: boolean - Used by: NodeConfig.wantOpenNLP()</para>
+    </section>
+    <section>
+      <title>machinelearning.opennlp.opennlpmodelpath</title>
+      <para>Key: "machinelearning.opennlp.opennlpmodelpath" - Type: string - Used by: NodeConfig.getOpenNLPModelPath()</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Synchronization &amp; Distributed</title>
+
+    <section>
+      <title>synchronization.zookeeper</title>
+      <para>Key: "synchronization.zookeeper" - Type: string - Used by: NodeConfig.getZookeeper()</para>
+    </section>
+    <section>
+      <title>synchronization.redis</title>
+      <para>Key: "synchronization.redis" - Type: string - Used by: NodeConfig.getRedis()</para>
+    </section>
+    <section>
+      <title>synchronization.communication[@enable]</title>
+      <para>Key: "synchronization.communication[@enable]" - Type: boolean - Used by: NodeConfig.wantSynchronizationCommunication()</para>
+    </section>
+    <section>
+      <title>synchronization.communication.name</title>
+      <para>Key: "synchronization.communication.name" - Type: string - Used by: NodeConfig.getSynchronizationCommunicationName()</para>
+    </section>
+    <section>
+      <title>synchronization.communication.connection</title>
+      <para>Key: "synchronization.communication.connection" - Type: string - Used by: NodeConfig.getSynchronizationCommunicationConnection()</para>
+    </section>
+    <section>
+      <title>synchronization.distributedlockmodebig[@enable]</title>
+      <para>Key: "synchronization.distributedlockmodebig[@enable]" - Type: boolean - Used by: NodeConfig.wantZookeeperSmall() (deprecated semantic)</para>
+    </section>
+    <section>
+      <title>synchronization.distributedprocess[@enable]</title>
+      <para>Key: "synchronization.distributedprocess[@enable]" - Type: boolean - Used by: NodeConfig.wantDistributedTraverse()</para>
+    </section>
+    <section>
+      <title>synchronization.async[@enable]</title>
+      <para>Key: "synchronization.async[@enable]" - Type: boolean - Used by: NodeConfig.wantAsync()</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Conversion &amp; Tika</title>
+    <section>
+      <title>conversion</title>
+      <para>Key: "conversion" - Type: string - Used by: NodeConfig.getConverters() - Description: Comma-list or identifier of enabled conversion chains/plugins.</para>
+    </section>
+    <section>
+      <title>convert.tika.ocr[@enable]</title>
+      <para>Key: "convert.tika.ocr[@enable]" - Type: boolean - Used by: NodeConfig.wantsTikaOCR()</para>
+    </section>
+    <section>
+      <title>convert.tika.ocr.timeout</title>
+      <para>Key: "convert.tika.ocr.timeout" - Type: integer - Used by: NodeConfig.getTikaOCRTimeout()</para>
+    </section>
+    <section>
+      <title>conversion.tikatimeout</title>
+      <para>Key: "conversion.tikatimeout" - Type: integer - Used by: NodeConfig.getTikaTimeout() - Default: 600</para>
+    </section>
+    <section>
+      <title>conversion.othertimeout</title>
+      <para>Key: "conversion.othertimeout" - Type: integer - Used by: NodeConfig.getOtherTimeout() - Default: 600</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Indexing</title>
+    <section>
+      <title>index.failedlimit</title>
+      <para>Key: "index.failedlimit" - Type: integer - Used by: NodeConfig.getFailedLimit() - Default: 0</para>
+    </section>
+    <section>
+      <title>index.reindexlimit</title>
+      <para>Key: "index.reindexlimit" - Type: integer - Used by: NodeConfig.getReindexLimit() - Default: 0</para>
+    </section>
+    <section>
+      <title>index.indexlimit</title>
+      <para>Key: "index.indexlimit" - Type: integer - Used by: NodeConfig.getIndexLimit() - Default: 0</para>
+    </section>
+    <section>
+      <title>index.timelimit</title>
+      <para>Key: "index.timelimit" - Type: integer - Used by: NodeConfig.getIndexTimeLimit()</para>
+    </section>
+    <section>
+      <title>index.retrytimelimit</title>
+      <para>Key: "index.retrytimelimit" - Type: integer - Used by: NodeConfig.getIndexRetryTimeLimit()</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>GUI / Web</title>
+    <section>
+      <title>gui.highlightmlt[@enable]</title>
+      <para>Key: "gui.highlightmlt[@enable]" - Type: boolean - Used by: NodeConfig.getHighlightmlt()</para>
+    </section>
+    <section>
+      <title>gui.downloader[@enable]</title>
+      <para>Key: "gui.downloader[@enable]" - Type: boolean - Used by: NodeConfig.getDownloader()</para>
+    </section>
+    <section>
+      <title>gui.authenticate[@enable]</title>
+      <para>Key: "gui.authenticate[@enable]" - Type: boolean - Used by: NodeConfig.getAuthenticate()</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Node &amp; Misc</title>
+    <section>
+      <title>node.nodename</title>
+      <para>Key: "node.nodename" - Type: string - Used by: NodeConfig.getNodename(), NodeConfig.isLocalhost()</para>
+    </section>
+    <section>
+      <title>node.languages</title>
+      <para>Key: "node.languages" - Type: CSV string - Used by: NodeConfig.getLanguages(), NodeConfig.getLanguagesUnsplit()</para>
+    </section>
+
+    <section>
+      <title>connector</title>
+      <para>Key: "connector" - Type: string - Used by: NodeConfig.getConnectors()</para>
+    </section>
+
+    <section>
+      <title>inmemory.server</title>
+      <para>Key: "inmemory.server" - Type: string - Used by: NodeConfig.getInmemoryServer(); typical values: "hazelcast", "redis" (see INMEMORYHAZELCAST, INMEMORYREDIS).</para>
+    </section>
+    <section>
+      <title>inmemory.hazelcast</title>
+      <para>Key: "inmemory.hazelcast" - Type: string - Used by: NodeConfig.getInmemoryHazelcast()</para>
+    </section>
+    <section>
+      <title>inmemory.redis</title>
+      <para>Key: "inmemory.redis" - Type: string - Used by: NodeConfig.getInmemoryRedis()</para>
+    </section>
+
+    <section>
+      <title>fs.datadir / fs.homedir / fs.logdir</title>
+      <para>Common filesystem path keys referenced by NodeConfig and related utilities.</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Defaults and Misc Constants</title>
+    <section>
+      <title>Default config values</title>
+      <para>Some default values exposed in code (ConfigConstants):</para>
+      <itemizedlist>
+        <listitem><para>DEFAULT_CONFIG_FAILEDLIMIT = 0</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_TIKATIMEOUT = 600</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_OTHERTIMEOUT = 600</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_INDEXLIMIT = 0</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_REINDEXLIMIT = 0</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_MLTCOUNT = 10</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_MLTMINDF = 5</para></listitem>
+        <listitem><para>DEFAULT_CONFIG_MLTMINTF = 2</para></listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Other static values</title>
+      <para>
+        CONFIGFILE = "aether.xml" (default configuration file name)
+      </para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Deprecated / Legacy Keys</title>
+    <para>These keys are present in constants but marked deprecated in source.</para>
+    <itemizedlist>
+      <listitem><para>fs (deprecated)</para></listitem>
+      <listitem><para>local, hadoop, swift (deprecated)</para></listitem>
+      <listitem><para>index (deprecated)</para></listitem>
+      <listitem><para>db (deprecated)</para></listitem>
+      <listitem><para>small, big (deprecated)</para></listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter>
+    <title>Notes &amp; Next Steps</title>
+    <para>
+      - The descriptions above are intentionally concise. For richer docs include example values and usage sections per key.
+      - If you want this file integrated into a build or transformed into HTML/PDF, I can add a small DocBook XSLT toolchain and a README describing how to render it.
+    </para>
+  </chapter>
+
+</book>
