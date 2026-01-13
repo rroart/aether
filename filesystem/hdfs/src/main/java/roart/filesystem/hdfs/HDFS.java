@@ -71,7 +71,6 @@ public class HDFS extends FileSystemOperations {
 
     @Override
     public FileSystemConstructorResult destroy() throws IOException {
-        // TODO right?
         conf.configuration.clear();
         return null;
     }
