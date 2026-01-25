@@ -3,6 +3,9 @@ all: xhtml pdf
 xhtml: DOCUMENTATION.xml
 	xmlto xhtml DOCUMENTATION.xml
 
+docbook/figures/%.svg: docbook/figures/%.fig
+	fig2dev $< $@
+
 pdf: DOCUMENTATION.pdf
 
 %.fo: %
