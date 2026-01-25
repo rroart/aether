@@ -1,9 +1,10 @@
 all: xhtml pdf
 
-xhtml: DOCUMENTATION.xml
-	xmlto xhtml DOCUMENTATION.xml
+xhtml: docbook/DOCUMENTATION.xml
+	xmlto -o docbookhtml xhtml docbook/DOCUMENTATION.xml
 
-docbook/figures/%.svg: docbook/figures/%.fig
+docbookhtml/figures/%.svg: docbook/figures/%.fig
+	mkdir -p docbookhtml/figures
 	fig2dev $< $@
 
 pdf: DOCUMENTATION.pdf
