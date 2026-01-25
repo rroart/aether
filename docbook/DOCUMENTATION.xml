@@ -35,6 +35,43 @@ Given a bit of manual training with classifier software, it is possible to use t
 </para>
 </chapter>
 <chapter>
+  <title>
+    Architecture
+  </title>
+<para>
+  Data sources, from xml (scraped and external fred).
+</para>
+<para>
+  Ingestion Layer
+  Data extraction, from SQL database
+  Data connectors, from SQL database and external (fred).
+  Data quality, using interpolation and removing extreme data.
+  Data capture, scraping
+</para>
+<para>
+  Processing Layer
+</para>
+<para>
+  Storage Layer
+  SQL database
+  No? Text file output
+  Any file input
+  In Memory while running
+</para>
+<para>
+  Analytics Layer
+</para>
+<para>
+  Visualization Layer
+  Tables
+  Graphs
+</para>
+<para>
+</para>
+<para>
+</para>
+</chapter>
+<chapter>
 <title>
 Installing
 </title>
