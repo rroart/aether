@@ -13,7 +13,19 @@ Aether disk search engine
   </author>
     <abstract>
     <para>
-	Aether is an application for indexing and searching unstructured collections.
+      Aether is an application for indexing and searching unstructured collections.
+	Data sources, from local file system, S3, HDFS or Swift.
+	Data sources may be used with Spark or OpenNLP classify file content.
+	Data sources may be used with specific files/directories or a random crawler, which convert files to text, classifies them with Spark or OpenNLP, and then indexing with Lucene, Solr or Elastic.
+<figure>
+  <title>Architecture</title>
+<mediaobject>
+  <imageobject>
+    <imagedata fileref="figures/architecture.svg"/>
+  </imageobject>
+  <textobject><phrase>An illustration of the architecture</phrase></textobject>
+</mediaobject>
+</figure>
     </para>
   </abstract>
 </bookinfo>

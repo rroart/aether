@@ -1,6 +1,6 @@
 all: xhtml pdf
 
-xhtml: docbook/DOCUMENTATION.xml
+xhtml: docbook/DOCUMENTATION.xml docbookhtml/figures/architecture.svg
 	xmlto -o docbookhtml xhtml docbook/DOCUMENTATION.xml
 
 docbookhtml/figures/%.svg: docbook/figures/%.fig
@@ -8,6 +8,9 @@ docbookhtml/figures/%.svg: docbook/figures/%.fig
 	fig2dev $< $@
 
 pdf: DOCUMENTATION.pdf
+
+DOCUMENTATION.pdf: docbook/DOCUMENTATION.xml
+	xmlto pdf docbook/DOCUMENTATION.xml
 
 %.fo: %
 	xsltproc -xinclude -o $@ /usr/share/xml/docbook/stylesheet/docbook-xsl-ns/fo/docbook.xsl $<
