@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import roart.common.mapper.Mapper;
 import roart.common.model.FilesDTO;
 import roart.common.model.IndexFiles;
@@ -15,7 +17,7 @@ public class DatabaseIndexFilesResult extends DatabaseResult {
     private IndexFilesDTO[] indexFiles;
 
     private Map<String, IndexFilesDTO> indexFilesMap;
-    
+
     public DatabaseIndexFilesResult() {
         super();
     }
@@ -38,15 +40,16 @@ public class DatabaseIndexFilesResult extends DatabaseResult {
 
     public Map<String, IndexFilesDTO> getIndexFilesDTOMap() {
         return indexFilesMap;
-   }
+    }
 
-     public Map<String, IndexFiles> getIndexFilesMap() {
-         Map<String, IndexFiles> simpleMap = new HashMap<>();
-         for (Entry<String, IndexFilesDTO> entry : indexFilesMap.entrySet()) {
-             String key = entry.getKey();
-             simpleMap.put(key, Mapper.map(entry.getValue()));
-         }
-         return simpleMap;
+    @JsonIgnore
+    public Map<String, IndexFiles> getIndexFilesMap() {
+        Map<String, IndexFiles> simpleMap = new HashMap<>();
+        for (Entry<String, IndexFilesDTO> entry : indexFilesMap.entrySet()) {
+            String key = entry.getKey();
+            simpleMap.put(key, Mapper.map(entry.getValue()));
+        }
+        return simpleMap;
     }
 
     public void setIndexFilesMap(Map<String, IndexFilesDTO> indexFilesMap) {
