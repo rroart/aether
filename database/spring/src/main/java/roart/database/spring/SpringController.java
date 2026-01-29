@@ -32,9 +32,11 @@ import org.springframework.data.jdbc.core.convert.InsertStrategyFactory;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.core.convert.MappingJdbcConverter;
+import org.springframework.data.jdbc.core.convert.QueryMappingConfiguration;
 import org.springframework.data.jdbc.core.convert.SqlGeneratorSource;
 import org.springframework.data.jdbc.core.convert.SqlParametersFactory;
 import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
+import org.springframework.data.jdbc.repository.config.DefaultQueryMappingConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.jdbc.repository.support.JdbcRepositoryFactory;
 import org.springframework.data.relational.core.dialect.Dialect;
@@ -110,8 +112,9 @@ public class SpringController extends DatabaseAbstractController {
         SqlParametersFactory sqlParametersFactory = new SqlParametersFactory(context, converter);
         InsertStrategyFactory insertStrategyFactory = new InsertStrategyFactory(operations, dialect);
  
+        QueryMappingConfiguration mapping = new DefaultQueryMappingConfiguration();
         this.dataAccessStrategy = new DefaultDataAccessStrategy(generatorSource, context, converter, operations,
-                sqlParametersFactory, insertStrategyFactory, null);
+                sqlParametersFactory, insertStrategyFactory, mapping );
         delegatingDataAccessStrategy.setDelegate(dataAccessStrategy);
         JdbcRepositoryFactory factory = new JdbcRepositoryFactory(dataAccessStrategy, context, converter,
                 dialect, publisher, operations);
