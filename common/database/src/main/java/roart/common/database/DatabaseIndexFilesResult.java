@@ -38,12 +38,12 @@ public class DatabaseIndexFilesResult extends DatabaseResult {
         this.files = files;
     }
 
-    public Map<String, IndexFilesDTO> getIndexFilesDTOMap() {
+    public Map<String, IndexFilesDTO> getIndexFilesMap() {
         return indexFilesMap;
     }
 
     @JsonIgnore
-    public Map<String, IndexFiles> getIndexFilesMap() {
+    public Map<String, IndexFiles> getIndexFilesMapConvert() {
         Map<String, IndexFiles> simpleMap = new HashMap<>();
         for (Entry<String, IndexFilesDTO> entry : indexFilesMap.entrySet()) {
             String key = entry.getKey();

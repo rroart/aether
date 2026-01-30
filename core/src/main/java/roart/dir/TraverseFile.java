@@ -527,7 +527,7 @@ public class TraverseFile {
 	// when we get indexfiles from md5 from the db
 	// code location independent
         if (traverseElement.getOpid() != null && traverseElement.getOpid().equals(OperationConstants.GETBYMD5)) {
-            Map<String, IndexFiles> indexFilesMap = traverseElement.getDatabaseIndexFilesResult().getIndexFilesMap();
+            Map<String, IndexFiles> indexFilesMap = traverseElement.getDatabaseIndexFilesResult().getIndexFilesMapConvert();
             traverseElement.setDatabaseIndexFilesResult(null);
 	    if (traverseElement.getOldMd5() != null) {
 		traverseElement.setOldIndexFiles(indexFilesMap.get(traverseElement.getOldMd5()));

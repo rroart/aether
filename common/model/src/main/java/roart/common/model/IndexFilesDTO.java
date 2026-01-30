@@ -1,5 +1,6 @@
 package roart.common.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class IndexFilesDTO {
@@ -15,7 +16,7 @@ public class IndexFilesDTO {
     private String failedreason;
     private String noindexreason;
     private String timeoutreason;
-    private Set<FileLocation> filelocations;
+    private Set<FileLocation> filelocations = new HashSet<>();
     private String language;
     private String isbn;
     private String created;
