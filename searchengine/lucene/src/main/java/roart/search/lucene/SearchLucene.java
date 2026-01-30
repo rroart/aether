@@ -41,6 +41,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Fields;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -60,6 +61,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
 //import org.apache.lucene.search.TopDocCollector;
 import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.MMapDirectory;
@@ -259,11 +261,11 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
             IndexReader ind = DirectoryReader.open(index);
             IndexSearcher searcher = new IndexSearcher(ind);
             //TopDocCollector collector = new TopDocCollector(hitsPerPage);
-            TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, hitsPerPage);
+            TopScoreDocCollector collector = new TopScoreDocCollectorManager(hitsPerPage, hitsPerPage).newCollector();
             searcher.search(q, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            SearchEngineSearchResult result = handleDocs(search, q, ind, searcher, hits, true);
+            SearchEngineSearchResult result = handleDocs(search, q, ind, searcher, hits, true, collector.topDocs());
             return result;
         } catch (Exception e) {
             log.info("Error3: " + e.getMessage());
@@ -284,7 +286,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
             // searching ...
             IndexReader ind = DirectoryReader.open(index);
             IndexSearcher searcher = new IndexSearcher(ind);
-            TopScoreDocCollector collector = TopScoreDocCollector.create(1, 1);
+            TopScoreDocCollector collector = new TopScoreDocCollectorManager(1, 1).newCollector();
             searcher.search(q, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
@@ -299,7 +301,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
     }
 
     private SearchEngineSearchResult handleDocs(SearchEngineSearchParam search, Query q,
-            IndexReader ind, IndexSearcher searcher, ScoreDoc[] hits, boolean dohighlight)
+            IndexReader ind, IndexSearcher searcher, ScoreDoc[] hits, boolean dohighlight, TopDocs topDocs)
                     throws IOException, Exception {
         SearchEngineSearchResult result = new SearchEngineSearchResult();
         result.results = new SearchResult[hits.length];
@@ -309,11 +311,13 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
             highlighter = new FastVectorHighlighter();
         }    
         // output results
+        StoredFields storedFields = searcher.storedFields();
         log.info("Found " + hits.length + " hits.");
         for (int i = 0; i < hits.length; ++i) {
             int docId = hits[i].doc;
             float score = hits[i].score;
-            Document d = searcher.doc(docId);
+            ScoreDoc scoreDoc = hits[i];
+            Document d = storedFields.document(scoreDoc.doc);
             String md5 = d.get(SearchConstants.ID);
             String lang = d.get(SearchConstants.LANG);
             String[] metadataArray = d.getValues(SearchConstants.METADATA);
@@ -356,7 +360,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
             IndexReader ind = DirectoryReader.open(index);
             IndexSearcher searcher = new IndexSearcher(ind);
             //TopDocCollector collector = new TopDocCollector(hitsPerPage);
-            TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, hitsPerPage);
+            TopScoreDocCollector collector = new TopScoreDocCollectorManager(hitsPerPage, hitsPerPage).newCollector();;
 
             int totalDocs = ind.numDocs();
             //Document found = null;
@@ -416,7 +420,7 @@ public class SearchLucene extends SearchEngineAbstractSearcher {
             //searcher.search(query, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            SearchEngineSearchResult result = handleDocs(search, query, ind, searcher, hits, false);
+            SearchEngineSearchResult result = handleDocs(search, query, ind, searcher, hits, false, collector.topDocs());
             return result;
         } catch (Exception e) {
             log.info("Error3: " + e.getMessage());
