@@ -43,6 +43,7 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.search.HighlighterType;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import co.elastic.clients.transport.rest_client.RestClientOptions;
+import co.elastic.clients.util.NamedValue;
 
 import roart.common.config.NodeConfig;
 import roart.common.constants.Constants;
@@ -108,7 +109,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder();
             builder.setHttpAsyncResponseConsumerFactory(factory);
             RequestOptions requestOptions = builder.build();
-            RestClientOptions restClientOptions = new RestClientOptions(requestOptions);
+            RestClientOptions restClientOptions = new RestClientOptions(requestOptions, true);
             
             // Create the transport with a Jackson mapper
             RestClientTransport transport = new RestClientTransport(
@@ -254,7 +255,7 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .size(100)
                     .explain(true);
             if (nodeConf.getHighlightmlt()) {
-                sr.highlight(h -> h.fields(SearchConstants.CONTENT, v -> v.type(HighlighterType.Unified)));
+                sr.highlight(h -> h.fields(new NamedValue(SearchConstants.CONTENT, h.type(HighlighterType.Unified))));
             }
             SearchResponse<Appdata> response = conf.client.search(sr.build(), Appdata.class);
             HitsMetadata<Appdata> docs = response.hits();
