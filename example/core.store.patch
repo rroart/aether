@@ -1,8 +1,7 @@
-Only in ../../configsets/_default/conf: lang
 diff -ru ../../configsets/_default/conf/managed-schema.xml ./managed-schema.xml
---- ../../configsets/_default/conf/managed-schema.xml	2022-05-05 01:00:47.000000000 +0200
-+++ ./managed-schema.xml	2022-05-27 11:37:02.310657219 +0200
-@@ -121,6 +121,15 @@
+--- ../../configsets/_default/conf/managed-schema.xml	2026-01-15 15:38:23.000000000 +0100
++++ ./managed-schema.xml	2026-01-31 10:18:02.271849885 +0100
+@@ -122,6 +122,15 @@
      <field name="_nest_path_" type="_nest_path_" /><fieldType name="_nest_path_" class="solr.NestPathField" />
  
      <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
@@ -18,19 +17,20 @@ diff -ru ../../configsets/_default/conf/managed-schema.xml ./managed-schema.xml
  
      <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
           because it's very expensive to index everything twice. -->
+Only in .: managed-schema.xml.orig
 diff -ru ../../configsets/_default/conf/solrconfig.xml ./solrconfig.xml
---- ../../configsets/_default/conf/solrconfig.xml	2022-05-05 01:00:47.000000000 +0200
-+++ ./solrconfig.xml	2022-05-27 11:37:02.310657219 +0200
-@@ -358,7 +358,7 @@
+--- ../../configsets/_default/conf/solrconfig.xml	2026-01-15 15:38:23.000000000 +0100
++++ ./solrconfig.xml	2026-01-31 10:18:02.275514217 +0100
+@@ -306,7 +306,7 @@
           specified in `solr.xml`, it will have no effect, as that setting also limits the size
           of user specified boolean queries.
        -->
 -    <maxBooleanClauses>${solr.max.booleanClauses:1024}</maxBooleanClauses>
 +    <maxBooleanClauses>${solr.max.booleanClauses:16384}</maxBooleanClauses>
  
-     <!-- Solr Internal Query Caches
-          Starting with Solr 9.0 the default cache implementation used is CaffeineCache.
-@@ -660,13 +660,14 @@
+     <!-- Minimum acceptable prefix-size for prefix-based queries.
+ 
+@@ -623,13 +623,14 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
