@@ -203,8 +203,8 @@
     <camelactivemq.version>5.16.6</camelactivemq.version>
     <springintegration.version>6.1.0</springintegration.version>
     <springrabbit.version>3.0.4</springrabbit.version>
-    <redisclient.version>4.4.3</redisclient.version>
-    <redisson.version>3.27.1</redisson.version>
+    <redisclient.version>7.2.1</redisclient.version>
+    <redisson.version>4.1.0</redisson.version>
     <!-- spark 4.0.1 -->
     <chill.version>0.10.0</chill.version>
     <!-- spark 4.0.1 -->
