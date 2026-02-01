@@ -130,7 +130,7 @@
     <lucene.version>10.3.2</lucene.version>
     <solr.version>9.10.1</solr.version>
     <hbase.version>2.6.4</hbase.version>
-    <cassandra.version>4.19.2 </cassandra.version>
+    <cassandra.version>4.19.2</cassandra.version>
     <aws.version>1.12.114</aws.version>
     <awssdk.version>2.41.19</awssdk.version>
     <dynamodblocal.version>3.3.0</dynamodblocal.version>
@@ -184,7 +184,7 @@
     <guava.version>33.4.0-jre</guava.version>
     <commons.version>2.1.1</commons.version>
     <fastutil.version>7.0.11</fastutil.version>
-    <joss.version>0.9.14</joss.version>
+    <joss.version>0.10.4</joss.version>
     <elasticsearch.version>9.2.4</elasticsearch.version>
     <apachelog.version>2.7</apachelog.version>
     <netty.version>4.1.118.Final</netty.version>
