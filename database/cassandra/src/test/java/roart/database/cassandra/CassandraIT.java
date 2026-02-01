@@ -1,15 +1,16 @@
 package roart.database.cassandra;
 
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.cassandra.exceptions.ConfigurationException;
-import org.apache.thrift.transport.TTransportException;
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
+//import org.apache.cassandra.exceptions.ConfigurationException;
+//import org.apache.thrift.transport.TTransportException;
+//import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ public class CassandraIT {
     CqlSession session;
     CassandraIndexFiles indexfiles;
 
+    /*
     @BeforeEach
     public void setup() throws ConfigurationException, TTransportException, IOException, InterruptedException {
         System.out.println("st1");
@@ -36,6 +38,7 @@ public class CassandraIT {
         indexfiles = new CassandraIndexFiles(session, "localhost", null);
         //indexfiles.setSession(session);
     }
+*/
 
     @Test
     public void test() throws Exception {

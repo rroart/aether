@@ -8,10 +8,9 @@
 module cassandra {
     exports roart.database.cassandra;
 
-    requires com.datastax.oss.driver.core;
-    requires com.datastax.oss.driver.mapper.processor;
-    requires com.datastax.oss.driver.mapper.runtime;
-    requires com.datastax.oss.driver.querybuilder;
+    requires java.driver.core;
+    requires java.driver.mapper.runtime;
+    requires java.driver.query.builder;
     requires java.driver.shaded.guava;
     requires tools.jackson.core;
     requires tools.jackson.databind;
@@ -20,7 +19,6 @@ module cassandra {
     requires common.database;
     requires common.model;
     requires common.util;
-    requires guava;
     requires org.slf4j;
     requires spring.boot.autoconfigure;
     requires spring.boot.cassandra;
@@ -28,8 +26,4 @@ module cassandra {
     requires spring.web;
     requires spring.boot;
     requires database;
-    //requires junit;
-    //requires cassandra.unit;
-    //requires cassandra.all;
-    //requires libthrift;
 }

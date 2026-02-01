@@ -130,7 +130,7 @@
     <lucene.version>10.3.2</lucene.version>
     <solr.version>9.10.1</solr.version>
     <hbase.version>2.6.4</hbase.version>
-    <cassandra.version>4.16.0</cassandra.version>
+    <cassandra.version>4.19.2 </cassandra.version>
     <aws.version>1.12.114</aws.version>
     <awssdk.version>2.20.97</awssdk.version>
     <dynamodblocal.version>1.15.0</dynamodblocal.version>

@@ -17,9 +17,11 @@
 	<artifactId>maven-compiler-plugin</artifactId>
 	<version>${mavencompiler.version}</version>
 	<configuration>
+	  <source>1.8</source>
+          <target>1.8</target>
           <annotationProcessorPaths>
             <path>
-              <groupId>com.datastax.oss</groupId>
+              <groupId>org.apache.cassandra</groupId>
               <artifactId>java-driver-mapper-processor</artifactId>
 	      <version>${cassandra.version}</version>
             </path>
@@ -82,20 +84,27 @@
 	<type>pom</type>
 	<scope>import</scope>
       </dependency>
+       <dependency>
+        <groupId>org.apache.cassandra</groupId>
+        <artifactId>java-driver-bom</artifactId>
+        <version>${cassandra.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
+    <!--dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>18.0</version>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.cassandraunit</groupId>
       <artifactId>cassandra-unit</artifactId>
       <version>4.3.1.0</version>
       <scope>test</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -195,26 +204,43 @@
       <artifactId>aether-common-util</artifactId>
       <version>${aether.version}</version>
     </dependency>
+    <!-- module problems -->
+    <!--dependency>
+      <groupId>org.apache.cassandra</groupId>
+      <artifactId>java-driver-guava-shaded</artifactId>
+      <version>${cassandra.version}</version>
+    </dependency-->
     <dependency>
       <groupId>com.datastax.oss</groupId>
-      <artifactId>java-driver-core</artifactId>
-      <version>${cassandra.version}</version>
+      <artifactId>java-driver-shaded-guava</artifactId>
+      <version>25.1-jre-graal-sub-1</version>
     </dependency>
     <dependency>
-      <groupId>com.datastax.oss</groupId>
+      <groupId>org.apache.cassandra</groupId>
+      <artifactId>java-driver-core</artifactId>
+      <version>${cassandra.version}</version>
+      <exclusions>
+	<exclusion>
+	  <groupId>org.apache.cassandra</groupId>
+	  <artifactId>java-driver-guava-shaded</artifactId>
+	</exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cassandra</groupId>
       <artifactId>java-driver-query-builder</artifactId>
       <version>${cassandra.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.datastax.oss</groupId>
+      <groupId>org.apache.cassandra</groupId>
       <artifactId>java-driver-mapper-runtime</artifactId>
       <version>${cassandra.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.datastax.oss</groupId>
+    <!--dependency>
+      <groupId>org.apache.cassandra</groupId>
       <artifactId>java-driver-mapper-processor</artifactId>
       <version>${cassandra.version}</version>
-    </dependency>
+    </dependency-->
     <!--dependency>
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-mapping</artifactId>
@@ -231,9 +257,9 @@
       <version>3.2.6</version>
     </dependency-->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${springboot.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
