@@ -3,6 +3,7 @@ package roart.database.dynamodb;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
@@ -10,16 +11,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.local.embedded.DynamoDBEmbedded;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
-import com.amazonaws.services.dynamodbv2.util.TableUtils;
-
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFilesDTO;
 import roart.common.model.IndexFilesUtil;
 import roart.database.dynamodb.DynamodbIndexFiles;
+
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 public class DynamodbIT {
     @RegisterExtension
@@ -30,19 +32,42 @@ public class DynamodbIT {
 
     @BeforeEach
     public void setup() {
-        ddb = null; //DynamoDBEmbedded.create().amazonDynamoDB();
+        // Build an SDK v2 client pointing at the local DynamoDB instance started by the extension
+        String endpoint = dynamoDB.getEndpoint();
+        ddb = DynamoDbClient.builder()
+                .endpointOverride(URI.create(endpoint))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("x", "x")))
+                .region(Region.US_WEST_2)
+                .build();
+
         System.out.println("here");
         indexfiles = new DynamodbIndexFiles(ddb, "localhost", null);
-        //indexfiles.setClient(ddb);
     }
 
     private void deleteTables() {
-        DeleteTableRequest deleteTableRequest = new DeleteTableRequest().withTableName(DynamodbIndexFiles.TABLE_FILES_NAME);
-        boolean status = false; // TableUtils.deleteTableIfExists(indexfiles.client, deleteTableRequest);
-        System.out.println("res1 " + status);
-        DeleteTableRequest deleteTableRequest2 = new DeleteTableRequest().withTableName(DynamodbIndexFiles.TABLE_INDEXFILES_NAME);
-        boolean status2 = false; //TableUtils.deleteTableIfExists(indexfiles.client, deleteTableRequest2);
-        System.out.println("res1 " + status2);
+        try {
+            DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder()
+                    .tableName(DynamodbIndexFiles.TABLE_FILES_NAME)
+                    .build();
+            ddb.deleteTable(deleteTableRequest);
+            System.out.println("deleted " + DynamodbIndexFiles.TABLE_FILES_NAME);
+        } catch (DynamoDbException e) {
+            System.out.println("could not delete " + DynamodbIndexFiles.TABLE_FILES_NAME + ": " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("unexpected error deleting " + DynamodbIndexFiles.TABLE_FILES_NAME + ": " + e.getMessage());
+        }
+
+        try {
+            DeleteTableRequest deleteTableRequest2 = DeleteTableRequest.builder()
+                    .tableName(DynamodbIndexFiles.TABLE_INDEXFILES_NAME)
+                    .build();
+            ddb.deleteTable(deleteTableRequest2);
+            System.out.println("deleted " + DynamodbIndexFiles.TABLE_INDEXFILES_NAME);
+        } catch (DynamoDbException e) {
+            System.out.println("could not delete " + DynamodbIndexFiles.TABLE_INDEXFILES_NAME + ": " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("unexpected error deleting " + DynamodbIndexFiles.TABLE_INDEXFILES_NAME + ": " + e.getMessage());
+        }
     }
 
     @Test
@@ -74,9 +99,7 @@ public class DynamodbIT {
     @AfterEach
     public void shutdown() {
         deleteTables();
-        //ddb.shutdown();
+        if (ddb != null) ddb.close();
         System.out.println("shutdown");
-        //dynamoDB.stopUnchecked(null);
     }
 }
-
