@@ -52,7 +52,6 @@ import roart.common.model.IndexFilesDTO;
 
 @Entity
     @Table(name = "Index")
-    @org.hibernate.annotations.Table(appliesTo = "Index")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public class HibernateIndexFiles implements Serializable {
 	private Logger log = LoggerFactory.getLogger(HibernateIndexFiles.class);
@@ -523,7 +522,7 @@ import roart.common.model.IndexFilesDTO;
 
     public void save() {
         try {
-        HibernateUtil.currentSession(getH2Dir()).saveOrUpdate(this);
+        HibernateUtil.currentSession(getH2Dir()).merge(this);
     } catch (Exception e) {
         log.error(Constants.EXCEPTION, e);
     }
