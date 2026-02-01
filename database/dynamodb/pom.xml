@@ -188,7 +188,7 @@
       <version>${guava.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
+      <groupId>software.amazon.dynamodb</groupId>
       <artifactId>DynamoDBLocal</artifactId>
       <version>${dynamodblocal.version}</version>
       <scope>test</scope>

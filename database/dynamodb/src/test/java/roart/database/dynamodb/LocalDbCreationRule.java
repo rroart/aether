@@ -4,8 +4,8 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
-import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
+import software.amazon.dynamodb.services.local.main.ServerRunner;
+import software.amazon.dynamodb.services.local.server.DynamoDBProxyServer;
 
 public class LocalDbCreationRule implements BeforeAllCallback, AfterAllCallback {
     private DynamoDBProxyServer server;
