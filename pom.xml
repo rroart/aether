@@ -132,7 +132,7 @@
     <hbase.version>2.6.4</hbase.version>
     <cassandra.version>4.19.2 </cassandra.version>
     <aws.version>1.12.114</aws.version>
-    <awssdk.version>2.20.97</awssdk.version>
+    <awssdk.version>2.41.19</awssdk.version>
     <dynamodblocal.version>1.15.0</dynamodblocal.version>
     <tika.version>3.2.3</tika.version>
     <mahout.version>14.1</mahout.version>
