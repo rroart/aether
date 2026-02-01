@@ -199,9 +199,9 @@
     <commons.io.version>2.11.0</commons.io.version>
     <commons.beanutils.version>1.9.4</commons.beanutils.version>
     <log4j.version>1.2.17</log4j.version>
-    <camel.version>4.0.0-RC1</camel.version>
-    <camelactivemq.version>5.16.6</camelactivemq.version>
-    <springintegration.version>6.1.0</springintegration.version>
+    <camel.version>4.17.0</camel.version>
+    <camelactivemq.version>4.17.0</camelactivemq.version>
+    <springintegration.version>7.0.1</springintegration.version>
     <springrabbit.version>3.0.4</springrabbit.version>
     <redisclient.version>7.2.1</redisclient.version>
     <redisson.version>4.1.0</redisson.version>
