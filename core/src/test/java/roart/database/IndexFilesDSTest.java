@@ -24,6 +24,7 @@ import roart.common.model.IndexFilesDTO;
 import roart.common.model.Files;
 import roart.common.model.IndexFiles;
 import roart.common.queue.QueueElement;
+import roart.common.util.FsUtil;
 import roart.service.ControlService;
 import roart.common.constants.EurekaConstants;
 import roart.eureka.util.EurekaUtil;
@@ -189,8 +190,9 @@ public class IndexFilesDSTest {
         ControlService cs = controlService(nc);
         IndexFilesDS ds = new TestIndexFilesDS(nc, cs);
 
-        DatabaseResult dbres = new DatabaseResult();
-        DatabaseMd5Result md5res = new DatabaseMd5Result(); md5res.setMd5(new String[] { "x","y" });
+        DatabaseResult dbres = new DatabaseIndexFilesResult();
+        DatabaseMd5Result md5res = new DatabaseMd5Result(); 
+        md5res.setMd5(new String[] { "x","y" });
         DatabaseLanguagesResult langs = new DatabaseLanguagesResult(); langs.languages = new String[] { "en","no" };
 
         try (MockedStatic<EurekaUtil> mocked = Mockito.mockStatic(EurekaUtil.class)) {
@@ -231,7 +233,7 @@ public class IndexFilesDSTest {
         ControlService cs = controlService(nc);
         IndexFilesDS ds = new TestIndexFilesDS(nc, cs);
 
-        DatabaseResult dbres = new DatabaseResult();
+        DatabaseResult dbres = new DatabaseIndexFilesResult();
         IndexFiles idx = new IndexFiles("delmd5");
         Files f = new Files();
 
@@ -284,7 +286,7 @@ public class IndexFilesDSTest {
         ds.setQueue("some-queue");
 
         FileLocation fl = new FileLocation("n","obj");
-        FileObject fo = new FileObject(fl.location, fl.file);
+        FileObject fo = FsUtil.getFileObject(fl);
         MyQueue queue = ds.getQueue(fo);
         assertNotNull(queue);
 
