@@ -18,6 +18,7 @@ import roart.common.constants.FileSystemConstants;
 import roart.common.constants.QueueConstants;
 import roart.common.filesystem.MyFile;
 import roart.common.inmemory.model.InmemoryMessage;
+import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.queue.QueueElement;
@@ -241,6 +242,14 @@ public class FileSystemDao {
     
     public void readFileQueue(QueueElement element, FileObject fileObject) {
         getFileSystemAccessQueue(fileObject).readFileQueue(element, fileObject);
+    }
+
+    public boolean works(FileObject f) {
+        return getFileSystemAccess(f) != null;
+    }
+
+    public String getAccessName(FileObject f) {
+        return getFileSystemAccess(f).getAppName();
     }
 
 }

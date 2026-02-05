@@ -107,13 +107,47 @@ public class EurekaUtil {
             return WebFluxUtil.sendMe(myclass, url, param, path);            
         }
         
+        appName = getAppNameWithId(appName);
+
+        String homePageUrl = getHomePageUrl(appName);
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+        Map map = new HashMap<String, String>();
+        map.put("Content-Type", "application/json");
+
+        headers.setAll(map);
+
+        HttpEntity<?> request = new HttpEntity<>(param, headers);
+        String url = homePageUrl;
+        if (false && url == null) {
+            log.error("No home page url for " + appName);
+            return null;
+        }
+        if (true) {
+            return WebFluxUtil.sendMe(myclass, url, param, path);
+        }
+        RestTemplate rt = new RestTemplate();
+        /*
+		for (HttpMessageConverter<?> converter : rt.getMessageConverters()) {
+			log.info(converter.getClass().getName());
+		}
+		log.info(rt.getMessageConverters().size());
+         */
+        ResponseEntity<T> regr = new RestTemplate().postForEntity(url + path, request, myclass);
+        T result = regr.getBody();
+        return result;
+    }
+
+    public static String getAppNameWithId(String appName) {
         String appid = System.getenv(Constants.APPID);
         if (appid != null) {
             appName = appName + appid.toUpperCase(); // can not handle domain, only eureka
         }
+        return appName;
+    }
 
+    public static String getHomePageUrl(String appName) {
         String homePageUrl = null;
-        log.debug("homePagePre " + appName + " " + path);
+        log.debug("homePagePre " + appName);
         log.debug("clis" + eurekaClient + " " + discoveryClient);
         if (discoveryClient != null) {
             List<InstanceInfo> li = discoveryClient.getApplication(appName).getInstances();
@@ -136,27 +170,7 @@ public class EurekaUtil {
             }
             }
         }
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-        Map map = new HashMap<String, String>();
-        map.put("Content-Type", "application/json");
-
-        headers.setAll(map);
-
-        HttpEntity<?> request = new HttpEntity<>(param, headers);
-        String url = homePageUrl;
-        if (true) {
-            return WebFluxUtil.sendMe(myclass, url, param, path);
-        }
-        RestTemplate rt = new RestTemplate();
-        /*
-		for (HttpMessageConverter<?> converter : rt.getMessageConverters()) {
-			log.info(converter.getClass().getName());
-		}
-		log.info(rt.getMessageConverters().size());
-         */
-        ResponseEntity<T> regr = new RestTemplate().postForEntity(url + path, request, myclass);
-        T result = regr.getBody();
-        return result;
+        return homePageUrl;
     }
 
     public static <T> T sendMe(Class<T> myclass, String url, Object param, String path) {

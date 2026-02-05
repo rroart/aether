@@ -23,6 +23,7 @@ import roart.common.synchronization.MyObjectLock;
 import roart.common.synchronization.MyObjectLockData;
 import roart.common.synchronization.MySemaphore;
 import roart.common.synchronization.impl.MyObjectLockFactory;
+import roart.eureka.util.EurekaUtil;
 import roart.service.ControlService;
 
 import org.slf4j.Logger;
@@ -441,5 +442,11 @@ public class IndexFilesDao {
 
     public MyQueue<QueueElement> getQueue() {
         return indexFiles.getQueue(null);
+    }
+    
+    public boolean works() {
+        String appName = indexFiles.getAppName();
+        appName = EurekaUtil.getAppNameWithId(appName);
+        return EurekaUtil.getHomePageUrl(appName) != null;
     }
 }

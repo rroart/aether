@@ -1,4 +1,4 @@
-package roart.search;
+package roart.filesystem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -6,17 +6,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
+import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.GetChildrenBuilder;
 import org.apache.curator.framework.api.GetDataBuilder;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.framework.api.ExistsBuilder;
 import org.apache.zookeeper.data.Stat;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
+import roart.common.model.FileLocation;
+import roart.common.model.FileObject;
 import roart.common.model.Location;
+import roart.common.util.FsUtil;
 import roart.config.MyXMLConfig;
 import roart.filesystem.FileSystemDao;
 import roart.service.ControlService;
@@ -80,6 +87,22 @@ public class FsIT {
         assertEquals("/abc", res2);
     }
     
+    @Test
+    public void test() throws Exception {
+        ControlService controlService = new ControlService(nodeConf);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
+        String zookeeperConnectionString = "localhost:2181";
+        controlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        controlService.curatorClient.start();
+        FileSystemDao dao = new FileSystemDao(nodeConf, controlService);
+        FileLocation fl = new FileLocation("n","obj");
+        FileObject fo = FsUtil.getFileObject(":::/tmp");        
+        //FileObject f = new FileObject("", "/tmp/fakerepo/c/bla");
+        Assertions.assertTrue(dao.works(fo), "Not working");
+        System.out.println("URL " + dao.getAccessName(fo));
+    }
+    
+
     // duplicated from MyXMLConfig to get config file path
     private String getConfigfile() {
         String myConfigFile = System.getProperty("config");
