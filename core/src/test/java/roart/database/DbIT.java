@@ -16,19 +16,22 @@ import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
+import roart.config.MyXMLConfig;
 import roart.database.IndexFilesDS;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
 public class DbIT {
 
+    private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(getConfigfile());
+
     @Test
     public void testSaveGetDelete() throws Exception {
         // minimal NodeConfig
-        MyConfig.createMapsNot();
-        NodeConfig nodeConf = new NodeConfig();
-        nodeConf.configValueMap = new HashMap<>();
-        nodeConf.deflt = new HashMap<>();
+        //MyConfig.createMapsNot();
+        //NodeConfig nodeConf = new NodeConfig();
+        //nodeConf.configValueMap = new HashMap<>();
+        //nodeConf.deflt = new HashMap<>();
         // choose hibernate db implementation by setting the flag (factory will pick it)
         nodeConf.configValueMap.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
 
@@ -172,6 +175,16 @@ public class DbIT {
         }
 
         // other methods are left as-is (inherited)
+    }
+
+    // duplicated from MyXMLConfig to get config file path
+    private String getConfigfile() {
+        String myConfigFile = System.getProperty("config");
+        if (myConfigFile == null) {
+            myConfigFile = ConfigConstants.CONFIGFILE;
+        }
+        //myConfigFile = "../conf/" + myConfigFile;
+        return myConfigFile;
     }
 
 }

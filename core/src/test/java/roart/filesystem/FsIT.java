@@ -14,17 +14,21 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import roart.common.config.ConfigConstants;
 import roart.common.config.NodeConfig;
 import roart.common.model.Location;
+import roart.config.MyXMLConfig;
 import roart.filesystem.FileSystemDao;
 import roart.service.ControlService;
 
 public class FsIT {
 
+    private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(getConfigfile());
+
     @Test
     public void testConstructFileSystemDao() {
         // Minimal smoke test: construct FileSystemDao with a basic NodeConfig and ControlService.
-        NodeConfig nodeConf = new NodeConfig();
+        //NodeConfig nodeConf = new NodeConfig();
         ControlService controlService = new ControlService(nodeConf);
         FileSystemDao dao = new FileSystemDao(nodeConf, controlService);
         assertNotNull(dao, "FileSystemDao should be constructed");
@@ -32,7 +36,7 @@ public class FsIT {
 
     @Test
     public void testGetUrlWithMockedCuratorReturnsData() throws Exception {
-        NodeConfig nodeConf = new NodeConfig();
+        //NodeConfig nodeConf = new NodeConfig();
         ControlService controlService = new ControlService(nodeConf);
         FileSystemDao dao = new FileSystemDao(nodeConf, controlService);
 
@@ -63,7 +67,7 @@ public class FsIT {
 
     @Test
     public void testStringOrNullReflection() throws Exception {
-        NodeConfig nodeConf = new NodeConfig();
+        //NodeConfig nodeConf = new NodeConfig();
         ControlService controlService = new ControlService(nodeConf);
         FileSystemDao dao = new FileSystemDao(nodeConf, controlService);
 
@@ -75,4 +79,15 @@ public class FsIT {
         assertEquals("", res1);
         assertEquals("/abc", res2);
     }
+    
+    // duplicated from MyXMLConfig to get config file path
+    private String getConfigfile() {
+        String myConfigFile = System.getProperty("config");
+        if (myConfigFile == null) {
+            myConfigFile = ConfigConstants.CONFIGFILE;
+        }
+        //myConfigFile = "../conf/" + myConfigFile;
+        return myConfigFile;
+    }
+
 }
