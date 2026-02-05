@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,6 +17,7 @@ import roart.common.config.MyConfig;
 import roart.common.config.NodeConfig;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
+import roart.config.ConfigConstantMaps;
 import roart.config.MyXMLConfig;
 import roart.database.IndexFilesDS;
 import roart.database.IndexFilesDao;
@@ -26,11 +28,16 @@ public class DbTest {
     @Test
     public void testSaveGetDelete() throws Exception {
         // minimal NodeConfig
+        ConfigConstantMaps.makeDefaultMap();
         NodeConfig nodeConf = new NodeConfig();
         nodeConf.configValueMap = new HashMap<>();
-        nodeConf.deflt = new HashMap<>();
+        nodeConf.deflt = ConfigConstantMaps.deflt;
         // choose hibernate db implementation by setting the flag (factory will pick it)
         nodeConf.configValueMap.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
+        //nodeConf.configValueMap.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
+        //nodeConf.configValueMap.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
+        //nodeConf.configValueMap.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
+        //nodeConf.configValueMap.put(ConfigConstants.DATABASEHIBERNATE, Boolean.TRUE);
 
         ControlService controlService = new ControlService(nodeConf);
 
@@ -65,8 +72,13 @@ public class DbTest {
         dao.delete(loaded);
         dao.commit();
 
+            try {
         IndexFiles afterDelete = dao.getExistingByMd5(md5);
         Assertions.assertNull(afterDelete, "Index should be deleted from underlying store");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assertions.fail("getExistingByMd5 should not throw exception after delete");
+            }
     }
 
     // In-memory stub implementation that stores IndexFiles in a map
@@ -122,13 +134,13 @@ public class DbTest {
         }
 
         @Override
-        public java.util.List<IndexFiles> getAll() throws Exception {
-            return java.util.List.copyOf(store.values());
+        public List<IndexFiles> getAll() throws Exception {
+            return List.copyOf(store.values());
         }
 
         @Override
-        public java.util.List<roart.common.model.Files> getAllFiles() throws Exception {
-            return java.util.List.of();
+        public List<roart.common.model.Files> getAllFiles() throws Exception {
+            return List.of();
         }
 
         @Override
