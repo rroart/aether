@@ -34,7 +34,6 @@ module core {
     requires common.leader;
     requires common.communication.factory;
     requires common.communication.model;
-    requires commons.configuration2;
     requires curator.client;
     requires curator.framework;
     requires curator.recipes;

@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import roart.common.config.ConfigConstants;
 import roart.common.config.MyConfig;
+import roart.common.config.MyXMLConfig;
 import roart.common.config.NodeConfig;
 import roart.common.model.FileLocation;
 import roart.common.model.IndexFiles;
-import roart.config.MyXMLConfig;
 import roart.database.IndexFilesDS;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;

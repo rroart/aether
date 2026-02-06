@@ -1,10 +1,8 @@
-package roart.config;
+package roart.common.config;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import roart.common.config.ConfigConstants;
-import roart.common.config.XMLType;
 import roart.common.constants.Constants;
 
 public class ConfigConstantMaps {

@@ -19,12 +19,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import roart.common.config.ConfigConstants;
+import roart.common.config.MyXMLConfig;
 import roart.common.config.NodeConfig;
 import roart.common.model.FileLocation;
 import roart.common.model.FileObject;
 import roart.common.model.Location;
 import roart.common.util.FsUtil;
-import roart.config.MyXMLConfig;
 import roart.filesystem.FileSystemDao;
 import roart.service.ControlService;
 

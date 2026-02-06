@@ -19,6 +19,7 @@
     <module>hdfs</module>
     <module>local</module>
     <module>swift</module>
+    <module>test</module>
   </modules>
 </project>
 

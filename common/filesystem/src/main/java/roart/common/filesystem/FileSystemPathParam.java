@@ -8,4 +8,12 @@ public class FileSystemPathParam extends FileSystemParam {
     public FileObject path;
     
     public Set<FileObject> paths;
+
+    public FileSystemPathParam() {
+    }
+
+    public FileSystemPathParam(FileObject fo) {
+        this.path = fo;
+    }
+
 }

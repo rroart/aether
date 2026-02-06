@@ -11,4 +11,6 @@ module common.config {
     requires com.fasterxml.jackson.annotation;
     requires common.constants;
     requires org.slf4j;
+    requires java.xml;
+    requires commons.configuration2;
 }

@@ -236,5 +236,22 @@
       <artifactId>hazelcast</artifactId>
       <version>${hazelcast.version}</version>
     </dependency>
+    <dependency>
+      <groupId>roart</groupId>
+      <artifactId>aether-filesystem-test</artifactId>
+      <version>${aether.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>${commons.beanutils.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

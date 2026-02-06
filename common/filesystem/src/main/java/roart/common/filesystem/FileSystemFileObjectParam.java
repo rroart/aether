@@ -8,4 +8,12 @@ public class FileSystemFileObjectParam extends FileSystemParam {
     public FileObject fo;
     
     public Set<FileObject> fos;
+
+    public FileSystemFileObjectParam() {
+    }
+
+    public FileSystemFileObjectParam(FileObject fo) {
+        this.fo = fo;
+    }
+
 }
