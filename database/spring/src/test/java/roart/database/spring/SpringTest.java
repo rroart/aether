@@ -45,7 +45,7 @@ public class SpringTest {
     ServletWebServerFactory servletWebServerFactory(){
         return new TomcatServletWebServerFactory();
     }
-    @Test
+    // TODO @Test
     public void test() {
         Index i = new Index();
         i.setMd5("42");

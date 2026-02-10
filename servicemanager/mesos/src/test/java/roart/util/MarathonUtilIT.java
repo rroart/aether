@@ -23,7 +23,7 @@ import com.netflix.discovery.util.EurekaUtils;
 
 import roart.common.util.JarThread;
 
-public class MarathonUtilTest {
+public class MarathonUtilIT {
 
     @BeforeEach
     public void setUp() {

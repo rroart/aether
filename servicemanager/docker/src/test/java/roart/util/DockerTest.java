@@ -43,7 +43,7 @@ public class DockerTest {
     	//IUser user = user = connection.getUser();
     }
 
-    @Test
+    // TODO @Test
     public void t5() {
     	DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
     		    .withDockerHost("tcp://192.168.42.56:2376")

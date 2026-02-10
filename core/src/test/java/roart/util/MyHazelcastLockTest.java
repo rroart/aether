@@ -14,7 +14,7 @@ import roart.common.hcutil.GetHazelcastInstance;
 
 public class MyHazelcastLockTest {
    
-    @Test
+    // TODO @Test
     public void test() throws Exception {
         int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);

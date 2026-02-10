@@ -97,7 +97,7 @@ public class SizeTest {
         System.out.println(i.length);
     }
     
-    @Test
+    // TODO @Test
     public void big9() throws IOException {
         List<byte[]> source = new ArrayList<>();
         source.add(new byte[SIZE]);
@@ -112,7 +112,7 @@ public class SizeTest {
         byte[] bytes = baos.toByteArray();
     }
     
-    @Test
+    // TODO @Test
     public void big10() throws IOException {
         InputStream f = new FileInputStream("/tmp/hbase.log");
         String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex( f );

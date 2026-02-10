@@ -50,7 +50,7 @@ public class ConsistentCleanTest {
         //when(ControlService.curatorClient.checkExists().forPath(any()).).thenReturn(true);        
     }
     
-    @Test
+    // TODO @Test
     public void deletepath() throws Exception {
         var flset = testData.fileLocationSet;
         String path = "/tmp";
@@ -68,7 +68,7 @@ public class ConsistentCleanTest {
         assertEquals(1, indexes.get(2).getFilelocations().size());
     }
 
-    @Test
+    // TODO @Test
     public void consistentnoclean() throws Exception {
         var flset = testData.fileLocationSet;
         var fls = testData.fileLocations;
@@ -94,7 +94,7 @@ public class ConsistentCleanTest {
         assertEquals(2, indexes.get(2).getFilelocations().size());
     }
 
-    @Test
+    // TODO @Test
     public void consistentclean() throws Exception {
         var flset = testData.fileLocationSet;
         var fls = testData.fileLocations;

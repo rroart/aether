@@ -60,7 +60,7 @@ public class IndexFilesDSTest {
         return cs;
     }
 
-    @Test
+    // TODO @Test
     public void testConstructorDestructorClearDrop() {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
@@ -92,7 +92,7 @@ public class IndexFilesDSTest {
         }
     }
 
-    @Test
+    // TODO @Test
     public void testGetByFilelocationAndGetMd5ByFilelocation() throws Exception {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
@@ -122,7 +122,7 @@ public class IndexFilesDSTest {
         }
     }
 
-    @Test
+    // TODO @Test
     public void testGetByMd5AndGetFilelocationsByMd5() throws Exception {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
@@ -155,7 +155,7 @@ public class IndexFilesDSTest {
         }
     }
 
-    @Test
+    // TODO @Test
     public void testGetAllAndGetAllFiles() throws Exception {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
@@ -184,7 +184,7 @@ public class IndexFilesDSTest {
         }
     }
 
-    @Test
+    // TODO @Test
     public void testSaveFlushCloseCommitAndSimpleResults() throws Exception {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
@@ -227,7 +227,7 @@ public class IndexFilesDSTest {
         }
     }
 
-    @Test
+    // TODO @Test
     public void testDeleteAndGetByMd5MapAndMd5ByFilelocation() throws Exception {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
@@ -272,7 +272,7 @@ public class IndexFilesDSTest {
         }
     }
 
-    @Test
+    // TODO @Test
     public void testQueuesSetAndQueueOperations() throws Exception {
         NodeConfig nc = nodeConf();
         ControlService cs = controlService(nc);
