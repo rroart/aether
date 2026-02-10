@@ -204,9 +204,9 @@
       <version>${imageio.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${springboot.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
