@@ -78,6 +78,7 @@
 		    --add-opens springdata/roart.database.spring=ALL-UNNAMED
 		    --add-opens spark.ml/roart.classification.spark.ml=ALL-UNNAMED
 		  </argLine>
+                  <useModulePath>false</useModulePath>
 		</configuration>
       </plugin>
       <plugin>
