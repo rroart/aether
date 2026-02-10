@@ -21,6 +21,7 @@
     <module>hbase</module>
     <module>hibernate</module>
     <module>spring</module>
+    <module>test</module>
   </modules>
 </project>
 
