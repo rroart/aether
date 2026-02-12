@@ -188,15 +188,14 @@
       <version>${guava.version}</version>
     </dependency>
     <dependency>
-      <groupId>software.amazon.dynamodb</groupId>
-      <artifactId>DynamoDBLocal</artifactId>
-      <version>${dynamodblocal.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
+      <groupId>software.amazon.dynamodb</groupId>
+      <artifactId>DynamoDBLocal</artifactId>
+      <version>${dynamodblocal.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
