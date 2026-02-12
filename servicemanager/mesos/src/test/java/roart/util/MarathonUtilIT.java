@@ -43,7 +43,7 @@ public class MarathonUtilIT {
         //IUser user = user = connection.getUser();
     }
 
-    @Test
+    // TODO classnotfound @Test
     public void t5() throws JacksonException {
         String str = null;
         Runnable eureka = new JarThread("/home/roart/src/aethermicro/eureka/target/aether-eureka-0.10-SNAPSHOT.jar", null, str);

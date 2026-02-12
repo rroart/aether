@@ -11,7 +11,7 @@ import com.hazelcast.shaded.org.checkerframework.checker.units.qual.Time;
 
 import roart.testdata.TestFiles;
 
-public class AnotherIT {
+public class AnotherE2E {
 
     @Test
     public void ordinaryTest() throws Exception {

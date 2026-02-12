@@ -26,6 +26,7 @@
     <module>servicemanager</module>
     <module>testdata</module>
     <module>distribution</module>
+    <module>jacoco</module>
   </modules>
   <build>
     <pluginManagement>
@@ -68,18 +69,18 @@
 	<version>${jetty.version}</version>
       </plugin>
       <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-		<version>3.5.4</version>
-		<configuration>
-		  <argLine>
-		    --add-opens java.base/java.lang=ALL-UNNAMED
-		    --add-reads common.config=ALL-UNNAMED
-		    --add-reads common.model=ALL-UNNAMED
-		    --add-opens springdata/roart.database.spring=ALL-UNNAMED
-		    --add-opens spark.ml/roart.classification.spark.ml=ALL-UNNAMED
-		  </argLine>
-                  <useModulePath>false</useModulePath>
-		</configuration>
+        <artifactId>maven-surefire-plugin</artifactId>
+	<version>3.5.4</version>
+	<configuration>
+	  <argLine>${jacocoArgLine}
+	  --add-opens java.base/java.lang=ALL-UNNAMED
+	  --add-reads common.config=ALL-UNNAMED
+	  --add-reads common.model=ALL-UNNAMED
+	  --add-opens springdata/roart.database.spring=ALL-UNNAMED
+	  --add-opens spark.ml/roart.classification.spark.ml=ALL-UNNAMED
+	  </argLine>
+          <useModulePath>false</useModulePath>
+	</configuration>
       </plugin>
       <plugin>
 	<groupId>org.cyclonedx</groupId>
@@ -98,12 +99,60 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>3.5.4</version>
         <executions>
+	  <execution>
+	    <goals>
+	      <goal>integration-test</goal>
+	      <goal>verify</goal>
+	    </goals>
+	  </execution>
+        </executions>
+	<configuration>
+	  <argLine>${jacocoArgLine}
+	  </argLine>
+	  <useModulePath>false</useModulePath>
+	</configuration>
+      </plugin>
+      <!-- JaCoCo plugin to prepare agent in modules and create an aggregate report at the root -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <!-- Prepare agent in each module so unit tests are recorded -->
           <execution>
+            <id>prepare-agent</id>
             <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <!-- property name injected and referenced by Surefire's argLine -->
+              <propertyName>jacocoArgLine</propertyName>
+              <destFile>${project.build.directory}/jacoco.exec</destFile>
+              <append>true</append>
+            </configuration>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
             </goals>
           </execution>
+
+          <!-- Generate an aggregated report at the reactor root during verify -->
+          <!--execution>
+            <id>report-aggregate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report-aggregate</goal>
+            </goals>
+            <configuration>
+                <dataFileIncludes>
+                    <dataFileInclude>**/jacoco.exec</dataFileInclude>
+                </dataFileIncludes>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate</outputDirectory>
+            </configuration>
+          </execution-->
         </executions>
       </plugin>
     </plugins>
@@ -213,6 +262,7 @@
     <imageio.version>1.4.0</imageio.version>
     <cyclonedx.version>2.9.0</cyclonedx.version>
     <fabric8.version>7.0.1</fabric8.version>
+    <jacoco.version>0.8.14</jacoco.version>
   </properties>
   <dependencyManagement>
     <dependencies>

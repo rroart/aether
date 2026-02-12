@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 import java.util.concurrent.TimeoutException;
 import org.apache.camel.component.amqp.AMQPComponent;
 
-public class CamelIT {
+public class CamelE2E {
 
     CamelContext context;
 

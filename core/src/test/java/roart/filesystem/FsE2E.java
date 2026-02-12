@@ -28,7 +28,7 @@ import roart.common.util.FsUtil;
 import roart.filesystem.FileSystemDao;
 import roart.service.ControlService;
 
-public class FsIT {
+public class FsE2E {
 
     private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(getConfigfile());
 

@@ -13,7 +13,7 @@ import roart.common.service.ServiceParam.Function;
 import roart.common.service.ServiceResult;
 import roart.eureka.util.EurekaUtil;
 
-public class AnIT {
+public class AnE2E {
 
     @Test
     public void myTest() {
@@ -96,6 +96,11 @@ public class AnIT {
     @Test
     public void dTest() throws Exception {
         new Util(new Sender()).deletepathdb("/home/roart/usr/aethermicro/books/doc");
+    }
+     
+    @Test
+    public void dbcheckTest() throws Exception {
+        new Util(new Sender()).dbcheck(null);
     }
      
 }
