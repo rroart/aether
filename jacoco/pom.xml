@@ -389,11 +389,11 @@
       <artifactId>aether.shadow.hbase</artifactId>
       <version>0.10-SNAPSHOT</version>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>roart</groupId>
       <artifactId>aether.shadow.mahout.mr</artifactId>
       <version>0.10-SNAPSHOT</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>roart</groupId>
       <artifactId>aether.shadow.mahout.spark</artifactId>
