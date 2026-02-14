@@ -18,19 +18,19 @@ public class RedisTest {
         concurrencyTest(queue);
     }
     
-    @Test
+    // TODO embed @Test
     public void concurrencyJedisTest() throws Exception {
         MyQueue<String> queue = new MyRedisQueue<String>("http://localhost:6379", "num");
         concurrencyTest(queue);
     }
     
-    @Test
+    // TODO embed @Test
     public void concurrencyRedissonTest() throws Exception {
         MyQueue<String> queue = new MyRedissonQueue<String>("redis://localhost:6379", "num");
         concurrencyTest(queue);
     }
     
-    @Test
+    // TODO embed @Test
     public void concurrencyMoreJedisTest() throws Exception {
         MyQueue<String>[] queues = new MyQueue[3];
         queues[0] = new MyRedisQueue<String>("http://localhost:6379", "num");

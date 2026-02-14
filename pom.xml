@@ -292,7 +292,7 @@
       </snapshots>
     </repository>
   </repositories-->
-  <repositories>
+  <!--repositories>
     <repository>
         <id>repository.spring.milestone</id>
         <name>Spring Milestone Repository</name>
@@ -306,12 +306,12 @@
 	<enabled>false</enabled>
       </snapshots>
     </repository>
-  </repositories>
-  <pluginRepositories>
+  </repositories-->
+  <!--pluginRepositories>
     <pluginRepository>
         <id>repository.spring.milestone</id>
         <name>Spring Milestone Repository</name>
         <url>https://repo.spring.io/milestone</url>
     </pluginRepository>
-  </pluginRepositories>
+  </pluginRepositories-->
 </project>

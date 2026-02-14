@@ -36,7 +36,7 @@ public class MyCuratorSemaphoreTest {
         controlService.curatorClient.start();
     }
     
-    @Test
+    // TODO embed @Test
     public void test() throws Exception {
         int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
@@ -62,7 +62,7 @@ public class MyCuratorSemaphoreTest {
         assertEquals(0, latchDone.getCount());
     }
     
-    @Test
+    // TODO embed @Test
     public void trytest() throws Exception {
         int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
@@ -90,7 +90,7 @@ public class MyCuratorSemaphoreTest {
         assertEquals(0, latchDone.getCount());
     }
     
-    @Test
+    // TODO embed @Test
     public void try1test() throws Exception {
         int n = 10;
         int numberOfThreads = 4;
@@ -127,7 +127,7 @@ public class MyCuratorSemaphoreTest {
         assertEquals(0, latchDone.getCount());
     }
     
-    @Test
+    // TODO embed @Test
     public void try2test() throws Exception {
         MySemaphore locka1 = new MyCuratorSemaphore("a", controlService.curatorClient);
         MySemaphore locka2 = new MyCuratorSemaphore("b", controlService.curatorClient);
