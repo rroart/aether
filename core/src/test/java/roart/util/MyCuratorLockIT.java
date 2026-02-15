@@ -8,8 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.test.TestingServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +19,10 @@ import roart.common.synchronization.MyLock;
 import roart.common.synchronization.impl.MyCuratorLock;
 import roart.service.ControlService;
 
-public class MyCuratorLockTest {
+public class MyCuratorLockIT {
 
     ControlService controlService = mock(ControlService.class);
+    /*
     @BeforeEach
     public void before() {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
@@ -27,9 +30,16 @@ public class MyCuratorLockTest {
         controlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
         controlService.curatorClient.start();
     }
+    */
     
-    // TODO embed @Test
+    @Test
     public void test() throws Exception {
+      try (TestingServer server = new TestingServer(true)) {
+        ExponentialBackoffRetry retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        controlService.curatorClient = CuratorFrameworkFactory.newClient(server.getConnectString(), retryPolicy);
+        //String zookeeperConnectionString = "localhost:2181";
+        //controlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        controlService.curatorClient.start();
         int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads * 100);
@@ -52,5 +62,6 @@ public class MyCuratorLockTest {
         }
         latch.await();
         assertEquals(0, latchDone.getCount());
+      }
     }
 }

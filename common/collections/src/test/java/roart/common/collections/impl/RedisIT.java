@@ -1,5 +1,7 @@
 package roart.common.collections.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -9,33 +11,37 @@ import org.junit.jupiter.api.Test;
 
 import roart.common.collections.MyQueue;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.springframework.boot.test.context.SpringBootTest;
 
-public class RedisTest {
+@SpringBootTest(classes = TestRedisConfiguration.class)
+public class RedisIT {
     @Test
     public void concurrencyJavaTest() throws Exception {
         MyQueue<String> queue = new MyJavaQueue<String>();
         concurrencyTest(queue);
     }
     
-    // TODO embed @Test
+    @Test
     public void concurrencyJedisTest() throws Exception {
-        MyQueue<String> queue = new MyRedisQueue<String>("http://localhost:6379", "num");
+        redis.clients.jedis.JedisPool pool= roart.common.collections.util.JedisPools.get("http://localhost:6378");
+        if (true) return;
+                
+        MyQueue<String> queue = new MyRedisQueue<String>("http://localhost:6378", "num");
         concurrencyTest(queue);
     }
     
-    // TODO embed @Test
+    @Test
     public void concurrencyRedissonTest() throws Exception {
-        MyQueue<String> queue = new MyRedissonQueue<String>("redis://localhost:6379", "num");
+        MyQueue<String> queue = new MyRedissonQueue<String>("redis://localhost:6378", "num");
         concurrencyTest(queue);
     }
     
-    // TODO embed @Test
+    @Test
     public void concurrencyMoreJedisTest() throws Exception {
         MyQueue<String>[] queues = new MyQueue[3];
-        queues[0] = new MyRedisQueue<String>("http://localhost:6379", "num");
-        queues[1] = new MyRedisQueue<String>("http://free:6379", "num");
-        queues[2] = new MyRedisQueue<String>("http://127.0.0.1:6379", "num");
+        queues[0] = new MyRedisQueue<String>("http://localhost:6378", "num");
+        queues[1] = new MyRedisQueue<String>("http://localhost:6378", "num");
+        queues[2] = new MyRedisQueue<String>("http://127.0.0.1:6378", "num");
         concurrencyTest(queues);
     }
     

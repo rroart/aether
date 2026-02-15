@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.test.TestingServer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -21,22 +23,29 @@ import roart.common.synchronization.impl.MyCuratorSemaphore;
 import roart.dir.TraverseFile;
 import roart.service.ControlService;
 
-public class MyCuratorSemaphoreTest {
+public class MyCuratorSemaphoreIT {
 
-    private static Logger log = LoggerFactory.getLogger(MyCuratorSemaphoreTest.class);
+    private static Logger log = LoggerFactory.getLogger(MyCuratorSemaphoreIT.class);
 
     private static Random rand = new Random();
     
     ControlService controlService = mock(ControlService.class);
     @BeforeEach
-    public void before() {
+    public void before() throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);        
-        String zookeeperConnectionString = "localhost:2181";
-        controlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        //String zookeeperConnectionString = "localhost:2181";
+        //controlService.curatorClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+        TestingServer server = new TestingServer(true);
+        controlService.curatorClient = CuratorFrameworkFactory.newClient(server.getConnectString(), retryPolicy);
         controlService.curatorClient.start();
     }
     
-    // TODO embed @Test
+    @AfterEach
+    public void after() {
+        controlService.curatorClient.close();
+    }
+    
+    @Test
     public void test() throws Exception {
         int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
@@ -62,7 +71,7 @@ public class MyCuratorSemaphoreTest {
         assertEquals(0, latchDone.getCount());
     }
     
-    // TODO embed @Test
+    @Test
     public void trytest() throws Exception {
         int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
@@ -90,7 +99,7 @@ public class MyCuratorSemaphoreTest {
         assertEquals(0, latchDone.getCount());
     }
     
-    // TODO embed @Test
+    @Test
     public void try1test() throws Exception {
         int n = 10;
         int numberOfThreads = 4;
@@ -127,7 +136,7 @@ public class MyCuratorSemaphoreTest {
         assertEquals(0, latchDone.getCount());
     }
     
-    // TODO embed @Test
+    @Test
     public void try2test() throws Exception {
         MySemaphore locka1 = new MyCuratorSemaphore("a", controlService.curatorClient);
         MySemaphore locka2 = new MyCuratorSemaphore("b", controlService.curatorClient);

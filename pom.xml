@@ -255,6 +255,7 @@
     <springrabbit.version>4.0.2</springrabbit.version>
     <redisclient.version>7.2.1</redisclient.version>
     <redisson.version>4.1.0</redisson.version>
+    <redisembed.version>1.4.3</redisembed.version>
     <!-- spark 4.1.1? -->
     <chill.version>0.10.0</chill.version>
     <!-- spark 4.1.1 -->
