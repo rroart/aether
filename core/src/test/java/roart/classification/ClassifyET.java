@@ -11,7 +11,7 @@ import roart.search.Util;
 import roart.common.config.NodeConfig;
 import roart.common.inmemory.redis.InmemoryJedis;
 
-public class ClassifyE2E {
+public class ClassifyET {
 
     @Test
     public void testClassify() throws Exception {

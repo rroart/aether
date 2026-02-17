@@ -8,7 +8,7 @@ import roart.common.config.ConfigConstants;
 // hbase 23,18 55
 // psql   33,32   160
 // cass 25,22 771/580
-public class DbCopyE2E {
+public class DbCopyET {
     @Test
     public void myTest() throws Exception {
         String src = ConfigConstants.DATABASESPRING;

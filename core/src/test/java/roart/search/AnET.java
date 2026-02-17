@@ -13,7 +13,7 @@ import roart.common.service.ServiceParam.Function;
 import roart.common.service.ServiceResult;
 import roart.eureka.util.EurekaUtil;
 
-public class AnE2E {
+public class AnET {
 
     @Test
     public void myTest() {

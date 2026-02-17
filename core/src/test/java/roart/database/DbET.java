@@ -21,7 +21,7 @@ import roart.database.IndexFilesDS;
 import roart.database.IndexFilesDao;
 import roart.service.ControlService;
 
-public class DbE2E {
+public class DbET {
 
     private NodeConfig nodeConf = MyXMLConfig.getConfigInstance(getConfigfile());
 
