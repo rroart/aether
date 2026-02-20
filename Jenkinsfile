@@ -125,6 +125,6 @@ pipeline {
     // Keep the workspace and timestamps for better logs when running in Jenkins
     options {
         preserveStashes(buildsToKeepStr: '1')
-        timestamps()
+        // TODO timestamps()
     }
 }
