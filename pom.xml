@@ -178,7 +178,7 @@
     <junit.version>5.10.2</junit.version>
     <mahout.lucene.version>8.9.0</mahout.lucene.version>
     <lucene.version>10.3.2</lucene.version>
-    <solr.version>9.10.1</solr.version>
+    <solr.version>10.0.0</solr.version>
     <hbase.version>2.6.4</hbase.version>
     <cassandra.version>4.19.2</cassandra.version>
     <aws.version>1.12.114</aws.version>

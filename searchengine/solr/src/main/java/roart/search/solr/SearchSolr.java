@@ -9,16 +9,17 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.solr.client.solrj.jetty.HttpJettySolrClient;
+import org.apache.solr.client.solrj.request.SolrQuery;
+import org.apache.solr.client.solrj.response.XMLResponseParser;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.MapSolrParams;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -53,9 +54,9 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
         super(configname, configid, nodeConf);
         conf = new SolrConfig();
         String url = nodeConf.getSolrurl() + nodeConf.solrIndex();
-        HttpSolrClient server = new HttpSolrClient.Builder(url)
-                .withSocketTimeout(60000)
-                .withConnectionTimeout(5000)
+        HttpJettySolrClient server = new HttpJettySolrClient.Builder(url)
+                //.withSocketTimeout(60000)
+                .withConnectionTimeout(5000, TimeUnit.MILLISECONDS)
                 .build();
         conf.server = server;
         log.info("server " + server);
@@ -63,7 +64,7 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
         // Setting the XML response parser is only required for cross
         // version compatibility and only when one side is 1.4.1 or
         // earlier and the other side is 3.1 or later.
-        server.setParser(new XMLResponseParser());
+        //server.setParser(new XMLResponseParser());
         // binary parser is used by default
         // The following settings are provided here for completeness.
         // They will not normally be required, and should only be used 
@@ -308,13 +309,13 @@ public class SearchSolr extends SearchEngineAbstractSearcher {
 
             log.info("query " + query);
 
-            HttpSolrClient mltserver = new HttpSolrClient.Builder(conf.server.getBaseURL())
-                    .withSocketTimeout(600000) // bigger timeout, only diff
-                    .withConnectionTimeout(5000)
+            HttpJettySolrClient mltserver = new HttpJettySolrClient.Builder(conf.server.getBaseURL())
+                    //.withSocketTimeout(600000) // bigger timeout, only diff
+                    .withConnectionTimeout(5000, TimeUnit.MILLISECONDS)
                     .build();
             // mltserver.setDefaultMaxConnectionsPerHost(100);
             // mltserver.setMaxTotalConnections(100);
-            mltserver.setFollowRedirects(false);  // defaults to false
+            // mltserver.setFollowRedirects(false);  // defaults to false
             // allowCompression defaults to false.
             // Server side must support gzip or deflate for this to have any effect.
             // mltserver.setAllowCompression(true);

@@ -1,7 +1,7 @@
 package roart.search.solr;
 
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.jetty.HttpJettySolrClient;
 
 public class SolrConfig {
-    public HttpSolrClient server;
+    public HttpJettySolrClient server;
 }

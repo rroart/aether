@@ -22,4 +22,5 @@ module solr {
     requires spring.cloud.commons;
     requires spring.web;
     requires common.util;
+    requires solr.solrj.jetty;
 }
