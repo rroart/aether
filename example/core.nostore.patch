@@ -30,7 +30,7 @@ diff -ru ../../configsets/_default/conf/solrconfig.xml ./solrconfig.xml
  
      <!-- Minimum acceptable prefix-size for prefix-based queries.
  
-@@ -623,13 +623,14 @@
+@@ -615,13 +615,14 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
