@@ -344,7 +344,12 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-api</artifactId>
-      <version>1.36.0</version>
+      <version>1.63.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry.semconv</groupId>
+      <artifactId>opentelemetry-semconv</artifactId>
+      <version>1.42.0</version>
     </dependency>
   </dependencies>
 </project>
