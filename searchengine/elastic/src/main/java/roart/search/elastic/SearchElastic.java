@@ -257,7 +257,8 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
                     .size(100)
                     .explain(true);
             if (nodeConf.getHighlightmlt()) {
-                sr.highlight(h -> h.fields(new NamedValue(SearchConstants.CONTENT, h.type(HighlighterType.Unified))));
+                sr.highlight(h -> h.fields(NamedValue.of(SearchConstants.CONTENT,
+                        HighlightField.of(f -> f.type(HighlighterType.Unified)))));
             }
             SearchResponse<Appdata> response = conf.client.search(sr.build(), Appdata.class);
             HitsMetadata<Appdata> docs = response.hits();
