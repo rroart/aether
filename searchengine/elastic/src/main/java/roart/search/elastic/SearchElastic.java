@@ -40,6 +40,8 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.search.Highlight;
+import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.HighlighterType;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import co.elastic.clients.transport.rest_client.RestClientOptions;
@@ -248,9 +250,9 @@ public class SearchElastic extends SearchEngineAbstractSearcher {
             SearchRequest.Builder sr = new SearchRequest.Builder()
                     .index(myindex)
                     .query(q -> q
-                            .term(t -> t
+                            .match(m -> m
                                     .field(SearchConstants.CONTENT)
-                                    .value(v -> v.stringValue(str))))
+                                    .query(v -> v.stringValue(str))))
                     .from(0)
                     .size(100)
                     .explain(true);
