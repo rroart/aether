@@ -131,6 +131,58 @@ public class IndexFilesUtil {
         return ri;
     }
 
+    public static ResultItem getSearchResultItem(String md5, String lang, float score, String[] highlights, List<String> metadata, String csnodename) {
+        boolean doclassify = MyConfig.conf.wantClassify();
+        boolean admin = MyConfig.conf.admin;
+        boolean dohighlightmlt = MyConfig.conf.getHighlightmlt();
+
+        ResultItem ri = new ResultItem();
+        ri.add("" + score);
+        ri.add(md5);
+        ri.add("Lost data");
+        ri.add(null);
+        ri.add(null);
+        if (dohighlightmlt) {
+            if (highlights != null && highlights.length > 0) {
+                ri.add(highlights[0]);
+            } else {
+                ri.add(null);
+            }
+        }
+        ri.add(lang);
+        ri.add(null);
+        if (doclassify) {
+            ri.add(null);
+        }
+        ri.add(null);
+        ri.add(null);
+        if (admin) {
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            if (doclassify) {
+                ri.add(null);
+            }
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            ri.add(null);
+            String metadatastring = "";
+            if (metadata != null) {
+                for (String md : metadata) {
+                    metadatastring = metadatastring + md + "<br>";
+                }
+            }
+            ri.add(metadatastring);
+        }
+        return ri;
+    }
+
     public static ResultItem getHeader() {
         boolean doclassify = MyConfig.conf.wantClassify();
     

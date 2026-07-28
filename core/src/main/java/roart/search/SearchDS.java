@@ -138,6 +138,15 @@ public abstract class SearchDS {
     }
 
     private ResultItem[] getResultItems(SearchEngineSearchResult result) {
+        // result is null due to exception
+        if (result == null) {
+            ResultItem[] strarr = new ResultItem[2];
+            strarr[0] = IndexFilesUtil.getHeaderSearch();
+            strarr[1] = new ResultItem();
+            strarr[1].add("0");
+            strarr[1].add("Search exception");
+            return strarr;
+        }
         SearchResult[] results = result.results;
         ResultItem[] strarr = new ResultItem[results.length + 1];
         strarr[0] = IndexFilesUtil.getHeaderSearch();
@@ -153,6 +162,12 @@ public abstract class SearchDS {
                 String md5 = res.md5;
                 IndexFiles indexmd5 = indexmd5s.get(md5);
 
+                // null if elastic and db inconsistence
+                if (indexmd5 == null) {
+                    strarr[i] = IndexFilesUtil.getSearchResultItem(res.md5, res.lang, res.score, res.highlights, res.metadata, controlService.nodename);
+                    i++;
+                    continue;
+                }
                 String filename = indexmd5.getFilelocation();
                 FileLocation aFl = indexmd5.getaFilelocation();
                 log.info("Hit {}.{} : {} {}",i ,md5, filename, res.score);
