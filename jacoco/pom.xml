@@ -314,11 +314,11 @@
       <artifactId>aether-mahout-mr</artifactId>
       <version>0.10-SNAPSHOT</version>
     </dependency-->
-    <dependency>
+    <!--dependency>
       <groupId>roart</groupId>
       <artifactId>aether-mahout-spark</artifactId>
       <version>0.10-SNAPSHOT</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>roart</groupId>
       <artifactId>aether-opennlp</artifactId>

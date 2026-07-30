@@ -16,12 +16,6 @@ build:
       dockerfile: docker/cloud/sparkmldata/Dockerfile
       buildArgs:
         mydata: '{{.MYSPARKMLDATA}}'
-  - image: aether-mahout-spark-data$CLASSIFYAPPID
-    context: ../../..
-    docker:
-      dockerfile: docker/cloud/mahoutsparkdata/Dockerfile
-      buildArgs:
-        mydata: '{{.MYMAHOUTSPARKDATA}}'
   - image: aether-opennlp$CLASSIFYIMGID
     context: ../../..
     docker:
@@ -35,21 +29,6 @@ build:
         appid: '{{.CLASSIFYAPPID}}'
         zookeeper: '{{.ZOOKEEPER}}'
         mydata: '{{.MYOPENNLPDATA}}'
-        jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
-  - image: aether-mahout-spark$CLASSIFYIMGID
-    context: ../../..
-    docker:
-      dockerfile: docker/cloud/generic/Dockerfile
-      buildArgs:
-        distlib: '{{.DISTLIB}}'
-        distjar: '{{.MAHOUTSPARKJAR}}'
-        mywebport: "8080"
-        myconfig: '{{.MYCONFIG}}'
-        mydebug: '{{.MYDEBUG}}'
-        extras: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
-        appid: '{{.CLASSIFYAPPID}}'
-        zookeeper: '{{.ZOOKEEPER}}'
-        mydata: '{{.MYMAHOUTSPARKDATA}}'
         jdk_java_options: '{{.JDK_JAVA_OPTIONS}}'
   - image: aether-spark-ml$CLASSIFYIMGID
     context: ../../..
@@ -73,5 +52,3 @@ deploy:
     - opennlpdata/deployment.yaml
     - sparkml/deployment.yaml
     - sparkmldata/deployment.yaml
-    - mahoutspark/deployment.yaml
-    - mahoutsparkdata/deployment.yaml
