@@ -110,6 +110,11 @@
 	  <argLine>${jacocoArgLine}
 	  </argLine>
 	  <useModulePath>false</useModulePath>
+	  <!-- By default Failsafe puts the project artifact on the test classpath instead of
+	       target/classes. The spring-boot repackage goal rewrites that artifact into a fat jar
+	       with the classes under BOOT-INF/classes, which makes them invisible to the ITs
+	       (NoClassDefFoundError). Point Failsafe at the plain output directory instead. -->
+	  <classesDirectory>${project.build.outputDirectory}</classesDirectory>
 	</configuration>
       </plugin>
       <!-- JaCoCo plugin to prepare agent in modules and create an aggregate report at the root -->
