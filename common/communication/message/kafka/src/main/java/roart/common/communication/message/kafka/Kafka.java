@@ -89,7 +89,9 @@ public class Kafka extends MessageCommunication {
             //props.put("fetch.message.max.bytes", MSGSIZE);
             //props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, MSGSIZE);
             consumer = new KafkaConsumer<>(props);
+            consumer.subscribe(Collections.singletonList(getReceiveService()));
 
+            /*
             List<TopicPartition> partitions = new ArrayList<>(); 
             List<PartitionInfo> partitionInfos = null;
             partitionInfos = consumer.partitionsFor(getReceiveService());
@@ -99,6 +101,8 @@ public class Kafka extends MessageCommunication {
                             partition.partition()));
             }
             consumer.assign(partitions);
+
+             */
 
         }
     }
