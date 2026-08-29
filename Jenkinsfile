@@ -110,7 +110,11 @@ pipeline {
             }
             steps {
                 script {
+                    // replicate Jenkinsfile.sonar behavior
+                    def scannerHome = tool 'sonarqube-scanner'
+                    env.PATH = "${scannerHome}/bin:${env.PATH}"
                     env.GIT_DEPTH = 0
+                    sh 'ls -R ${scannerHome}'
                     sh 'mvn clean install -pl !webr -Dcyclonedx.skip'
                     sh 'sonar-scanner'
                 }
