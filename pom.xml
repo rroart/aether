@@ -210,7 +210,7 @@
     <hazelcastclient.version>3.12.13</hazelcastclient.version>
     <snappyjava.version>1.0.4.1</snappyjava.version>
     <jackson.version>3.0.2</jackson.version>
-    <jackson.annotations.version>2.20</jackson.annotations.version>
+    <jackson.annotations.version>2.21</jackson.annotations.version>
     <jackson.jsr.version>3.0.0-rc2</jackson.jsr.version>
     <httpclient.version>4.5.6</httpclient.version>
     <dbunit.dataTypeFactoryName>org.dbunit.ext.h2.H2DataTypeFactory</dbunit.dataTypeFactoryName>
