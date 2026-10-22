@@ -177,6 +177,7 @@
     <!-- Align Spring Cloud with Boot 4; pick compatible release when available -->
     <springcloud.version>5.1.0-M1</springcloud.version>
     <springcloudstarter.version>2025.1.0-RC1</springcloudstarter.version>
+    <springclouddependencies.version>2026.0.0-M1</springclouddependencies.version>
     <springcore.version>7.1.0-M2</springcore.version>
     <eurekaclient.version>2.0.5</eurekaclient.version>
     <reactor.version>3.6.8</reactor.version>
