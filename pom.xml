@@ -260,7 +260,8 @@
     <camelactivemq.version>4.17.0</camelactivemq.version>
     <springintegration.version>7.0.1</springintegration.version>
     <springrabbit.version>4.0.2</springrabbit.version>
-    <redisclient.version>7.2.1</redisclient.version>
+    <!-- todo keep in sync with spring, or problems -->
+    <redisclient.version>8.0.1</redisclient.version>
     <redisson.version>4.1.0</redisson.version>
     <redisembed.version>1.4.3</redisembed.version>
     <!-- spark 4.2.0 -->
