@@ -23,10 +23,10 @@ public class RedisIT {
     
     @Test
     public void concurrencyJedisTest() throws Exception {
-        redis.clients.jedis.JedisPool pool= roart.common.collections.util.JedisPools.get("http://localhost:6378");
+        redis.clients.jedis.JedisPool pool= roart.common.collections.util.JedisPools.get("redis://localhost:6378");
         if (true) return;
                 
-        MyQueue<String> queue = new MyRedisQueue<String>("http://localhost:6378", "num");
+        MyQueue<String> queue = new MyRedisQueue<String>("redis://localhost:6378", "num");
         concurrencyTest(queue);
     }
     
@@ -39,9 +39,9 @@ public class RedisIT {
     @Test
     public void concurrencyMoreJedisTest() throws Exception {
         MyQueue<String>[] queues = new MyQueue[3];
-        queues[0] = new MyRedisQueue<String>("http://localhost:6378", "num");
-        queues[1] = new MyRedisQueue<String>("http://localhost:6378", "num");
-        queues[2] = new MyRedisQueue<String>("http://127.0.0.1:6378", "num");
+        queues[0] = new MyRedisQueue<String>("redis://localhost:6378", "num");
+        queues[1] = new MyRedisQueue<String>("redis://localhost:6378", "num");
+        queues[2] = new MyRedisQueue<String>("redis://127.0.0.1:6378", "num");
         concurrencyTest(queues);
     }
     
